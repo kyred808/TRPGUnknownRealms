@@ -380,15 +380,8 @@ function SaveCharacter(%clientId)
         $funk::var["[\"" @ %name @ "\", 0, "@%idx+%i+$Belt::NumberOfBeltGroups@"]"] = fetchData(%clientId, "Stored"@$Belt::ItemGroup[%i]);
     }
     
-   //$funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "GemItems");
-   //$funk::var["[\"" @ %name @ "\", 0, 33]"] = fetchData(%clientId, "RareItems");
-   //$funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "LoreItems");
-   //$funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "EquipItems");
-   
-    //$funk::var["[\"" @ %name @ "\", 0, 36]"] = fetchData(%clientId, "StoredGemItems");
-    //$funk::var["[\"" @ %name @ "\", 0, 37]"] = fetchData(%clientId, "StoredRareItems");
-    //$funk::var["[\"" @ %name @ "\", 0, 38]"] = fetchData(%clientId, "StoredLoreItems");
-    //$funk::var["[\"" @ %name @ "\", 0, 39]"] = fetchData(%clientId, "StoredEquipItems");
+    // Realms
+    $funk::var["[\"" @ %name @ "\", 30, 0]"] = fetchData(%clientId, "realm");
 
 
 	//Key binds
@@ -554,6 +547,11 @@ function LoadCharacter(%clientId)
             storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 0, %idx+%i]);
             storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 0, %idx+%i+$Belt::NumberOfBeltGroups]);
         }
+        %idx += %i;
+        if($funk::var[%name, 30, 0] != "")
+            storeData(%clientId,"realm",$funk::var[%name, 30, 0]);
+        else
+            storeData(%clientId,"realm",$RealmData::RealmIdToLabel[0]);
         
         //storeData(%clientId, "GemItems", $funk::var[%name, 0, 32]);
         //storeData(%clientId, "RareItems", $funk::var[%name, 0, 33]);
@@ -1175,12 +1173,15 @@ function ClearVariables(%clientId)
 	$numMessage[%clientId, m] = "";
 	$numMessage[%clientId, c] = "";
 
-	for(%i = 0; (%id = GetWord($TownBotList, %i)) != -1; %i++)
-	{
-		$state[%id, %clientId] = "";
-		if($QuestCounter[%name, %id.name] != "")
-			$QuestCounter[%name, %id.name] = "";
-	}
+    for(%k = 0; $RealmData::RealmIdToLabel[%k] != ""; %k++)
+    {
+        for(%i = 0; (%id = GetWord($TownBotList[%k], %i)) != -1; %i++)
+        {
+            $state[%id, %clientId] = "";
+            if($QuestCounter[%name, %id.name] != "")
+                $QuestCounter[%name, %id.name] = "";
+        }
+    }
 
 	for(%i = 1; %i <= $maxDamagedBy; %i++)
 		$damagedBy[%name, %i] = "";
@@ -2226,7 +2227,7 @@ function FellOffMap(%id)
 		Item::setVelocity(%id, "0 0 0");
         if($Realms::MapUsesRealms)
         {
-            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"realm");
+            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"realm"));
             return;
         }
         else

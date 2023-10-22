@@ -217,11 +217,15 @@ function createServer(%mission, %dedicated)
     if($Realms::MapUsesRealms)
         InitRealms();
 	InitCrystals();
-	InitZones();
-	InitFerry();
-	InitTownBots();
+    Realms::InitZones();
+    Realms::InitFerry();
+    Realms::InitTownBots();
+	//InitZones();
+	//InitFerry();
+	//InitTownBots();
 	if(!$NoSpawn)
-		InitSpawnPoints();
+        Realms::InitSpawnPoints();
+		//InitSpawnPoints();
 
 	if($arenaOn)
 	{

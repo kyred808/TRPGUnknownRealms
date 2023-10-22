@@ -1375,6 +1375,8 @@ function InitTownBots()
         Realms::InitTownBots();
         return;
     }
+    
+    // Old Code
 	%group = nameToId("MissionGroup/TownBots");
 
 	if(%group != -1)
@@ -1403,15 +1405,15 @@ function InitTownBots()
 		}
 	}
 }
-function RotateTownBot(%id, %rot)
+function RotateTownBot(%id, %rot, %realmId)
 {
-	dbecho($dbechoMode, "RotateTownBot(" @ %id @ ", " @ %rot @ ")");
+	dbecho($dbechoMode, "RotateTownBot(" @ %id @ ", " @ %rot @ "," @ %realmId @ ")");
 
 	%pos = GameBase::getPosition(%id);
 	%name = %id.name;
 
 	//delete the bot
-	$TownBotList = String::replace($TownBotList, %id @ " ", "");
+	$TownBotList[%realmId] = String::replace($TownBotList[%realmId], %id @ " ", "");
 	deleteObject(%id);
 
 	//re-create the bot
@@ -1424,8 +1426,8 @@ function RotateTownBot(%id, %rot)
 	GameBase::setTeam(%townbot, $BotInfo[%name, TEAM]);
 	GameBase::playSequence(%townbot, 0, "root");	//thanks Adger!!
 	%townbot.name = %name;
-
-	$TownBotList = $TownBotList @ %townbot @ " ";
+    $BotInfo[%name, REALM] = $RealmData::RealmIdToLabel[%realId];
+	$TownBotList[%realmId] = $TownBotList[%realId] @ %townbot @ " ";
 }
 
 function GatherBeltShopInfo(%aiName,%info)

@@ -2,7 +2,7 @@ if($console::logmode == "") $console::logmode = 0;
 if($dbechoMode == "") $dbechoMode = 2;
 if($dbechoMode2 == "") $dbechoMode2 = 2;
 
-if($arenaOn == "") $arenaOn = True;
+if($arenaOn == "") $arenaOn = False;
 if($underwaterEffects == "") $underwaterEffects = False;
 if($postAttackGraphBar == "") $postAttackGraphBar = False;
 if($SaveWorldFreq == "") $SaveWorldFreq = 15 * 60;

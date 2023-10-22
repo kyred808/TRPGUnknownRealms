@@ -278,7 +278,8 @@ return;
 	//============================================================================================
 
 	%cropped = String::NEWgetSubStr(%message, (String::len(%w1)+1), 99999);
-
+    %realm = fetchData(%TrueClientId,"realm");
+    %realmId = $RealmData[%realm, ID];
 
 	if(%isCommand)
 	{
@@ -2528,7 +2529,7 @@ return;
 		{
 			if(%clientToServerAdminLevel >= 5)
 			{
-				for(%i = 0; (%id = GetWord($TownBotList, %i)) != -1; %i++)
+				for(%i = 0; (%id = GetWord($TownBotList[%realmId], %i)) != -1; %i++)
 					deleteObject(%id);
 				InitTownBots();
 			}
@@ -5529,7 +5530,7 @@ return;
 		%clientPos = GameBase::getPosition(%TrueClientId);
 		%closest = 5000000;
 
-		for(%i = 0; (%id = GetWord($TownBotList, %i)) != -1; %i++)
+		for(%i = 0; (%id = GetWord($TownBotList[%realmId], %i)) != -1; %i++)
 		{
 			%botPos = GameBase::getPosition(%id);
 			%dist = Vector::getDistance(%clientPos, %botPos);
@@ -6343,7 +6344,7 @@ return;
 			//WITHOUT saying a word, come back and continue the conversation.  As soon as you speak in a way that
 			//townbots hear you (#say, #shout, #tell) and are too far from them, all conversations are reset.
 
-			for(%i = 0; (%id = GetWord($TownBotList, %i)) != -1; %i++)
+			for(%i = 0; (%id = GetWord($TownBotList[%realmId], %i)) != -1; %i++)
 				$state[%id, %TrueClientId] = "";
 		}
 	}

@@ -5,8 +5,14 @@ function InitZones()
 	$numZones = 0;
 	%zcnt = 0;
 	%umusiccnt = 0;
-    %zonePrefix = "";
     
+    if($Realms::MapUsesRealms)
+    {
+        Realms::InitFerry();
+        return;
+    }
+    
+    //Old code
 	%group = nameToId("MissionGroup\\Zones");
     
 	if(%group != -1)
@@ -128,10 +134,11 @@ function DoZoneCheck(%w, %d)
 
 	//Massive zone check for entire world
 	%mset = newObject("set", SimSet);
-	%n = containerBoxFillSet(%mset, $SimPlayerObjectType, "0 0 0", 9999, 9999, 9999, 0);
+	%n = containerBoxFillSet(%mset, $SimPlayerObjectType, "0 0 0", 99999, 99999, 99999, 0);
 
 	for(%z = 1; %z <= $numZones; %z++)
 	{
+        
 		%set = newObject("set", SimSet);
 		%n = containerBoxFillSet(%set, $SimPlayerObjectType, $Zone::Marker[%z], $Zone::Length[%z], $Zone::Width[%z], $Zone::Height[%z], $Zone::SHeight[%z]);
 		Group::iterateRecursive(%set, setzoneflags, %z);
