@@ -91,6 +91,8 @@ $SimTerrainObjectType    = 1 << 1;
 $SimInteriorObjectType   = 1 << 2;
 $SimPlayerObjectType     = 1 << 7;
 
+$SimMarkerObjectType = 1 << 10;
+
 $MineObjectType		    = 1 << 26;	
 $MoveableObjectType	    = 1 << 22;
 $VehicleObjectType	 	 = 1 << 29;  

@@ -93,7 +93,7 @@ function InitRealms()
 
 function Realms::InitZones()
 {
-    $numZones = 0;
+    $ZoneData::NumberZones = 0;
     for(%i = 0; nameToID("MissionGroup\\Realm"@%i) != -1; %i++)
     {
         Realms::InitializeZone("MissionGroup\\Realm"@%i@"\\Zones",$RealmData::RealmIdToLabel[%i]);
@@ -102,7 +102,7 @@ function Realms::InitZones()
 
 function Realms::InitializeZone(%groupPath,%realm)
 {
-    //%zcnt = 0;
+    %zcnt = 0;
 	%umusiccnt = 0;
     %group = nameToID(%groupPath);
     if(%group != -1)
@@ -137,74 +137,23 @@ function Realms::InitializeZone(%groupPath,%realm)
 			//---------------------------------------------------------------
 			else
 			{
-				%zcnt = $numZones+1;
-
-				%tmpgroup = nameToId(%groupPath @"\\" @ %system);
-				%tmpcount = Group::objectCount(%tmpgroup);
-				%marker = "";
-				%musiccnt = 0;
-
-				for(%z = 0; %z <= %tmpcount-1; %z++)
-				{
-					%tmpobject = Group::getObject(%tmpgroup, %z);
-	
-					if(getObjectType(%tmpobject) == "Marker")
-					{
-						if(%marker == "")
-						{
-							%marker = %tmpobject;
-							$numZones++;
-						}
-					}
-					else if(getObjectType(%tmpobject) == "SimGroup")
-					{
-						%n = Object::getName(%tmpobject);
-						
-						if(GetWord(%n, 0) == "ENTERSOUND")
-						{	
-							$Zone::EnterSound[%zcnt] = GetWord(%n, 1);
-						}
-						else if(GetWord(%n, 0) == "AMBIENTSOUND")
-						{
-							$Zone::AmbientSound[%zcnt] = GetWord(%n, 1);
-							$Zone::AmbientSoundPerc[%zcnt] = GetWord(%n, 2);
-						}
-						else if(GetWord(%n, 0) == "EXITSOUND")
-						{
-							$Zone::ExitSound[%zcnt] = GetWord(%n, 1);
-						}
-						else if(GetWord(%n, 0) == "MUSIC")
-						{
-							$Zone::Music[%zcnt, %musiccnt++] = GetWord(%n, 1);
-							$Zone::MusicTicks[%zcnt, %musiccnt] = GetWord(%n, 2);
-						}
-					}
-				}
-				
-				%mname = Object::getName(%marker);
-				$Zone::Marker[%zcnt] = GameBase::getPosition(%marker);
-				$Zone::Length[%zcnt] = GetWord(%mname, 0);
-				$Zone::Width[%zcnt] = GetWord(%mname, 1);
-				$Zone::Height[%zcnt] = GetWord(%mname, 2);
-				$Zone::SHeight[%zcnt] = GetWord(%mname, 3);
-				$Zone::Type[%zcnt] = %type;
-				$Zone::Desc[%zcnt] = %desc;
-				$Zone::FolderID[%zcnt] = %tmpgroup;
+                %zoneGrp = nameToId(%groupPath @"\\" @ %system);
+				%zoneId = Zone::addZone(%zoneGrp);
                 
-                $Zone::Realm[%zcnt] = %realm;
-                $RealmData[%realm,ZoneList] = $RealmData[%realm,ZoneList] @" "@%zcnt;
+                $RealmData[%realm,ZoneList] = $RealmData[%realm,ZoneList] @" "@%zoneId;
+                $Zone::Realm[%zoneId] = %realm;
 			}
 		}
-		echo($numZones @ " zones initialized.");
+		echo($ZoneData::NumberZones @ " zones initialized.");
 	}
 }
 
 function Realms::InitSpawnPoints()
 {
-    for(%i = 0; nameToID("MissionGroup\\Realm"@%i) != -1; %i++)
-    {
-        Realms::InitializeSpawnPoints("MissionGroup\\Realm"@%i@"\\SpawnPoints",$RealmData::RealmIdToLabel[%i]);
-    }
+  // for(%i = 0; nameToID("MissionGroup\\Realm"@%i) != -1; %i++)
+  // {
+  //     Realms::InitializeSpawnPoints("MissionGroup\\Realm"@%i@"\\SpawnPoints",$RealmData::RealmIdToLabel[%i]);
+  // }
 }
 
 function Realms::InitializeSpawnPoints(%groupPath,%realm)
@@ -357,11 +306,11 @@ function PlayerRealmCheck()
         if(fetchData(%c,"HasLoadedAndSpawned") && fetchData(%c,"noRealmCheck") == "")
         {
             %zpos = getWord(Gamebase::getPosition(%c),2);
-            %currentRealm = fetchData(%c,"realm");
+            %currentRealm = fetchData(%c,"Realm");
             %realmList[$RealmData[%currentRealm, ID]] = true;
             // Find player's current Realm by Z position
-            echo("MaxH: "@ $RealmData[%currentRealm,MaxHeight]@" MinH: "@ $RealmData[%currentRealm,MinHeight]);
-            echo("ZPos: "@ %zpos);
+            //echo("MaxH: "@ $RealmData[%currentRealm,MaxHeight]@" MinH: "@ $RealmData[%currentRealm,MinHeight]);
+            //echo("ZPos: "@ %zpos);
             if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
             {
                 Realm::KickPlayerBackInRealm(%c,%currentRealm);
@@ -382,7 +331,7 @@ function Realm::KickPlayerBackInRealm(%client,%realm)
 {
     echo("Realm Kick!");
     if(%realm == "")
-        %realm = fetchData(%client,"realm");
+        %realm = fetchData(%client,"Realm");
     
     Item::setVelocity(%client, "0 0 0");
     Gamebase::setPosition(%client,Gamebase::getPosition($RealmData[%realm, SpawnMarker]));

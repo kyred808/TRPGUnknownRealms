@@ -278,7 +278,7 @@ return;
 	//============================================================================================
 
 	%cropped = String::NEWgetSubStr(%message, (String::len(%w1)+1), 99999);
-    %realm = fetchData(%TrueClientId,"realm");
+    %realm = fetchData(%TrueClientId,"Realm");
     %realmId = $RealmData[%realm, ID];
 
 	if(%isCommand)

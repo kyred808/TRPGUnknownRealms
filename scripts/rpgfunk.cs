@@ -381,7 +381,7 @@ function SaveCharacter(%clientId)
     }
     
     // Realms
-    $funk::var["[\"" @ %name @ "\", 30, 0]"] = fetchData(%clientId, "realm");
+    $funk::var["[\"" @ %name @ "\", 30, 0]"] = fetchData(%clientId, "Realm");
 
 
 	//Key binds
@@ -549,9 +549,9 @@ function LoadCharacter(%clientId)
         }
         %idx += %i;
         if($funk::var[%name, 30, 0] != "")
-            storeData(%clientId,"realm",$funk::var[%name, 30, 0]);
+            storeData(%clientId,"Realm",$funk::var[%name, 30, 0]);
         else
-            storeData(%clientId,"realm",$RealmData::RealmIdToLabel[0]);
+            storeData(%clientId,"Realm",$RealmData::RealmIdToLabel[0]);
         
         //storeData(%clientId, "GemItems", $funk::var[%name, 0, 32]);
         //storeData(%clientId, "RareItems", $funk::var[%name, 0, 33]);
@@ -2227,7 +2227,7 @@ function FellOffMap(%id)
 		Item::setVelocity(%id, "0 0 0");
         if($Realms::MapUsesRealms)
         {
-            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"realm"));
+            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"Realm"));
             return;
         }
         else

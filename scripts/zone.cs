@@ -8,102 +8,260 @@ function InitZones()
     
     if($Realms::MapUsesRealms)
     {
-        Realms::InitFerry();
+        Realms::InitZones();
         return;
     }
     
     //Old code
-	%group = nameToId("MissionGroup\\Zones");
+    ///===============================================
+	//%group = nameToId("MissionGroup\\Zones");
+    //
+	//if(%group != -1)
+	//{
+	//	%count = Group::objectCount(%group);
+	//	for(%i = 0; %i <= %count-1; %i++)
+	//	{
+	//		%object = Group::getObject(%group, %i);
+	//		%system = Object::getName(%object);
+	//		%type = GetWord(%system, 0);
+	//		%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
+    //        echo(%system);
+	//		//---------------------------------------------------------------
+	//		//THIS PART GATHERS SOUNDS FOR THE GENERIC UNKNOWN ZONE
+	//		// there is no EXIT sound for the unknown zone.
+	//		//---------------------------------------------------------------
+	//		if(GetWord(%system, 0) == "ENTERSOUND")
+	//		{	
+	//			$Zone::EnterSound[0] = GetWord(%system, 1);
+	//		}
+	//		else if(GetWord(%system, 0) == "AMBIENTSOUND")
+	//		{
+	//			$Zone::AmbientSound[0] = GetWord(%system, 1);
+	//			$Zone::AmbientSoundPerc[0] = GetWord(%system, 2);
+	//		}
+	//		else if(GetWord(%system, 0) == "MUSIC")
+	//		{
+    //            
+	//			$Zone::Music[0, %umusiccnt++] = GetWord(%system, 1);
+	//			$Zone::MusicTicks[0, %umusiccnt] = GetWord(%system, 2);
+	//		}
+	//		//---------------------------------------------------------------
+	//		else
+	//		{
+	//			%zcnt++;
+    //
+	//			%tmpgroup = nameToId("MissionGroup\\Zones\\" @ %system);
+	//			%tmpcount = Group::objectCount(%tmpgroup);
+	//			%marker = "";
+	//			%musiccnt = 0;
+    //
+	//			for(%z = 0; %z <= %tmpcount-1; %z++)
+	//			{
+	//				%tmpobject = Group::getObject(%tmpgroup, %z);
+	//
+	//				if(getObjectType(%tmpobject) == "Marker")
+	//				{
+	//					if(%marker == "")
+	//					{
+	//						%marker = %tmpobject;
+	//						$numZones++;
+	//					}
+	//				}
+	//				else if(getObjectType(%tmpobject) == "SimGroup")
+	//				{
+	//					%n = Object::getName(%tmpobject);
+	//					
+	//					if(GetWord(%n, 0) == "ENTERSOUND")
+	//					{	
+	//						$Zone::EnterSound[%zcnt] = GetWord(%n, 1);
+	//					}
+	//					else if(GetWord(%n, 0) == "AMBIENTSOUND")
+	//					{
+	//						$Zone::AmbientSound[%zcnt] = GetWord(%n, 1);
+	//						$Zone::AmbientSoundPerc[%zcnt] = GetWord(%n, 2);
+	//					}
+	//					else if(GetWord(%n, 0) == "EXITSOUND")
+	//					{
+	//						$Zone::ExitSound[%zcnt] = GetWord(%n, 1);
+	//					}
+	//					else if(GetWord(%n, 0) == "MUSIC")
+	//					{
+	//						$Zone::Music[%zcnt, %musiccnt++] = GetWord(%n, 1);
+	//						$Zone::MusicTicks[%zcnt, %musiccnt] = GetWord(%n, 2);
+	//					}
+	//				}
+	//			}
+	//			
+	//			%mname = Object::getName(%marker);
+	//			$Zone::Marker[%zcnt] = GameBase::getPosition(%marker);
+	//			$Zone::Length[%zcnt] = GetWord(%mname, 0);
+	//			$Zone::Width[%zcnt] = GetWord(%mname, 1);
+	//			$Zone::Height[%zcnt] = GetWord(%mname, 2);
+	//			$Zone::SHeight[%zcnt] = GetWord(%mname, 3);
+	//			$Zone::Type[%zcnt] = %type;
+	//			$Zone::Desc[%zcnt] = %desc;
+	//			$Zone::FolderID[%zcnt] = %tmpgroup;
+	//		}
+	//	}
+	//	echo($numZones @ " zones initialized.");
+	//}
+}
+
+function Zone::addZone(%group)
+{
+    %zcnt = $ZoneData::NumberZones+1;
+    %tmpgroup = %group;
+    %tmpcount = Group::objectCount(%tmpgroup);
+    %marker = "";
+    %musiccnt = 0;
+    %system = Object::getName(%group);
+    %type = getWord(%system,0);
+    %desc = Word::getSubWord(%system,1,999);
+    for(%z = 0; %z <= %tmpcount-1; %z++)
+    {
+        %tmpobject = Group::getObject(%tmpgroup, %z);
+        
+
+        if(getObjectType(%tmpobject) == "Marker")
+        {
+            if(%marker == "")
+            {
+                %marker = %tmpobject;
+                $ZoneData::NumberZones++;
+            }
+        }
+        else if(getObjectType(%tmpobject) == "SimGroup")
+        {
+            %n = Object::getName(%tmpobject);
+            %w0 = GetWord(%n, 0);
+            if(%w0 == "ENTERSOUND")
+            {	
+                $Zone::EnterSound[%zcnt] = GetWord(%n, 1);
+            }
+            else if(%w0 == "AMBIENTSOUND")
+            {
+                $Zone::AmbientSound[%zcnt] = GetWord(%n, 1);
+                $Zone::AmbientSoundPerc[%zcnt] = GetWord(%n, 2);
+            }
+            else if(%w0 == "EXITSOUND")
+            {
+                $Zone::ExitSound[%zcnt] = GetWord(%n, 1);
+            }
+            else if(%w0 == "MUSIC")
+            {
+                $Zone::Music[%zcnt, %musiccnt++] = GetWord(%n, 1);
+                $Zone::MusicTicks[%zcnt, %musiccnt] = GetWord(%n, 2);
+            }
+            else if(%w0 == "SpawnPoints")
+            {
+                Zone::addSpawnPoints(%zcnt,%tmpobject);
+            }
+        }
+    }
     
-	if(%group != -1)
+    %mname = Object::getName(%marker);
+    $Zone::Marker[%zcnt] = GameBase::getPosition(%marker);
+    $Zone::Length[%zcnt] = GetWord(%mname, 0);
+    $Zone::Width[%zcnt] = GetWord(%mname, 1);
+    $Zone::Height[%zcnt] = GetWord(%mname, 2);
+    $Zone::SHeight[%zcnt] = GetWord(%mname, 3);
+    $Zone::Type[%zcnt] = %type;
+    $Zone::Desc[%zcnt] = %desc;
+    $Zone::FolderID[%zcnt] = %tmpgroup;
+    $Zone::FolderToID[%tmpgroup] = %zcnt;
+    
+    $Zone::Active[%zcnt] = false;
+    return %zcnt;
+}
+
+function Zone::addSpawnPoints(%zoneId,%spawnGroup)
+{
+	if(%spawnGroup != -1)
 	{
-		%count = Group::objectCount(%group);
-		for(%i = 0; %i <= %count-1; %i++)
+		for(%i = 0; %i <= Group::objectCount(%spawnGroup)-1; %i++)
 		{
-			%object = Group::getObject(%group, %i);
-			%system = Object::getName(%object);
-			%type = GetWord(%system, 0);
-			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
-            echo(%system);
-			//---------------------------------------------------------------
-			//THIS PART GATHERS SOUNDS FOR THE GENERIC UNKNOWN ZONE
-			// there is no EXIT sound for the unknown zone.
-			//---------------------------------------------------------------
-			if(GetWord(%system, 0) == "ENTERSOUND")
-			{	
-				$Zone::EnterSound[0] = GetWord(%system, 1);
-			}
-			else if(GetWord(%system, 0) == "AMBIENTSOUND")
+		    %this = Group::getObject(%spawnGroup, %i);
+			%info = Object::getName(%this);
+            
+			if(%info != "")
 			{
-				$Zone::AmbientSound[0] = GetWord(%system, 1);
-				$Zone::AmbientSoundPerc[0] = GetWord(%system, 2);
-			}
-			else if(GetWord(%system, 0) == "MUSIC")
-			{
+                $MarkerZone[%this] = $Zone::FolderID[%zoneId];
+
+				$numAIperSpawnPoint[%this] = 0;
+				%indexes = Word::getSubWord(%info,5,9999);
                 
-				$Zone::Music[0, %umusiccnt++] = GetWord(%system, 1);
-				$Zone::MusicTicks[0, %umusiccnt] = GetWord(%system, 2);
-			}
-			//---------------------------------------------------------------
-			else
-			{
-				%zcnt++;
+				//for(%z = 5; GetWord(%info, %z) != -1; %z++)
+				//	%indexes = %indexes @ GetWord(%info, %z) @ " ";
 
-				%tmpgroup = nameToId("MissionGroup\\Zones\\" @ %system);
-				%tmpcount = Group::objectCount(%tmpgroup);
-				%marker = "";
-				%musiccnt = 0;
+                $Zone::SpawnPoint[%zoneId,%i,Marker] = %this;
+                $Zone::SpawnPoint[%zoneId,%i,MaxSpawnPer] = GetWord(%info, 0);
+                $Zone::SpawnPoint[%zoneId,%i,MinRadius] = GetWord(%info, 1);
+                $Zone::SpawnPoint[%zoneId,%i,MaxRadius] = GetWord(%info, 2);
+                $Zone::SpawnPoint[%zoneId,%i,MinDelay] = GetWord(%info, 3);
+                $Zone::SpawnPoint[%zoneId,%i,MaxDelay] = GetWord(%info, 4);
+                $Zone::SpawnPoint[%zoneId,%i,SpawnIndexes] = %indexes;
+                $Zone::SpawnPoint[%zoneId,%i,IndexCount] = GetWordCount(%indexes);
+                $Zone::SpawnPoint[%zoneId,%i,SpawnCount] = 0;
+                $Zone::SpawnPoint[%zoneId,%i,NextSpawnCheck] = -1;
+                $Zone::SpawnPonitMarkerToIndex[%zoneId,%this] = %i;
+				echo("===================================================");
+				echo("Spawn Point was initialized, %this = " @ %this);
+				echo("Max spawn per: " @ GetWord(%info, 0));
+				echo("Min radius: " @ GetWord(%info, 1));
+				echo("Max radius: " @ GetWord(%info, 2));
+				echo("Min delay: " @ GetWord(%info, 3));
+				echo("Max delay: " @ GetWord(%info, 4));
+				echo("Spawn indexes: " @ %indexes);
+				echo("Marker Zone ID: " @ $MarkerZone[%this]);
+				echo("===================================================");
 
-				for(%z = 0; %z <= %tmpcount-1; %z++)
-				{
-					%tmpobject = Group::getObject(%tmpgroup, %z);
-	
-					if(getObjectType(%tmpobject) == "Marker")
-					{
-						if(%marker == "")
-						{
-							%marker = %tmpobject;
-							$numZones++;
-						}
-					}
-					else if(getObjectType(%tmpobject) == "SimGroup")
-					{
-						%n = Object::getName(%tmpobject);
-						
-						if(GetWord(%n, 0) == "ENTERSOUND")
-						{	
-							$Zone::EnterSound[%zcnt] = GetWord(%n, 1);
-						}
-						else if(GetWord(%n, 0) == "AMBIENTSOUND")
-						{
-							$Zone::AmbientSound[%zcnt] = GetWord(%n, 1);
-							$Zone::AmbientSoundPerc[%zcnt] = GetWord(%n, 2);
-						}
-						else if(GetWord(%n, 0) == "EXITSOUND")
-						{
-							$Zone::ExitSound[%zcnt] = GetWord(%n, 1);
-						}
-						else if(GetWord(%n, 0) == "MUSIC")
-						{
-							$Zone::Music[%zcnt, %musiccnt++] = GetWord(%n, 1);
-							$Zone::MusicTicks[%zcnt, %musiccnt] = GetWord(%n, 2);
-						}
-					}
-				}
-				
-				%mname = Object::getName(%marker);
-				$Zone::Marker[%zcnt] = GameBase::getPosition(%marker);
-				$Zone::Length[%zcnt] = GetWord(%mname, 0);
-				$Zone::Width[%zcnt] = GetWord(%mname, 1);
-				$Zone::Height[%zcnt] = GetWord(%mname, 2);
-				$Zone::SHeight[%zcnt] = GetWord(%mname, 3);
-				$Zone::Type[%zcnt] = %type;
-				$Zone::Desc[%zcnt] = %desc;
-				$Zone::FolderID[%zcnt] = %tmpgroup;
+				//SpawnLoop(%this);
 			}
 		}
-		echo($numZones @ " zones initialized.");
 	}
+}
+
+function Zone::RollAllSpawnDelays(%zoneId)
+{
+    for(%i = 0; $Zone::SpawnPoint[%zoneId,%i,Marker] != ""; %i++)
+    {
+        $Zone::SpawnPoint[%zoneId,%i,NextSpawnCheck] = getSimTime() + Zone::RollSpawnDelayTime(%zoneId,%i);
+    }
+}
+
+function Zone::RollSpawnDelayTime(%zoneId,%spawnIndex)
+{
+    %diff = $Zone::SpawnPoint[%zoneId,%spawnIndex,MaxDelay] - $Zone::SpawnPoint[%zoneId,%spawnIndex,MinDelay];
+    return floor(getRandom() * %diff) + $Zone::SpawnPoint[%zoneId,%spawnIndex,MinDelay];
+}
+
+// 27 27 28 28 29 29 30 30 52
+function Zone::SpawnCheck(%zoneId)
+{
+    if($Zone::Active[%zoneId])
+    {
+        for(%i = 0; $Zone::SpawnPoint[%zoneId,%i,Marker] != ""; %i++)
+        {
+            %time = getSimTime();
+            if($Zone::SpawnPoint[%zoneId,%i,NextSpawnCheck] < %time)
+            {
+                //Setup next spawn check time
+                $Zone::SpawnPoint[%zoneId,%i,NextSpawnCheck] = getSimTime() + Zone::RollSpawnDelayTime(%zoneId,%i);
+                
+                %maxs = Cap(round($Zone::SpawnPoint[%zoneId,%i,MaxSpawnPer] * $spawnMultiplier), 0, "inf");
+                
+                if($Zone::SpawnPoint[%zoneId,%i,SpawnCount] < %maxs)
+                {
+                    //Select spawn index
+                    %indexes = $Zone::SpawnPoint[%zoneId,%i,SpawnIndexes];
+                    %r = floor(getRandom() * ($Zone::SpawnPoint[%zoneId,%i,IndexCount]));
+                    %index = GetWord(%indexes, %r);
+                    
+                    AI::helper($spawnIndex[%index], $spawnIndex[%index], "ZoneSpawn " @ %zoneId @" "@ %i);//$Zone::SpawnPoint[%zoneId,%i,Marker]);
+                }
+            }
+        }
+    }
 }
 
 function RecursiveZone(%delay)
@@ -136,14 +294,17 @@ function DoZoneCheck(%w, %d)
 	%mset = newObject("set", SimSet);
 	%n = containerBoxFillSet(%mset, $SimPlayerObjectType, "0 0 0", 99999, 99999, 99999, 0);
 
-	for(%z = 1; %z <= $numZones; %z++)
+	for(%z = 1; %z <= $ZoneData::NumberZones; %z++)
 	{
-        
 		%set = newObject("set", SimSet);
 		%n = containerBoxFillSet(%set, $SimPlayerObjectType, $Zone::Marker[%z], $Zone::Length[%z], $Zone::Width[%z], $Zone::Height[%z], $Zone::SHeight[%z]);
 		Group::iterateRecursive(%set, setzoneflags, %z);
 		deleteObject(%set);
+        
+        Zone::SpawnCheck(%z);
 	}
+    
+    
 	
 	Group::iterateRecursive(%mset, UpdateZone);
 	deleteObject(%mset);
@@ -159,15 +320,12 @@ function setzoneflags(%object, %z)
 function UpdateZone(%object)
 {
 	dbecho($dbechoMode, "UpdateZone(" @ %object @ ")");
-
 	%clientId = Player::getClient(%object);
 	%zoneflag = fetchData(%clientId, "tmpzone");
-
 	//check if the player was found inside a zone
 	if(%zoneflag != "")
 	{
 		//the player is inside a zone!
-	
 		//check if the player's current zone matches the one he's detected in
 		if(fetchData(%clientId, "zone") != $Zone::FolderID[%zoneflag])
 		{
@@ -175,7 +333,6 @@ function UpdateZone(%object)
 			//current zone (if any)
 			if(fetchData(%clientId, "zone") != "")
 				Zone::DoExit(Zone::getIndex(fetchData(%clientId, "zone")), %clientId);
-	
 			//throw the player inside this new zone
 			Zone::DoEnter(%zoneflag, %clientId);
 		}
@@ -416,12 +573,16 @@ function gravWorkaround(%clientId, %method)
 function Zone::DoEnter(%z, %clientId)
 {
 	dbecho($dbechoMode, "Zone::DoEnter(" @ %z @ ", " @ %clientId @ ")");
-
+    
 	%oldZone = fetchData(%clientId, "zone");
 	%newZone = $Zone::FolderID[%z];
 
 	storeData(%clientId, "zone", $Zone::FolderID[%z]);
-
+    if(!$Zone::Active[%z])
+    {
+        Zone::RollAllSpawnDelays(%z);
+        $Zone::Active[%z] = true;
+    }
 	if($Zone::Type[%z] == "PROTECTED")
 	{
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".  This is protected territory.";
@@ -445,6 +606,7 @@ function Zone::DoEnter(%z, %clientId)
 	if($Zone::EnterSound[%z] != "")
 		%msg = %msg @ "~w" @ $Zone::EnterSound[%z];
 
+    echo(%z @" "@ %msg);
 	if(%msg != "")
 		Client::sendMessage(%clientId, %color, %msg);
 
@@ -522,13 +684,14 @@ function Zone::getIndex(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return %i;
-			}
-		}
+        return $Zone::FolderToID[%z];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return %i;
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -538,13 +701,14 @@ function Zone::getMarker(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::Marker[%i];
-			}
-		}
+        return $Zone::Marker[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::Marker[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -554,13 +718,14 @@ function Zone::getType(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::Type[%i];
-			}
-		}
+        return $Zone::Type[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::Type[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -570,13 +735,14 @@ function Zone::getDesc(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::Desc[%i];
-			}
-		}
+        return $Zone::Desc[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::Desc[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -586,13 +752,14 @@ function Zone::getEnterSound(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::EnterSound[%i];
-			}
-		}
+        return $Zone::EnterSound[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::EnterSound[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -602,13 +769,14 @@ function Zone::getAmbientSound(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::AmbientSound[%i];
-			}
-		}
+        return $Zone::AmbientSound[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::AmbientSound[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -618,13 +786,14 @@ function Zone::getAmbientSoundPerc(%z)
 
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::AmbientSoundPerc[%i];
-			}
-		}
+        return $Zone::AmbientSoundPerc[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::AmbientSoundPerc[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -632,15 +801,17 @@ function Zone::getExitSound(%z)
 {
 	dbecho($dbechoMode, "Zone::getExitSound(" @ %z @ ")");
 
+        
 	if(%z != "")
 	{
-		for(%i = 1; %i <= $numZones; %i++)
-		{
-			if($Zone::FolderID[%i] == %z)
-			{
-				return $Zone::ExitSound[%i];
-			}
-		}
+        return $Zone::ExitSound[$Zone::FolderToID[%z]];
+		//for(%i = 1; %i <= $numZones; %i++)
+		//{
+		//	if($Zone::FolderID[%i] == %z)
+		//	{
+		//		return $Zone::ExitSound[%i];
+		//	}
+		//}
 	}
 	return -1;
 }
@@ -688,6 +859,7 @@ function Zone::onExit(%clientId, %zoneLeft)
         
         if(getWordCount(Zone::getPlayerList(%zoneLeft, 2)) == 0)
         {
+            $Zone::Active[Zone::getIndex(%zoneLeft)] = false;
             %bots = Zone::getPlayerList(%zoneLeft, 3);
             for(%i = 0; %i < getWordCount(%bots); %i++)
             {
@@ -718,24 +890,47 @@ function GetNearestZone(%clientId, %zonetype, %returnType)
 	%closestZone = "";
 	%mpos = "";
 	%clpos = GameBase::getPosition(%clientId);
-
-	for(%i = 1; %i <= $numZones; %i++)
-	{
-		%type = $Zone::Type[%i];
-		if(%type == "PROTECTED" && String::ICompare(%zonetype, "town") == 0 || %type == "DUNGEON" && String::ICompare(%zonetype, "dungeon") == 0 || %type == "FREEFORALL" && String::ICompare(%zonetype, "freeforall") == 0 || %zonetype == -1)
+    
+    %realm = fetchData(%clientId,"Realm");
+    
+    for(%i = 0; %i < getWordCount($RealmData[%realm,ZoneList]); %i++)
+    {
+        %zid = getWord($RealmData[%realm,ZoneList],%i);
+        %type = $Zone::Type[%zid];
+        
+        if(%type == "PROTECTED" && String::ICompare(%zonetype, "town") == 0 || %type == "DUNGEON" && String::ICompare(%zonetype, "dungeon") == 0 || %type == "FREEFORALL" && String::ICompare(%zonetype, "freeforall") == 0 || %zonetype == -1)
 		{
-			%finalpos = $Zone::Marker[%i];
-	
-			%dist = Vector::getDistance(%finalpos, %clpos);
-			if(%dist < %closestDist)
+            %finalpos = $Zone::Marker[%zid];
+            
+            %dist = Vector::getDistance(%finalpos, %clpos);
+            if(%dist < %closestDist)
 			{
 				%closestDist = %dist;
 				%closestZoneDesc = $Zone::Desc[%i];
 				%closestZone = $Zone::FolderID[%i];
 				%mpos = %finalpos;
 			}
-		}
-	}
+        }
+    }
+    
+    // Old Code
+	//for(%i = 1; %i <= $numZones; %i++)
+	//{
+	//	%type = $Zone::Type[%i];
+	//	if(%type == "PROTECTED" && String::ICompare(%zonetype, "town") == 0 || %type == "DUNGEON" && String::ICompare(%zonetype, "dungeon") == 0 || %type == "FREEFORALL" && String::ICompare(%zonetype, "freeforall") == 0 || %zonetype == -1)
+	//	{
+	//		%finalpos = $Zone::Marker[%i];
+	//
+	//		%dist = Vector::getDistance(%finalpos, %clpos);
+	//		if(%dist < %closestDist)
+	//		{
+	//			%closestDist = %dist;
+	//			%closestZoneDesc = $Zone::Desc[%i];
+	//			%closestZone = $Zone::FolderID[%i];
+	//			%mpos = %finalpos;
+	//		}
+	//	}
+	//}
 
 	if(%mpos == "")		//no zones were found (this means there are NO zones in the map...)
 		return False;
@@ -756,63 +951,95 @@ function GetNearestZone(%clientId, %zonetype, %returnType)
 		return %mpos;
 }
 
-function GetZoneByKeywords(%clientId, %keywords, %returnType)
+function GetZoneByKeywords(%clientId, %keywords, %returnType, %realm)
 {
 	dbecho($dbechoMode, "GetZoneByKeywords(" @ %clientId @ ", " @ %keywords @ ", " @ %returnType @ ")");
 
-	%mpos = "";
-
-	%group = nameToId("MissionGroup\\Zones");
-
-	if(%group != -1)
-	{
-		//IMPORTANT: zone markers must be objects 0 and 1 in the zone's folder
-
-		%count = Group::objectCount(%group);
-		for(%i = 0; %i <= %count-1; %i++)
-		{
-			%object = Group::getObject(%group, %i);
-			%system = Object::getName(%object);
-			%type = GetWord(%system, 0);
-			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
-			if(%type == "PROTECTED" || %type == "DUNGEON" || %type == "FREEFORALL")
+    if(%realm == "") // Grab them all
+    {
+        for(%i = 1; %i <= $ZoneData::NumberZones; %i++)
+        {
+            if(String::findSubStr($Zone::Desc[%i], %keywords) != -1)
+			{                
+                if(%returnType == 1)
+                    return Vector::getDistance($Zone::Marker[%i], GameBase::getPosition(%clientId));
+                else if(%returnType == 2)
+                    return $Zone::Desc[%i];
+                else if(%returnType == 3)
+                    return $Zone::FolderID[%i];
+            }
+        }
+        return False;
+    }
+    else
+    {
+        for(%i = 0; %i < getWordCount($RealmData[%realm,ZoneList]); %i++)
+        {
+            %zid = getWord($RealmData[%realm,ZoneList],%i);
+            if(String::findSubStr($Zone::Desc[%zid], %keywords) != -1)
 			{
-				if(String::findSubStr(%desc, %keywords) != -1)
-				{
-					//get the two markers
-					%tmpgroup = nameToId("MissionGroup\\Zones\\" @ %system);
-
-					%m1pos = GameBase::getPosition(Group::getObject(%tmpgroup, 0));
-					%m2pos = GameBase::getPosition(Group::getObject(%tmpgroup, 1));
-
-					%mx = (((GetWord(%m2pos, 0) - GetWord(%m1pos, 0)) / 2) + GetWord(%m1pos, 0));
-					%my = (((GetWord(%m2pos, 1) - GetWord(%m1pos, 1)) / 2) + GetWord(%m1pos, 1));
-					%mz = (((GetWord(%m2pos, 2) - GetWord(%m1pos, 2)) / 2) + GetWord(%m1pos, 2));
-
-					%mpos = %mx @ " " @ %my @ " " @ %mz;
-					%dist = Vector::getDistance(%mpos, GameBase::getPosition(%clientId));
-
-					//%returnType:
-					//1 = returns the distance from the client to the zone
-					//2 = returns the description of the zone
-					//3 = returns the zone id
-					//4 = returns the position of the middle of the zone
-
-					if(%returnType == 1)
-						return %dist;
-					else if(%returnType == 2)
-						return %desc;
-					else if(%returnType == 3)
-						return %object;
-					else if(%returnType == 4)
-						return %mpos;
-				}
-			}
-		}
-		return False;	
-	}
-	else
-		return False;
+                if(%returnType == 1)
+                    return Vector::getDistance($Zone::Marker[%zid], GameBase::getPosition(%clientId));
+                else if(%returnType == 2)
+                    return $Zone::Desc[%zid];
+                else if(%returnType == 3)
+                    return $Zone::FolderID[%zid];
+            }
+        }
+        return False;
+    }
+    return False;
+	//%group = nameToId("MissionGroup\\Zones");
+    //
+	//if(%group != -1)
+	//{
+	//	//IMPORTANT: zone markers must be objects 0 and 1 in the zone's folder
+    //
+	//	%count = Group::objectCount(%group);
+	//	for(%i = 0; %i <= %count-1; %i++)
+	//	{
+	//		%object = Group::getObject(%group, %i);
+	//		%system = Object::getName(%object);
+	//		%type = GetWord(%system, 0);
+	//		%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
+	//		if(%type == "PROTECTED" || %type == "DUNGEON" || %type == "FREEFORALL")
+	//		{
+	//			if(String::findSubStr(%desc, %keywords) != -1)
+	//			{
+	//				//get the two markers
+	//				%tmpgroup = nameToId("MissionGroup\\Zones\\" @ %system);
+    //
+	//				%m1pos = GameBase::getPosition(Group::getObject(%tmpgroup, 0));
+	//				%m2pos = GameBase::getPosition(Group::getObject(%tmpgroup, 1));
+    //
+	//				%mx = (((GetWord(%m2pos, 0) - GetWord(%m1pos, 0)) / 2) + GetWord(%m1pos, 0));
+	//				%my = (((GetWord(%m2pos, 1) - GetWord(%m1pos, 1)) / 2) + GetWord(%m1pos, 1));
+	//				%mz = (((GetWord(%m2pos, 2) - GetWord(%m1pos, 2)) / 2) + GetWord(%m1pos, 2));
+    //
+	//				%mpos = %mx @ " " @ %my @ " " @ %mz;
+	//				%dist = Vector::getDistance(%mpos, GameBase::getPosition(%clientId));
+    //
+	//				//%returnType:
+	//				//1 = returns the distance from the client to the zone
+	//				//2 = returns the description of the zone
+	//				//3 = returns the zone id
+	//				//4 = returns the position of the middle of the zone
+    //
+	//				if(%returnType == 1)
+	//					return %dist;
+	//				else if(%returnType == 2)
+	//					return %desc;
+	//				else if(%returnType == 3)
+	//					return %object;
+	//				else if(%returnType == 4)
+	//					return %mpos;
+	//			}
+	//		}
+	//	}
+	//	return False;	
+	//}
+	//else
+	//	return False;
 }
 
 function Zone::getNumPlayers(%z, %all)
@@ -845,7 +1072,7 @@ function ObjectInWhichZone(%object)
 	%fid = "";
 	%closest = 99999;
 	%objpos = GameBase::getPosition(%object);
-	for(%z = 1; %z <= $numZones; %z++)
+	for(%z = 1; %z <= $ZoneData::NumberZones; %z++)
 	{
 		%rad = ($Zone::Length[%z] + $Zone::Width[%z] + $Zone::Height[%z]) / 3;
 		%dist = Vector::getDistance(%objpos, $Zone::Marker[%z]);

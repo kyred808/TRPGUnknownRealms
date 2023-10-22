@@ -767,22 +767,30 @@ $numAI = 0;
 function AI::helper(%aiName, %displayName, %commandIssuer, %loadout)
 {
 	dbecho($dbechoMode, "AI::helper(" @ %aiName @ ", " @ %displayName @ ", " @ %commandIssuer @ ")");
-
-	if(GetWord(%commandIssuer, 0) == "TempSpawn")
+    %w0 = GetWord(%commandIssuer, 0);
+	if(%w0 == "TempSpawn")
 	{
 		//the %commandIssuer is a data string
 		%spawnPos = GetWord(%commandIssuer, 1) @ " " @ GetWord(%commandIssuer, 2) @ " " @ GetWord(%commandIssuer, 3);
 	}
-	else if(GetWord(%commandIssuer, 0) == "MarkerSpawn")
+	else if(%w0 == "MarkerSpawn")
 	{
 		//the %commandIssuer is a marker
 		%spawnPos = GameBase::getPosition(GetWord(%commandIssuer, 1));
 	}
-	else if(GetWord(%commandIssuer, 0) == "SpawnPoint")
+    else if(%w0 == "ZoneSpawn")
+    {
+        %zoneId = GetWord(%commandIssuer, 1);
+        %spawnIdx = GetWord(%commandIssuer, 2);
+        
+        %tempPos = RandomPositionXY($Zone::SpawnPoint[%zoneId,%spawnIdx,MinRadius], $Zone::SpawnPoint[%zoneId,%spawnIdx,MaxRadius]);
+        %spawnPos = Vector::add(GameBase::getPosition($Zone::SpawnPoint[%zoneId,%spawnIdx,Marker]),%tempPos @" 0");
+    }
+	else if(%w0 == "SpawnPoint")
 	{
 		//the %commandIssuer is a Spawn Point
 		//we must now figure out a position around this Spawn Point
-
+        
 		%spawnpoint = GetWord(%commandIssuer, 1);
 
 		%info = Object::getName(%spawnpoint);
@@ -816,7 +824,7 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
 	dbecho($dbechoMode, "SpawnAI(" @ %newName @ ", " @ %displayName @ ", " @ %aiSpawnPos @ ", " @ %commandIssuer @ ")");
 
 	%retval = createAI(%newName, %aiSpawnPos, %displayName);
-
+    %w0 = GetWord(%commandIssuer, 0);
 	if(%retval != -1)
 	{
 		%aiId = AI::getId( %newName );
@@ -826,7 +834,7 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
 		//AI::SetVar( %newName,  seekOff, 1);
 		AI::setAutomaticTargets( %newName );
 
-		if(GetWord(%commandIssuer, 0) == "TempSpawn")
+		if(%w0 == "TempSpawn")
 		{
 			//the %commandIssuer is a data string
 			storeData(%aiId, "SpawnBotInfo", %commandIssuer);
@@ -835,7 +843,7 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
 
 			AI::SetVar(%newName, spotDist, $AIspotDist);
 		}
-		else if(GetWord(%commandIssuer, 0) == "MarkerSpawn")
+		else if(%w0 == "MarkerSpawn")
 		{
 			//the %commandIssuer is a marker
 			storeData(%aiId, "SpawnBotInfo", %commandIssuer);
@@ -845,12 +853,23 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
 
 			AI::SetVar(%newName, spotDist, $AIspotDist);
 		}
-		else if(GetWord(%commandIssuer, 0) == "SpawnPoint")
+        else if(%w0 == "ZoneSpawn")
+        {
+            storeData(%aiId, "SpawnBotInfo", %commandIssuer);
+            %zid = getWord(fetchData(%aiId, "SpawnBotInfo"), 1);
+            %spawnIdx = getWord(fetchData(%aiId, "SpawnBotInfo"), 2);
+            $Zone::SpawnPoint[%zid,%spawnIdx,SpawnCount]++;
+            UpdateTeam(%aiId);
+
+			AI::SetVar(%newName, spotDist, $AIspotDist);
+        }
+		else if(%w0 == "SpawnPoint")
 		{
 			//the %commandIssuer is a spawn crystal
 			storeData(%aiId, "SpawnBotInfo", %commandIssuer);
 
 			$numAIperSpawnPoint[GetWord(%commandIssuer, 1)]++;
+            
 			UpdateTeam(%aiId);
 
 			AI::SetVar(%newName, spotDist, $AIspotDist);
@@ -1006,14 +1025,24 @@ function AI::onDroneKilled(%aiName)
 		storeData(%aiId, "botTeam", "");
 		$aiNumTable[$tmpbotn[%aiName]] = "";
 		$tmpbotn[%aiName] = "";
-
-		if(fetchData(%aiId, "SpawnBotInfo") != "")
+        
+        %info = fetchData(%aiId, "SpawnBotInfo");
+		if(%info != "")
 		{
-			if(GetWord(fetchData(%aiId, "SpawnBotInfo"), 0) == "SpawnPoint")
+            %w0 = GetWord(%info, 0);
+			if(%w0 == "SpawnPoint")
 			{
 				//this bot originally spawned from a crystal
 				$numAIperSpawnPoint[GetWord(fetchData(%aiId, "SpawnBotInfo"), 1)]--;
 			}
+            else if(%w0 == "ZoneSpawn")
+            {
+                %zid = getWord(fetchData(%aiId, "SpawnBotInfo"), 1);
+                %spawnIdx = getWord(fetchData(%aiId, "SpawnBotInfo"), 2);
+                $Zone::SpawnPoint[%zid,%spawnIdx,SpawnCount]--;
+            }
+            
+            
 			storeData(%aiId, "SpawnBotInfo", "");
 			storeData(%aiId, "AIattackMarker", "");
 
