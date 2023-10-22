@@ -103,7 +103,13 @@ function IsOnFerry(%clientId)
 function InitFerry()
 {
 	dbecho($dbechoMode, "InitFerry()");
-
+    
+    if($Realms::MapUsesRealms)
+    {
+        Realms::InitFerry();
+        return;
+    }
+    
 	%group = nameToId("MissionGroup\\Ferry");
 
 	if(%group != -1)

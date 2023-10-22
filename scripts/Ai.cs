@@ -1370,6 +1370,11 @@ function InitTownBots()
 	dbecho($dbechoMode, "InitTownBots()");
 
 	$TownBotList = "";
+    if($Realms::MapUsesRealms)
+    {
+        Realms::InitTownBots();
+        return;
+    }
 	%group = nameToId("MissionGroup/TownBots");
 
 	if(%group != -1)

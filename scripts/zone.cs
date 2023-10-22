@@ -5,9 +5,10 @@ function InitZones()
 	$numZones = 0;
 	%zcnt = 0;
 	%umusiccnt = 0;
-
+    %zonePrefix = "";
+    
 	%group = nameToId("MissionGroup\\Zones");
-
+    
 	if(%group != -1)
 	{
 		%count = Group::objectCount(%group);

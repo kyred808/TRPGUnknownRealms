@@ -2224,7 +2224,13 @@ function FellOffMap(%id)
 	{
 		CheckAndBootFromArena(%id);
 		Item::setVelocity(%id, "0 0 0");
-		TeleportToMarker(%id, "TheArena\\TeleportExitMarkers", 0, 0);
+        if($Realms::MapUsesRealms)
+        {
+            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"realm");
+            return;
+        }
+        else
+            TeleportToMarker(%id, "TheArena\\TeleportExitMarkers", 0, 0);
 
 		Client::sendMessage(%id, $MsgRed, "You were restored to the arena exit marker.");
 	}

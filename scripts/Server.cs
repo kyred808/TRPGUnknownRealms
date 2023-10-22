@@ -124,6 +124,7 @@ function createServer(%mission, %dedicated)
 	exec(admin);
 	exec(Marker);
 	exec(Trigger);
+    exec(Realms);
 	exec(zone);
 	exec(spells);
 	exec(classes);
@@ -213,6 +214,8 @@ function createServer(%mission, %dedicated)
 	CreateWeaponCyclingTables();
 
 	LoadWorld();
+    if($Realms::MapUsesRealms)
+        InitRealms();
 	InitCrystals();
 	InitZones();
 	InitFerry();

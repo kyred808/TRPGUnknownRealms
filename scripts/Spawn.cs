@@ -1,7 +1,13 @@
 function InitSpawnPoints()
 {
 	dbecho($dbechoMode, "InitSpawnPoints()");
-
+    
+    if($Realms::MapUsesRealms)
+    {
+        Realms::InitSpawnPoints();
+        return;
+    }
+    
 	%group = nameToID("MissionGroup\\SpawnPoints");
 
 	if(%group != -1)
