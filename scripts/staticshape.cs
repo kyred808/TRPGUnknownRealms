@@ -841,3 +841,60 @@ StaticShapeData FireMediumShape
 	maxDamage = 999.0;
 	isTranslucent = "True";
 };
+
+StaticShapeData AuraFireShape
+{
+    shapeFile = "aura_fire";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData AuraFire2Shape
+{
+    shapeFile = "aura_fire_2";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData AuraEnergyShape
+{
+    shapeFile = "aura_energy";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData AutoMagicShape
+{
+    shapeFile = "auto_magic";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData BlueOrb
+{
+    shapeFile = "BlueOrb";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData BiteBug
+{
+    shapeFile = "BiteBug";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData BigRed
+{
+    shapeFile = "BigRed";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData BigTree
+{
+    shapeFile = "bigrpgtree1";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+

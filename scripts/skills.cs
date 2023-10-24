@@ -509,9 +509,7 @@ $SkillRestriction["#advcompass"] = $SkillSenseHeading @ " 20";
 // Spells
 $SkillRestriction[thorn] = $SkillOffensiveCasting @ " 15";
 $SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20";
-$SkillRestriction[fireball2] = $SkillOffensiveCasting @ " 20";
 $SkillRestriction[firebomb] = $SkillOffensiveCasting @ " 35";
-$SkillRestriction[firebomb2] = $SkillOffensiveCasting @ " 35";
 $SkillRestriction[icespike] = $SkillOffensiveCasting @ " 45";
 $SkillRestriction[icestorm] = $SkillOffensiveCasting @ " 85";
 $SkillRestriction[ironfist] = $SkillOffensiveCasting @ " 110";

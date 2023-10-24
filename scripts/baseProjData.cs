@@ -159,7 +159,7 @@ RocketData IceSpike
 	terminalVelocity = 90.0;
 	acceleration = 10.0;
 	totalTime = 2.0;
-	liveTime = 1.6;
+	liveTime = 1.8;
 	lightRange = 5.0;
 	colors[0] = { 15.0, 0.75, 0.75 };
 	colors[1] = { 15.0, 0.25, 10.25 };
@@ -186,7 +186,7 @@ RocketData IceStorm
 	terminalVelocity = 40.0;
 	acceleration = 2.0;
 	totalTime = 2.0;
-	liveTime = 1.6;
+	liveTime = 1.8;
 	lightRange = 20.0;
 	colors[0] = { 1.0, 5.75, 0.75 };
 	colors[1] = { 1.0, 0.25, 10.25 };
@@ -677,6 +677,35 @@ RocketData MeteorCrystalBeaconEffect
 	rotationPeriod = 0.5;
     trailLength = 600;
 	trailWidth  = 1;
+};
+
+//SunFlare
+RocketData SunFlare
+{ 
+	bulletShapeName = "mortar.dts"; 
+	explosionTag = grenadeEXPBoom; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 140; 
+	damageType = $SpellDamageType;
+	explosionRadius = 13.0;
+	kickBackStrength = -2.0;
+	muzzleVelocity   = 200.0;
+	terminalVelocity = 200.0;
+	acceleration = 0;
+	totalTime = 5.0;
+	liveTime = 5.0; //10.0;
+	lightRange = 20.0;
+	colors = { 10.0, 0.75, 0.75 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 0.3;
+	soundId = SoundScreamingLoop;
+	rotationPeriod = 0.4;
+	trailLength = 70;
+	trailWidth  = 5.8;
 };
 
 //--------------------------------------

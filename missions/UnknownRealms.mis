@@ -28,6 +28,9 @@ instant SimGroup "MissionGroup" {
         instant SimVolume "tedFile" {
 			fileName = "missions\\RPGbutch1.ted";
 		};
+        instant SimVolume "tedFile" {
+			fileName = "missions\\RMR.ted";
+		};
 		instant SimVolume "hosedfrt" {
 			fileName = "hosedfrt.vol";
 		};
@@ -157,8 +160,89 @@ instant SimGroup "MissionGroup" {
 		instant SimVolume "newcrypt" {
 			fileName = "crypt0.vol";
 		};
+        instant SimVolume "ctown" {
+			fileName = "CTown.vol";
+		};
+        instant SimVolume "cdoors" {
+			fileName = "CDoors.vol";
+		};
+        instant SimVolume "forsaken" {
+			fileName = "Forsaken_Deserts.vol";
+		};
+        instant SimVolume "canisursa" {
+			fileName = "canisursa2019.vol";
+		};
+        instant SimVolume "hosed3" {
+			fileName = "hosed3.vol";
+		};
+        instant SimVolume "cowfart" {
+			fileName = "cowfart.vol";
+		};
+        instant SimVolume "cowfart2" {
+			fileName = "cowfart2.vol";
+		};
+        instant SimVolume "dungeons" {
+            fileName = "dungeons.vol";
+        };
+        instant SimVolume "dungeons2" {
+            fileName = "dungeons2.vol";
+        };
+        instant SimVolume "dungeons3" {
+            fileName = "dungeons3.vol";
+        };
 		instant SimVolume "MissionLighting" {
 			fileName = "UnknownRealms.vol";
+		};
+        instant SimVolume "coalshapes09-13" {
+			fileName = "coalshapes09-13.vol";
+		};
+		instant SimVolume "coaltex09-13" {
+			fileName = "coaltex09-13.vol";
+		};
+		instant SimVolume "walkbovRPGObjsTex" {
+			fileName = "walkbovRPGObjsTex.vol";
+		};
+        instant SimVolume "cave" {
+            fileName = "cave.vol";
+        };
+        instant SimVolume "upc2" {
+            fileName = "upc2.vol";
+        };
+        instant SimVolume "RPGtexturesh" {
+			fileName = "RPGtexturesh.vol";
+		};
+        instant SimVolume "towns" {
+			fileName = "towns.vol";
+		};
+        instant SimVolume "towns2" {
+			fileName = "towns2.vol";
+		};
+        instant SimVolume "towns3" {
+			fileName = "towns3.vol";
+		};
+        instant SimVolume "rmrtowns" {
+			fileName = "rmrtowns.vol";
+		};
+        instant SimVolume "rmrwtowns" {
+			fileName = "rmrwtowns.vol";
+		};
+        instant SimVolume "rmrdungeons" {
+			fileName = "rmrdungeons.vol";
+		};
+        instant SimVolume "rmrwdungeons" {
+			fileName = "rmrwdungs.vol";
+		};
+        instant SimVolume "cait_pounder" {
+			fileName = "cait_pounder.vol";
+		};
+        instant SimVolume "cheebriges" {
+			fileName = "cheebridges.vol";
+		};
+        instant SimVolume "cheetown" {
+			fileName = "cheetown2.vol";
+		};
+        instant SimVolume "chee" {
+			fileName = "cheevol1.vol";
 		};
 	};
 	instant SimGroup "World" {
@@ -189,6 +273,23 @@ instant SimGroup "MissionGroup" {
 			position = "-5120 -3072 0";
 			rotation = "0 0 0";
 			terrainType = "flat";
+		}; //6144 x 6144
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "1024 -3072 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
 		};
         instant SimTerrain "Terrain" {
 			tedFileName = "RPGbutch1.dtf";
@@ -204,6 +305,23 @@ instant SimGroup "MissionGroup" {
 			contDrag = "0";
 			contHeight = "12000";
 			position = "-5120 -3072 -4000";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		};
+        instant SimTerrain "Terrain" {
+			tedFileName = "RMR.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "-5120 -3072 4000";
 			rotation = "0 0 0";
 			terrainType = "flat";
 		};
@@ -4477,6 +4595,159 @@ instant SimGroup "MissionGroup" {
             rotation = "0.0103382 -1.5568 -1.56599";
             lightParams = "0 ";
             locked = "1";
+        };
+    };
+    instant SimGroup "Realm1" {
+        instant SimGroup "REALM_LABEL brokenworld";
+        instant SimGroup "REALM_NAME The Broken Lands";
+        instant SimGroup "REALM_DIMS -7000 -1000";
+        instant Marker "REALM_DROP_POINT" {
+            dataBlock = "PathMarker";
+            name = "";
+            position = "-2460.86 1945.42 -3951";
+            rotation = "0 0 0";
+        };
+        instant SimGroup "Scenery" {
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "853.616 2270.89 -3992.39";
+                rotation = "0 -0 1.57995";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "854.296 223.864 -3990";
+                rotation = "0 -0 -1.58323";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "956.316 -1832.63 -3990";
+                rotation = "0 -0 -1.58324";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "623.476 -1852.07 -3990";
+                rotation = "0 -0 1.53992";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "-5087.6 -1856.06 -3990";
+                rotation = "0 -0 1.53993";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "-5092.27 2234.83 -3990";
+                rotation = "0 -0 1.53994";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+        };
+        instant SimGroup "Water" {
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-3725.15 2156.25 -3972.11";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-4745.48 2228.74 -3972";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "360.499 2228.74 -3972";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-660.5 2228.74 -3972";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-1680.51 2228.81 -3972.06";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-2702.21 2156.3 -3972.17";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-3725.13 156.25 -3972.1";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-4745.46 156.25 -3972";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-1680.5 156.25 -3972.04";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-660.505 156.25 -3972";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "360.492 156.25 -3972";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "water11" {
+                fileName = "water1.dis";
+                isContainer = "1";
+                position = "-2702.2 156.25 -3972.16";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+        };
+        instant SimGroup "PortofCarlin";
+    };
+    instant SimGroup "Realm2" {
+        instant SimGroup "REALM_LABEL rmr";
+        instant SimGroup "REALM_NAME Crimson Lunar";
+        instant SimGroup "REALM_DIMS 1000 7000";
+        instant Marker "REALM_DROP_POINT" {
+            dataBlock = "PathMarker";
+            name = "";
+            position = "-2460.86 1945.42 4200";
+            rotation = "0 0 0";
         };
     };
 };

@@ -1,7 +1,7 @@
 //Regular crystal
 StaticShapeData Crystal
 {
-	shapeFile = "crystals";
+	shapeFile = "crystals2";
 	debrisId = flashDebrisSmall;
 	maxDamage = 1.0;
 	damageSkinData = "objectDamageSkins";

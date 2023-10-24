@@ -102,6 +102,12 @@ SoundProfileData Profile3dVeryVeryFarLoop
 //----------------------------------------------------------------------------
 // sound data
 
+SoundData SoundScreamingLoop
+{
+	wavFileName = "UndeadHit2.wav";
+	profile = Profile3dFarLoop;
+};
+
 SoundData SoundLandOnGround
 {
    wavFileName = "Land_On_Ground.wav";

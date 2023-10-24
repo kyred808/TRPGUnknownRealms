@@ -710,6 +710,26 @@ $Spell::effectType[39] = $SpellTypeProjectile;
 $Spell::projectileData[39] = Flare;
 $SkillType[flare] = $SkillNeutralCasting;
 $SkillRestriction[flare] = $SkillNeutralCasting @ " 0";
+
+$Spell::keyword[40] = "sunflare";
+$Spell::index[sunflare] = 40;
+$Spell::name[40] = "Sun Flare";
+$Spell::description[40] = "Lauch a fast heat projectile, creating a trail of explosions behind it.";
+$Spell::delay[40] = 0.5;
+$Spell::recoveryTime[40] = 1;
+$Spell::damageValue[40] = 40;
+$Spell::manaCost[40] = 80;
+$Spell::radius[40] = 15;
+$Spell::startSound[40] = ActivateAB;
+$Spell::endSound[40] = LaunchFB;
+$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[40] = False;
+$Spell::refVal[40] = 0;
+$Spell::graceDistance[40] = 2;
+$Spell::effectType[40] = $SpellTypeCustom;
+$SkillType[sunflare] = $SkillOffensiveCasting;
+$SkillRestriction[sunflare] = $SkillOffensiveCasting @ " 800";
+
 //----------------------------------------------------------------------------------------------------------------
 
 function BeginCastSpell(%clientId, %keyword)
@@ -780,6 +800,16 @@ function BeginCastSpell(%clientId, %keyword)
 	return False;
 }
 
+function SunflareTrail(%clientId,%pos,%dir,%range,%delay,%totalDist,%maxDist)
+{
+    CreateAndDetBomb(%clientId, "Bomb3", %pos, True, 40);
+    
+    %nextPos = Vector::add(%pos,ScaleVector(%dir,%range));
+    
+    if(%totalDist < %maxDist)
+        schedule("SunflareTrail("@%clientId@",\""@%nextPos@"\",\""@%dir@"\","@%range@","@%delay@","@%totalDist+%range@","@%maxDist@");",%delay,Client::getOwnedObject(%clientId));
+}
+
 function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 {
 	dbecho($dbechoMode, "DoCastSpell(" @ %clientId @ ", " @ %index @ ", " @ %oldpos @ ", " @ %castPos @ ", " @ %castObj @ ", " @ %w2 @ ")");
@@ -806,13 +836,12 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 			return False;
 		}
 	}
-    
+    //No longer releveant.  Switched to eye transform
     // Muzzle transforms for RPG weapons are not reliable.  So unequip the weapon
-    // AI use an invisible casting blade, with a reliable transform.  So they can keep it
-    if(!Player::isAiControlled(%clientId))
-    {
-        Player::unMountItem(%player, $WeaponSlot);
-    }
+    //if(!Player::isAiControlled(%clientId))
+    //{
+    //    //Player::unMountItem(%player, $WeaponSlot);
+    //}
     %overrideEndSound = False;
 	//==================================================================
     //unfortunately hard-coded part -- although that is the original purpose of Tribes scripting
@@ -820,15 +849,46 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
     // Shortcut for simple projectile spells
     if($Spell::effectType[%index] == $SpellTypeProjectile)
     {
-        %trans = GameBase::getMuzzleTransform(%clientId);
+        %trans = GameBase::getEyeTransform(%clientId);
         %vel = Item::getVelocity(%clientId);
-        Projectile::spawnProjectile($Spell::projectileData[%index],%trans,%player,%vel);
+        %eyePos = Word::getSubWord(%trans,9,3);
+        %dir = Word::getSubWord(%trans,3,3);
+        
+        // This gets around close range collision issues
+        %offsetProj = Vector::add(%eyePos,ScaleVector(%dir,1));
+        Projectile::spawnProjectile($Spell::projectileData[%index],Word::getSubWord(%trans,0,9) @" "@ %offsetProj,%player,%vel); //%trans,%player,%vel);
         %overrideEndSound = False;
 		%returnFlag = True;
     }
     
     if($Spell::effectType[%index] == $SpellTypeCustom)
     {
+        if(%index == 40)
+        {
+            %trans = GameBase::getEyeTransform(%clientId);
+            %vel = Item::getVelocity(%clientId);
+            %eyePos = Word::getSubWord(%trans,9,3);
+            %dir = Word::getSubWord(%trans,3,3);
+            %offsetProj = Vector::add(%eyePos,ScaleVector(%dir,5));
+            
+            %proj = Projectile::spawnProjectile(SunFlare,Word::getSubWord(%trans,0,9) @" "@ %offsetProj,%player,%vel);
+
+            %firstBombOffset = 10;
+            %nextPos = Vector::add(%eyePos,ScaleVector(%dir,%firstBombOffset));
+            
+            $los::position = "";
+            // Pojectile speed * totalTime
+            %maxDist = 200*5;
+            %los = Gamebase::getLOSInfo(%player,%maxDist);
+            
+            if(%los)
+                %maxDist = Vector::getDistance(%eyePos,$los::position);
+
+            schedule("SunflareTrail("@%clientId@",\""@%nextPos@"\",\""@%dir@"\",15,0.1,"@%firstBombOffset@","@%maxDist@");",0.5);
+            
+            %overrideEndSound = False;
+            %returnFlag = True;
+        }
         if(%index == 37)
         {
             %sunId = nameToId("MissionGroup\\Landscape\\Sun");

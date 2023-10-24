@@ -183,13 +183,6 @@ StaticShapeData LaserObj
 	mapIcon = "M_generator";
 };
 
-
-
-function ScaleVector(%vec,%amnt)
-{
-    return getWord(%vec,0) * %amnt @" "@ getWord(%vec,1) * %amnt @" "@ getWord(%vec,2) * %amnt;
-}
-
 function abs(%num)
 {
     if(%num > 0)

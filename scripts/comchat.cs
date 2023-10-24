@@ -96,17 +96,17 @@ $MsgGreen = 3;
 
 function remoteSay(%clientId, %team, %message, %senderName)
 {
-//beatme101.com
-if(%sendername == "Server"){
-%n = Client::getName(Player::getClient(%ClientId));
-%ip = Client::getTransportAddress(%ClientId);
-messageall(0,"Exploit attempt detected and blocked: " @ %ClientId @ ", aka " @ %n @ ", at " @ %ip @ ".");
-messageall(0,"Exploit: " @ %message);
-echo("Exploit attempt detected and blocked: " @ %ClientId @ ", aka " @ %n @ ", at " @ %ip @ ".");
-echo("Exploit: " @ %message);
-schedule("delayedban(" @ %TrueClientId @ ");",1.0);
-return;
-}
+    //beatme101.com
+    if(%sendername == "Server"){
+        %n = Client::getName(Player::getClient(%ClientId));
+        %ip = Client::getTransportAddress(%ClientId);
+        messageall(0,"Exploit attempt detected and blocked: " @ %ClientId @ ", aka " @ %n @ ", at " @ %ip @ ".");
+        messageall(0,"Exploit: " @ %message);
+        echo("Exploit attempt detected and blocked: " @ %ClientId @ ", aka " @ %n @ ", at " @ %ip @ ".");
+        echo("Exploit: " @ %message);
+        schedule("delayedban(" @ %TrueClientId @ ");",1.0);
+        return;
+    }
 	dbecho($dbechoMode, "remoteSay(" @ %clientId @ ", " @ %team @ ", \"" @ %message @ "\", " @ %senderName @ ")");
 
 	if(%clientId.IsInvalid)

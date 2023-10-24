@@ -37,6 +37,7 @@ BeltItem::AddBeltItemGroup("PotionItems","Potions",6);
 BeltItem::AddBeltItemGroup("OreItems","Ores",7);
 BeltItem::AddBeltItemGroup("MetalItems","Metals",8);
 BeltItem::AddBeltItemGroup("WoodItems","Wood",9);
+BeltItem::AddBeltItemGroup("ScrollItems","Spell Scrolls",10);
 // =============================
 // End Belt Groups
 // =============================
@@ -179,8 +180,14 @@ BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0
 BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,35,"ATK 250","arm");
 BeltEquip::AddEquipmentItem("Swordsman Armbad","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
 
+// Spell Scroll Items
+BeltItem::Add("Enhanced Offensive Casting","enhancedoffcastscroll","ScrollItems",0,5000,600);
+BeltItem::Add("Enhanced Defensive Casting","enhanceddefcastscroll","ScrollItems",0,5000,601);
+BeltItem::Add("Enhanced Neutral Casting","enhancedneucastscroll","ScrollItems",0,5000,602);
 
-
+$StealProtectedItem["enhancedoffcastscroll"] = true;
+$StealProtectedItem["enhanceddefcastscroll"] = true;
+$StealProtectedItem["enhancedneucastscroll"] = true;
 
 
 

@@ -2209,6 +2209,11 @@ function getSpawnIndex(%aiName)
 	return -1;
 }
 
+function ScaleVector(%vec,%amnt)
+{
+    return getWord(%vec,0) * %amnt @" "@ getWord(%vec,1) * %amnt @" "@ getWord(%vec,2) * %amnt;
+}
+
 function FellOffMap(%id)
 {
 	dbecho($dbechoMode, "FellOffMap(" @ %id @ ")");
