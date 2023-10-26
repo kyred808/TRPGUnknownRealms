@@ -321,6 +321,7 @@ function Item::onUse(%player,%item)
 
 		refreshHP(%clientId, 0);
 		refreshMANA(%clientId, 0);
+        refershStamina(%clientId, 0);
 		RefreshAll(%clientId,false);
 	}
 }

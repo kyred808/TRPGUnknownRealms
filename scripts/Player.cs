@@ -18,7 +18,7 @@ function Player::onAdd(%this)
 {
 	dbecho($dbechoMode, "Player::onAdd(" @ %this @ ")");
 
-	//reset the player's recharge rates for HP and MANA
+	//reset the player's recharge rates for HP and Stamina
       GameBase::setRechargeRate(%this, 0);
 	GameBase::setAutoRepairRate(%this, 0);
 }

@@ -147,8 +147,9 @@ function createServer(%mission, %dedicated)
 	exec(gameevents);
 	exec(shopping);
 	exec(weight);
-	exec(mana);
-	exec(hp);
+	//exec(mana);
+	//exec(hp);
+    exec(HpMpSt);
 	exec(rpgstats);
 	exec(playerdamage);
 	exec(playerspawn);

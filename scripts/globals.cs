@@ -68,6 +68,8 @@ $MaxCraftingBatch = 100;
 
 $NewPlayerSpawnZone = "PROTECTED New Player Camp";
 
+$ManaEnergyFactor = 1/25;
+
 // Once exceeded, the oldest gets deleted
 $MaxLootbagsPerPlayer = 15;
 

@@ -70,22 +70,44 @@ function fetchData(%clientId, %type)
 
 		return round(%b);
 	}
+    else if(%type == "Stamina")
+    {
+        %armor = Player::getArmor(%clientId);
+        %a = GameBase::getEnergy(Client::getOwnedObject(%clientId)) * fetchData(%clientId, "MaxStam");
+        %b = %a / %armor.maxEnergy;
+        return round(%b);
+    }
+    else if(%type == "MaxStam")
+    {
+        %a = 100;
+        %b = AddBonusStatePoints(%clientId, "MaxStam");
+        %c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
+        return floor(%a + %b + %c);
+    }
 	else if(%type == "MaxMANA")
 	{
-		%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
-		%b = AddPoints(%clientId, 5);
-		%c = AddBonusStatePoints(%clientId, "MaxMANA");
-        %d = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
-		return %a + %b + %c + %d;
+        %lvl = fetchData(%clientId,"LVL");
+        %rl = fetchData(%clientId,"RemortStep");
+        %eng = floor( CalculatePlayerSkill(%clientId, $SkillEnergy) * $ManaEnergyFactor );
+        %eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
+        
+        return 5*%lvl + 3*%rl + %end + %eqp;
+        
+		//%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
+		//%b = AddPoints(%clientId, 5);
+		//%c = AddBonusStatePoints(%clientId, "MaxMANA");
+        //%d = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
+		//return %a + %b + %c + %d;
 	}
 	else if(%type == "MANA")
 	{
-		%armor = Player::getArmor(%clientId);
-
-		%a = GameBase::getEnergy(Client::getOwnedObject(%clientId)) * fetchData(%clientId, "MaxMANA");
-		%b = %a / %armor.maxEnergy;
-
-		return round(%b);
+        return $ClientData[%clientId, %type];
+		//%armor = Player::getArmor(%clientId);
+        //
+		//%a = GameBase::getEnergy(Client::getOwnedObject(%clientId)) * fetchData(%clientId, "MaxMANA");
+		//%b = %a / %armor.maxEnergy;
+        //
+		//return round(%b);
 	}
 	else if(%type == "MaxWeight")
 	{
@@ -188,9 +210,17 @@ function storeData(%clientId, %type, %amt, %special)
 	}
 	else if(%type == "MANA")
 	{
-		setMANA(%clientId, %amt);
+        %newVal = 0;
+		if(%special == "inc")
+			%newVal = $ClientData[%clientId, %type] + %amt;
+		else if(%special == "dec")
+			%newVal = $ClientData[%clientId, %type] - %amt;
+        else
+            %newVal = %amt;
+            
+        $ClientData[%clientId, %type] = Cap(%newVal,0,fetchData(%clientId,"MaxMANA"));
 	}
-	else if(%type == "MaxHP" || %type == "MaxMANA" || %type == "MaxWeight" || %type == "Weight")
+	else if(%type == "MaxHP" || %type == "MaxMANA" || %type == "MaxStam" ||%type == "MaxWeight" || %type == "Weight")
 	{
 		echo("Invalid call to storeData for " @ %type @ " : Can't manually set this variable.");
 	}

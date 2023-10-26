@@ -78,10 +78,11 @@ function createAI(%aiName, %markerGroup, %name)
 		storeData(%AiId, "tmpbotdata", "");
 
 		storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
+        storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
 
 		refreshHPREGEN(%AiId);
-		refreshMANAREGEN(%AiId);
+		refreshStaminaREGEN(%AiId);
 
 		storeData(%AiId, "LCK", $BotInfo[%aiName, LCK]);
 

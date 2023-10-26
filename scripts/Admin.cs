@@ -493,7 +493,8 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "DEF: " @ fetchData(%clientId, "DEF") @ "\n";
 		%a[%tmp++] = "MDEF: " @ fetchData(%clientId, "MDEF") @ "\n";
 		%a[%tmp++] = "Hit Pts: " @ fetchData(%clientId, "HP") @ " / " @ fetchData(%clientId, "MaxHP") @ "\n";
-		%a[%tmp++] = "LCK: " @ fetchData(%clientId, "LCK") @ "\n";
+		%a[%tmp++] = "Stamina: " @ fetchData(%clientId, "Stamina") @ " / " @ fetchData(%clientId, "MaxStam") @ "\n";
+        %a[%tmp++] = "LCK: " @ fetchData(%clientId, "LCK") @ "\n";
 
 		if(fetchData(%clientId, "MyHouse") != "")
 		{

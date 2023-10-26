@@ -764,7 +764,7 @@ function BeginCastSpell(%clientId, %keyword)
 					storeData(%clientId, "SpellCastStep", 1);
 	
 					%tempManaCost = floor($Spell::manaCost[%i] / 2);
-					refreshMANA(%clientId, %tempManaCost);
+					refreshStamina(%clientId, %tempManaCost);
 					playSound($Spell::startSound[%i], GameBase::getPosition(%clientId));
 
 					%skt = $SkillType[$Spell::keyword[%i]];
@@ -779,9 +779,9 @@ function BeginCastSpell(%clientId, %keyword)
 					%recovTime = $Spell::delay[%i] + Cap(%a + %c, %a, %rt);	//recovery time is never smaller than half of the original and never bigger than the original.
                     
                     if(Player::isAiControlled(%clientId))
-                        schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                        schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
 					else
-                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
                     schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
 		
 					return True;

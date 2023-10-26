@@ -1372,7 +1372,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
 				Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
 				refreshHPREGEN(%TrueClientId);
-				refreshMANAREGEN(%TrueClientId);
+				refreshStaminaREGEN(%TrueClientId);
 	
 				Client::sendMessage(%TrueClientId, $MsgWhite, "You fall asleep...  Use #wake to wake up.");
 			}
@@ -1381,7 +1381,24 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
-		if(%w1 == "#meditate")
+        else if(%w1 == "#heal")
+        {
+            if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
+			{
+                %TrueClientId.sleepMode = 3;
+                Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
+                Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
+                refreshHPREGEN(%TrueClientId);
+                refreshStaminaREGEN(%TrueClientId);
+    
+                Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
+            }
+            else
+                Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to heal.");
+            
+            return;
+        }
+		else if(%w1 == "#rest")
 		{
 			if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
 			{
@@ -1389,23 +1406,23 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
 				Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
 				refreshHPREGEN(%TrueClientId);
-				refreshMANAREGEN(%TrueClientId);
+				refreshStaminaREGEN(%TrueClientId);
 	
-				Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to meditate.  Use #wake to stop meditating.");
+				Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to rest.  Use #wake to stop resting.");
 			}
 			else
-				Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to meditate.");
+				Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to rest.");
 	
 			return;
 		}
-		if(%w1 == "#wake")
+		else if(%w1 == "#wake")
 		{
 			if(%TrueClientId.sleepMode != "")
 			{
 				%TrueClientId.sleepMode = "";
 				Client::setControlObject(%TrueClientId, %TrueClientId);
 				refreshHPREGEN(%TrueClientId);
-				refreshMANAREGEN(%TrueClientId);
+				refreshStaminaREGEN(%TrueClientId);
 	
 				Client::sendMessage(%TrueClientId, $MsgWhite, "You awake.");
 			}

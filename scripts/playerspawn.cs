@@ -144,14 +144,14 @@ function Game::playerSpawn(%clientId, %respawn)
 			if(%respawn)	      
 			{
 				setHP(%clientId, fetchData(%clientId, "MaxHP"));
-				setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
+				setStamina(%clientId, fetchData(%clientId, "MaxStam"));
 			}
 			else
 			{
 				setHP(%clientId, fetchData(%clientId, "tmphp"));
-				setMANA(%clientId, fetchData(%clientId, "tmpmana"));
+				setStamina(%clientId, fetchData(%clientId, "tmpstam"));
 				storeData(%clientId, "tmphp", "");
-				storeData(%clientId, "tmpmana", "");
+				storeData(%clientId, "tmpstam", "");
 			}
 			storeData(%clientId.possessId, "dumbAIflag", "");
 		}

@@ -307,7 +307,7 @@ function Player::onKilled(%this)
 	storeData(%clientId, "SpellCastStep", "");
 	%clientId.sleepMode = "";
 	refreshHPREGEN(%clientId);
-	refreshMANAREGEN(%clientId);
+	refreshStaminaREGEN(%clientId);
 
 	Client::setControlObject(%clientId, %clientId);
 	storeData(%clientId, "dumbAIflag", "");
