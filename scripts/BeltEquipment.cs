@@ -90,14 +90,14 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
     %numFullPages = getWord(%menuULB,0);
     %lb = getWord(%menuULB,1);
     %ub = getWord(%menuULB,2);
-    echo(%lb);
-    echo(%ub);
+    //echo(%lb);
+    //echo(%ub);
 	%x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
     {
 		%x++;
 		%item = getword(%nf,%x);
-        echo(%item);
+        //echo(%item);
 		%amnt = Belt::HasThisStuff(%clientid,%item);
 		Client::addMenuItem(%clientId, %cnt++ @%amnt@" "@ $beltitem[%item, "Name"], "select "@ %item @" "@ %slotId @" "@%prevType);
 	}

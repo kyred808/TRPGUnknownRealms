@@ -16,6 +16,10 @@ function fetchData(%clientId, %type)
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
+        %stam = fetchData(%clientId,"Stamina");
+        if(%stam <= 25)
+            %e = %e * %stam/25;
+        
 		return floor(%e);
 	}
 	else if(%type == "MDEF")
@@ -26,6 +30,10 @@ function fetchData(%clientId, %type)
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
+        %stam = fetchData(%clientId,"Stamina");
+        if(%stam <= 25)
+            %e = %e * %stam/25;
+        
 		return floor(%e);
 	}
 	else if(%type == "ATK")
@@ -45,7 +53,14 @@ function fetchData(%clientId, %type)
 			%b = GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
             %b = %b + %extra;
             %c = BeltEquip::AddBonusStats(%clientId,"ATK");
-			return %a + %b + %c;
+            
+            %val = %a + %b + %c;
+            
+            %stam = fetchData(%clientId,"Stamina");
+            if(%stam <= 25)
+                %val = %val * %stam/25;
+            
+			return %val;
 		}
 		else
 			return 0;
@@ -75,7 +90,7 @@ function fetchData(%clientId, %type)
         %armor = Player::getArmor(%clientId);
         %a = GameBase::getEnergy(Client::getOwnedObject(%clientId)) * fetchData(%clientId, "MaxStam");
         %b = %a / %armor.maxEnergy;
-        return round(%b);
+        return %b;
     }
     else if(%type == "MaxStam")
     {
@@ -260,7 +275,7 @@ function MenuSP(%clientId, %page)
 	for(%i = %lb; %i <= %ub; %i++)
     {
         %bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
-        echo(%bonus);
+        //echo(%bonus);
         if(%bonus > 0)
             Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
         else

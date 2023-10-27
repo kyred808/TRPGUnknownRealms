@@ -1101,8 +1101,8 @@ function ChangeRace(%clientId, %race)
 		storeData(%clientId, "RACE", "FemaleHuman");
 
 	setHP(%clientId, fetchData(%clientId, "MaxHP"));
-	setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
-
+	//setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
+    setStamina(%clientId, fetchData(%clientId, "MaxStam"));
 	RefreshAll(%clientId,true);
 }
 

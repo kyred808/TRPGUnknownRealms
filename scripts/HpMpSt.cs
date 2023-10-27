@@ -41,6 +41,36 @@ function setHP(%clientId, %val)
 
 	return %val;
 }
+
+function ForceWakeUp(%clientId)
+{
+    %clientId.sleepMode = "";
+    Client::setControlObject(%clientId, %clientId);
+    refreshHPREGEN(%clientId);
+    refreshStaminaREGEN(%clientId);
+    %clientId.healTick = 0;
+    Client::sendMessage(%clientId, $MsgWhite, "You awake.");
+}
+
+function HealHPCheck(%clientId)
+{
+    if(fetchData(%clientId, "HP") == fetchData(%clientId, "MaxHP") || fetchData(%clientId, "Stamina") == 0)
+    {
+        ForceWakeUp(%clientId);
+    }
+    else if(%clientId.sleepMode == 3)
+    {
+        if(%clientId.healTick > 10)
+        {
+            %clientId.healTick = 0;
+            UseSkill(%clientId, $SkillHealing, True, True);
+        }
+        else
+            %clientId.healTick++;
+        schedule("HealHPCheck("@%clientId@");",0.3);
+    }
+}
+
 function refreshHP(%clientId, %value)
 {
 	dbecho($dbechoMode, "refreshHP(" @ %clientId @ ", " @ %value @ ")");
@@ -54,12 +84,14 @@ function refreshHPREGEN(%clientId,%zone)
     // No natural passive regen
 	//%a = CalculatePlayerSkill(%clientId, $SkillHealing) / 250000;
     
+    %a = AddBonusStatePoints(%clientId, "HPRegen");
+    
 	if(%clientId.sleepMode == 1)
 		%b = 0.0200;
 	else if(%clientId.sleepMode == 2)
 		%b = 0;
     else if(%clientId.sleepMode == 3)
-        %b = 0.1 + CalculatePlayerSkill(%clientId, $SkillHealing) / 250000;
+        %b = 0.025 + CalculatePlayerSkill(%clientId, $SkillHealing) / 250000;
 	else
 		%b = 0;
 
@@ -84,9 +116,18 @@ function refreshHPREGEN(%clientId,%zone)
 
 function refreshStaminaREGEN(%clientId)
 {
-	dbecho($dbechoMode, "refreshMANAREGEN(" @ %clientId @ ")");
+	dbecho($dbechoMode, "refreshStaminaREGEN(" @ %clientId @ ")");
 
-	%a = (CalculatePlayerSkill(%clientId, $SkillEnergy) / 3250);
+	GameBase::setRechargeRate(Client::getOwnedObject(%clientId), calcRechargeRate(%clientId));
+}
+
+function calcRechargeRate(%clientId)
+{
+    %a = (CalculatePlayerSkill(%clientId, $SkillEnergy) / 6500) + (CalculatePlayerSkill(%clientId, $SkillEndurance) / 6500);
+
+    if(%clientId.isAtRest && %clientId.sleepMode == "")
+        %a = %a + 0.3;
+    
 	if(%clientId.sleepMode == 1) //Sleep
 		%b = 1.0 + %a;
 	else if(%clientId.sleepMode == 2) //Rest
@@ -99,8 +140,8 @@ function refreshStaminaREGEN(%clientId)
 	%c = AddPoints(%clientId, 11) / 800;
 
 	%r = %b + %c;
-
-	GameBase::setRechargeRate(Client::getOwnedObject(%clientId), %r);
+    
+    return %r;
 }
 
 function setStamina(%clientId,%val)
@@ -124,6 +165,28 @@ function setStamina(%clientId,%val)
 function refreshStamina(%clientId,%value)
 {
     setStamina(%clientId, (fetchData(%clientId, "Stamina") - %value));
+}
+
+function WeaponStamina(%clientId,%weapon)
+{
+    %skillType = $SkillType[%weapon];
+    %skill = CalculatePlayerSkill(%clientId, %skillType);
+    
+    if(%clientId.isAtRest == 1)
+    {
+        %clientId.isAtRest = 0;
+        refreshStaminaREGEN(%clientId);
+    }
+    %clientId.isAtRestCounter = 0;
+    
+    %minSkill = 1;
+    %wx = Word::FindWord($SkillRestriction[%weapon],%skillType);
+    if(%wx != -1)
+        %minSkill = Cap(getWord($SkillRestriction[%weapon],%wx+1),1,"inf");
+        
+    %stamCost = Cap(GetAccessoryVar(%weapon, $Weight) + (%minSkill-%skill)/(1.5*%minSkill),0.5,"inf");
+    echo(%stamCost);
+    refreshStamina(%clientId,%stamCost);
 }
 
 //======================

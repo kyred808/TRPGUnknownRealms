@@ -495,6 +495,13 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				%c2 = %c2 / 10;
 				%mom = Vector::getFromRot( %b, %c1, %c2 );
 			}
+            
+            //Maybe a little too harsh.  Will handle with ATK and DEF/MDEF stats instead.
+            //if(fetchData(%damagedClient,"Stamina") <= 25)
+            //    %value = %value * 25/Cap(fetchData(%damagedClient,"Stamina"),1,25);
+            //%stam = fetchData(%shooterClient,"Stamina");
+            //if(%stam <= 25)
+            //    %value = %value * %stam/25;
 
 			%value = (%value / $TribesDamageToNumericDamage);
 		}
@@ -742,6 +749,15 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					%value = 0;
 				%backupValue = %value;
 
+                if(%damagedClient.sleepMode != "")
+                {
+                    %value = %value * 10.0; //OUCH!
+                    Client::sendMessage(%damagedClient, $MsgRed, "You got caught off guard!");
+                    Client::sendMessage(%shooterClient, $MsgBeige, "You sneak attacked "@ Client::getName(%damagedClient));
+                    UseSkill(%shooterClient, $SkillBackstabbing, True, True,1); //Give them a level in backstabbing.  They deserve it
+                    ForceWakeUp(%damagedClient);
+                }
+                
 				%rhp = refreshHP(%damagedClient, %value);
 
 				if(%rhp == -1)

@@ -410,7 +410,9 @@ function MeleeAttack(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-		
+	
+    WeaponStamina(%clientId,%weapon);
+	
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
@@ -434,7 +436,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 		return;
 	%clientId.lastFireTime = %time;
 	
-    
+    WeaponStamina(%clientId,%weapon);
     %loadedProjectile = fetchData(%clientId, "LoadedProjectile " @ %weapon);
 	if(%loadedProjectile == "")
 		return;
@@ -508,7 +510,7 @@ function PickAxeSwing(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-
+    WeaponStamina(%clientId,%weapon);
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
@@ -589,6 +591,7 @@ function WoodAxeSwing(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
+    WeaponStamina(%clientId,%weapon);
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{

@@ -62,15 +62,25 @@ function AddBonusStatePoints(%clientId, %filter)
 	{
 		if($BonusStateCnt[%clientId, %i] > 0)
 		{
-			for(%z = 0; (%p1 = GetWord($BonusState[%clientId, %i], %z)) != -1; %z+=2)
-			{
-				%p2 = GetWord($BonusState[%clientId, %i], %z+1);
-				if(String::ICompare(%p1, %filter) == 0)
-				{
-					//same filter
-					%add += %p2;
-				}
-			}
+            %substr = $BonusState[%clientId, %i];
+            %wx = Word::FindWord(%substr,%filter);
+            while(%wx != -1)
+            {
+                %add += getWord(%substr,%wx+1);
+                
+                %substr = Word::getSubWord(%substr,%wx+2,9999);
+                %wx = Word::FindWord(%substr,%filter);
+            }
+        
+			//for(%z = 0; (%p1 = GetWord($BonusState[%clientId, %i], %z)) != -1; %z+=2)
+			//{
+			//	%p2 = GetWord($BonusState[%clientId, %i], %z+1);
+			//	if(String::ICompare(%p1, %filter) == 0)
+			//	{
+			//		//same filter
+			//		%add += %p2;
+			//	}
+			//}
 		}
 	}
 

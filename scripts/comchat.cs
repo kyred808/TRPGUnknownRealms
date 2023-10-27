@@ -1385,13 +1385,23 @@ function remoteSay(%clientId, %team, %message, %senderName)
         {
             if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
 			{
-                %TrueClientId.sleepMode = 3;
-                Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
-                Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
-                refreshHPREGEN(%TrueClientId);
-                refreshStaminaREGEN(%TrueClientId);
-    
-                Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
+                if(fetchData(%TrueClientId,"HP") < fetchData(%TrueClientId,"MaxHP"))
+                {
+                    if(fetchData(%TrueClientId,"Stamina") >= 10)
+                    {
+                        %TrueClientId.sleepMode = 3;
+                        Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
+                        Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
+                        refreshHPREGEN(%TrueClientId);
+                        refreshStaminaREGEN(%TrueClientId);
+                        HealHPCheck(%TrueClientId);
+                        Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
+                    }
+                    else
+                        Client::sendMessage(%TrueClientId, $MsgRed, "Your stamina is too low to do that.");
+                }
+                else
+                    Client::sendMessage(%TrueClientId, $MsgWhite, "Your health is already full.");
             }
             else
                 Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to heal.");
