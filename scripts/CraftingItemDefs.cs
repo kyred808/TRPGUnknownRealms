@@ -19,8 +19,10 @@ Crafting::SetCraftSound("Broadsword",SoundCanSmith2);
 // Alchemy recipes
 //===================
 
-Crafting::Addrecipe("alchemy","BluePotion",$SkillAlchemy @" 15","quartz 1",1);
-
+Crafting::Addrecipe("alchemy","EnergyShot",$SkillAlchemy @" 15","GobbieBerry 3 quartz 1",1);
+Crafting::Addrecipe("alchemy","EnergyVial",$SkillAlchemy @" 60","GoblinEar 2 GobbieBerry 3",1);
+Crafting::Addrecipe("alchemy","CrystalEnergyVial",$SkillAlchemy @" 250","turquoise 2 redberry 3",1);
+Crafting::Addrecipe("alchemy","EnergizedPotion",$SkillAlchemy @" 500","sapphire 3 skeletonbone 2 yuccavera 5",1);
 
 //===================
 // Smelting recipes

@@ -31,10 +31,11 @@ function Game::pickPlayerSpawn(%clientId, %respawn)
     }
     else
     {
+        %realmId = $RealmData[fetchData(%clientId,"realm"), ID];
         if(fetchData(%clientId, "lastzone") == "")
             %group = nameToID("MissionGroup/Teams/team0/DropPoints");
         else
-            %group = nameToID("MissionGroup/Zones/" @ Object::getName(fetchData(%clientId, "lastzone")) @ "/DropPoints");
+            %group = nameToID("MissionGroup/Realm"@%realmId@"/Zones/" @ Object::getName(fetchData(%clientId, "lastzone")) @ "/DropPoints");
     }
 	%count = Group::objectCount(%group);
 	if(!%count)
@@ -131,6 +132,8 @@ function Game::playerSpawn(%clientId, %respawn)
 		PlaySound(SoundSpawn2, %spawnPos);
 		GameBase::startFadeIn(Client::getOwnedObject(%clientId));
 
+        Farming::PlayerSpawnProtection(%spawnPos);
+        
 		echo("SPAWN: cl:" @ %clientId @ " pl:" @ %pl @ " marker:" @ %spawnMarker @ " position: " @ %spawnPos @ " armor:" @ %armor);
 
 		if(%pl != -1)

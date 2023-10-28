@@ -748,9 +748,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				if(%value < 0)
 					%value = 0;
 				%backupValue = %value;
-
-                if(%damagedClient.sleepMode != "")
+                echo(%damagedClient);
+                if(!(%damagedClient.sleepMode == "" || !%damagedClient.sleepMode))
                 {
+                    echo(%damagedClient.sleepMode);
                     %value = %value * 10.0; //OUCH!
                     Client::sendMessage(%damagedClient, $MsgRed, "You got caught off guard!");
                     Client::sendMessage(%shooterClient, $MsgBeige, "You sneak attacked "@ Client::getName(%damagedClient));

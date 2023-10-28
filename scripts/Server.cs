@@ -83,6 +83,7 @@ function createServer(%mission, %dedicated)
     deleteVariables("beltitem*");
     deleteVariables("BeltEquip::*");
     deleteVariables("Crafting::*");
+    deleteVariables("Farming::*");
 	$PetList = "";
 	$DISlist = "";
 	$SpawnPackList = "";
@@ -180,6 +181,7 @@ function createServer(%mission, %dedicated)
     exec(BeltItemDefs);
     exec(crafting);
     exec(CraftingItemDefs);
+    exec(Farming);
 	exec(fix);
     exec(admin_defs);
     

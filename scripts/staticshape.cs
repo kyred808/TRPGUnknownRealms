@@ -606,6 +606,38 @@ StaticShapeData TreeShapeTwo
    description = "Tree";
 };
 
+StaticShapeData PlantedSeed
+{
+	shapeFile = "bullet";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+    description = "Seed";
+};
+
+StaticShapeData PlantedTreeShape
+{
+	shapeFile = "tree2";
+	maxDamage = 99999.0;
+	isTranslucent = "True";
+   description = "Tree";
+};
+
+StaticShapeData PlantedPlantOne
+{
+	shapeFile = "plant1";
+	debrisId = defaultDebrisSmall;
+	maxDamage = 99999.0;
+   description = "Plant";
+};
+
+StaticShapeData PlantedPlantTwo
+{
+	shapeFile = "plant2";
+	debrisId = defaultDebrisSmall;
+	maxDamage = 99999.0;
+   description = "Plant";
+};
+
 StaticShapeData PhantomStrangerTree1
 {
 	shapeFile = "rpgtree1";

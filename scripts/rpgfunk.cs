@@ -800,6 +800,7 @@ function SaveWorld()
 	messageAll(2, "SaveWorld in progress... This process might induce temporary lag");
 	deletevariables("$world::*");
 	deletevariables("$sw::*");
+    
 	%i = 0;
 	%ii = 0;
 	%othercnt = 0;
@@ -838,6 +839,9 @@ function SaveWorld()
 			%othercnt = 0;
 
 	}
+    
+    Farming::SaveWorld();
+    
 	echo("Deleting old file before save for '" @ $missionName @ "_worldsave_.cs'...");
 	File::delete("temp\\" @ $missionName @ "_worldsave_.cs");
 
@@ -851,6 +855,8 @@ function LoadWorld()
 
 	%filename = $missionName @ "_worldsave_.cs";
 
+    Farming::LoadWorld();
+    
 	if(isFile("temp\\" @ %filename))
 	{
 		//load world
@@ -880,6 +886,7 @@ function LoadWorld()
 				DeployLootbag($world::pos[%i], $world::rot[%i], $world::special[%i]);
 			}
 		}
+        
 		echo("Load complete.");
 		messageAll(2, "LoadWorld complete.");
 	}

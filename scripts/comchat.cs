@@ -1919,6 +1919,70 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
+        if(%w1 == "#plant")
+        {
+            %item = %cropped;
+            %skill = CalculatePlayerSkill(%TrueClientId,$SkillFarming);
+            %player = Client::getOwnedObject(%TrueClientId);
+            if(Word::findWord($FarmingItems,%item,",") != -1)
+            {
+                if(SkillCanUse(%TrueClientId, "#plant "@ %item))
+                {
+                    if(HasThisStuff(%TrueClientId,%item @" 1"))
+                    {
+                        if(fetchData(%TrueClientId,"zone") == "")
+                        {
+                            $los::object = "";
+                            %los = GameBase::getLOSinfo(%player,8);
+                            echo(getObjectType($los::object));
+                            if(%los && getObjectType($los::object) == "SimTerrain")
+                            {
+                                TakeThisStuff(%TrueClientId,%item @" 1");
+                                Farming::PlantCrop(%TrueClientId,%item);
+                            }
+                            else
+                                Client::SendMessage(%TrueClientId,$MsgWhite,"You must be looking at the ground to plant.");
+                            
+                        }
+                        else
+                            Client::SendMessage(%TrueClientId,$MsgRed,"You can't farm here.");
+                        
+                    }
+                    else
+                        Client::SendMessage(%TrueClientId,$MsgWhite,"You do not have any "@ %item @" to plant.");
+                }
+                else
+                    Client::SendMessage(%TrueClientId,$MsgWhite,"You do not have the required skill to plant that item.");
+            }
+            else
+                Client::SendMessage(%TrueClientId,$MsgRed,%item @" is not a farmable item.");
+        }
+        else if(%w1 == "#unplant")
+        {
+            if(%clientToServerAdminLevel < 5)
+                return;
+            %player = Client::getOwnedObject(%TrueClientId);
+            $los::object = "";
+            %los = GameBase::getLOSinfo(%player,15);
+            echo(GameBase::getDataName($los::object));
+            if(%los)
+            {
+                %type = GameBase::getDataName($los::object);
+                %name = Object::getName($los::object);
+                if(%type == "PlantedSeed")
+                {
+                    $Farming::GrowingTime[$los::object] = "";
+                    deleteObject($los::object);
+                    Client::SendMessage(%TrueClientId,$MsgWhite,"Removed seed object "@%name@".");
+                }
+                else if(%type == "PlantedTreeShape" || %type == "PlantedPlantOne" || %type == "PlantedPlantTwo")
+                {
+                    $Farming::PlantLock[$los::object] = "";
+                    deleteObject($los::object);
+                    Client::SendMessage(%TrueClientId,$MsgWhite,"Removed plant object "@%name@".");
+                }
+            }
+        }
         if(%w1 == "#smith" || %w1 == "#mix" || %w1 == "#smelt")
         {
             %item = getWord(%cropped,0);
@@ -2164,7 +2228,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		if(%w1 == "#spawnflyer")
 			{
 			
-			if(%clientToServerAdminLevel < 6)
+			if(%clientToServerAdminLevel < 4)
 				return;
 			if(getword(%cropped,0) == -1)
 			{

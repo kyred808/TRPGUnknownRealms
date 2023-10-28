@@ -393,10 +393,37 @@ function remoteConsider(%clientId)
 		}
 		else if(%clientId.adminLevel >= 3)
 		{
-            if(Gamebase::getDataName(%object) == "MeteorCrystal")
+            %type = Gamebase::getDataName(%object);
+            if(%type == "MeteorCrystal")
             {
                 %idx = FindMeteorCrystalIndex(%object);
                 Client::sendMessage(%clientId, $MsgWhite, "Meteor Crystal: Index - "@ %idx @" Object: "@ %object);
+            }
+            else if(%type == "PlantedSeed")
+            {
+                %name = Object::getName(%object);
+                %crop = getWord(%name,1);
+                %plantTime = String::getWord($Farming::GrowingTime[%object],",",0);
+                %time = String::getWord($Farming::GrowingTime[%object],",",1);
+                Client::sendMessage(%clientId, $MsgWhite, "Crop: "@ %crop @" Planter: "@ getWord(%name,2) @" PlantingST: "@ %plantTime @" TimeLeft: " @ %time);
+            }
+            else if(%type == "PlantedTreeShape" || %type == "PlantedPlantOne" || %type == "PlantedPlantTwo")
+            {
+                %name = Object::getName(%object);
+                %lock = $Farming::PlantLock[%object];
+                
+                %crop = String::getWord(%name,",",0);
+                %owner = String::getWord(%name,",",1);
+                
+                %msg = "Crop: "@ %crop @" Planter: "@ %owner;
+                if(%lock != "")
+                {
+                    %lockOwner = String::getWord(%lock,",",0);
+                    %lockST = String::getWord(%lock,",",1);
+                    %time = String::getWord(%lock,",",2);
+                    %msg = %msg @" LockOwner: "@ %lockOwner @" LockST: "@ %lockST @" LockTimeLeft: "@ (%time + %lockST) -getSimTime();
+                }
+                Client::sendMessage(%clientId, $MsgWhite, %msg);
             }
             else
                 Client::sendMessage(%clientId, $MsgWhite, "Position at LOS is " @ %objpos);
