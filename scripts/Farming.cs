@@ -32,6 +32,18 @@ $Farming::PlantShape[Nixphyllum] = PlantedPlantOne;
 $Farming::PlantShape[DeezNuts] = PlantedPlantOne;
 $Farming::PlantShape[Lunabrosia] = PlantedPlantOne;
 
+$Farming::MaxHarvestAmnt = 5;
+
+$Farming::PlantBaseHarvestAmnt[Grain] = 3;
+$Farming::PlantBaseHarvestAmnt[GobbieBerry] = 2;
+$Farming::PlantBaseHarvestAmnt[RedBerry] = 2;
+$Farming::PlantBaseHarvestAmnt[Yuccavera] = 2;
+$Farming::PlantBaseHarvestAmnt[Treefruit] = 2;
+$Farming::PlantBaseHarvestAmnt[Strawberry] = 2;
+$Farming::PlantBaseHarvestAmnt[Nixphyllum] = 2;
+$Farming::PlantBaseHarvestAmnt[DeezNuts] = 2;
+$Farming::PlantBaseHarvestAmnt[Lunabrosia] = 2;
+
 $Farming::BaseGrowTime[Grain] = 120;
 $Farming::BaseGrowTime[GobbieBerry] = 150;
 $Farming::BaseGrowTime[RedBerry] = 200;
@@ -76,16 +88,6 @@ function Farming::PlayerSpawnProtection(%pos)
 // Assumes a LOS check already happened
 function Farming::PlantCrop(%clientId,%crop)
 {
-    //%set = nameToId("MissionCleanup\\PlantedCrops");
-    //if(%set == -1)
-    //{
-    //    %set = newObject("PlantedCrops",SimGroup);
-    //    addToSet(nameToId("MissionCleanup"),%set);
-    //}
-    //%obj = newObject("Plant "@%crop@" "@Client::getName(%clientId),StaticShape,PlantedSeed,true);
-    //addToSet(%obj,%set);
-    //Gamebase::setPosition(%obj,$los::position);
-    //Gamebase::setRotation(%obj,Vector::add(Vector::getRotation($los::normal),"1.57 0 0"));
     Client::SendMessage(%clientId,$MsgWhite,"You planted a "@ $beltitem[%crop, "Name"] @" plant.~wPku_hlth.wav");
     
     %skillRestrict = $SkillRestriction["#plant "@%crop];
@@ -95,14 +97,13 @@ function Farming::PlantCrop(%clientId,%crop)
     %time = Cap($Farming::BaseGrowTime[%crop]*((1.2*%skillReq)/%pskill)*%mod,$Farming::BaseGrowTime[%crop]/2,"inf");
     echo("Grow Time: "@ %time @" "@%mod);
     
-    %rot = Vector::add(Vector::getRotation($los::normal),"1.57 0 0");
-    Farming::PlantSeedObj(%crop,"PlantedSeed",$los::position,%rot,%time,Client::getName(%clientId));
+    %amnt = Cap(floor(getRandom()*($Farming::PlantBaseHarvestAmnt[%crop]+floor((%pskill - %skillReq)/(3*%skillReq)*getRandom()))),1,$Farming::MaxHarvestAmnt);
     
-    //schedule("Farming::GrowPant("@%obj@","@%ownerName@");",%time,%obj);
-    //$Farming::GrowingTime[%obj] = getSimTime() @ "," @ %time;
+    %rot = Vector::add(Vector::getRotation($los::normal),"1.57 0 0");
+    Farming::PlantSeedObj(%crop,"PlantedSeed",$los::position,%rot,%time,%amnt,Client::getName(%clientId));
 }
 
-function Farming::PlantSeedObj(%cropType,%seedObjType,%pos,%rot,%growTime,%ownerName)
+function Farming::PlantSeedObj(%cropType,%seedObjType,%pos,%rot,%growTime,%amnt,%ownerName)
 {
     %set = nameToId("MissionCleanup\\PlantedCrops");
     if(%set == -1)
@@ -117,38 +118,24 @@ function Farming::PlantSeedObj(%cropType,%seedObjType,%pos,%rot,%growTime,%owner
     Gamebase::setRotation(%obj,%rot);
     schedule("Farming::GrowPant("@%obj@","@%ownerName@");",%growTime,%obj);
     $Farming::GrowingTime[%obj] = getSimTime() @ "," @ %growTime;
+    $Farming::SeedHarvestAmnt[%obj] = %amnt;
 }
 
 
 function Farming::GrowPant(%object,%ownerName)
 {
-    //%set = nameToId("MissionCleanup\\PlantedCrops");
-    //if(%set == -1)
-    //{
-    //    %set = newObject("PlantedCrops",SimGroup);
-    //    addToSet(nameToId("MissionCleanup"),%set);
-    //}
     
     $Farming::GrowingTime[%object] = "";
     %type = getWord(Object::getName(%object),1);
     
-    //%name = %type;
-    //if(%ownerName != "")
-    //    %name = %name @","@%ownerName;
-    //%nobj = newObject(%name,StaticShape,$Farming::PlantShape[%type],true);
-    //addToSet(%nobj,%set);
-    //Gamebase::setPosition(%nobj,Gamebase::getPosition(%object));
-    //Gamebase::setRotation(%nobj,Vector::add(Gamebase::getRotation(%object),"-1.57 0 0");
-    //if(%ownerName != "")
-    //    $Farming::PlantLock[%nobj] = %ownerName@","@getSimTime()@","@$Farming::PlantLockTime);
-    
     %pos = Gamebase::getPosition(%object);
     %rot = Vector::add(Gamebase::getRotation(%object),"-1.57 0 0");
     deleteObject(%object);
-    Farming::PlantCropObj(%type,$Farming::PlantShape[%type],%pos,%rot,$Farming::PlantLockTime,%ownerName);
+    Farming::PlantCropObj(%type,$Farming::PlantShape[%type],%pos,%rot,$Farming::SeedHarvestAmnt[%object],$Farming::PlantLockTime,%ownerName);
+    $Farming::SeedHarvestAmnt[%object] = "";
 }
 
-function Farming::PlantCropObj(%cropType,%cropObjType,%pos,%rot,%lockTime,%ownerName)
+function Farming::PlantCropObj(%cropType,%cropObjType,%pos,%rot,%amnt,%lockTime,%ownerName)
 {
     %set = nameToId("MissionCleanup\\PlantedCrops");
     if(%set == -1)
@@ -164,9 +151,17 @@ function Farming::PlantCropObj(%cropType,%cropObjType,%pos,%rot,%lockTime,%owner
     Gamebase::setPosition(%nobj,%pos);
     Gamebase::setRotation(%nobj,%rot);
     addToSet(%set,%nobj);
+    $Farming::harvestAmnt[%nobj] = %amnt;
     if(%lockTime != "")
         $Farming::PlantLock[%nobj] = %ownerName@","@getSimTime()@","@%lockTime;
     
+}
+
+function Farming::deleteCrop(%cropObj)
+{
+    $Farming::harvestAmnt[%cropObj] = "";
+    $Farming::PlantLock[%cropObj] = "";
+    deleteObject(%cropObj);
 }
 
 function Farming::LoadWorld()
@@ -234,6 +229,7 @@ function Farming::SavePlantData(%plant)
             $FarmingWorldSave::seed[$FarmingWorldSave::seedCount,TimeRemaing] = %diff;
             $FarmingWorldSave::seed[$FarmingWorldSave::seedCount,Pos] = Gamebase::getPosition(%plant);
             $FarmingWorldSave::seed[$FarmingWorldSave::seedCount,Rot] = Gamebase::getRotation(%plant);
+            $FarmingWorldSave::seed[$FarmingWorldSave::seedCount,HarvestAmnt] = $Farming::SeedHarvestAmnt[%plant];
             $FarmingWorldSave::seedCount++;
         }
         else
@@ -253,7 +249,7 @@ function Farming::SavePlantData(%plant)
             $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,Owner] = %owner;
         $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,Pos] = Gamebase::getPosition(%plant);
         $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,Rot] = Gamebase::getRotation(%plant);
-        
+        $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,HarvestAmnt] = $Farming::harvestAmnt[%plant] = %amnt;
         %lock = $Farming::PlantLock[%plant];
         if(%lock != "")
         {
@@ -282,8 +278,9 @@ function Farming::LoadPlantedCrop(%index)
     %rot = $FarmingWorldSave::crop[%index,Rot];
     %lockTime = $FarmingWorldSave::crop[%index,Lock,TimeRemaining];
     %ownerName = $FarmingWorldSave::crop[%index,Lock,Owner];
-
-    Farming::PlantCropObj(%type,%objType,%pos,%rot,%lockTime,%ownerName);
+    %amnt = $FarmingWorldSave::crop[%index,HarvestAmnt];
+    
+    Farming::PlantCropObj(%type,%objType,%pos,%rot,%amnt,%lockTime,%ownerName);
 }
 
 function Farming::LoadPlantedSeed(%index)
@@ -294,6 +291,7 @@ function Farming::LoadPlantedSeed(%index)
     %rot = $FarmingWorldSave::seed[%index,Rot];
     %time = $FarmingWorldSave::seed[%index,TimeRemaing];
     %owner = $FarmingWorldSave::seed[%index,Owner];
+    %amnt = $FarmingWorldSave::seed[%index,HarvestAmnt];
     
-    Farming::PlantSeedObj(%cropType,%objType,%pos,%rot,%time,%owner);
+    Farming::PlantSeedObj(%cropType,%objType,%pos,%rot,%time,%amnt,%owner);
 }

@@ -235,7 +235,6 @@ function Zone::RollSpawnDelayTime(%zoneId,%spawnIndex)
     return floor(getRandom() * %diff) + $Zone::SpawnPoint[%zoneId,%spawnIndex,MinDelay];
 }
 
-// 27 27 28 28 29 29 30 30 52
 function Zone::SpawnCheck(%zoneId)
 {
     if($Zone::Active[%zoneId])

@@ -795,7 +795,7 @@ function StaticDoorForceField::onCollision(%this, %object)
 		
         if(IsInCommaList($grouplist[%owner], %name) || %name == %owner)
 	{
-		echo(%this);
+		//echo(%this);
 		if($recreatingfField[%this] == "")
 		{
 			Client::sendMessage(%clientId,0,"Access granted.");

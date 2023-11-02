@@ -2,9 +2,10 @@
 //=================
 // Crafting Types
 //=================
-Crafting::AddCraftingType("smithing","Smithing","#smith",SoundCanSmith,$SkillSmithing,0);
-Crafting::AddCraftingType("alchemy","Alchemy","#mix",SoundCanSmith,$SkillAlchemy,1);
-Crafting::AddCraftingType("smelting","Smelting","#smelt",SoundCanSmith2,$SkillSmithing,2);
+Crafting::AddCraftingType("smithing","Smithing","#smith","smith","smithed",SoundCanSmith,$SkillSmithing,0);
+Crafting::AddCraftingType("alchemy","Alchemy","#mix","mix","mixed",SoundCanSmith,$SkillAlchemy,1);
+Crafting::AddCraftingType("smelting","Smelting","#smelt","smelt","smelted",SoundCanSmith2,$SkillSmithing,2);
+Crafting::AddCraftingType("cooking","Cooking","#cook","cook","cooked",SoundCanSmith2,$SkillCooking,3);
 
 //===================
 // Smithing recipes
@@ -23,6 +24,16 @@ Crafting::Addrecipe("alchemy","EnergyShot",$SkillAlchemy @" 15","GobbieBerry 3 q
 Crafting::Addrecipe("alchemy","EnergyVial",$SkillAlchemy @" 60","GoblinEar 2 GobbieBerry 3",1);
 Crafting::Addrecipe("alchemy","CrystalEnergyVial",$SkillAlchemy @" 250","turquoise 2 redberry 3",1);
 Crafting::Addrecipe("alchemy","EnergizedPotion",$SkillAlchemy @" 500","sapphire 3 skeletonbone 2 yuccavera 5",1);
+
+//===================
+// Cooking Recipes
+//===================
+
+Crafting::Addrecipe("cooking","Bread",$SkillCooking @" 15","Grain 20",1);
+Crafting::Addrecipe("cooking","GobCookie",$SkillCooking @" 50","Grain 10 GobbieBerry 5",3);
+Crafting::Addrecipe("cooking","YucJuice",$SkillCooking @" 180","Yuccavera 5",1);
+Crafting::Addrecipe("cooking","RedBerryPie",$SkillCooking @" 220","Yuccavera 2 RedBerry 10 Grain 50",1);
+Crafting::Addrecipe("cooking","StrawberryCake",$SkillCooking @" 400","Bread 10 Eggs 5 Strawberry 15",1);
 
 //===================
 // Smelting recipes

@@ -1779,6 +1779,128 @@ instant SimGroup "MissionGroup" {
         //instant SimGroup "SpawnPoints" {
         //
         //};
+        instant SimGroup "UberArena" {
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "1497.48 -2423.1 82.4016";
+                rotation = "0 -0 2.35996";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "w64gate1" {
+                fileName = "W64gate.dis";
+                isContainer = "1";
+                position = "1842.48 -2430.84 62.5334";
+                rotation = "0 -0 0.859993";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "w64long1" {
+                fileName = "W64long.dis";
+                isContainer = "1";
+                position = "1834.46 -2444.36 61.9528";
+                rotation = "0 -0 -2.26891";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "w64long1" {
+                fileName = "W64long.dis";
+                isContainer = "1";
+                position = "1893.07 -2374.45 49.0091";
+                rotation = "0 -0.174531 -2.26891";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "w64long1" {
+                fileName = "W64long.dis";
+                isContainer = "1";
+                position = "1933.93 -2325.39 49.0093";
+                rotation = "0 -0 -2.26319";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "w64long1" {
+                fileName = "W64long.dis";
+                isContainer = "1";
+                position = "1741.45 -2547.27 62.0863";
+                rotation = "0 -0 0.839993";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "observation1" {
+                fileName = "observation.dis";
+                isContainer = "1";
+                position = "1656.01 -2283.16 66.6407";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "newdam1" {
+                fileName = "newdam.dis";
+                isContainer = "1";
+                position = "1643.2 -2099.34 87.9578";
+                rotation = "0 -0 0.379996";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant SimGroup "Rocks" {
+                instant InteriorShape "lrock11" {
+                    fileName = "lrock1.dis";
+                    isContainer = "0";
+                    position = "1590.67 -2380.83 66.4227";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+                instant InteriorShape "lrock41" {
+                    fileName = "lrock4.dis";
+                    isContainer = "1";
+                    position = "1514.78 -2295.69 71.206";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+                instant InteriorShape "lrock61" {
+                    fileName = "lrock6.dis";
+                    isContainer = "0";
+                    position = "1608.06 -2201.45 63.9556";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+                instant InteriorShape "lrock51" {
+                    fileName = "lrock5.dis";
+                    isContainer = "0";
+                    position = "1701.97 -2398.39 65";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+                instant InteriorShape "lrock11" {
+                    fileName = "lrock1.dis";
+                    isContainer = "0";
+                    position = "1756.74 -2295.55 65";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+                instant InteriorShape "lrock51" {
+                    fileName = "lrock5.dis";
+                    isContainer = "0";
+                    position = "1661.57 -2353.4 64.9999";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+                instant InteriorShape "lrock31" {
+                    fileName = "lrock3.dis";
+                    isContainer = "1";
+                    position = "1707.32 -2183.49 64.6381";
+                    rotation = "0 0 0";
+                    lightParams = "0 ";
+                };
+            };
+            instant Marker "SpawnMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "1674.06 -2288.29 65";
+                rotation = "0 0 0";
+            };
+            instant InteriorShape "tank161" {
+                fileName = "tank16.dis";
+                isContainer = "1";
+                position = "1799.46 -2484.71 80.7754";
+                rotation = "0 -0 0.819991";
+                lightParams = "0 ";
+            };
+        };
         instant SimGroup "AncientCrypt" {
             instant InteriorShape "lrock61" {
                 fileName = "lrock6.0.dis";

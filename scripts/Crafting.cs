@@ -1,13 +1,15 @@
 
 $Crafting::MultiCraftDelay = 0.4;
 
-function Crafting::AddCraftingType(%name,%desc,%command,%defaultSound,%skillId,%id)
+function Crafting::AddCraftingType(%name,%desc,%command,%verb,%pastTenseVerb,%defaultSound,%skillId,%id)
 {
     $Crafting::TypeList[%id] = %name;
     $Crafting::Type[%name,Command] = %command;
     $Crafting::Type[%name,Desc] = %desc;
     $Crafting::Type[%name,Skill] = %skillId;
     $Crafting::Type[%name,DefaultSound] = %defaultSound;
+    $Crafting::Type[%name,Verb] = %verb;
+    $Crafting::Type[%name,PastTenseVerb] = %pastTenseVerb;
     $Crafting::CommandToType[%command] = %name;
 }
 
@@ -24,6 +26,16 @@ function Crafting::GetFullCraftCommand(%craftedItem)
 function Crafting::GetSkill(%craftedItem)
 {
     return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],Skill];
+}
+
+function Crafting::GetVerb(%craftedItem)
+{
+    return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],Verb];
+}
+
+function Crafting::GetPastTenseVerb(%craftedItem)
+{
+    return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],PastTenseVerb];
 }
 
 function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty)
@@ -84,7 +96,7 @@ function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
     if($ExtraCraftingRequirements)
     {
         //Temp until fire is a thing
-        if(%craftType == "alchemy")
+        if(%craftType == "alchemy" || %craftType == "cooking")
             return true;
         $los::object = "";
         %los = Gamebase::getLOSInfo(Client::getControlObject(%clientId),5);
@@ -101,7 +113,7 @@ function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
                 //
                 //return %objSet == %anvilSet;
             }
-            else if(%craftType == "alchemy")
+            else if(%craftType == "alchemy" || %craftType == "cooking")
             {
                 return true;
             }
@@ -175,17 +187,18 @@ function Crafting::CraftItem(%clientId,%craftedItem)
     TakeThisStuff(%clientId,$Crafting::recipe[%craftedItem,Items]);
     %rand = getRandom();
     echo(%rand @" vs. "@ %percentSuccess);
+
     if(%rand <= %percentSuccess)
     {
         playSound($Crafting::recipe[%craftedItem,Sound], GameBase::getPosition(%clientId));
         UseSkill(%clientId,Crafting::GetSkill(%craftedItem),true,true,$Crafting::recipe[%craftedItem,Difficulty],true);
         GiveThisStuff(%clientId,%craftedItem @" 1",false,$Crafting::recipe[%craftedItem,Amount]);
         echo($Crafting::recipe[%craftedItem,Sound]);
-        Client::sendMessage(%clientId, $MsgWhite, "You successfully smithed "@ $Crafting::recipe[%craftedItem,Amount] @" "@ %craftedItem @".");
+        Client::sendMessage(%clientId, $MsgWhite, "You successfully "@ Crafting::GetPastTenseVerb(%craftedItem) @" "@ $Crafting::recipe[%craftedItem,Amount] @" "@ %craftedItem @".");
     }
     else
     {
-        Client::sendMessage(%clientId, $MsgRed, "You failed smithing "@ %craftedItem @".");
+        Client::sendMessage(%clientId, $MsgRed, "You failed to "@ Crafting::GetVerb(%craftedItem) @" "@ %craftedItem @".");
         UseSkill(%clientId,Crafting::GetSkill(%craftedItem),false,true,$Crafting::recipe[%craftedItem,Difficulty],true);
     }
 }

@@ -116,7 +116,7 @@ function RefreshWeight(%clientId)
 	%a = Player::getArmor(%clientId);
 	%ae = GameBase::getEnergy(%player);
 
-	if(%a != %newarmor && %newarmor != "")
+	if(%a != %newarmor && %newarmor != "" && fetchData(%clientId, "NoArmorCheck") == "")
 	{
 		//set the new armor
 		Player::setArmor(%clientId, %newarmor);

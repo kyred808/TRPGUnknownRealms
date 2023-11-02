@@ -30,7 +30,6 @@ function RPGmountItem(%player, %item, %slot)
 	dbecho($dbechoMode, "RPGmountItem(" @ %player @ ", " @ %item @ ", " @ %slot @ ")");
 
 	%clientId = Player::getClient(%player);
-
 	if(SkillCanUse(%clientId, %item))
 	{
 		Player::mountItem(%player, %item, %slot);

@@ -68,6 +68,8 @@ function Player::onKilled(%this)
 	storeData(%clientId.possessId, "dumbAIflag", "");
 	$possessedBy[%clientId.possessId] = "";
 
+    Player::setJet(%this,false);
+    
 	if(IsStillArenaFighting(%clientId))
 	{
 		//player's dueling flag is still at ALIVE, make him DEAD
@@ -370,10 +372,42 @@ function Player::onKilled(%this)
 	}
 }
 
+function CalculateDamageReduction(%clientId)
+{
+    %def = fetchData(%clientId, "DEF");
+    
+    if(%def <= 500)
+    {
+        return (%def /1000);
+    }
+    else
+    {
+        %upper = ((%def-500)/15)/100;
+        return 0.5 + %upper;
+    }
+   //if(%def <= 300)
+   //{
+   //    return (%def/1000);
+   //}
+   //else if(%def <= 500)
+   //{
+   //    %upper = ((%def-300)/15)/100;
+   //    return 0.3 + %upper;
+   // }
+   // else
+   // {
+   //     %lower = 0.3 + 0.13;
+   //     %upper = ((%def-500)/20)/100; // %def factors in less
+   //     return %lower + %upper; //0.5 for the lower 500 def
+   // }
+    
+    
+}
+
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-
+    //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
 	%skilltype = $SkillType[%weapon];
 
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
@@ -381,6 +415,28 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		%damagedClient = Player::getClient(%this);
 		%shooterClient = %object;
         
+        if(fetchData(%damagedClient,"isUberBoss") && fetchData(%aiId,"ubCombatStarted") == "")
+        {
+            %swState = fetchData(%aiId,"ubStandWaiting");
+            if(%swState != "")
+            {
+                if(%swState == 1)
+                {
+                    UberBoss::teleportToMarker(%damagedClient);
+                    return;
+                }
+                else if(%swState == 2)
+                {
+                    UberBoss::StartCombat(fetchData(%damagedClient, "BotInfoAiName"),%damagedClient,true);
+                    return;
+                }
+            }
+        }
+        
+        //if(%shooterClient == 0 && fetchData(%damagedClient,"dragonAttack") != "")
+        //{
+        //    %shooterClient = fetchData(%damagedClient,"dragonAttack");
+        //}
 		%damagedClientPos = GameBase::getPosition(%damagedClient);
 		%shooterClientPos = GameBase::getPosition(%shooterClient);
 
@@ -430,6 +486,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		else if(%type != $LandingDamageType)
 		{
 			%multi = 1;
+            
+            if(%type == $DragonDamageType)
+                %multi = 100;
 
 			//Backstab
 			if(fetchData(%shooterClient, "invisible"))
@@ -480,12 +539,20 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             
 			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
 
-			%ab = (getRandom() * (fetchData(%damagedClient, "DEF") / 10)) + 1;
-			%value = Cap(%value - %ab, 1, "inf");
+            %dmgRedPct = CalculateDamageReduction(%damagedClient);
+            
+            %amr = fetchData(%damagedClient,"AMR");
+            
+            echo("Value: "@%value @" ","DmgPct: "@ %dmgRedPct*100 @" ","AMR: "@%amr);
+			
+			%value = Cap(%value - %amr, 1, "inf");
 
 			%a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
 			%value += %r;
+            
+            %value = %value * (%dmgRedPct);
+            
 			if(%value < 1)
 				%value = 1;
 
@@ -507,24 +574,24 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		}
 
 		//------------- DETERMINE MISS OR HIT -------------
-		if(%preCalcMiss == "")
-		{
-			if(%type != $LandingDamageType && %shooterClient != %damagedClient && %shooterClient != 0)
-			{
-				if(%type == $SpellDamageType)
-					%x = (fetchData(%damagedClient, "MDEF") / 5) + CalculatePlayerSkill(%damagedClient, $SkillSpellResistance) + 5;
-				else
-					%x = (fetchData(%damagedClient, "DEF") / 5); //+ $PlayerSkill[%damagedClient, $SkillDodging] + 5;
-				%y = CalculatePlayerSkill(%shooterClient, %skilltype) + 5;
-	
-				%n = %x + %y;
-	
-				%r = floor(getRandom() * %n) + 1;
-	
-				if(%r <= %x)
-					%isMiss = True;
-			}
-		}
+		//if(%preCalcMiss == "")
+		//{
+		//	if(%type != $LandingDamageType && %shooterClient != %damagedClient && %shooterClient != 0)
+		//	{
+		//		if(%type == $SpellDamageType)
+		//			%x = (fetchData(%damagedClient, "MDEF") / 5) + CalculatePlayerSkill(%damagedClient, $SkillSpellResistance) + 5;
+		//		else
+		//			%x = (fetchData(%damagedClient, "DEF") / 5); //+ $PlayerSkill[%damagedClient, $SkillDodging] + 5;
+		//		%y = CalculatePlayerSkill(%shooterClient, %skilltype) + 5;
+	    //
+		//		%n = %x + %y;
+	    //
+		//		%r = floor(getRandom() * %n) + 1;
+	    //
+		//		if(%r <= %x)
+		//			%isMiss = True;
+		//	}
+		//}
 
 		//=======================================|WATER CHECKS|=========================================
 		//------------------------------------
@@ -748,10 +815,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				if(%value < 0)
 					%value = 0;
 				%backupValue = %value;
-                echo(%damagedClient);
+                //echo(%damagedClient);
                 if(!(%damagedClient.sleepMode == "" || !%damagedClient.sleepMode))
                 {
-                    echo(%damagedClient.sleepMode);
+                    //echo(%damagedClient.sleepMode);
                     %value = %value * 10.0; //OUCH!
                     Client::sendMessage(%damagedClient, $MsgRed, "You got caught off guard!");
                     Client::sendMessage(%shooterClient, $MsgBeige, "You sneak attacked "@ Client::getName(%damagedClient));
@@ -765,6 +832,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					%value = -1;	//There was an LCK miss
 				else
 				{
+                    echo("Bashed Impulse: "@ %mom);
 					if(!%noImpulse) Player::applyImpulse(%this,%mom);
 					%noImpulse = "";
 

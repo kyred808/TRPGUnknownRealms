@@ -4,7 +4,7 @@
 // the zone check.
 //======================================================================
 
-$maxBonusStates = 10;
+$maxBonusStates = 50;
 
 function DecreaseBonusStateTicks(%clientId, %b)
 {
@@ -16,8 +16,13 @@ function DecreaseBonusStateTicks(%clientId, %b)
 		if($BonusStateCnt[%clientId, %b] <= 0)
 		{
 			$BonusStateCnt[%clientId, %b] = "";
+            if(Word::FindWord($BonusState[%clientId, %i],"FoodCoolDown") != -1)
+                Client::sendMessage(%clientId,$MsgBeige,"You are able to eat again.");
 			$BonusState[%clientId, %b] = "";
 			playSound(BonusStateExpire, GameBase::getPosition(%clientId));
+            refreshHPREGEN(%clientId);
+            refreshStaminaREGEN(%clientId);
+            refreshAll(%clientId,false);
 		}
 	}
 	else
@@ -35,8 +40,13 @@ function DecreaseBonusStateTicks(%clientId, %b)
 				if($BonusStateCnt[%clientId, %i] <= 0)
 				{
 					$BonusStateCnt[%clientId, %i] = "";
+                    if(Word::FindWord($BonusState[%clientId, %i],"FoodCoolDown") != -1)
+                        Client::sendMessage(%clientId,$MsgBeige,"You are able to eat again.");
 					$BonusState[%clientId, %i] = "";
 					playSound(BonusStateExpire, GameBase::getPosition(%clientId));
+                    refreshHPREGEN(%clientId);
+                    refreshStaminaREGEN(%clientId);
+                    refreshAll(%clientId,false);
 				}
 				else
 				{
@@ -89,6 +99,7 @@ function AddBonusStatePoints(%clientId, %filter)
 
 function UpdateBonusState(%clientId, %type, %ticks)
 {
+    echo("Bonus: "@%type@" "@ %ticks);
 	//look thru the current bonus states and attempt to update
 	%flag = False;
 	for(%i = 1; %i <= $maxBonusStates; %i++)

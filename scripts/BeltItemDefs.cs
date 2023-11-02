@@ -191,6 +191,20 @@ $StealProtectedItem["enhancedoffcastscroll"] = true;
 $StealProtectedItem["enhanceddefcastscroll"] = true;
 $StealProtectedItem["enhancedneucastscroll"] = true;
 
+// Food Items
+BeltItem::Add("Bread","Bread","FoodItems",0.5,50,750,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.2/$TribesDamageToNumericDamage@" 60");
+BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751);
+BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752);
+BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,500,753);
+BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,1200,754);
+
+$AccessoryVar[Bread, $MiscInfo] = "A loaf of bread.  Eating it will boost health and stamina regen slightly.";
+$AccessoryVar[GobCookie, $MiscInfo] = "A cookie made of Gobbie Berries.  Eating it will boost stamina regen";
+$AccessoryVar[YucJuice, $MiscInfo] = "A flask of healthy yuccavera juice.  Eating it will boost health and stamina regen."; 
+$AccessoryVar[RedBerryPie, $MiscInfo] = "Delicious red berry pie. Eating it will boost stamina regen.";
+$AccessoryVar[StrawberryCake, $MiscInfo] = "A cake slices of strawberries.  Greatly boosts stamina regen.";
+
+
 // Plant Items (Other vars defined in Farming.cs
 BeltItem::Add("Grain","Grain","PlantItems",0.25,8,700);
 BeltItem::Add("Gobbie Berry","GobbieBerry","PlantItems",0.2,30,701);
@@ -324,12 +338,27 @@ function Belt::UseItem(%clientId,%item)
             Belt::TakeThisStuff(%clientId,%item,1);
             RefreshAll(%clientId,false);
         }
-        
         else if(getWord($beltitem[%item, "Special"],0) == "DrinkStaminaPotion")
         {
             DrinkStaminaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
             Belt::TakeThisStuff(%clientId,%item,1);
             RefreshAll(%clientId,false);
+        }
+        else if(String::getWord($beltitem[%item, "Special"],",",0) == "EatFoodItem")
+        {
+            if(AddBonusStatePoints("FoodCooldown") == 0)
+            {
+                if(%clientId.sleepMode == "")
+                {
+                    EatFoodItem(%clientId,%item,Word::getSubWord($beltitem[%item, "Special"],1,999,","));
+                    Belt::TakeThisStuff(%clientId,%item,1);
+                    RefreshAll(%clientId,false);
+                }
+                else
+                    Client::sendMessage(%clientId, $MsgWhite, "You can't eat right now.");
+            }
+            else
+                Client::sendMessage(%clientId, $MsgWhite, "You aren't ready to eat again.");
         }
     }
 }
@@ -347,6 +376,31 @@ function DrinkStaminaPotion(%clientId,%item,%amt)
 {
     refreshStamina(%clientId,%amt*-1);
     Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @" Stamina~wActivateAR.wav");
+}
+
+function EatFoodItem(%clientId,%item,%special)
+{
+    //"EatFoodItem,Cooldown 80,StamRegen 0.1 60,HPRegen 0.1 60"
+    %cooldown = "";
+    
+    for(%i = 0; String::getWord(%special,",",%i) != ","; %i++)
+    {
+        %data = String::getWord(%special,",",%i);
+        //echo(%data);
+        if(String::icompare(getWord(%data,0),"cooldown") == 0)
+            %cooldown = getWord(%data,1);
+        else
+        {
+            %bonusType = getWord(%data,0);
+            %bonusAmnt = getWord(%data,1);
+            %bonusTicks = getWord(%data,2);
+            UpdateBonusState(%clientId, %bonusType @" "@%bonusAmnt, %bonusTicks);
+        }
+    }
+    refreshHPREGEN(%clientId);
+    refreshStaminaREGEN(%clientId);
+    UpdateBonusState(%clientId, "FoodCooldown 1", %cooldown);
+    Client::sendMessage(%clientId, $MsgWhite, "You ate a "@$beltitem[%item, "Name"]@".");
 }
 
 // =============================

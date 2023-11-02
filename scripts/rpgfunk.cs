@@ -1088,7 +1088,6 @@ function UpdateTeam(%clientId)
 	dbecho($dbechoMode, "UpdateTeam(" @ %clientId @ ")");
 
 	%t = $TeamForRace[fetchData(%clientId, "RACE")];
-    echo("Ent team?");
 	GameBase::setTeam(%clientId, %t);
 }
 
@@ -1800,7 +1799,7 @@ function RefreshEquipment(%clientId)
     %sound = true;
     if(%weapon != -1)
     {
-        echo(%weapon);
+        //echo(%weapon);
         echo(SkillCanUse(%clientId,%weapon));
         if(!SkillCanUse(%clientId,%weapon))
         {
@@ -2193,7 +2192,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 		else
 		{
-			Item::giveItem(%clientId, %w, %w2, %echo);
+			Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
 		}
 	}
 

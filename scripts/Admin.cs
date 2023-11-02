@@ -490,7 +490,8 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "<f1>" @ Client::getName(%clientId) @ ", LEVEL " @ fetchData(%clientId, "LVL") @ " " @ fetchData(%clientId, "RACE") @ " " @ fetchData(%clientId, "CLASS") @ "<f0>\n\n";
 
 		%a[%tmp++] = "ATK: " @ Number::Beautify(fetchData(%clientId, "ATK"),0,2) @ "\n";
-		%a[%tmp++] = "DEF: " @ Number::Beautify(fetchData(%clientId, "DEF"),0,2) @ "\n";
+		%a[%tmp++] = "DEF: " @ Number::Beautify(fetchData(%clientId, "DEF"),0,2) @ " ("@ round(CalculateDamageReduction(%clientId)*100) @"%)\n";
+        %a[%tmp++] = "AMR: " @ Number::Beautify(fetchData(%clientId, "AMR"),0,2) @ "\n";
 		%a[%tmp++] = "MDEF: " @ Number::Beautify(fetchData(%clientId, "MDEF"),0,2) @ "\n";
 		%a[%tmp++] = "Hit Pts: " @ fetchData(%clientId, "HP") @ " / " @ fetchData(%clientId, "MaxHP") @ "\n";
         

@@ -104,8 +104,9 @@ function refreshHPREGEN(%clientId,%zone)
     }
 	%c = AddPoints(%clientId, 10) / 2000;
 
-	%r = %b + %c;
-
+	%r = %a + %b + %c;
+    echo(%a @" "@ %b @" "@ %c);
+    echo(%r);
 	GameBase::setAutoRepairRate(Client::getOwnedObject(%clientId), %r);
 }
 
@@ -125,6 +126,8 @@ function calcRechargeRate(%clientId)
 {
     %a = (CalculatePlayerSkill(%clientId, $SkillEnergy) / 6500) + (CalculatePlayerSkill(%clientId, $SkillEndurance) / 6500);
 
+    %a = %a + AddBonusStatePoints(%clientId, "StamRegen");
+    
     if(%clientId.isAtRest && %clientId.sleepMode == "")
         %a = %a + 0.3;
     
@@ -146,6 +149,8 @@ function calcRechargeRate(%clientId)
 
 function setStamina(%clientId,%val)
 {
+    dbecho($dbechoMode, "setStamina(" @ %clientId @ ", " @ %val @ ")");
+
     %armor = Player::getArmor(%clientId);
     %max = fetchData(%clientId, "MaxStam");
 	if(%val == "")
@@ -164,11 +169,18 @@ function setStamina(%clientId,%val)
 
 function refreshStamina(%clientId,%value)
 {
+    dbecho($dbechoMode, "refreshStamina(" @ %clientId @ ", " @ %value @ ")");
     setStamina(%clientId, (fetchData(%clientId, "Stamina") - %value));
 }
 
 function WeaponStamina(%clientId,%weapon)
 {
+    dbecho($dbechoMode, "WeaponStamina(" @ %clientId @ ", " @ %weapon @ ")");
+    if(Player::isAiControlled(%clientId))
+    {
+        return;
+    }
+    
     %skillType = $SkillType[%weapon];
     %skill = CalculatePlayerSkill(%clientId, %skillType);
     
@@ -185,7 +197,7 @@ function WeaponStamina(%clientId,%weapon)
         %minSkill = Cap(getWord($SkillRestriction[%weapon],%wx+1),1,"inf");
         
     %stamCost = Cap(GetAccessoryVar(%weapon, $Weight) + (%minSkill-%skill)/(1.5*%minSkill),0.5,"inf");
-    echo(%stamCost);
+    //echo(%stamCost);
     refreshStamina(%clientId,%stamCost);
 }
 
@@ -223,6 +235,7 @@ function refreshMANA(%clientId, %value)
 
 function ManaRegenTick(%clientId)
 {
+    dbecho($dbechoMode, "ManaRegenTick(" @ %clientId @ ")");
     if(%clientId.manaRegenTick == "")
         %clientId.manaRegenTick = 1;
     else

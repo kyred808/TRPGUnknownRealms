@@ -15,6 +15,44 @@ $MissileDamageType     = 12;
 $MineDamageType        = 13;
 $NullDamageType        = 14;
 $SpellDamageType        = 15;
+$DragonDamageType      = 16;
+
+function Projectile::TrackProjectile(%this,%rate,%owner)
+{
+    $Projectile::tracking[%this,PrevPos] = $Projectile::tracking[%this,Pos];
+    $Projectile::tracking[%this,PrevTime] = $Projectile::tracking[%this,Time];
+    if(%owner != "")
+        $Projectile::tracking[%this,Owner] = %owner;
+    $Projectile::tracking[%this,Pos] = Gamebase::getPosition(%this);
+    $Projectile::tracking[%this,Time] = getSimTime();
+    schedule("Projectile::TrackProjectile("@%this@","@%rate@");",%rate,%this);
+}
+
+function Projectile::TrackCleanup(%this)
+{
+    $Projectile::tracking[%this,PrevPos] = "";
+    $Projectile::tracking[%this,PrevTime] = "";
+    $Projectile::tracking[%this,Pos] = "";
+    $Projectile::tracking[%this,Time] = "";
+    $Projectile::tracking[%this,Owner] = "";
+}
+
+function Projectile::PropagateTrack(%this,%timeLess)
+{
+    %dir = Vector::sub($Projectile::tracking[%this,Pos],$Projectile::tracking[%this,PrevPos]);
+    %dt = $Projectile::tracking[%this,Time] - $Projectile::tracking[%this,PrevTime];
+    //Divide directon vector by time, to get velocity
+    %vel = ScaleVector(%dir,1/%dt);
+    
+    // Get time difference between last recorded time and now.
+    %newDt = getSimTime() - $Projectile::tracking[%this,Time]; 
+    
+    // Multiply that by the calculated velocity to estimate how far the projectile has travelled
+    %propDelta = ScaleVector(%vel,%newDt- %timeLess); // Take off timeless incase we want to back the propagation up a little.
+    
+    // Add that to the last recorded position to propagate to our estimated position
+    return Vector::add($Projectile::tracking[%this,Pos],%propDelta);
+}
 
 //--------------------------------------
 BulletData FusionBolt
@@ -642,7 +680,7 @@ MineData Bombf
 	explosionRadius = 25.0;
 	damageValue = 0.5;
 	damageType = $ShrapnelDamageType;
-	kickBackStrength = 100;
+	kickBackStrength = 0; //200
 	triggerRadius = 0.5;
 	maxDamage = 1.5;
 };
@@ -707,6 +745,66 @@ RocketData SunFlare
 	trailLength = 70;
 	trailWidth  = 5.8;
 };
+
+
+
+
+RocketData DragonFireball
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = plasmaExpBoom; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 70; 
+	damageType = $DragonDamageType; //Energy gets translated to spell damage type in onDamage
+	explosionRadius = 8.0;
+	kickBackStrength = 0.1;
+	muzzleVelocity   = 100.0;
+	terminalVelocity = 120.0;
+	acceleration = 15.0;
+	totalTime = 3.1;
+	liveTime = 3.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 0; // needs a trail =X
+	trailString = "plasmaex.dts";
+	smokeDist = 2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+};
+
+RocketData DragonBlast
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = BigRedExp; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 300; 
+	damageType = $DragonDamageType;
+	explosionRadius = 13.0;
+	kickBackStrength = -2.0;
+	muzzleVelocity   = 80.0;
+	terminalVelocity = 120.0;
+	acceleration = 2.0;
+	totalTime = 10.0;
+	liveTime = 9.6;
+	lightRange = 20.0;
+	colors = { 10.0, 0.75, 0.75 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 0.3;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+	trailLength = 70;
+	trailWidth  = 5.8;
+};
+
+
 
 //--------------------------------------
 BulletData MiniFusionBolt

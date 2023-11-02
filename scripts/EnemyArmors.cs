@@ -240,6 +240,8 @@ $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 
 $BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 Quartz 4/-300";
 
 $BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 Treeatk 1";
+
+$BotEquipment[Dragon] = "CLASS Fighter LVL 50 COINS 3000";
 //------------------------------
 
 $TeamForRace[Traveller] = 1;
@@ -256,6 +258,7 @@ $TeamForRace[Zombie] = 4;
 $TeamForRace[Demon] = 4;
 $TeamForRace[Bat] = 2;
 $TeamForRace[Enchanted] = 5;
+$TeamForRace[Dragon] = 7;
 
 //------------------------------
 
@@ -302,6 +305,12 @@ $RaceSound[Uber, Acquired, 1] = SoundUberAcquired1;
 $RaceSound[Uber, Acquired, 2] = SoundUberAcquired2;
 $RaceSound[Uber, RandomWait, 1] = SoundUberRandom1;
 $RaceSound[Uber, Hit, 1] = SoundUberHit1;
+
+$RaceSound[Dragon, Death, 1] = SoundUberDeath1;
+$RaceSound[Dragon, Acquired, 1] = SoundUberAcquired1;
+$RaceSound[Dragon, Acquired, 2] = SoundUberAcquired2;
+$RaceSound[Dragon, RandomWait, 1] = SoundUberRandom1;
+$RaceSound[Dragon, Hit, 1] = SoundUberHit1;
 
 $RaceSound[Goblin, Death, 1] = SoundGoblinDeath1;
 $RaceSound[Goblin, Death, 2] = SoundGoblinDeath2;
@@ -2934,3 +2943,339 @@ function TreeatkImage::onFire(%player, %slot)
 
 	MeleeAttack(%player, $WeaponRange[Treeatk], Treeatk);
 }
+
+$mass[dragon] = 50.0;
+$speed[dragon] = 12;
+$jump[dragon] = 500;
+
+PlayerData DragonArmor
+{
+   className = "Armor";
+   shapeFile = "dragonarmorgreen";
+   damageSkinData = "armorDamageSkins";
+	debrisId = playerDebris;
+   flameShapeName = "";
+   shieldShapeName = "shield";
+   shadowDetailMask = 1;
+
+   visibleToSensor = False;
+	mapFilter = 0;
+	mapIcon = "M_player";
+   canCrouch = false;
+
+   maxJetSideForceFactor = 20;
+   maxJetForwardVelocity = 20.0; //50
+   minJetEnergy = 00;
+   jetForce = 2000;
+   jetEnergyDrain = 0.0;
+
+	maxDamage = 1.0;
+   maxForwardSpeed = $speed[dragon];
+   maxBackwardSpeed = $speed[dragon] * 0.8;
+   maxSideSpeed = $speed[dragon] * 0.5;
+
+   groundForce = 50.00 * $mass[dragon];
+   mass = $mass[dragon];
+   groundTraction = 3.0;
+	maxEnergy = 60;
+   drag = 3.0;
+   density = 1.2;
+
+	minDamageSpeed = 20;
+	damageScale = $damageScale;
+
+   jumpImpulse = $jump[dragon];
+   jumpSurfaceMinDot = $jumpSurfaceMinDot;
+
+   // animation data:
+   // animation name, one shot, direction
+	// firstPerson, chaseCam, thirdPerson, signalThread
+   // movement animations:
+   animData[0]  = { "root", none, 1, true, true, true, false, 0 };
+   animData[1]  = { "run", none, 1, true, false, true, false, 3 };//run
+   animData[2]  = { "run", none, -1, true, false, true, false, 3 };//runback
+   animData[3]  = { "sidestep", none, -1, true, false, true, false, 3 };//side left
+   animData[4]  = { "sidestep", none, 1, true, false, true, false, 3 };//side left -1
+   animData[5] = { "root", none, 1, true, false, true, false, 3 };//jump stand, works
+   animData[6] = { "root", none, 1, true, false, true, false, 3 };//jump run, works
+   animData[7] = { "root", none, 1, true, true, true, false, 3 };//crouch root
+   animData[8] = { "root", none, 1, true, true, true, false, 3 };//crouch root
+   animData[9] = { "root", none, -1, true, true, true, false, 3 };//crouch root -1
+   animData[10] = { "root", none, 1, true, false, true, false, 3 };//crouch forward
+   animData[11] = { "root", none, -1, true, false, true, false, 3 };//crouch forward -1
+   animData[12] = { "root", none, 1, true, false, true, false, 3 };//crouch side left
+   animData[13] = { "root", none, -1, true, false, true, false, 3 };//crouch side left -1
+   animData[14]  = { "jetting", none, 1, true, true, true, false, 3 };//fall, works
+   animData[15]  = { "root", SoundLandOnGround, 1, true, false, false, false, 3 };//landing, works
+   animData[16]  = { "root", SoundLandOnGround, 1, true, false, false, false, 3 };//landing, works
+   animData[17]  = { "jetting", none, 1, true, false, false, false, 3 };//tumble loop
+   animData[18]  = { "jetting", none, 1, true, false, false, false, 3 };//tumble end
+   animData[19] = { "jetting", none, 1, true, true, true, false, 3 };//root, flying works
+
+   // misc. animations:
+   animData[20] = { "diebackwards", none, 1, true, false, false, false, 0 };//die back
+   animData[21] = { "root", none, 1, true, false, false, false, 3 };//throw
+   animData[22] = { "root", none, 1, false, false, false, false, 3 };//flyer root
+   animData[23] = { "root", none, 1, true, true, true, false, 3 };//apc root
+   animData[24] = { "root", none, 1, false, false, false, false, 3 };//apc pilot
+   
+   // death animations:
+   animData[25] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[26] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[27] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[28] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[29] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[30] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[31] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[32] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[33] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[34] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[35] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[36] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[37] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+
+   // signal moves:
+	animData[38] = { "root",  none, 1, true, false, false, false, 2 };//sign over here
+   animData[39] = { "root", none, 1, true, false, false, false, 1 };//sign point
+   animData[40] = { "root",none, 1, true, false, false, false, 2 };//sign retreat
+   animData[41] = { "root", none, 1, true, false, false, true, 1 };//sign stop
+   animData[42] = { "root", none, 1, true, false, false, true, 1 }; //sign salut
+
+
+    // celebration animations:
+   animData[43] = { "root",none, 1, true, false, false, false, 2 };//celebration 1
+   animData[44] = { "root", none, 1, true, false, false, false, 2 };//celebration 2
+   animData[45] = { "root", none, 1, true, false, false, false, 2 };//celebration 3
+ 
+    // taunt animations:
+	animData[46] = { "root", none, 1, true, false, false, false, 2 };//taunt 1
+	animData[47] = { "root", none, 1, true, false, false, false, 2 };//taunt 2
+ 
+    // poses:
+	animData[48] = { "generaldie", none, 1, true, false, false, true, 1 };//pose kneel
+	animData[49] = { "root", none, 1, true, false, false, true, 1 };//pose stand
+
+	// Bonus wave
+   animData[50] = { "root", none, 1, true, false, false, true, 1 };//wave
+
+   jetSound = NoSound;
+   rFootSounds = 
+   {
+     SoundLFootRSoft,
+     SoundLFootRHard,
+     SoundLFootRSoft,
+     SoundLFootRHard,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRHard,
+     SoundLFootRSnow,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft
+  }; 
+   lFootSounds =
+   {
+      SoundLFootLSoft,
+      SoundLFootLHard,
+      SoundLFootLSoft,
+      SoundLFootLHard,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLHard,
+      SoundLFootLSnow,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft
+   };
+
+   footPrints = { 0, 1 };
+
+   boxWidth = 5;
+   boxDepth = 5;
+   boxNormalHeight = 6;
+   boxCrouchHeight = 5;
+
+   boxNormalHeadPercentage  = 0.5;
+   boxNormalTorsoPercentage = 0.8;
+   boxCrouchHeadPercentage  = 0.26;
+   boxCrouchTorsoPercentage = 0.3333;
+
+   boxHeadLeftPercentage  = 0;
+   boxHeadRightPercentage = 1;
+   boxHeadBackPercentage  = 0;
+   boxHeadFrontPercentage = 1;
+};
+
+PlayerData FlyingDragonArmor
+{
+   className = "Armor";
+   shapeFile = "dragonarmorgreen";
+   damageSkinData = "armorDamageSkins";
+	debrisId = playerDebris;
+   flameShapeName = "";
+   shieldShapeName = "shield";
+   shadowDetailMask = 1;
+
+   visibleToSensor = False;
+	mapFilter = 0;
+	mapIcon = "M_player";
+   canCrouch = false;
+
+   maxJetSideForceFactor = 20;
+   maxJetForwardVelocity = 20.0; //50
+   minJetEnergy = 00;
+   jetForce = 2000;
+   jetEnergyDrain = 0.0;
+
+	maxDamage = 1.0;
+   maxForwardSpeed = $speed[dragon];
+   maxBackwardSpeed = $speed[dragon] * 0.8;
+   maxSideSpeed = $speed[dragon] * 0.5;
+
+   groundForce = 50.00 * $mass[dragon];
+   mass = $mass[dragon];
+   groundTraction = 3.0;
+	maxEnergy = 60;
+   drag = 3.0;
+   density = 1.2;
+
+	minDamageSpeed = 20;
+	damageScale = $damageScale;
+
+   jumpImpulse = $jump[dragon];
+   jumpSurfaceMinDot = $jumpSurfaceMinDot;
+
+   // animation data:
+   // animation name, one shot, direction
+	// firstPerson, chaseCam, thirdPerson, signalThread
+   // movement animations:
+   animData[0]  = { "jetting", none, 1, true, true, true, false, 0 };
+   animData[1]  = { "jetting", none, 1, true, false, true, false, 3 };//run
+   animData[2]  = { "jetting", none, -1, true, false, true, false, 3 };//runback
+   animData[3]  = { "jetting", none, -1, true, false, true, false, 3 };//side left
+   animData[4]  = { "jetting", none, 1, true, false, true, false, 3 };//side left -1
+   animData[5] = { "root", none, 1, true, false, true, false, 3 };//jump stand, works
+   animData[6] = { "root", none, 1, true, false, true, false, 3 };//jump run, works
+   animData[7] = { "root", none, 1, true, true, true, false, 3 };//crouch root
+   animData[8] = { "root", none, 1, true, true, true, false, 3 };//crouch root
+   animData[9] = { "root", none, -1, true, true, true, false, 3 };//crouch root -1
+   animData[10] = { "root", none, 1, true, false, true, false, 3 };//crouch forward
+   animData[11] = { "root", none, -1, true, false, true, false, 3 };//crouch forward -1
+   animData[12] = { "root", none, 1, true, false, true, false, 3 };//crouch side left
+   animData[13] = { "root", none, -1, true, false, true, false, 3 };//crouch side left -1
+   animData[14]  = { "jetting", none, 1, true, true, true, false, 3 };//fall, works
+   animData[15]  = { "root", SoundLandOnGround, 1, true, false, false, false, 3 };//landing, works
+   animData[16]  = { "root", SoundLandOnGround, 1, true, false, false, false, 3 };//landing, works
+   animData[17]  = { "jetting", none, 1, true, false, false, false, 3 };//tumble loop
+   animData[18]  = { "jetting", none, 1, true, false, false, false, 3 };//tumble end
+   animData[19] = { "jetting", none, 1, true, true, true, false, 3 };//root, flying works
+
+   // misc. animations:
+   animData[20] = { "diebackwards", none, 1, true, false, false, false, 0 };//die back
+   animData[21] = { "root", none, 1, true, false, false, false, 3 };//throw
+   animData[22] = { "root", none, 1, false, false, false, false, 3 };//flyer root
+   animData[23] = { "root", none, 1, true, true, true, false, 3 };//apc root
+   animData[24] = { "root", none, 1, false, false, false, false, 3 };//apc pilot
+   
+   // death animations:
+   animData[25] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[26] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[27] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[28] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[29] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[30] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[31] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[32] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[33] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[34] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[35] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[36] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+   animData[37] = { "generaldie", SoundPlayerDeath, 1, false, false, false, false, 4 };//die back
+
+   // signal moves:
+	animData[38] = { "root",  none, 1, true, false, false, false, 2 };//sign over here
+   animData[39] = { "root", none, 1, true, false, false, false, 1 };//sign point
+   animData[40] = { "root",none, 1, true, false, false, false, 2 };//sign retreat
+   animData[41] = { "root", none, 1, true, false, false, true, 1 };//sign stop
+   animData[42] = { "root", none, 1, true, false, false, true, 1 }; //sign salut
+
+
+    // celebration animations:
+   animData[43] = { "root",none, 1, true, false, false, false, 2 };//celebration 1
+   animData[44] = { "root", none, 1, true, false, false, false, 2 };//celebration 2
+   animData[45] = { "root", none, 1, true, false, false, false, 2 };//celebration 3
+ 
+    // taunt animations:
+	animData[46] = { "root", none, 1, true, false, false, false, 2 };//taunt 1
+	animData[47] = { "root", none, 1, true, false, false, false, 2 };//taunt 2
+ 
+    // poses:
+	animData[48] = { "generaldie", none, 1, true, false, false, true, 1 };//pose kneel
+	animData[49] = { "root", none, 1, true, false, false, true, 1 };//pose stand
+
+	// Bonus wave
+   animData[50] = { "root", none, 1, true, false, false, true, 1 };//wave
+
+   jetSound = NoSound;
+   rFootSounds = 
+   {
+     SoundLFootRSoft,
+     SoundLFootRHard,
+     SoundLFootRSoft,
+     SoundLFootRHard,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRHard,
+     SoundLFootRSnow,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft,
+     SoundLFootRSoft
+  }; 
+   lFootSounds =
+   {
+      SoundLFootLSoft,
+      SoundLFootLHard,
+      SoundLFootLSoft,
+      SoundLFootLHard,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLHard,
+      SoundLFootLSnow,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft,
+      SoundLFootLSoft
+   };
+
+   footPrints = { 0, 1 };
+
+   boxWidth = 5;
+   boxDepth = 5;
+   boxNormalHeight = 6;
+   boxCrouchHeight = 5;
+
+   boxNormalHeadPercentage  = 0.5;
+   boxNormalTorsoPercentage = 0.8;
+   boxCrouchHeadPercentage  = 0.26;
+   boxCrouchTorsoPercentage = 0.3333;
+
+   boxHeadLeftPercentage  = 0;
+   boxHeadRightPercentage = 1;
+   boxHeadBackPercentage  = 0;
+   boxHeadFrontPercentage = 1;
+};

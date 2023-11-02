@@ -28,6 +28,10 @@ $AI::defaultPathType = 2; //run twoWay paths
 
 $AIattackMode = 1;
 
+exec(DragonAi);
+exec(AiTest);
+exec(UberBoss);
+
 //---------------------------------
 //createAI()
 //---------------------------------
@@ -123,6 +127,36 @@ function createAI(%aiName, %markerGroup, %name)
       }
 }
 
+function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
+{
+    if(AI::spawn( %aiName, %armor, %pos, %rot, %name, "male2" ))
+    {
+        %AiId = AI::getId(%aiName);
+		ClearVariables(%AiId);
+        storeData(%AiId, "BotInfoAiName", %aiName);
+        
+        storeData(%AiId, "RACE", $ArmorTypeToRace[%armor]);
+        
+        storeData(%AiId, "LCKconsequence", "miss");
+		storeData(%AiId, "RemortStep", 0);
+		storeData(%AiId, "HasLoadedAndSpawned", True);
+		storeData(%AiId, "botAttackMode", 1);
+		storeData(%AiId, "tmpbotdata", "");
+        
+        storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
+        storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
+		storeData(%AiId, "MANA", 1000);
+        
+        refreshHPREGEN(%AiId);
+		refreshStaminaREGEN(%AiId);
+
+		storeData(%AiId, "LCK", 0);
+        
+        //AI::setAutomaticTargets(%aiName);
+        
+    }
+}
+
 //----------------------------------
 // AI::setupAI()
 //
@@ -177,22 +211,28 @@ function AI::setupAI(%key, %team)
 //------------------------------
 // AI::setWeapons()
 //------------------------------
-function AI::setWeapons(%aiName, %loadout)
+function AI::setWeapons(%aiName, %loadout, %callback)
 {
 	dbecho($dbechoMode, "AI::setWeapons(" @ %aiName @ ")");
 
 	%aiId = AI::getId(%aiName);
-
+    echo("Loadout: "@ %loadout);
 	if(%loadout == -1 || %loadout == "" || String::ICompare(%loadout, "default") == 0)
 	{
 		%items = $BotInfo[%aiName, ITEMS];
+        echo("Items: "@ %items);
 		if(%items == "")
 			GiveThisStuff(%aiId, $BotEquipment[clipTrailingNumbers(%aiName)], False);
 		else
 			GiveThisStuff(%aiId, %items, False);
 	}
 	else
-		GiveThisStuff(%aiId, $LoadOut[%loadout], False);
+    {
+        if($LoadOut[%loadout] != "")
+            GiveThisStuff(%aiId, $LoadOut[%loadout], False);
+        else
+            GiveThisStuff(%aiId, %loadout, False);
+    }
 
 	HardcodeAIskills(%aiId);
 
@@ -203,7 +243,10 @@ function AI::setWeapons(%aiName, %loadout)
 	AI::setVar(%aiName, attackMode, $AIattackMode);
 	AI::setAutomaticTargets( %aiName );
 
-	ai::callbackPeriodic(%aiName, 5, AI::Periodic);
+    if(%callback == "")
+        ai::callbackPeriodic(%aiName, 5, AI::Periodic);
+    else
+        ai::callbackPeriodic(%aiName, 5, %callback);
 
 	AI::SelectBestWeapon(%aiId);	//this way the bot spawns and has a weapon in hand
 }
@@ -528,6 +571,7 @@ function AI::SelectBestWeapon(%aiId)
 	dbecho($dbechoMode, "AI::SelectBestWeapon(" @ %aiId @ ")");
 
 	%weapon = GetBestWeapon(%aiId);
+    echo(%weapon);
 	if(%weapon != -1)
 	{
 		%x = "";
@@ -540,6 +584,7 @@ function AI::SelectBestWeapon(%aiId)
 
 		if(%x != -1)
 		{
+            echo(%weapon);
 			Player::useItem(%aiId, %weapon);
 			AI::SetSpotDist(%aiId);
 		}
@@ -758,6 +803,109 @@ function AI::initDrones(%team, %numAi)
 	}
 }
 
+// Need to rewrite without raycast for performance
+function AI::TargetWithinFOV(%aiId,%target,%fov)
+{
+    
+    $los::object = "";
+    %cast = RaycastCheck(Client::getOwnedObject(%aiId),"",%target,30,"0 0 1.5"); //Offset by 1.5 so we aren't checking feet
+    %vecRot = $RayCast::Rotation;
+    //echo("Cast Check: "@ %cast);
+    if(%vecRot < %fov && %vecRot >= -1*%fov)
+    {
+        return true;
+    }
+    return false;
+}
+
+function AI::setupMobDefaults(%AiId,%aiName,%race,%lck)
+{
+    ClearVariables(%AiId);
+    
+    storeData(%AiId, "BotInfoAiName", %aiName);
+
+    storeData(%AiId, "RACE", %race);
+
+    storeData(%AiId, "LCKconsequence", "miss");
+    storeData(%AiId, "RemortStep", 0);
+    storeData(%AiId, "HasLoadedAndSpawned", True);
+    storeData(%AiId, "botAttackMode", 1);
+    storeData(%AiId, "tmpbotdata", "");
+
+    storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
+    storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
+    storeData(%AiId, "MANA", 1000);
+    
+    refreshHPREGEN(%AiId);
+    refreshStaminaREGEN(%AiId);
+    
+    if(%lck == "")
+        %lck = -1;
+    storeData(%AiId, "LCK", %lck);
+}
+
+function spawnMobTest(%clientId)
+{
+    %player = Client::getOwnedObject(%clientId);
+    $los::position = "";
+    %los = Gamebase::getLOSInfo(%player,50);
+    
+    if(%los)
+    {
+        %rot = Vector::sub(Gamebase::getRotation(%clientId),"0 0 "@ -1*$pi);
+        %aiName = AI::SpawnMob("Dragon","TestDragonPlzIgnore",dragonarmor,$los::position,%rot,"Dragon",7,$BotEquipment[Dragon],Dragon::Periodic);
+        storeData(AI::getID(%aiName),"dragonBoss",true);
+        Player::setJet(Client::getOwnedObject(AI::getID(%aiName)),false);
+        echo("Dragon Spawned: "@ %aiName);
+    }
+}
+
+// Modified AI::helper -> spawnAI -> createAI sequence -Kyred
+function AI::SpawnMob(%aiType,%displayName,%armor,%spawnPos,%spawnRot,%race,%team,%loadout,%callback)
+{
+    %n = getAInumber();
+
+	%newName = %aiType @ %n;
+	if(%aiType == %displayName)
+		%displayName = $NameForRace[%aiType] @ %newName;
+	$numAI++;
+	
+    if( AI::spawn( %newName, %armor, %spawnPos, %spawnRot, %displayName, "male2" ) != "false" )
+	{
+        %AiId = AI::getId(%newName);
+        if(%race == "") //If blank, go by armor type
+            %race = $ArmorTypeToRace[%armor];
+		AI::setupMobDefaults(%AiId,%newName,%race);
+        
+        GameBase::startFadeIn(%AiId);
+        %sound = $MobRaceSpawnSound[%race];
+        if(%sound == "")
+            %sound = SoundSpawn2;
+		PlaySound(%sound, %spawnPos);
+
+        AI::setVar( %newName,  iq,  100 );
+		AI::setVar( %newName,  attackMode, $AIattackMode);
+		AI::setVar( %newName,  pathType, $AI::defaultPathType);
+
+        storeData(%aiId, "SpawnBotInfo","active"); //So the AI doesn't just sit there, assuming default %callback
+        
+		AI::setAutomaticTargets( %newName );
+        
+        if(%team == "")
+            %team = $TeamForRace[fetchData(%AiId, "RACE")];     
+        GameBase::setTeam(%AiId, %team);
+        
+        AI::SetVar(%newName, spotDist, $AIspotDist);
+        
+        AI::setWeapons(%newName, %loadout, %callback);
+        
+        setAInumber(%newName, %n);
+        
+        return %newName;
+    }
+    else
+        return -1;
+}
 
 //------------------------------------------------------------------
 //functions to test and move AI players.
@@ -1021,7 +1169,7 @@ function AI::onDroneKilled(%aiName)
 	if(!$SinglePlayer )
 	{
 	      %aiId = AI::getId(%aiName);
-
+        Player::setJet(Client::getOwnedObject(%aiId),false);
       	%team = fetchData(%aiId, "botTeam");
 		storeData(%aiId, "botTeam", "");
 		$aiNumTable[$tmpbotn[%aiName]] = "";
@@ -1080,8 +1228,12 @@ function AI::onTargetLOSAcquired(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSAcquired(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+    echo("Target Found");
+    if(fetchData(%aiId,"dragonBoss") && fetchData(%aiId,"flightSequence") == 2)
+    {
+        storeData(%aiId,"targetFound",%idNum);
+    }
+    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 
@@ -1090,7 +1242,12 @@ function AI::onTargetLOSLost(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSLost(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-
+    echo("Target Lost");
+    if(fetchData(%aiId,"dragonBoss"))
+    {
+        storeData(%aiId,"targetFound","");
+    }
+    
 	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }
@@ -1100,7 +1257,7 @@ function AI::onTargetLOSRegained(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSRegained(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-
+    echo("Target Reacquired");
 	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
@@ -1255,6 +1412,7 @@ function HardcodeAIskills(%aiId)
 	$PlayerSkill[%aiId, $SkillSlashing] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillPiercing] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillBludgeoning] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
+    $PlayerSkill[%aiId, $SkillBashing] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	//$PlayerSkill[%aiId, $SkillDodging] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillArchery] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillOffensiveCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);

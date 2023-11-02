@@ -238,10 +238,6 @@ function Item::onCollision(%this,%object)
 				deleteObject(%this);
 			}
 		}
-        else if(%item == "LaserRifle")
-        {
-        
-        }
 		else if(%item.className == "TownBot")
 		{
 			//do nothing.
@@ -272,7 +268,7 @@ function Item::onUse(%player,%item)
 	dbecho($dbechoMode, "Item::onUse(" @ %player @ ", " @ %item @ ")");
 
 	%clientId = Player::getClient(%player);
-
+    echo("Item::onUse(" @ %player @ ", " @ %item @ ")");
 	if(!IsDead(%clientId))
 	{
 		//this is how you toggle back and forth from equipped to carrying.
@@ -321,7 +317,7 @@ function Item::onUse(%player,%item)
 
 		refreshHP(%clientId, 0);
 		refreshMANA(%clientId, 0);
-        refershStamina(%clientId, 0);
+        refreshStamina(%clientId, 0);
 		RefreshAll(%clientId,false);
 	}
 }

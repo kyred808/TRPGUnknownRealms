@@ -1712,6 +1712,22 @@ SoundData SoundUberRandom1
 	wavFileName = "UberRandom1.wav";
 	profile = Profile3dNear;
 };
+
+//UberBoss Vairants
+
+SoundData SoundUberBossLaugh1
+{
+    wavFileName = "OgreTaunt1.wav";
+	profile = Profile3dFar;
+};
+
+//Die!
+SoundData SoundUberBossAcquired1
+{
+	wavFileName = "OgreAcquired1.wav";
+	profile = Profile3dFar;
+};
+
 //MINOTAUR SOUNDS
 SoundData SoundMinotaurDeath1
 {

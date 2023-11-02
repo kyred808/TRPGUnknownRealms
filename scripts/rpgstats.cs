@@ -7,6 +7,15 @@ function fetchData(%clientId, %type)
 		%a = GetLevel(fetchData(%clientId, "EXP"), %clientId);
 		return %a;
 	}
+    else if(%type == "AMR")
+    {
+        %a = AddPoints(%clientId, 1);
+        %b = AddBonusStatePoints(%clientId, "AMR");
+        %belt = BeltEquip::AddBonusStats(%clientId,"AMR");
+        %v = Cap(%a + %b + %belt,0,"inf");
+        
+        return floor(%v);
+    }
 	else if(%type == "DEF")
 	{
 		%a = AddPoints(%clientId, 7);
@@ -16,9 +25,12 @@ function fetchData(%clientId, %type)
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
-        %stam = fetchData(%clientId,"Stamina");
-        if(%stam <= 25)
-            %e = %e * %stam/25;
+        if(!Player::isAiControlled(%clientId))
+        {
+            %stam = fetchData(%clientId,"Stamina");
+            if(%stam <= 25)
+                %e = %e * %stam/25;
+        }
         
 		return floor(%e);
 	}
@@ -30,9 +42,12 @@ function fetchData(%clientId, %type)
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
-        %stam = fetchData(%clientId,"Stamina");
-        if(%stam <= 25)
-            %e = %e * %stam/25;
+        if(!Player::isAiControlled(%clientId))
+        {
+            %stam = fetchData(%clientId,"Stamina");
+            if(%stam <= 25)
+                %e = %e * %stam/25;
+        }
         
 		return floor(%e);
 	}
@@ -55,10 +70,12 @@ function fetchData(%clientId, %type)
             %c = BeltEquip::AddBonusStats(%clientId,"ATK");
             
             %val = %a + %b + %c;
-            
-            %stam = fetchData(%clientId,"Stamina");
-            if(%stam <= 25)
-                %val = %val * %stam/25;
+            if(!Player::isAiControlled(%clientId))
+            {
+                %stam = fetchData(%clientId,"Stamina");
+                if(%stam <= 25)
+                    %val = %val * %stam/25;
+            }
             
 			return %val;
 		}
