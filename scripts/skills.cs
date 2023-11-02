@@ -2,7 +2,7 @@
 // Skills
 //######################################################################################
 
-$NumberOfSkills = 22;
+$NumberOfSkills = 24;
 $SkillSlashing = 1;
 $SkillPiercing = 2;
 $SkillBludgeoning = 3;
@@ -26,7 +26,9 @@ $SkillHaggling = 18;
 $SkillNeutralCasting = 19;
 $SkillSmithing = 20;
 $SkillAlchemy = 21;
-$SKillWoodCutting = 22;
+$SkillWoodCutting = 22;
+$SkillFarming = 23;
+$SkillCooking = 24;
 $MinLevel = "L";
 $MinGroup = "G";
 $MinClass = "C";
@@ -61,6 +63,8 @@ $SkillDesc[19] = "Neutral Casting";
 $SkillDesc[20] = "Smithing";
 $SkillDesc[21] = "Alchemy";
 $SkillDesc[22] = "Wood Cutting";
+$SkillDesc[23] = "Farming";
+$SkillDesc[24] = "Cooking";
 $SkillDesc[L] = "Level";
 $SkillDesc[G] = "Group";
 $SkillDesc[C] = "Class";
@@ -121,6 +125,8 @@ $SkillMultiplier[Cleric, $SkillHaggling] = 1.0;
 $SkillMultiplier[Cleric, $SkillSmithing] = 1.2;
 $SkillMultiplier[Cleric, $SkillAlchemy] = 0.8;
 $SKillMultiplier[Cleric, $SkillWoodCutting] = 1.0;
+$SKillMultiplier[Cleric, $SkillFarming] = 1.0;
+$SKillMultiplier[Cleric, $SkillCooking] = 1.0;
 $EXPmultiplier[Cleric] = 0.85;
 
 //--------------
@@ -156,6 +162,8 @@ $SkillMultiplier[Druid, $SkillHaggling] = 1.3;
 $SkillMultiplier[Druid, $SkillSmithing] = 1.0;
 $SkillMultiplier[Druid, $SkillAlchemy] = 2.0;
 $SKillMultiplier[Druid, $SkillWoodCutting] = 2.0;
+$SKillMultiplier[Druid, $SkillFarming] = 2.0;
+$SKillMultiplier[Druid, $SkillCooking] = 1.0;
 $EXPmultiplier[Druid] = 0.8;
 
 //--------------
@@ -191,6 +199,8 @@ $SkillMultiplier[Thief, $SkillHaggling] = 1.5;
 $SkillMultiplier[Thief, $SkillSmithing] = 1.2;
 $SkillMultiplier[Thief, $SkillAlchemy] = 1.5;
 $SKillMultiplier[Thief, $SkillWoodCutting] = 1.0;
+$SKillMultiplier[Thief, $SkillFarming] = 1.0;
+$SKillMultiplier[Thief, $SkillCooking] = 1.0;
 $EXPmultiplier[Thief] = 0.8;
 
 //--------------
@@ -225,6 +235,8 @@ $SkillMultiplier[Bard, $SkillHaggling] = 2.0;
 $SkillMultiplier[Bard, $SkillSmithing] = 1.0;
 $SkillMultiplier[Bard, $SkillAlchemy] = 1.0;
 $SKillMultiplier[Bard, $SkillWoodCutting] = 2.0;
+$SKillMultiplier[Bard, $SkillFarming] = 1.5;
+$SKillMultiplier[Bard, $SkillCooking] = 2.0;
 $EXPmultiplier[Bard] = 0.8;
 
 //--------------
@@ -261,6 +273,8 @@ $SkillMultiplier[Fighter, $SkillHaggling] = 1.0;
 $SkillMultiplier[Fighter, $SkillSmithing] = 2.0;
 $SkillMultiplier[Fighter, $SkillAlchemy] = 1.0;
 $SKillMultiplier[Fighter, $SkillWoodCutting] = 1.0;
+$SKillMultiplier[Fighter, $SkillFarming] = 1.0;
+$SKillMultiplier[Fighter, $SkillCooking] = 1.2;
 $EXPmultiplier[Fighter] = 1.0;
 
 //--------------
@@ -295,6 +309,8 @@ $SkillMultiplier[Paladin, $SkillHaggling] = 1.3;
 $SkillMultiplier[Paladin, $SkillSmithing] = 1.5;
 $SkillMultiplier[Paladin, $SkillAlchemy] = 1.0;
 $SKillMultiplier[Paladin, $SkillWoodCutting] = 1.0;
+$SKillMultiplier[Paladin, $SkillFarming] = 1.0;
+$SKillMultiplier[Paladin, $SkillCooking] = 0.5;
 $EXPmultiplier[Paladin] = 1.0;
 
 //--------------
@@ -330,6 +346,8 @@ $SkillMultiplier[Ranger, $SkillHaggling] = 0.7;
 $SkillMultiplier[Ranger, $SkillSmithing] = 1.3;
 $SkillMultiplier[Ranger, $SkillAlchemy] = 2.0;
 $SKillMultiplier[Ranger, $SkillWoodCutting] = 2.0;
+$SKillMultiplier[Ranger, $SkillFarming] = 1.5;
+$SKillMultiplier[Ranger, $SkillCooking] = 1.5;
 $EXPmultiplier[Ranger] = 0.95;
 
 //--------------
@@ -365,6 +383,8 @@ $SkillMultiplier[Mage, $SkillHaggling] = 1.0;
 $SkillMultiplier[Mage, $SkillSmithing] = 1.0;
 $SkillMultiplier[Mage, $SkillAlchemy] = 1.5;
 $SKillMultiplier[Mage, $SkillWoodCutting] = 1.0;
+$SKillMultiplier[Mage, $SkillFarming] = 1.5;
+$SKillMultiplier[Mage, $SkillFarming] = 1.0;
 $EXPmultiplier[Mage] = 1.0;
 
 //######################################################################################
@@ -545,6 +565,9 @@ $SkillRestriction[advshield3] = $SkillDefensiveCasting @ " 290";
 $SkillRestriction[advshield4] = $SkillDefensiveCasting @ " 420";
 $SkillRestriction[advshield5] = $SkillDefensiveCasting @ " 635";
 $SkillRestriction[massshield] = $SkillDefensiveCasting @ " 680";
+
+//Planting
+//$SkillRestriction["#plant "@
 
 //######################################################################################
 // Skill functions

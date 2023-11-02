@@ -20,7 +20,7 @@
 //10: HP regen
 //11: Mana regen	
 
-$SpecialVarDesc[1] = "";
+$SpecialVarDesc[1] = "AMR";
 $SpecialVarDesc[2] = "";
 $SpecialVarDesc[3] = "MDEF (Magical)";
 $SpecialVarDesc[4] = "HP";
@@ -288,7 +288,8 @@ function AddPoints(%clientId, %char)
 	for(%i = 0; GetWord(%list, %i) != -1; %i++)
 	{
 		%w = GetWord(%list, %i);
-
+        if(%char == 10)
+            echo(%add @" "@%w);
 		%slot = "";
 		if(%w.className == Weapon)
 			%slot = $WeaponSlot;
@@ -306,12 +307,16 @@ function AddPoints(%clientId, %char)
 			%count = Player::getItemCount(%clientId, %w);
 
 		%tmp = GetAccessoryVar(%w, $SpecialVar);
-
+        echo("Temp: "@ %tmp);
 		for(%j = 0; GetWord(%tmp, %j) != -1; %j+=2)
 		{
 			%e = GetWord(%tmp, %j);
 			if(String::findSubStr(%char, %e) != -1)
+            {
 				%add += GetWord(%tmp, %j+1) * %count;
+                if(%char == 10)
+                    echo(%add @" "@%e);
+            }
 		}
 	}
 

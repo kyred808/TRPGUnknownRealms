@@ -84,7 +84,11 @@ function RefreshWeight(%clientId)
 		%spill = %weight - fetchData(%clientId, "MaxWeight");
 
 		%num = floor(%spill / %changeweightstep);
-
+        
+        // Too many ways for this check not to happen
+        //if(fetchData(%clientId,"Stamina") < 10)
+        //    %num = Cap(%num,"inf",-5);
+        
 		if(%num > 0)
 		{
 			//overweight, select appropriate armor
@@ -112,7 +116,7 @@ function RefreshWeight(%clientId)
 	%a = Player::getArmor(%clientId);
 	%ae = GameBase::getEnergy(%player);
 
-	if(%a != %newarmor && %newarmor != "")
+	if(%a != %newarmor && %newarmor != "" && fetchData(%clientId, "NoArmorCheck") == "")
 	{
 		//set the new armor
 		Player::setArmor(%clientId, %newarmor);

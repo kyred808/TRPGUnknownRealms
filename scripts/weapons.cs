@@ -410,7 +410,9 @@ function MeleeAttack(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-		
+	
+    WeaponStamina(%clientId,%weapon);
+	
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
@@ -434,7 +436,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 		return;
 	%clientId.lastFireTime = %time;
 	
-    
+    WeaponStamina(%clientId,%weapon);
     %loadedProjectile = fetchData(%clientId, "LoadedProjectile " @ %weapon);
 	if(%loadedProjectile == "")
 		return;
@@ -508,7 +510,7 @@ function PickAxeSwing(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-
+    WeaponStamina(%clientId,%weapon);
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
@@ -572,7 +574,7 @@ function PickAxeSwing(%player, %length, %weapon)
 
 function WoodAxeSwing(%player, %length, %weapon)
 {
-	dbecho($dbechoMode, "PickAxeSwing(" @ %player @ ", " @ %length @ ")");
+	dbecho($dbechoMode, "WoodAxeSwing(" @ %player @ ", " @ %length @ ")");
 	//echo("crap");
 	%clientId = Player::getClient(%player);
 	if(%clientId == "")
@@ -589,6 +591,7 @@ function WoodAxeSwing(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
+    WeaponStamina(%clientId,%weapon);
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
@@ -3138,19 +3141,255 @@ function RWarAxeImage::onFire(%player, %slot)
 	MeleeAttack(%player, GetRange(RWarAxe), RWarAxe);
 }
 
-
-ItemData Blaster
+ItemImageData DragonFireCharge1Image
 {
-   heading = "zOmg";
-	description = "Blaster";
+    shapeFile = "plasmaex";
+	mountPoint = 0;
+
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = 2;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = NoSound;
+	sfxActivate = NoSound;
+};
+
+ItemData DragonFireCharge1
+{	
+	description = "dd";
 	className = "Weapon";
-   shapeFile  = "energygun";
-	hudIcon = "blaster";
+	shapeFile = "grenadeL";
+	hudIcon = "grenade";
+	heading = "zomg";
 	shadowDetailMask = 4;
-	imageType = BlasterImage;
+	imageType = DragonFireCharge1Image;
+	price = 150;
+	showWeaponBar = true;
+};
+
+ItemImageData DragonFireCharge2Image
+{
+    shapeFile = "fiery";
+	mountPoint = 0;
+
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = 2;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = NoSound;
+	sfxActivate = NoSound;
+};
+
+ItemData DragonFireCharge2
+{	
+	description = "dd2";
+	className = "Weapon";
+	shapeFile = "grenadeL";
+	hudIcon = "grenade";
+	heading = "zomg";
+	shadowDetailMask = 4;
+	imageType = DragonFireCharge2Image;
+	price = 150;
+	showWeaponBar = true;
+};
+
+GrenadeData Chkn
+{
+   bulletShapeName    = "chickenarmor1.dts";
+   explosionTag       = rocketExpBoom;
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 0.3;
+   mass               = 8.0;
+   elasticity         = 0.1;
+
+   damageClass        = 1;       // 0 impact, 1, radius
+   damageValue        = 85;
+   damageType         = $NullDamageType;
+   explosionRadius    = 10.0;
+   kickBackStrength   = 5.0;
+   maxLevelFlightDist = 75;
+   totalTime          = 30.0;
+   liveTime           = 2.0;
+   projSpecialTime    = 0.01;
+
+   inheritedVelocityScale = 0.5;
+   smokeName              = "invisable.dts";
+};
+
+GrenadeData Eggie
+{
+   bulletShapeName    = "egg.dts";
+   explosionTag       = debrisExpSmall;
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 0.3;
+   mass               = 8.0;
+   elasticity         = 0.2;
+
+   damageClass        = 1;       // 0 impact, 1, radius
+   damageValue        = 85;
+   damageType         = $NullDamageType;
+   explosionRadius    = 10.0;
+   kickBackStrength   = 5.0;
+   maxLevelFlightDist = 15;
+   totalTime          = 30.0;
+   liveTime           = 0.5;
+   projSpecialTime    = 0.01;
+
+   inheritedVelocityScale = 0.5;
+   smokeName              = "invisable.dts";
+};
+
+ItemImageData ChickenLauncherImage 
+{	
+	shapeFile = "chickenarmor1";
+	mountPoint = 0;
+	weaponType = 0;
+	//ammoType = GrenadeAmmo;
+	//projectileType = BomberWarhead;
+    mountOffset = { 0, 0.351, -0.1};
+	accuFire = false;
+	reloadTime = 0.8;
+	fireTime = 0.5;
+	lightType = 3;
+	lightRadius = 3;
+	lightTime = 1;
+	lightColor = { 0.6, 1, 1.0 };
+	sfxFire = SoundPickUpWeapon;	//SoundTurretDeploy;	//SoundFireGrenade;
+	sfxActivate = SoundPickUpWeapon;
+	sfxReload = SoundDryFire;
+};
+
+ItemData ChickenLauncher 
+{	
+	description = "ChickenLauncher";
+	className = "Weapon";
+	shapeFile = "grenadeL";
+	hudIcon = "grenade";
+	heading = "zomg";
+	shadowDetailMask = 4;
+	imageType = ChickenLauncherImage;
+	price = 150;
+	showWeaponBar = true;
+};
+
+$AccessoryVar[ChickenWeapon, $Weight] = 0.2;
+$SkillRestriction[ChickenWeapon] = $SkillPiercing @ " 1";
+$AccessoryVar[ChickenWeapon, $MiscInfo] = "A Chicken Beak";
+$AccessoryVar[ChickenWeapon, $AccessoryType] = $ShortBladeAccessoryType;
+$AccessoryVar[ChickenWeapon, $SpecialVar] = "6 114";
+$SkillType[ChickenWeapon] = $SkillPiercing;
+
+ItemImageData ChickenWeaponImage
+{
+	shapeFile  = "invisable";
+	mountPoint = 0;
+
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(ChickenWeapon);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing3;
+	sfxActivate = AxeSlash2;
+};
+ItemData ChickenWeapon
+{
+	heading = "bWeapons";
+	description = "Chicken Peck";
+	className = "Weapon";
+	shapeFile  = "hammer";
+	hudIcon = "hammer";
+	shadowDetailMask = 4;
+	imageType = ChickenWeaponImage;
 	price = 0;
 	showWeaponBar = true;
 };
+function ChickenWeaponImage::onFire(%player, %slot)
+{
+	MeleeAttack(%player, GetRange(ChickenWeapon), ChickenWeapon);
+}
+$ChickenSpawn = 30;
+function Chkn::onRemove(%this)
+{
+    echo("Removing Chkn");
+    // Projectile was already cleaned up, so we have to estimate its position
+    %pos = Projectile::PropagateTrack(%this,0.5);
+    %player = $Projectile::tracking[%this,Owner];
+    %trans = "0 0 0 0 0 1 0 0 0 "@ %pos;
+    for(%i = 0; %i < $ChickenSpawn; %i++)
+    {
+        %x = 15*getRandom();
+        %y = 15*getRandom();
+        %z = 10*getRandom();
+        %vel = %x@" "@%y@" "@%z;
+        %proj = Projectile::spawnProjectile("Eggie",%trans,%player,%vel);
+        //$EggieNum[%proj] = %i;
+        Projectile::TrackProjectile(%proj,0.2,%player);
+    }
+    
+    Projectile::TrackCleanup(%this);
+}
+
+function Eggie::onRemove(%this)
+{
+    %pos = Projectile::PropagateTrack(%this,0.5);
+    %player = $Projectile::tracking[%this,Owner];
+    
+    %rot = "0 0 "@ 2*$pi*getRandom();
+    
+    setAInumber(%newName, %n);
+    %n = getAInumber();
+    %aiName = "Chicken"@%n;
+    echo("Create AI: "@ AI::otherCreate(%aiName,"Chicken",chickenarmor1,%pos,%rot));
+    setAINumber(%aiName,%n);
+    
+
+    AI::setVar( %aiName,  iq,  100 );
+    AI::setVar( %aiName,  attackMode, $AIattackMode);
+    AI::setVar( %aiName,  pathType, $AI::defaultPathType);
+    %aiCl = AI::getId(%aiName);
+    
+    echo("AI Client:" @%aiCL);
+    storeData(%aiCl,"SpawnBotInfo","NotBlank");
+    Gamebase::setTeam(%aiCl,7);
+    AI::SetVar(%aiName, spotDist, 40);
+    
+    GiveThisStuff(%aiCl,"Dagger 1 EXP 20000");
+    HardcodeAIskills(%aiCl);
+    AI::SelectBestWeapon(%aiCl);
+    AI::newDirectiveFollow(%aiName, Player::getClient(%player), 0, 99);
+    
+    $AICount++;
+    
+    Projectile::TrackCleanup(%this);
+    //$EggieNum[%this] = "";
+}
+
+$AccessoryVar[ChickenLauncher, $MiscInfo] = "What it says on the tin";
+
+function ChickenLauncherImage::onFire(%player, %slot)
+{
+    %clientId = Player::getClient(%player);
+	%trans = GameBase::getMuzzleTransform(%player);
+    
+    %proj = Projectile::spawnProjectile("Chkn",%trans,%player,%vel);
+    Projectile::TrackProjectile(%proj,0.2,%player);
+    Player::unmountItem(%player,%slot);
+}
+
 
 
 ItemData PlasmaGun

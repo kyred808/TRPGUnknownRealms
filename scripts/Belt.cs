@@ -1547,6 +1547,7 @@ function Belt::DropItem(%clientid,%item,%amnt,%type)
 
 function Belt::GetNS(%clientid,%type)
 {
+    dbecho($dbechoMode, "Belt::GetNS(" @ %clientid @ ","@ %type @")");
 	%bn = 0;
 	%num = $Belt::ItemGroupItemCount[%type];
 	for(%i;%i<=%num;%i++)
@@ -1593,6 +1594,7 @@ function BeltItem::SetShopItemIndex(%item,%index)
 
 function Belt::HasThisStuff(%clientid,%item)
 {
+    dbecho($dbechoMode, "Belt::HasThisStuff(" @ %clientid @ ","@ %item @")");
 	%item = $beltitem[%item, "Item"];
 	%type = $beltitem[%item, "Type"];
 	%list = fetchdata(%clientid,%type);
@@ -1602,6 +1604,7 @@ function Belt::HasThisStuff(%clientid,%item)
 
 function Belt::GiveThisStuff(%clientid, %item, %amnt, %echo, %mine)
 {
+    dbecho($dbechoMode, "Belt::GiveThisStuff(" @ %clientid @ ","@ %item @","@%amnt@","@%echo@","@%mine@")");
     %item = $beltitem[%item, "Item"];
     %type = $beltitem[%item, "Type"];
     %list = fetchdata(%clientid,%type);
@@ -1664,6 +1667,7 @@ function Belt::BankTakeThisStuff(%clientid,%item,%amnt)
 
 function Belt::TakeThisStuff(%clientid,%item,%amnt)
 {
+    dbecho($dbechoMode, "Belt::TakeThisStuff(" @ %clientid @ ","@ %item @","@%amnt@")");
     %amnt = floor(%amnt);
 	if(%amnt > 0)
 	{
@@ -1681,6 +1685,7 @@ function Belt::TakeThisStuff(%clientid,%item,%amnt)
 
 function isBeltItem(%item)
 {
+    dbecho($dbechoMode, "Belt::isBeltItem("@ %item @")");
 	%flag = flase;
 	if((String::ICompare($beltitem[%item, "Item"], %item) == 0))
 		%flag = True;
@@ -1689,6 +1694,7 @@ function isBeltItem(%item)
 
 function Belt::ItemCount(%item,%list)
 {
+    dbecho($dbechoMode, "Belt::ItemCount("@ %item @","@%list@")");
     %w = Word::FindWord(%list,%item);
     if(%w == -1)
         return 0;
@@ -1734,6 +1740,7 @@ function belt::GetStored(%clientId, %opt)
 
 function Belt::refreshFullBeltList(%clientId)
 {
+    dbecho($dbechoMode, "Belt::refreshFullBeltList("@ %clientId @")");
     %list = 
     storedata(%clientid,"AllBelt",fetchdata(%clientId, "RareItems") @ fetchdata(%clientId, "LoreItems") @ fetchdata(%clientId, "KeyItems") @ fetchdata(%clientId, "GemItems") @ fetchData(%clientId,"AmmoItems") @ fetchData(%clientId,"EquipItems"));
 }

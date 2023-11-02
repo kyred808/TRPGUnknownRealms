@@ -1,9 +1,9 @@
 ExplosionData BigRedExp
 {
    shapeName = "bigred.dts";
-   soundId   = NoSound;
+   soundId   = BigExplosion2;
 
-   faceCamera = false;
+   faceCamera = true;
    randomSpin = false;
    hasLight   = true;
    lightRange = 8.0;
@@ -107,6 +107,25 @@ ExplosionData plasmaExp
 {
    shapeName = "plasmaex.dts";
    soundId   = NoSound;
+
+   faceCamera = true;
+   randomSpin = true;
+   hasLight   = true;
+   lightRange = 4.0;
+
+   timeZero = 0.200;
+   timeOne  = 0.950;
+
+   colors[0]  = { 1.0, 1.0,  0.0 };
+   colors[1]  = { 1.0, 1.0, 0.75 };
+   colors[2]  = { 1.0, 1.0, 0.75 };
+   radFactors = { 0.375, 1.0, 0.9 };
+};
+
+ExplosionData plasmaExpBoom
+{
+   shapeName = "plasmaex.dts";
+   soundId   = Explosion4;
 
    faceCamera = true;
    randomSpin = true;

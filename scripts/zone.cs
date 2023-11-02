@@ -235,7 +235,6 @@ function Zone::RollSpawnDelayTime(%zoneId,%spawnIndex)
     return floor(getRandom() * %diff) + $Zone::SpawnPoint[%zoneId,%spawnIndex,MinDelay];
 }
 
-// 27 27 28 28 29 29 30 30 52
 function Zone::SpawnCheck(%zoneId)
 {
     if($Zone::Active[%zoneId])
@@ -462,12 +461,24 @@ function UpdateZone(%object)
 	//-----------------------------------------------------------
 	DecreaseBonusStateTicks(%clientId);
 
+    //-----------------------------------------------------------
+	// Do passive mana regen ticks
+	//-----------------------------------------------------------
+    ManaRegenTick(%clientId);
+    
 	//-----------------------------------------------------------
 	// Check if the player has moved since last ZoneCheck
 	//-----------------------------------------------------------
 	%pos = GameBase::getPosition(%clientId);
 	if(%pos != %clientId.zoneLastPos && !IsDead(%clientId))
 	{
+        if(%clientId.isMoving == 0)
+        {
+            %clientId.isMoving = 1;
+            %clientId.isAtRestCounter = 0;
+            %clientId.isAtRest = 0;
+            refreshStaminaREGEN(%clientId);
+        }
 		//train Weight Capacity
 		if(OddsAre(8))
 			UseSkill(%clientId, $SkillWeightCapacity, True, True, "", True);
@@ -524,6 +535,21 @@ function UpdateZone(%object)
 			}
 		}
 	}
+    else if(%pos == %clientId.zoneLastPos && %clientId.sleepMode == "")
+    {
+        if(%clientId.isMoving == 1)
+        {
+            %clientId.isMoving = 0;
+            refreshStaminaREGEN(%clientId);
+        }
+        if(%clientId.isAtRestCounter > 3)
+        {
+            %clientId.isAtRest = 1;
+            refreshStaminaREGEN(%clientId);
+        }
+        else
+            %clientId.isAtRestCounter++;
+    }
 	%clientId.zoneLastPos = %pos;
 
 	storeData(%clientId, "tmpzone", "");
@@ -606,7 +632,7 @@ function Zone::DoEnter(%z, %clientId)
 	if($Zone::EnterSound[%z] != "")
 		%msg = %msg @ "~w" @ $Zone::EnterSound[%z];
 
-    echo(%z @" "@ %msg);
+    //echo(%z @" "@ %msg);
 	if(%msg != "")
 		Client::sendMessage(%clientId, %color, %msg);
 

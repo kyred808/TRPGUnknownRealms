@@ -37,7 +37,9 @@ BeltItem::AddBeltItemGroup("PotionItems","Potions",6);
 BeltItem::AddBeltItemGroup("OreItems","Ores",7);
 BeltItem::AddBeltItemGroup("MetalItems","Metals",8);
 BeltItem::AddBeltItemGroup("WoodItems","Wood",9);
-BeltItem::AddBeltItemGroup("ScrollItems","Spell Scrolls",10);
+BeltItem::AddBeltItemGroup("PlantItems","Plants",10);
+BeltItem::AddBeltItemGroup("FoodItems","Food",11);
+BeltItem::AddBeltItemGroup("ScrollItems","Spell Scrolls",12);
 // =============================
 // End Belt Groups
 // =============================
@@ -51,10 +53,10 @@ $BeltEquip::Type[2] = "neck";
 
 $BeltEquip::NumberOfSlots = 0;
 
-BeltEquip::AddEquipmentSlot("finger1","Finger 1",$BeltEquip::Type[0],0);
-BeltEquip::AddEquipmentSlot("finger2","Finger 2",$BeltEquip::Type[0],1);
+BeltEquip::AddEquipmentSlot("finger1","Ring 1",$BeltEquip::Type[0],0);
+BeltEquip::AddEquipmentSlot("finger2","Ring 2",$BeltEquip::Type[0],1);
 BeltEquip::AddEquipmentSlot("arm","Arm",$BeltEquip::Type[1],2);
-BeltEquip::AddEquipmentSlot("neck","Neck",$BeltEquip::Type[2],3);
+BeltEquip::AddEquipmentSlot("neck","Necklace",$BeltEquip::Type[2],3);
 
 // =============================
 // End Belt Equipment Slots and Types
@@ -189,7 +191,30 @@ $StealProtectedItem["enhancedoffcastscroll"] = true;
 $StealProtectedItem["enhanceddefcastscroll"] = true;
 $StealProtectedItem["enhancedneucastscroll"] = true;
 
+// Food Items
+BeltItem::Add("Bread","Bread","FoodItems",0.5,50,750,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.2/$TribesDamageToNumericDamage@" 60");
+BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751);
+BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752);
+BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,500,753);
+BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,1200,754);
 
+$AccessoryVar[Bread, $MiscInfo] = "A loaf of bread.  Eating it will boost health and stamina regen slightly.";
+$AccessoryVar[GobCookie, $MiscInfo] = "A cookie made of Gobbie Berries.  Eating it will boost stamina regen";
+$AccessoryVar[YucJuice, $MiscInfo] = "A flask of healthy yuccavera juice.  Eating it will boost health and stamina regen."; 
+$AccessoryVar[RedBerryPie, $MiscInfo] = "Delicious red berry pie. Eating it will boost stamina regen.";
+$AccessoryVar[StrawberryCake, $MiscInfo] = "A cake slices of strawberries.  Greatly boosts stamina regen.";
+
+
+// Plant Items (Other vars defined in Farming.cs
+BeltItem::Add("Grain","Grain","PlantItems",0.25,8,700);
+BeltItem::Add("Gobbie Berry","GobbieBerry","PlantItems",0.2,30,701);
+BeltItem::Add("Yuccavera","Yuccavera","PlantItems",0.2,100,702);
+BeltItem::Add("Red Berry","RedBerry","PlantItems",0.2,30,703);
+BeltItem::Add("Tree Fruit","TreeFruit","PlantItems",0.5,1,704);
+BeltItem::Add("Strawberry","Strawberry","PlantItems",0.3,250,705);
+BeltItem::Add("Nixphyllum","Nixphyllum","PlantItems",0.3,300,706);
+BeltItem::Add("Deez Nuts","DeezNuts","PlantItems",0.3,1500,707);
+BeltItem::Add("Lunabrosia","Lunabrosia","PlantItems",0.3,3000,708);
 
 //Ammo Items
 BeltItem::Add("Small Rock","SmallRock","AmmoItems",0.2,13,16);
@@ -265,31 +290,43 @@ $AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
 // Rare and Quest Items
 
 BeltItem::Add("Black Statue","BlackStatue","RareItems",3,1);
+BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,250);
 BeltItem::Add("Skeleton Bone","SkeletonBone","RareItems",1,1);
 BeltItem::Add("Enchanted Stone","EnchantedStone","RareItems",2,1);
 BeltItem::Add("Dragon Scale","DragonScale","RareItems",8,245310);
 //BeltItem::Add("Testing Anvil","Anvil","RareItems",20,5000);
 
-$AccessoryVar[blackstatue, $MiscInfo] = "A strage black statue.";
+$AccessoryVar[blackstatue, $MiscInfo] = "A strange black statue.";
 $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";
 $AccessoryVar[EnchantedStone, $MiscInfo] = "A weird glowing stone.";
 $AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale.";
 
+$AccessoryVar[blackstatue, $MiscInfo] = "Ear of a goblin.";
 
 
-BeltItem::Add("Blue Potion","BluePotion","PotionItems",4,15,27,"DrinkHealingPotion 15");
-BeltItem::Add("Crystal Blue Potion","CrystalBluePotion","PotionItems",10,100,28,"DrinkHealingPotion 16");
+BeltItem::Add("Blue Potion","BluePotion","PotionItems",4,80,27,"DrinkHealingPotion 15");
+BeltItem::Add("Crystal Blue Potion","CrystalBluePotion","PotionItems",10,200,28,"DrinkHealingPotion 60");
 
-BeltItem::Add("Energy Vial","EnergyVial","PotionItems",2,15,29,"DrinkManaPotion 15");
-BeltItem::Add("Crystal Energy Vial","CrystalEnergyVial","PotionItems",5,100,30,"DrinkManaPotion 50");
+BeltItem::Add("Energy Potion","EnergyPotion","PotionItems",4,80,29,"DrinkStaminaPotion 25");
+BeltItem::Add("Crystal Energy Potion","CrystalEnergyPotion","PotionItems",10,200,30,"DrinkStaminaPotion 50");
+
+// Crafted and not sold in stores.
+BeltItem::Add("Energy Shot","EnergyShot","PotionItems",0.2,50,"","DrinkStaminaPotion 15");
+BeltItem::Add("Energy Vial","EnergyVial","PotionItems",0.5,250,"","DrinkStaminaPotion 25");
+BeltItem::Add("Crystal Energy Vial","CrystalEnergyVial","PotionItems",1,1500,"","DrinkStaminaPotion 50");
+BeltItem::Add("Energized Potion","EnergizedPotion","PotionItems",1,5000,"","DrinkStaminaPotion 100");
 
 
 $AccessoryVar[BluePotion, $MiscInfo] = "A blue potion that heals 15 HP";
 $AccessoryVar[CrystalBluePotion, $MiscInfo] = "A crystal blue potion that heals 60 HP";
 
 
-$AccessoryVar[EnergyVial, $MiscInfo] = "An energy vial that provides 16 MP";
-$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A crystal energy vial that provides 50 MP";
+$AccessoryVar[EnergyPotion, $MiscInfo] = "An energy potion that provides 50 Stamina";
+$AccessoryVar[CrystalEnergyPotion, $MiscInfo] = "A crystal energy potion that provides 100 Stamina";
+$AccessoryVar[EnergyShot, $MiscInfo] = "A very small vial of potion that restores 15 Stamina. Not much, but very light weight."; 
+$AccessoryVar[EnergyVial, $MiscInfo] = "A small energy vial restores 15 Stamina. Doesn't seem like much, but very light weight.";
+$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A small energy vial that restores 50 Stamina. Similar to a Crystal Energy Potion, but lighter.";
+$AccessoryVar[EnergizedPotion, $MiscInfo] = "An energy potion that restores 100 Stamina.";
 
 function Belt::UseItem(%clientId,%item)
 {
@@ -301,12 +338,27 @@ function Belt::UseItem(%clientId,%item)
             Belt::TakeThisStuff(%clientId,%item,1);
             RefreshAll(%clientId,false);
         }
-        
-        else if(getWord($beltitem[%item, "Special"],0) == "DrinkManaPotion")
+        else if(getWord($beltitem[%item, "Special"],0) == "DrinkStaminaPotion")
         {
-            DrinkManaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
+            DrinkStaminaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
             Belt::TakeThisStuff(%clientId,%item,1);
             RefreshAll(%clientId,false);
+        }
+        else if(String::getWord($beltitem[%item, "Special"],",",0) == "EatFoodItem")
+        {
+            if(AddBonusStatePoints("FoodCooldown") == 0)
+            {
+                if(%clientId.sleepMode == "")
+                {
+                    EatFoodItem(%clientId,%item,Word::getSubWord($beltitem[%item, "Special"],1,999,","));
+                    Belt::TakeThisStuff(%clientId,%item,1);
+                    RefreshAll(%clientId,false);
+                }
+                else
+                    Client::sendMessage(%clientId, $MsgWhite, "You can't eat right now.");
+            }
+            else
+                Client::sendMessage(%clientId, $MsgWhite, "You aren't ready to eat again.");
         }
     }
 }
@@ -320,10 +372,35 @@ function DrinkHealingPotion(%clientId,%item,%amt)
     Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @"HP~wActivateAR.wav");
 }
 
-function DrinkManaPotion(%clientId,%item,%amt)
+function DrinkStaminaPotion(%clientId,%item,%amt)
 {
-    refreshMana(%clientId,%amt*-1);
-    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @"MP~wActivateAR.wav");
+    refreshStamina(%clientId,%amt*-1);
+    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @" Stamina~wActivateAR.wav");
+}
+
+function EatFoodItem(%clientId,%item,%special)
+{
+    //"EatFoodItem,Cooldown 80,StamRegen 0.1 60,HPRegen 0.1 60"
+    %cooldown = "";
+    
+    for(%i = 0; String::getWord(%special,",",%i) != ","; %i++)
+    {
+        %data = String::getWord(%special,",",%i);
+        //echo(%data);
+        if(String::icompare(getWord(%data,0),"cooldown") == 0)
+            %cooldown = getWord(%data,1);
+        else
+        {
+            %bonusType = getWord(%data,0);
+            %bonusAmnt = getWord(%data,1);
+            %bonusTicks = getWord(%data,2);
+            UpdateBonusState(%clientId, %bonusType @" "@%bonusAmnt, %bonusTicks);
+        }
+    }
+    refreshHPREGEN(%clientId);
+    refreshStaminaREGEN(%clientId);
+    UpdateBonusState(%clientId, "FoodCooldown 1", %cooldown);
+    Client::sendMessage(%clientId, $MsgWhite, "You ate a "@$beltitem[%item, "Name"]@".");
 }
 
 // =============================

@@ -338,7 +338,15 @@ function SaveCharacter(%clientId)
 	//the second identifier in the array is either 0, 1, or 2
 	//0: regular player variable
 	//1: weapon/item
-	//2: quest counters
+	//2 & 3: quest counters
+    //4: Skill Counters
+    //5 & 6: Bonus State
+    //7: Keybindings
+    //8: Belt Equip Slots
+    //9: Belt items
+    //10: Belt Storage
+    //30: Realm
+    
 
 	//the third identifier is simply for identifying what we're saving.
 
@@ -361,7 +369,7 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 16]"] = fetchData(%clientId, "BankStorage");
 	$funk::var["[\"" @ %name @ "\", 0, 17]"] = fetchData(%clientId, "campRot");
 	$funk::var["[\"" @ %name @ "\", 0, 18]"] = fetchData(%clientId, "HP");
-	$funk::var["[\"" @ %name @ "\", 0, 19]"] = fetchData(%clientId, "MANA");
+	$funk::var["[\"" @ %name @ "\", 0, 19]"] = fetchData(%clientId, "Stamina");
 	$funk::var["[\"" @ %name @ "\", 0, 20]"] = fetchData(%clientId, "LCKconsequence");
 	$funk::var["[\"" @ %name @ "\", 0, 21]"] = fetchData(%clientId, "RemortStep");
 	$funk::var["[\"" @ %name @ "\", 0, 22]"] = fetchData(%clientId, "LCK");
@@ -372,12 +380,13 @@ function SaveCharacter(%clientId)
 	//$funk::var["[\"" @ %name @ "\", 0, 29]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
+    $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
     
-    %idx = 32;
+    
     for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
     {
-        $funk::var["[\"" @ %name @ "\", 0, "@%idx+%i@"]"] = fetchData(%clientId, $Belt::ItemGroup[%i]);
-        $funk::var["[\"" @ %name @ "\", 0, "@%idx+%i+$Belt::NumberOfBeltGroups@"]"] = fetchData(%clientId, "Stored"@$Belt::ItemGroup[%i]);
+        $funk::var["[\"" @ %name @ "\", 9, "@%i@"]"] = fetchData(%clientId, $Belt::ItemGroup[%i]);
+        $funk::var["[\"" @ %name @ "\", 10, "@%i@"]"] = fetchData(%clientId, "Stored"@$Belt::ItemGroup[%i]);
     }
     
     // Realms
@@ -529,7 +538,7 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "BankStorage", $funk::var[%name, 0, 16]);
 		storeData(%clientId, "campRot", $funk::var[%name, 0, 17]);
 		storeData(%clientId, "tmphp", $funk::var[%name, 0, 18]);
-		storeData(%clientId, "tmpmana", $funk::var[%name, 0, 19]);
+		storeData(%clientId, "tmpstam", $funk::var[%name, 0, 19]);
 		storeData(%clientId, "LCKconsequence", $funk::var[%name, 0, 20]);
 		storeData(%clientId, "RemortStep", $funk::var[%name, 0, 21]);
 		storeData(%clientId, "LCK", $funk::var[%name, 0, 22]);
@@ -540,14 +549,14 @@ function LoadCharacter(%clientId)
 		//$funk::var[%name, 0, 29]);
 		storeData(%clientId, "MyHouse", $HouseName[$funk::var[%name, 0, 30]]);
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
+        storeData(%clientId, "MANA", $funk::var[%name, 0, 32]);
         
-        %idx = 32;
         for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
         {
-            storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 0, %idx+%i]);
-            storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 0, %idx+%i+$Belt::NumberOfBeltGroups]);
+            storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 9, %i]);
+            storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 10, %i]);
         }
-        %idx += %i;
+
         if($funk::var[%name, 30, 0] != "")
             storeData(%clientId,"Realm",$funk::var[%name, 30, 0]);
         else
@@ -631,8 +640,8 @@ function LoadCharacter(%clientId)
 			storeData(%clientId, "LCKconsequence", "death");
 		if(fetchData(%clientId, "tmphp") == "")
 			storeData(%clientId, "tmphp", 1);
-		if(fetchData(%clientId, "tmpmana") == "")
-			storeData(%clientId, "tmpmana", 1);
+		if(fetchData(%clientId, "tmpstam") == "")
+			storeData(%clientId, "tmpstam", 1);
 		if(fetchData(%clientId, "tmpname") == "")
 			storeData(%clientId, "tmpname", %name);
 		//------------
@@ -657,7 +666,7 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "ignoreGlobal", "");
 		storeData(%clientId, "LCKconsequence", "death");
 		storeData(%clientId, "tmphp", "");
-		storeData(%clientId, "tmpmana", "");
+		storeData(%clientId, "tmpstam", "");
 		storeData(%clientId, "RemortStep", 0);
 		storeData(%clientId, "tmpname", %name);
 		storeData(%clientId, "tmpLastSaveVer", $rpgver);
@@ -791,6 +800,7 @@ function SaveWorld()
 	messageAll(2, "SaveWorld in progress... This process might induce temporary lag");
 	deletevariables("$world::*");
 	deletevariables("$sw::*");
+    
 	%i = 0;
 	%ii = 0;
 	%othercnt = 0;
@@ -829,6 +839,9 @@ function SaveWorld()
 			%othercnt = 0;
 
 	}
+    
+    Farming::SaveWorld();
+    
 	echo("Deleting old file before save for '" @ $missionName @ "_worldsave_.cs'...");
 	File::delete("temp\\" @ $missionName @ "_worldsave_.cs");
 
@@ -842,6 +855,8 @@ function LoadWorld()
 
 	%filename = $missionName @ "_worldsave_.cs";
 
+    Farming::LoadWorld();
+    
 	if(isFile("temp\\" @ %filename))
 	{
 		//load world
@@ -871,6 +886,7 @@ function LoadWorld()
 				DeployLootbag($world::pos[%i], $world::rot[%i], $world::special[%i]);
 			}
 		}
+        
 		echo("Load complete.");
 		messageAll(2, "LoadWorld complete.");
 	}
@@ -1072,7 +1088,6 @@ function UpdateTeam(%clientId)
 	dbecho($dbechoMode, "UpdateTeam(" @ %clientId @ ")");
 
 	%t = $TeamForRace[fetchData(%clientId, "RACE")];
-    echo("Ent team?");
 	GameBase::setTeam(%clientId, %t);
 }
 
@@ -1092,8 +1107,8 @@ function ChangeRace(%clientId, %race)
 		storeData(%clientId, "RACE", "FemaleHuman");
 
 	setHP(%clientId, fetchData(%clientId, "MaxHP"));
-	setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
-
+	//setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
+    setStamina(%clientId, fetchData(%clientId, "MaxStam"));
 	RefreshAll(%clientId,true);
 }
 
@@ -1773,7 +1788,7 @@ function RefreshAll(%clientId, %equip)
 
 	UpdateAppearance(%clientId);
 	refreshHPREGEN(%clientId);
-	refreshMANAREGEN(%clientId);
+	refreshStaminaREGEN(%clientId);
 	Game::refreshClientScore(%clientId);
 }
 
@@ -1784,7 +1799,7 @@ function RefreshEquipment(%clientId)
     %sound = true;
     if(%weapon != -1)
     {
-        echo(%weapon);
+        //echo(%weapon);
         echo(SkillCanUse(%clientId,%weapon));
         if(!SkillCanUse(%clientId,%weapon))
         {
@@ -2177,7 +2192,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 		else
 		{
-			Item::giveItem(%clientId, %w, %w2, %echo);
+			Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
 		}
 	}
 
