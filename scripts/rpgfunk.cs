@@ -1826,8 +1826,8 @@ function RefreshEquipment(%clientId)
                 %sound = false;
             }
 			Client::sendMessage(%clientId, $MsgRed,%msg);
-			Player::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-			Player::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
+			RPGItem::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
+			RPGItem::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);
@@ -2081,7 +2081,7 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 		{
 			%amount = Player::getItemCount(%clientId, %w);
 			if(%amount >= %w2)
-				Player::setItemCount(%clientId, %w, %amount-%w2);
+				RPGItem::setItemCount(%clientId, %w, %amount-%w2);
 			else
 				return False;
 		}
@@ -2192,7 +2192,8 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 		else
 		{
-			Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
+            RPGItem::incItemCount(%clientId,%w,%w2,%echo);
+			//Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
 		}
 	}
 
@@ -2312,14 +2313,22 @@ function FixStuffString(%stuff)
 {
 	dbecho($dbechoMode, "FixStuffString(" @ %stuff @ ")");
 
-	%nstuff = " ";
-	for(%i = 0; GetWord(%stuff, %i) != -1; %i++)
-	{
-		%w = GetWord(%stuff, %i);
-		%nstuff = %nstuff @ %w @ " ";
-	}
-
-	return %nstuff;
+    %nstuff = String::replace(%stuff,"  "," ");
+    if(String::left(%nstuff,1) != " ")
+        %nstuff = " "@%nstuff;
+    
+    if(String::right(%nstuff,1) != " ")
+        %nstuff = %nstuff @" ";
+        
+    return %nstuff;
+	//%nstuff = " ";
+	//for(%i = 0; GetWord(%stuff, %i) != -1; %i++)
+	//{
+	//	%w = GetWord(%stuff, %i);
+	//	%nstuff = %nstuff @ %w @ " ";
+	//}
+    //
+	//return %nstuff;
 }
 
 function IsStuffStringEquiv(%s1, %s2, %dblCheck)

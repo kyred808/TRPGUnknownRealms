@@ -101,7 +101,7 @@ function buyItem(%clientId, %item)
 			%cnt = GetStuffStringCount(fetchData(%clientId, "BankStorage"), %item);
 			if(%cnt >= %n)
 			{
-				Player::incItemCount(%clientId, %item, %n);
+				RPGItem::incItemCount(%clientId, %item, %n);
 				storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, -%n));
 	
 				SetupBank(%clientId, %clientId.currentBank);	//refresh
@@ -132,7 +132,7 @@ function buyItem(%clientId, %item)
 			{
 				if(checkResources(%player,%item,%cost,%clientId.bulkNum) && !IsDead(%clientId))
 				{
-					Player::incItemCount(%clientId, %item, %clientId.bulkNum);
+					RPGItem::incItemCount(%clientId, %item, %clientId.bulkNum);
 					BuySell(%player, %item, %clientId.bulkNum, BUY);
 		
 					RefreshAll(%clientId,false);
@@ -267,8 +267,8 @@ function DoSteal(%clientId, %cl, %itemcount, %item, %fitem, %w)
 		if(%a > 0 && %itemcount == %icnt)
 		{
 			Client::sendMessage(%clientId, $MsgBeige, "You successfully stole a " @ %fitem.description @ " from " @ %victimName @ "!");
-			Player::decItemCount(%cl, %item, 1);
-			Player::incItemCount(%clientId, %fitem, 1);
+			RPGItem::decItemCount(%cl, %item, 1);
+			RPGItem::incItemCount(%clientId, %fitem, 1);
 			PerhapsPlayStealSound(%clientId, %clientId.stealType);
 		
 			SetupInvSteal(%clientId, %cl);
@@ -348,7 +348,7 @@ function sellItem(%clientId, %item)
 				{
 					if(%item.className != Equipped)
 					{
-						Player::decItemCount(%clientId, %item, %n);
+						RPGItem::decItemCount(%clientId, %item, %n);
 						storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, %n));
 		
 						SetupBank(%clientId, %clientId.currentBank);	//refresh
@@ -403,7 +403,7 @@ function sellItem(%clientId, %item)
 					%numsell = %clientId.bulkNum;
 	
 					BuySell(%player, %item, %clientId.bulkNum, SELL);
-					Player::setItemCount(%player, %item, (%count-%numsell));
+					RPGItem::setItemCount(%player, %item, (%count-%numsell));
 					Client::SendMessage(%clientId, $MsgWhite, "~wbuysellsound.wav");
 	
 					RefreshAll(%clientId,false);

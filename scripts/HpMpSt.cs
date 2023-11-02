@@ -105,8 +105,8 @@ function refreshHPREGEN(%clientId,%zone)
 	%c = AddPoints(%clientId, 10) / 2000;
 
 	%r = %a + %b + %c;
-    echo(%a @" "@ %b @" "@ %c);
-    echo(%r);
+    //echo(%a @" "@ %b @" "@ %c);
+    //echo(%r);
 	GameBase::setAutoRepairRate(Client::getOwnedObject(%clientId), %r);
 }
 

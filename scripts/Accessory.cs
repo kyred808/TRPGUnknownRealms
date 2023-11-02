@@ -114,6 +114,84 @@ function GenerateAllShieldCosts()
 // ACCESSORY FUNCTIONS
 //=====================
 
+//=====================
+// WIP
+//=====================
+$AccessoryTypeAccessory = 1;
+$AccessoryTypeEquipment = 2;
+
+function Accessory::AddItem(%tag,%name,%type,%accType)
+{
+    $AccessoryData[%tag,Name] = %name;
+    $AccessoryData[%tag,Type] = %type;
+}
+
+//fetchData(%clientId,"AccItemList"@%type) = CSV of items
+function Accessory::getAccessoryList(%clientId,%type,%filter)
+{
+    if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid || %clientId.choosingGroup || %clientId.choosingClass)
+		return "";
+        
+    if(%type == $ProjectileAccessoryType)
+    {
+        %max = $Belt::ItemGroupItemCount["AmmoItems"];
+        for(%i = 0; %i < %max; %i++)
+        {
+            %item = $beltitem[%i+1,"Num","AmmoItems"];
+            %count = Belt::HasThisStuff(%clientId,%item);
+            if(%count)
+            {
+                if(%filter != -1)
+                {
+                    %flag2 = False;
+                    %av = GetAccessoryVar(%item, $SpecialVar);
+                    for(%j = 0; GetWord(%av, %j) != -1; %j+=2)
+                    {
+                        %w = GetWord(%av, %j);
+                        if(String::findSubStr(%filter, %w) != -1)
+                            %flag2 = True;
+                    }
+                }
+                if(%filter == -1 || %flag2)
+                    %list = %list @ %item @ " ";
+            }
+		}
+		return %list;
+    }
+    
+    %list = fetchData(%clientId,"AccItemList"@%type);
+    %retlist = "";
+    if(%filter != "")
+    {
+        if(String::getWord(%list,",",0) != ",")
+        {
+            for(%i = 0; String::getWord(%list,",",%i) != ","; %i++)
+            {
+                %itemAmtPair = String::getWord(%list,",",%i);
+                %item = getWord(%itemAmtPair,0);
+                %av = GetAccessoryVar(%item, $SpecialVar);
+                for(%j = 0; String::getWord(%av," ",%j) != " "; %j++)
+                {
+                    %w = GetWord(%av, %j);
+                    if(String::findSubStr(%filter, %w) != -1)
+                    {
+                        %retlist = %retlist @ %item @" ";
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    else
+        %retlist = %list;
+        
+    return %retlist;
+}
+
+//=====================
+// End WIP
+//=====================
+
 function GetAccessoryVar(%item, %type)
 {
 	dbecho($dbechoMode, "GetAccessoryVar(" @ %item @ ", " @ %type @ ")");
@@ -288,8 +366,8 @@ function AddPoints(%clientId, %char)
 	for(%i = 0; GetWord(%list, %i) != -1; %i++)
 	{
 		%w = GetWord(%list, %i);
-        if(%char == 10)
-            echo(%add @" "@%w);
+        //if(%char == 10)
+        //    echo(%add @" "@%w);
 		%slot = "";
 		if(%w.className == Weapon)
 			%slot = $WeaponSlot;
@@ -307,15 +385,15 @@ function AddPoints(%clientId, %char)
 			%count = Player::getItemCount(%clientId, %w);
 
 		%tmp = GetAccessoryVar(%w, $SpecialVar);
-        echo("Temp: "@ %tmp);
+        //echo("Temp: "@ %tmp);
 		for(%j = 0; GetWord(%tmp, %j) != -1; %j+=2)
 		{
 			%e = GetWord(%tmp, %j);
 			if(String::findSubStr(%char, %e) != -1)
             {
 				%add += GetWord(%tmp, %j+1) * %count;
-                if(%char == 10)
-                    echo(%add @" "@%e);
+                //if(%char == 10)
+                //    echo(%add @" "@%e);
             }
 		}
 	}
@@ -373,7 +451,7 @@ function NullItemList(%clientId, %type, %msgcolor, %msg)
 		%item = $ItemList[%type, %z];
 		if(Player::getItemCount(%clientId, %item))
 		{
-			Player::setItemCount(%clientId, %item, 0);
+			RPGItem::setItemCount(%clientId, %item, 0);
 
 			%newmsg = nsprintf(%msg, %item.description);
 			Client::sendMessage(%clientId, %msgcolor, %newmsg);

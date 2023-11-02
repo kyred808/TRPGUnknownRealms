@@ -247,6 +247,6 @@ function RepairPatch::onUse(%player,%item)
 {
 	dbecho($dbechoMode, "RepairPatch::onUse(" @ %player @ ", " @ %item @ ")");
 
-	Player::decItemCount(%player,%item);
+	RPGItem::decItemCount(%player,%item);
 	refreshHP(Player::getClient(%player), -0.1);
 }

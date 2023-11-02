@@ -491,7 +491,7 @@ function UpdateZone(%object)
 				if(Player::getItemCount(%clientId, %orb @ "0"))
 				{
 					Client::sendMessage(%clientId, $MsgRed, "Your " @ %orb.description @ " has burned out.");
-					Player::decItemCount(%clientId, %orb @ "0", 1);
+					RPGItem::decItemCount(%clientId, %orb @ "0", 1);
 					RefreshAll(%clientId,true);
 				}
 			}
@@ -504,7 +504,7 @@ function UpdateZone(%object)
 						if(Player::getItemCount(%clientId, %orb @ "0"))
 						{
 							Client::sendMessage(%clientId, $MsgRed, "The rain has burned out your " @ %orb.description @ ".");
-							Player::decItemCount(%clientId, %orb @ "0", 1);
+							RPGItem::decItemCount(%clientId, %orb @ "0", 1);
 							RefreshAll(%clientId,true);
 						}
 					}

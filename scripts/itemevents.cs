@@ -1,7 +1,9 @@
 function Item::giveItem(%player, %item, %delta, %showmsg)
 {
 	dbecho($dbechoMode, "Item::giveItem(" @ %player @ ", " @ %item @ ", " @ %delta @ ", " @ %showmsg @ ")");
-
+    if(%delta < 0)
+        return Item::takeItem(%player, -1*%item, %delta, %showmsg);
+        
 	%clientId = Player::getClient(%player);
 
 	//i used to restrict what you could pick up here, but that sucks, so i made
@@ -14,6 +16,28 @@ function Item::giveItem(%player, %item, %delta, %showmsg)
 		Client::sendMessage(%clientId, 0, "You received " @ %delta @ " " @ %item.description @ ".");
 
 	Player::incItemCount(%clientId, %item, %delta);
+
+	return %delta;
+}
+
+function Item::takeItem(%player, %item, %delta, %showmsg)
+{
+	dbecho($dbechoMode, "Item::takeItem(" @ %player @ ", " @ %item @ ", " @ %delta @ ", " @ %showmsg @ ")");
+    if(%delta < 0)
+        return Item::giveItem(%player, -1*%item, %delta, %showmsg);
+        
+	%clientId = Player::getClient(%player);
+
+	//i used to restrict what you could pick up here, but that sucks, so i made
+	//it so you can pick up anything, but you can't EQUIP anything. (see Item::onUse)
+
+	//also, the only reason you'd be getting a giveItem of an Equipped type is
+	//by giving the client an item and pre-equipping it.
+
+	if(%showmsg)
+		Client::sendMessage(%clientId, 0, "You lost " @ %delta @ " " @ %item.description @ ".");
+
+	Player::decItemCount(%clientId, %item, %delta);
 
 	return %delta;
 }
@@ -231,12 +255,13 @@ function Item::onCollision(%this,%object)
 		}
             else if(%item.className == "Accessory" || $LoreItem[%item] == True)
             {
-			if(Item::giveItem(%clientId, %item, 1, True))
-			{
-				Item::playPickupSound(%this);
-				RefreshAll(%clientId,false);
-				deleteObject(%this);
-			}
+                //if(Item::giveItem(%clientId, %item, 1, True))
+                if(RPGItem::incItemCount(%clientId, %item, 1, True))
+                {
+                    Item::playPickupSound(%this);
+                    RefreshAll(%clientId,false);
+                    deleteObject(%this);
+                }
 		}
 		else if(%item.className == "TownBot")
 		{
@@ -245,12 +270,13 @@ function Item::onCollision(%this,%object)
             else
             {
             	//%count = Player::getItemCount(%object,%item);
-            	if(Item::giveItem(%object, %item, %this.delta, True))
-                  {
+            	//if(Item::giveItem(%object, %item, %this.delta, True))
+                if(RPGItem::incItemCount(%clientId, %item, %this.delta, True))
+                {
                   	Item::playPickupSound(%this);
-				RefreshAll(%clientId);
-                        Item::respawn(%this);
-			}
+                    RefreshAll(%clientId);
+                    Item::respawn(%this);
+                }
 		}
 	}
 }
@@ -288,8 +314,8 @@ function Item::onUse(%player,%item)
 				if(%cnt < $maxAccessory[GetAccessoryVar(%item, $AccessoryType)])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "You equipped " @ %item.description @ ".");
-					Player::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-					Player::setItemCount(%player, %item @ "0", Player::getItemCount(%player, %item @ "0")+1);
+					RPGItem::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
+					RPGItem::setItemCount(%player, %item @ "0", Player::getItemCount(%player, %item @ "0")+1);
 				}
 				else
 					Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you have too many already equipped.~wC_BuySell.wav");
@@ -304,8 +330,8 @@ function Item::onUse(%player,%item)
 		{
 			%o = String::getSubStr(%item, 0, String::len(%item)-1);	//remove the 0
 			Client::sendMessage(%clientId, $MsgBeige, "You unequipped " @ %item.description @ ".");
-			Player::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-			Player::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
+			RPGItem::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
+			RPGItem::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);
@@ -352,7 +378,7 @@ function Item::onDrop(%player,%item)
 					Item::playPickupSound(%obj);
 				}
 
-				Player::decItemCount(%player,%item,%delta);
+				RPGItem::decItemCount(Player::getClient(%player),%item,%delta);
 				RefreshAll(Player::getClient(%player),false);
 
 				return %obj;

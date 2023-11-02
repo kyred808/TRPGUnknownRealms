@@ -151,7 +151,7 @@ function Player::onKilled(%this)
 					else
 					{
 						%tmploot = %tmploot @ %b @ " " @ Player::getItemCount(%clientId, %a) @ " ";
-						Player::setItemCount(%clientId, %a, 0);
+						RPGItem::setItemCount(%clientId, %a, 0);
 					}
 					if(String::len(%tmploot) > 200)
 					{

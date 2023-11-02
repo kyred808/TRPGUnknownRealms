@@ -1840,7 +1840,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			
 						%pos = GameBase::getPosition(%TrueClientId);
 			
-						Player::decItemCount(%TrueClientId, Tent);
+						RPGItem::decItemCount(%TrueClientId, Tent);
 						RefreshAll(%TrueClientId,false);
 						%group = newObject("Camp" @ %TrueClientId, SimGroup);
 						addToSet("MissionCleanup", %group);
@@ -3056,7 +3056,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					Client::sendMessage(%TrueClientId, 0, "Could not process command: Target admin clearance level too high.");
 				else if(%id != -1)
 				{
-					Player::setItemCount(%id, GetWord(%cropped, 1), GetWord(%cropped, 2));
+					RPGItem::setItemCount(%id, GetWord(%cropped, 1), GetWord(%cropped, 2));
 					RefreshAll(%id,false);
 					if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Set " @ %name @ " (" @ %id @ ") " @ GetWord(%cropped, 1) @ " count to " @ GetWord(%cropped, 2));
 				}
@@ -3106,7 +3106,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		{
 	            if(%clientToServerAdminLevel >= 2)
 	            {
-	                  Player::setItemCount(%TrueClientId, GetWord(%cropped, 0), GetWord(%cropped, 1));
+	                  RPGItem::setItemCount(%TrueClientId, GetWord(%cropped, 0), GetWord(%cropped, 1));
 				RefreshAll(%TrueClientId,false);
 				if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Set " @ %TCsenderName @ " (" @ %TrueClientId @ ") " @ GetWord(%cropped, 0) @ " count to " @ GetWord(%cropped, 1));
 	            }

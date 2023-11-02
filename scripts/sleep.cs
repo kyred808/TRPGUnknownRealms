@@ -168,7 +168,7 @@ function DoCampSetup(%clientId, %step, %pos)
 	{
 		%g = "MissionCleanup/Camp" @ %clientId;
 
-		Player::incItemCount(%clientId, Tent);
+		RPGItem::incItemCount(%clientId, Tent);
 		RefreshAll(%clientId,false);
 
 		//so the players in the grouptrigger get kicked out first.

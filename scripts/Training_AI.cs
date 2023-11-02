@@ -51,7 +51,7 @@ function Training::setupAI(%clientId)
          AI::setVar( %AIname,  attackMode, 0);
          AI::DirectiveTarget(%AIname, %clientId);
       }
-      AI::callWithId("*", Player::setItemCount, blaster, 1);
+      AI::callWithId("*", RPGItem::setItemCount, blaster, 1);
       AI::callWithId("*", Player::mountItem, blaster, 0);
       AI::SetVar( "*", triggerPct, 0.03 );
    }

@@ -216,6 +216,6 @@ function UberBoss::GiveStuff(%aiId)
     GiveThisStuff(%aiId,"LVL 85 CLASS Fighter warhammer 1");
     //HardcodeAIskills(%aiId);
     UberBoss::SkillSetup(%aiId);
-    Player::incItemCount(%aiId,FieldPlateArmor0);
+    RPGItem::incItemCount(%aiId,FieldPlateArmor0);
     //Player::mountItem(%aiId,WarMaul,0);
 }

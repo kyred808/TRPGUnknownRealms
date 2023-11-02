@@ -491,7 +491,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 	GameBase::setRotation(%clientId, %rot);
 
     Belt::TakeThisStuff(%clientId, %loadedProjectile,1);
-	//Player::decItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon));
+	//RPGItem::decItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon));
 
 	PostAttack(%clientId, %weapon);
 }

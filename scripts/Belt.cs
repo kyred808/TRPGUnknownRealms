@@ -1683,6 +1683,33 @@ function Belt::TakeThisStuff(%clientid,%item,%amnt)
 	}
 }
 
+function Belt::SetItemCount(%clientId,%item,%amnt)
+{
+    %amnt = floor(%amnt);
+    %item = $beltitem[%item, "Item"];
+    %type = $beltitem[%item, "Type"];
+    %list = fetchdata(%clientid,%type);
+    %count = Belt::ItemCount(%item,%list);
+    
+    if(%amnt > 0)
+    {
+        if(%count > 0)
+        {
+            %list = Belt::RemoveFromList(%list, %item@" "@%count);
+        }
+        %list = Belt::AddToList(%list, %item@" "@%amnt);
+        storeData(%clientId,%type,%list);
+        Belt::refreshFullBeltList(%clientid);
+    }
+    else if(%amnt == 0)
+    {
+        %list = Belt::RemoveFromList(%list, %item@" "@%count);
+        storeData(%clientId,%type,%list);
+        Belt::refreshFullBeltList(%clientid);
+    }
+    return %amnt;
+}
+
 function isBeltItem(%item)
 {
     dbecho($dbechoMode, "Belt::isBeltItem("@ %item @")");

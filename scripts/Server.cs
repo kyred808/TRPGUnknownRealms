@@ -181,6 +181,7 @@ function createServer(%mission, %dedicated)
     exec(BeltItemDefs);
     exec(crafting);
     exec(CraftingItemDefs);
+    exec(RPGItemInterface);
     exec(Farming);
 	exec(fix);
     exec(admin_defs);
@@ -241,6 +242,8 @@ function createServer(%mission, %dedicated)
 	GenerateAllShieldCosts();
 	GenerateAllArmorCosts();
 
+    RPGItem::BuildInventoryItemList();
+    
 	InitObjectives();
 
 	//permanent banlist
