@@ -215,7 +215,7 @@ function getCroppedItem(%item)
 	return %nitem;
 }
 
-function GetAccessoryList(%clientId, %type, %filter)
+function OldGetAccessoryList(%clientId, %type, %filter)
 {
 	dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
 
@@ -357,6 +357,155 @@ function GetAccessoryList(%clientId, %type, %filter)
 	return %list;
 }
 
+function GetAccessoryList(%clientId, %type, %filter)
+{
+	dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
+
+	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid || %clientId.choosingGroup || %clientId.choosingClass)
+		return "";
+
+    if(%type == 10) //$ProjectileAccessoryType
+    {
+        %max = $Belt::ItemGroupItemCount["AmmoItems"];
+        for(%i = 0; %i < %max; %i++)
+        {
+            %item = $beltitem[%i+1,"Num","AmmoItems"];
+            %count = Belt::HasThisStuff(%clientId,%item);
+            if(%count)
+            {
+                if(%filter != -1)
+                {
+                    %flag2 = False;
+                    %av = GetAccessoryVar(%item, $SpecialVar);
+                    for(%j = 0; GetWord(%av, %j) != -1; %j+=2)
+                    {
+                        %w = GetWord(%av, %j);
+                        if(String::findSubStr(%filter, %w) != -1)
+                            %flag2 = True;
+                    }
+                }
+                if(%filter == -1 || %flag2)
+                    %list = %list @ %item @ " ";
+            }
+		}
+		return %list;
+    }
+    
+	%list = "";
+    
+    %itemList = fetchData(%clientId,"InvItemList");
+    
+    for(%i = 0; String::getWord(%itemList,",",%i) != ","; %i++)
+    {
+        %itemName = String::getWord(%itemList,",",%i);
+        
+        %count = RPGItem::getItemCount(%clientId, %itemName);
+
+        if(%count)
+        {
+            %item = getItemData($RPGItem::InvItem[%itemName,Index]);
+            %flag = "";
+            %class = %item.className;
+			if(%type == 1)
+			{
+				if(%class == "Accessory")
+					%flag = True;
+			}
+			else if(%type == 2)
+			{
+				if(%class == "Equipped")
+					%flag = True;
+			}
+			else if(%type == 3)
+			{
+				if(%class == "Accessory" || %class == "Equipped")
+					%flag = True;
+			}
+			else if(%type == 4)
+			{
+                %weapCk = String::icompare(%class,"Weapon") == 0;
+                %bpCk = String::icompare(%class,"Backpack") == 0;
+				if(String::icompare(%class,"Equipped") == 0|| %weapCk || %bpCk)
+				{
+					if(%weapCk)
+					{
+						if(Player::getMountedItem(%clientId, $WeaponSlot) == %item)
+							%flag = True;
+					}
+					else if(%bpCk)
+					{
+						if(Player::getMountedItem(%clientId, $BackpackSlot) == %item)
+							%flag = True;
+					}
+					else
+						%flag = True;
+				}
+			}
+			else if(%type == 5)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $SwordAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 6)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $AxeAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 7)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $PolearmAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 8)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $BludgeonAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 9)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $RangedAccessoryType)
+					%flag = True;
+			}
+			//else if(%type == 10)
+			//{
+			//	if($AccessoryVar[%item, $AccessoryType] == $ProjectileAccessoryType)
+			//		%flag = True;
+			//}
+            else if(%type == 11)
+            {
+                if($AccessoryVar[%item, $AccessoryType] == $ShortBladeAccessoryType)
+                    %flag = True;
+            }
+            else if(%type == 12)
+            {
+                if($AccessoryVar[%item, $AccessoryType] == $PickAxeAccessoryType)
+                    %flag = True;
+            }
+			else if(%type == -1)
+				%flag = True;
+
+			if(%flag)
+			{
+				if(%filter != -1)
+				{
+					%flag2 = "";
+					%av = GetAccessoryVar(%item, $SpecialVar);
+					for(%j = 0; GetWord(%av, %j) != -1; %j+=2)
+					{
+						%w = GetWord(%av, %j);
+						if(String::findSubStr(%filter, %w) != -1)
+							%flag2 = True;
+					}
+				}
+				if(%filter == -1 || %flag2)
+					%list = %list @ %item @ " ";
+			}
+        }
+    }
+	return %list;
+}
+
+
 function AddPoints(%clientId, %char)
 {
 	dbecho($dbechoMode, "AddPoints(" @ %clientId @ ", " @ %char @ ")");
@@ -366,8 +515,6 @@ function AddPoints(%clientId, %char)
 	for(%i = 0; GetWord(%list, %i) != -1; %i++)
 	{
 		%w = GetWord(%list, %i);
-        //if(%char == 10)
-        //    echo(%add @" "@%w);
 		%slot = "";
 		if(%w.className == Weapon)
 			%slot = $WeaponSlot;
@@ -385,15 +532,15 @@ function AddPoints(%clientId, %char)
 			%count = Player::getItemCount(%clientId, %w);
 
 		%tmp = GetAccessoryVar(%w, $SpecialVar);
-        //echo("Temp: "@ %tmp);
+        
 		for(%j = 0; GetWord(%tmp, %j) != -1; %j+=2)
 		{
 			%e = GetWord(%tmp, %j);
-			if(String::findSubStr(%char, %e) != -1)
+            //echo(%e);
+			//if(String::findSubStr(%char, %e) != -1)
+            if(%char == %e)
             {
 				%add += GetWord(%tmp, %j+1) * %count;
-                //if(%char == 10)
-                //    echo(%add @" "@%e);
             }
 		}
 	}

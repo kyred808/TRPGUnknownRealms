@@ -56,9 +56,7 @@ function RPGItem::updateItemList(%clientId,%item)
     {
         if(%found)
         {
-            echo("Change");
             %invList = String::replace(%invList,%item@",","");
-            echo(%invList);
             if(String::right(%invList,1) != ",")
                 %invList = %invList @",";
             storeData(%clientId,"InvItemList",%invList);

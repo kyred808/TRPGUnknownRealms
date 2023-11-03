@@ -1,4 +1,4 @@
-function GetWeight(%clientId)
+function OldGetWeight(%clientId)
 {
 	dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
 
@@ -34,6 +34,72 @@ function GetWeight(%clientId)
 				$GetWeight::ArmorMod = GetWord(%specialvar, 1);
 		}
 	}
+    
+    %beltList = fetchData(%clientId,"AllBelt");
+    %i = 0;
+    %currentItem = getWord(%beltList,%i);
+    while(%currentItem != -1)
+    {
+        %count = getWord(%beltList,%i+1);
+        %weight = GetAccessoryVar(%currentItem, $Weight);
+        if(%weight != "" && %weight != False)
+            %total += %weight * %count;
+        
+        %i += 2;
+        %currentItem = getWord(%beltList,%i);
+    }
+    
+    for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+    {
+        %slotName = $BeltEquip::Slot[%i,Name];
+        %item = Player::GetEquippedBeltItem(%clientId,%slotName);
+        if(%item != "")
+        {
+            %weight = GetAccessoryVar(%item, $Weight);
+            if(%weight != "" && %weight != False)
+                %total += %weight;
+        }
+    }
+	//add up coins
+	%total += fetchData(%clientId, "COINS") * $coinweight;
+
+	storeData(%clientId, "tmpWeight", %total);
+	return %total;
+}
+
+function GetWeight(%clientId)
+{
+    dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
+
+	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
+		return 0;
+
+	//== HELPS REDUCE LAG WHEN THERE ARE SIMULTANEOUS CALLS ======
+	%time = getIntegerTime(true);
+	if(%time - %clientId.lastGetWeight <= 1 && fetchData(%clientId, "tmpWeight") != "")
+		return fetchData(%clientId, "tmpWeight");
+	%clientId.lastGetWeight = %time;
+	//============================================================
+
+	$GetWeight::ArmorMod = "";
+	%total = 0;
+    %itemList = fetchData(%clientId,"InvItemList");
+    
+    for(%i = 0; String::getWord(%itemList,",",%i) != ","; %i++)
+    {
+        %checkItem = String::getWord(%itemList,",",%i);
+        %itemcount = Player::getItemCount(%clientId, %checkItem);
+        if(%itemcount)
+        {
+            %weight = GetAccessoryVar(%checkItem, $Weight);
+            if(%weight != "" && %weight != False)
+                %total += %weight * %itemcount;
+                
+            %specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
+            if(GetWord(%specialvar, 0) == 8 && %checkItem.className == Equipped)
+				$GetWeight::ArmorMod = GetWord(%specialvar, 1);
+        }
+    }
     
     %beltList = fetchData(%clientId,"AllBelt");
     %i = 0;

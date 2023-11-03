@@ -321,6 +321,7 @@ function UpdateZone(%object)
 	dbecho($dbechoMode, "UpdateZone(" @ %object @ ")");
 	%clientId = Player::getClient(%object);
 	%zoneflag = fetchData(%clientId, "tmpzone");
+    
 	//check if the player was found inside a zone
 	if(%zoneflag != "")
 	{

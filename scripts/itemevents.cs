@@ -301,21 +301,31 @@ function Item::onUse(%player,%item)
 		if(%item.className == Accessory)
 		{
 			%cnt = 0;
-			%max = getNumItems();
-			for(%i = 0; %i < %max; %i++)
-			{
-				%checkItem = getItemData(%i);
-				if(%checkItem.className == Equipped && GetAccessoryVar(%checkItem, $AccessoryType) == GetAccessoryVar(%item, $AccessoryType))
-					%cnt += Player::getItemCount(%player, %checkItem);
-			}
+            %itemList = fetchData(%clientId,"InvItemList");
+            for(%i = 0; String::getWord(%itemList,",",%i) != ","; %i++)
+            {
+                %checkItem = String::getWord(%itemList,",",%i);
+                if(String::icompare($RPGItem::InvItem[%checkItem,ClassName],"Equipped") == 0 && GetAccessoryVar(%checkItem, $AccessoryType) == GetAccessoryVar(%item, $AccessoryType))
+                    %cnt += Player::getItemCount(%player, %checkItem);
+            }
+            //echo(%cnt);
+			//%max = getNumItems();
+			//for(%i = 0; %i < %max; %i++)
+			//{
+			//	%checkItem = getItemData(%i);
+			//	if(%checkItem.className == Equipped && GetAccessoryVar(%checkItem, $AccessoryType) == GetAccessoryVar(%item, $AccessoryType))
+			//		%cnt += Player::getItemCount(%player, %checkItem);
+			//}
+            
+            
 
 			if(SkillCanUse(%clientId, %item))
 			{
 				if(%cnt < $maxAccessory[GetAccessoryVar(%item, $AccessoryType)])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "You equipped " @ %item.description @ ".");
-					RPGItem::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-					RPGItem::setItemCount(%player, %item @ "0", Player::getItemCount(%player, %item @ "0")+1);
+					RPGItem::setItemCount(%clientId, %item, Player::getItemCount(%player, %item)-1);
+					RPGItem::setItemCount(%clientId, %item @ "0", Player::getItemCount(%player, %item @ "0")+1);
 				}
 				else
 					Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you have too many already equipped.~wC_BuySell.wav");
@@ -330,8 +340,8 @@ function Item::onUse(%player,%item)
 		{
 			%o = String::getSubStr(%item, 0, String::len(%item)-1);	//remove the 0
 			Client::sendMessage(%clientId, $MsgBeige, "You unequipped " @ %item.description @ ".");
-			RPGItem::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-			RPGItem::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
+			RPGItem::setItemCount(%clientId, %item, Player::getItemCount(%player, %item)-1);
+			RPGItem::setItemCount(%clientId, %o, Player::getItemCount(%player, %o)+1);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);

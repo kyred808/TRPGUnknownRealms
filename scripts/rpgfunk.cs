@@ -86,7 +86,8 @@ function updateSpawnStuff(%clientId)
 
 	//determine what player is carrying and transfer to spawnList
 	%s = "";
-	%max = getNumItems();
+    // This one can stay inefficient, because it is savecharacter related
+	%max = getNumItems(); 
 	for(%i = 0; %i < %max; %i++)
 	{
 		%checkItem = getItemData(%i);
@@ -450,6 +451,7 @@ function SaveCharacter(%clientId)
 	if(!IsDead(%clientId))
 	{
 		%s = "";
+        // Save character related, so it can stay inefficient
 		%max = getNumItems();
 		for(%i = 0; %i < %max; %i++)
 		{
@@ -3032,10 +3034,11 @@ function nsprintf(%in, %a1, %a2, %a3, %a4, %a5, %a6, %a7, %a8)
 	return msprintf(%in, %a[1], %a[2], %a[3], %a[4], %a[5], %a[6], %a[7], %a[8]);
 }
 
+
 function UnequipMountedStuff(%clientId)
 {
 	dbecho($dbechoMode, "UnequipMountedStuff(" @ %clientId @ ")");
-
+    // Rarely gets called.  Only when a player remorts or gets booted from a house
 	%max = getNumItems();
 	for(%i = 0; %i < %max; %i++)
 	{

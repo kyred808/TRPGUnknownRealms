@@ -1712,10 +1712,10 @@ function Belt::SetItemCount(%clientId,%item,%amnt)
 
 function isBeltItem(%item)
 {
-    dbecho($dbechoMode, "Belt::isBeltItem("@ %item @")");
-	%flag = flase;
+    dbecho($dbechoMode, "isBeltItem("@ %item @")");
+	%flag = false;
 	if((String::ICompare($beltitem[%item, "Item"], %item) == 0))
-		%flag = True;
+		%flag = true;
 	return %flag;
 }
 

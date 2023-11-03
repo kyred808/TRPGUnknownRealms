@@ -105,6 +105,7 @@ function Player::onKilled(%this)
 			%tmploot = %tmploot @ "COINS " @ floor(fetchData(%clientId, "COINS")) @ " ";
 		storeData(%clientId, "COINS", 0);
 
+        //Needs optimization, but not critical yet
 		%max = getNumItems();
 		for (%i = 0; %i < %max; %i++)
 		{
