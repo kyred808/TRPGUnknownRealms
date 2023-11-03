@@ -2163,7 +2163,8 @@ function CreateAndDetBomb(%clientId, %b, %castPos, %doDamage, %index)
 	if(%doDamage)
 		SpellRadiusDamage(%clientId, %castPos, %index);
 
-	playSound($Spell::endSound[%index], %castPos);
+    if(%index != -1)
+        playSound($Spell::endSound[%index], %castPos);
 }
 
 function SpellDamage(%clientId, %targetId, %damageValue, %index)

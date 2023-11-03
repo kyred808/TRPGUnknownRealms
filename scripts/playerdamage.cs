@@ -409,7 +409,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-	%skilltype = $SkillType[%weapon];
+    %skilltype = $SkillType[%weapon];
 
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
 	{
@@ -522,7 +522,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					%multi += CalculatePlayerSkill(%shooterClient, $SkillBashing) / 470;
 					%b = GameBase::getRotation(%shooterClient);
-					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing) / 15;
+					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing)/2;
+                    if(fetchData(%shooterClient,"isUberBoss"))
+                        %c = %c * 1.4;
 
 					%Bash = True;
 
@@ -537,22 +539,24 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			//else
 			//	%rweapondamage = 0;
 			%weapondamage = fetchData(%shooterClient,"ATK"); //GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
-            
+            if(%weapon == "UBBlast")
+                %weapondamage = %value;
+                
 			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
 
             %dmgRedPct = CalculateDamageReduction(%damagedClient);
-            
+
             %amr = fetchData(%damagedClient,"AMR");
             
-            echo("Value: "@%value @" ","DmgPct: "@ %dmgRedPct*100 @" ","AMR: "@%amr);
+            //echo("Value: "@%value @" ","DmgPct: "@ %dmgRedPct*100 @" ","AMR: "@%amr);
 			
 			%value = Cap(%value - %amr, 1, "inf");
-
+            //echo("Value after red: "@%value);
 			%a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
 			%value += %r;
             
-            %value = %value * (%dmgRedPct);
+            %value = %value - (%value * (%dmgRedPct));
             
 			if(%value < 1)
 				%value = 1;
@@ -986,14 +990,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				Player::setDamageFlash(%this,%flash);
 
 				//slow the player down for a bit
-				if(!Player::isAiControlled(%damagedClient))
-				{
-					storeData(%damagedClient, "SlowdownHitFlag", True);
-					RefreshWeight(%damagedClient);
-					schedule("storeData(" @ %damagedClient @ ", \"SlowdownHitFlag\", False);", $SlowdownHitDelay);
-					schedule("RefreshWeight(" @ %damagedClient @ ");", $SlowdownHitDelay, Client::getOwnedObject(%damagedClient));
-				}
-
+                if($SlowDownHitEnabled)
+                {
+                    if(!Player::isAiControlled(%damagedClient))
+                    {
+                        storeData(%damagedClient, "SlowdownHitFlag", True);
+                        RefreshWeight(%damagedClient);
+                        schedule("storeData(" @ %damagedClient @ ", \"SlowdownHitFlag\", False);", $SlowdownHitDelay);
+                        schedule("RefreshWeight(" @ %damagedClient @ ");", $SlowdownHitDelay, Client::getOwnedObject(%damagedClient));
+                    }
+                }
 				//If player not dead then play a random hurt sound
 				if(!Player::IsDead(%this))
 				{

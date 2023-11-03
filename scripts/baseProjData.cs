@@ -690,6 +690,31 @@ function Bombf::onAdd(%this)
 	schedule("Mine::Detonate(" @ %this @ ");",0.375,%this);
 }
 
+
+MineData ShockBomb
+{
+	mass = 5.0;
+	drag = 1.0;
+	density = 2.0;
+	elasticity = 0.15;
+	friction = 1.0;
+	className = "Handgrenade";
+	description = "Bomblet";
+	shapeFile = "force";
+	shadowDetailMask = 4;
+	explosionId = LargeShockwaveBoom;
+	explosionRadius = 25.0;
+	damageValue = 0.5;
+	damageType = $NullDamageType;
+	kickBackStrength = 0; //200
+	triggerRadius = 0.5;
+	maxDamage = 1.5;
+};
+function ShockBomb::onAdd(%this)
+{
+	schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
+}
+
 RocketData MeteorCrystalBeaconEffect
 { 
 	bulletShapeName = "shockwave_large.dts"; 

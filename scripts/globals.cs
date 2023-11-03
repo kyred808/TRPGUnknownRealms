@@ -39,6 +39,8 @@ $initHaze = 900;
 $currentHaze = $initHaze;
 $currentSky = "lushdayclear.dml";
 
+$SlowDownHitEnabled = false;
+
 $dayCycleSky[1] = "lushdayclear.dml";
 $dayCycleSky[2] = "litesky.dml";
 $dayCycleSky[3] = "lushsky_night.dml";

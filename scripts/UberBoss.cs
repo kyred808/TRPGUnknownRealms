@@ -1,10 +1,18 @@
 
-$UberBoss::triggerRange = 40;
+$UberBoss::triggerRange = 30;
+
+$UberBoss::ProxyRange = 60;
 
 $UberBoss::StandWaitingSetup = 0;
 $UberBoss::StandWaitingMoveToPos = 1;
 $UberBoss::StandWaitingWaitForTarget = 2;
 $UberBoss::StandWaitingTeleportDelay = 90;
+
+$UberBurstScale = 900;
+$SkillType[UBBlast] = $BludgeoningDamageType;
+$UberBoss::LoseTargetDist = 350;
+
+$UberBoss::CombatStateAttacking = 0;
 
 function UberBoss::TestSpawn()
 {
@@ -54,7 +62,26 @@ function UberBoss::clearVars(%aiId)
     storeData(%aiId,"currentTarget","");
     storeData(%aiId,"ubCombatStarted","");
     storeData(%aiId,"ubStandWaitingTime","");
+    storeData(%aiId,"ubCombatState","");
 }
+
+function UberBoss::DoReset(%aiName,%aiId)
+{
+    UberBoss::clearVars(%aiId);
+    AI::newDirectiveRemove(%aiName, 99);
+    AI::newDirectiveRemove(%aiName, 100);
+    storeData(%aiId,"ubStandWaiting",0);
+    Player::unmountItem(Client::getOwnedObject(%aiId),0);
+}
+
+function UberBoss::switchTarget(%aiName,%aiId,%targetClient)
+{
+    storeData(%aiId,"currentTarget",%targetClient);
+    AI::newDirectiveFollow(%aiName,%targetClient,0,99);
+    AI::setVar(%aiName, seekOff, Vector::getFromRot(Gamebase::getRotation(%targetClient),GetRange(WarMaul)-1));
+}
+
+
 
 function UberBoss::Periodic(%aiName)
 {
@@ -68,12 +95,13 @@ function UberBoss::Periodic(%aiName)
 	%aiPos = GameBase::getPosition(%aiId);
     %marker = fetchData(%aiId,"ubMarker");
     %standWaiting = fetchData(%aiId,"ubStandWaiting");
-    %combatStarted = fetchData(%aiId,"ubStandWaiting");
+    %combatStarted = fetchData(%aiId,"ubCombatStarted");
     if(%standWaiting != "")
     {
         if(%standWaiting == 0)
         {
-            AI::newDirectiveWaypoint(%aiName, Gamebase::getPosition(%marker), 70);
+            setHP(%aiId);
+            AI::newDirectiveWaypoint(%aiName, Gamebase::getPosition(%marker), 100);
             storeData(%aiId,"ubCombatReady",false);
             //AI::DirectiveCallback1(%aiName,UberBoss::setReadyFlag,70); //This might be causing a syntax error.  Not sure yet
             AI::SetVar(%aiName, spotDist, 500);
@@ -112,6 +140,73 @@ function UberBoss::Periodic(%aiName)
             deleteObject(%set);
         }
     }
+    else if(%combatStarted)
+    {
+        //Bash check
+        if(fetchData(%aiId,"blockBash") != "" && OddsAre(4))
+            storeData(%aiId,"NextHitBash",true);
+            
+        %state = fetchData(%aiId,"ubCombatState");
+        if(%state == $UberBoss::CombatStateAttacking)
+        {
+            %range = 2*$UberBoss::ProxyRange;
+            %set = newObject("set", SimSet);
+            %playerCnt = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %range, %range, %range, 0);
+            %ctarget = fetchData(%aiId,"currentTarget");
+            %tgtCnt = 0;
+            %targetDist = 0;
+            %newTarget = false;
+            %closest = 500000;
+            %closestId = "";
+            
+            %targetDist = Vector::getDistance(%aiPos, GameBase::getPosition(%ctarget));
+            
+            for(%i = 0; %i < %playerCnt; %i++)
+            {
+                %id = Player::getClient(Group::getObject(%set, %i));
+                
+                if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
+                {
+                    %tgtCnt++;
+                    if(%dist < %closest)
+                    {
+                        %closest = %dist;
+                        %closestId = %id;
+                        
+                    }
+                    if(%id != %ctarget)
+                    {
+                        if(OddsAre(5))
+                        {
+                            UberBoss::switchTarget(%aiName,%aiId,%id);
+                            %newTarget = true;
+                        }
+                        
+                    }
+                }
+            }
+            if(!%newTarget)
+            {
+                //Check if the target is still around
+                echo(%targetDist);
+                if(%targetDist >= $UberBoss::LoseTargetDist)
+                {
+                    if(%closestId != "")
+                    {
+                        UberBoss::switchTarget(%aiName,%aiId,%closestId);
+                    }
+                    else
+                        UberBoss::DoReset(%aiName,%aiId);
+                }
+            }
+            if(%tgtCnt >= 1 && OddsAre(3))
+            {
+                UberBoss::DoUberBurst(%aiId,%aiPos,%set);
+            }
+            
+            deleteObject(%set);
+        }
+    }
     
         
     //Hold still!
@@ -119,16 +214,37 @@ function UberBoss::Periodic(%aiName)
    // Dragon::SelectMovement(%aiName);
 }
 
+function UberBoss::DoUberBurst(%aiId,%pos,%set)
+{
+    playSound(SoundUberDeath1,%pos);
+    CreateAndDetBomb(%aiId, "ShockBomb", %pos, false, -1);
+    
+    for(%i = 0; %i < Group::objectCount(%set); %i++)
+    {
+        %pl = Group::getObject(%set, %i);
+        if(GameBase::getTeam(%pl) != GameBase::getTeam(%aiId))
+        {
+            %ppos = Gamebase::getPosition(%pl);
+            %dist = Vector::getDistance(%ppos,%pos);
+            %dir = Vector::Normalize(Vector::sub(%ppos,%pos));
+            %imp = ScaleVector(%dir,$UberBurstScale/%dist);
+            echo("Impulse: "@ %imp);
+            Player::applyImpulse(%pl,%imp);
+            GameBase::virtual(%pl, "onDamage", $BludgeoningDamageType, 350/%dist, "0 0 0", "0 0 0", "0 0 0", "torso", "", %aiId, "UBBlast");
+        }
+    }
+}
+
 function UberBoss::teleportToMarker(%aiId)
 {
-    Gamebase::setPositon(%aiId,fetchData(%aiId,"ubMarker"));
+    Gamebase::setPosition(%aiId,Gamebase::getPosition(fetchData(%aiId,"ubMarker")));
 }
 
 // Laugh
 function UberBoss::PreCombat(%aiName,%aiId)
 {
     dbecho($dbechoMode, "UberBoss::PreCombat(" @ %aiName @ ","@%aiId@")");
-    AI::DirectiveRemove(%aiName,70);
+    AI::newDirectiveRemove(%aiName,100);
 
     //OgreAcquired1
     %pos = Gamebase::getPosition(%aiId);
@@ -137,6 +253,8 @@ function UberBoss::PreCombat(%aiName,%aiId)
     schedule("Player::mountItem("@%aiId@",warhammer,0);",1.7);
     schedule("UberBoss::StartCombat("@%aiName@","@%aiId@");",2);
 }
+
+
 
 function UberBoss::StartCombat(%aiName,%aiId,%interrupt)
 {
@@ -152,6 +270,7 @@ function UberBoss::StartCombat(%aiName,%aiId,%interrupt)
     AI::setVar(%aiName, seekOff, Vector::getFromRot(ScaleVector(Gamebase::getRotation(%target),GetRange(WarMaul)-1)));
     storeData(%aiId,"ubCombatStarted",true);
     storeData(%aiId,"NextHitBash",true);
+    storeData(%aiId,"ubCombatState",$UberBoss::CombatStateAttacking);
 }
 
 function UberBoss::setReadyFlag(%aiName)
@@ -172,6 +291,13 @@ function UberBoss::debugState(%aiId)
     echo("Stand Waiting State: "@fetchData(%aiId,"ubStandWaiting"));
     echo("Stand Waiting Time: "@fetchData(%aiId,"ubStandWaitingTime"));
     echo("Current Target: "@fetchData(%aiId,"currentTarget"));
+    echo("Combat State: "@fetchData(%aiId,"ubCombatState"));
+    
+    if(fetchData(%aiId,"currentTarget") != "")
+    {
+        %dist = Vector::getDistance(Gamebase::getPosition(%aiId),Gamebase::getPosition(fetchData(%aiId,"currentTarget")));
+        echo("Target Dist: "@ %dist);
+    }
 }
 
 function UberBoss::setupAIDefaults(%aiName)
@@ -200,7 +326,7 @@ function UberBoss::SkillSetup(%aiId)
 	$PlayerSkill[%aiId, $SkillDefensiveCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillNeutralCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
     $PlayerSkill[%aiId, $SkillWeightCapacity] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
-	$PlayerSkill[%aiId, $SkillEndurance] = ( (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel) ) / 2;
+	$PlayerSkill[%aiId, $SkillEndurance] = ( (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel) ) / 1.2;
 
 	$PlayerSkill[%aiId, $SkillOffensiveCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel) / 2;
 	$PlayerSkill[%aiId, $SkillSenseHeading] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);

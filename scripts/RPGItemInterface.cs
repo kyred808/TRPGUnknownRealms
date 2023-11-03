@@ -33,6 +33,8 @@ function RPGItem::setItemCount(%clientId,%item,%amt)
 
 function RPGItem::incItemCount(%clientId,%item,%amt,%showmsg)
 {
+    if(%amt == "")
+        %amt = 1;
     %type = RPGItem::getItemInternalType(%item);
     
     if(%type == $RPGItem::InvItemType)
@@ -89,6 +91,8 @@ function RPGItem::getItemCount(%clientId,%item)
 
 function RPGItem::decItemCount(%clientId,%item,%amt,%showmsg)
 {
+    if(%amt == "")
+        %amt = 1;
     %type = RPGItem::getItemInternalType(%item);
     
     if(%type == $RPGItem::InvItemType)

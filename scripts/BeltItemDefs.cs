@@ -194,7 +194,7 @@ $StealProtectedItem["enhancedneucastscroll"] = true;
 // Food Items
 BeltItem::Add("Bread","Bread","FoodItems",0.5,50,750,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.2/$TribesDamageToNumericDamage@" 60");
 BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751);
-BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752);
+BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752,"EatFoodItem,cooldown 60,StamRegen 0.4 60,HPRegen "@0.5/$TribesDamageToNumericDamage@" 60");
 BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,500,753);
 BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,1200,754);
 

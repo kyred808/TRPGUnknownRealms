@@ -1267,7 +1267,7 @@ function AI::onTargetDied(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetDied(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-
+    echo("TARGET DIED");
 	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }                                 
