@@ -658,7 +658,32 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				}
 	            }
 			return;
-	      }
+        }
+        
+        if(%w1 == "#skill")
+        {
+            Player::useAbility(%TrueClientId,%cropped);
+        }
+        
+        if(%w1 == "#use")
+        {
+            if(%cropped != "")
+            {
+                %count = RPGItem::getItemCount(%TrueClientId,%cropped);
+                if(%count != "")
+                {
+                    if(!RPGItem::useItem(%TrueClientId,%cropped))
+                    {
+                        Client::sendMessage(%TrueClientId, $MsgRed, "Unable to use "@ %cropped);
+                    }
+                }
+                else
+                {
+                    Client::sendMessage(%TrueClientId, 0, %cropped @" is not a valid item");
+                }
+            }
+            return;
+        }
 	      if(%w1 == "#whatismyclientid")
 		{
 	            Client::sendMessage(%TrueClientId, 0, "Your clientId is " @ %TrueClientId);

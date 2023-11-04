@@ -830,6 +830,73 @@ RocketData DragonBlast
 };
 
 
+ExplosionData MageBoltExp
+{
+	shapeName = "bluex.dts";
+	soundId = rocketExplosion;
+	faceCamera = true;
+	randomSpin = true;
+	hasLight = true;
+	lightRange = 8.0;
+	timeScale = 1.5;
+	timeZero = 0.250;
+	timeOne = 0.850;
+	colors[0] = { 0.4, 0.4, 1.0 };
+	colors[1] = { 1.0, 1.0, 1.0 };
+	colors[2] = { 1.0, 0.95, 1.0 };
+	radFactors = { 0.5, 1.0, 1.0 };
+};
+
+RocketData MageBoltTail
+{
+	//bulletShapeName = "discb.dts";
+    bulletShapeName = "AUTO_MAGIC.dts";
+	explosionTag = MageBoltExp; //energyExp
+	collisionRadius = 0.0;
+	mass = 2.0;
+	damageClass = 1; // 0 impact, 1, radius
+	damageValue = 75;
+	damageType = $SpellDamageType;
+	explosionRadius = 7.5;
+	kickBackStrength = 150.0;
+	muzzleVelocity = 80.0;
+	terminalVelocity = 80.0;
+	acceleration = 0.0;
+	totalTime = 3.1;
+	liveTime = 3.0;
+	lightRange = 5.0;
+	lightColor = { 0.4, 0.4, 1.0 };
+	inheritedVelocityScale = 0.5;
+	// rocket specific
+	trailType = 1;
+	trailLength = 28;
+	trailWidth = 1.2;
+	soundId = SoundDiscSpin;
+};
+
+BulletData MageBoltMain
+{
+   bulletShapeName    = "enbolt.dts";
+   explosionTag       = MageBoltExp;
+
+   damageClass        = 1;
+   damageValue        = 0;
+   damageType         = $SpellDamageType;
+   explosionRadius    = 7.5;
+   kickBackStrength   = 150.0;
+   
+   muzzleVelocity     = 80.0;
+   totalTime          = 3.1;
+   liveTime           = 3.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 1;
+};
+
 
 //--------------------------------------
 BulletData MiniFusionBolt

@@ -126,7 +126,16 @@ function Game::initialMissionDrop(%clientId)
 		if(%clientId.choosingGroup)
                   StartStatSelection(%clientId);
 		else
-			Game::playerSpawn(%clientId, false);
+        {
+            if(%clientId.spawnDead)
+            {
+                %clientId.spawnDead = "";
+                Game::playerSpawn(%clientId, true);
+                schedule("Client::sendMessage("@ %clientId@","@$MsgRed@",\"You were dead during last world saved, so you respawned in town.\");",1);
+            }
+            else
+                Game::playerSpawn(%clientId, false);
+        }
 	}
 }
 

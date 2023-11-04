@@ -27,7 +27,7 @@ function Game::pickPlayerSpawn(%clientId, %respawn)
 
     if(%clientId.newPlayer)
     {
-        %group = nameToID("MissionGroup/Zones/"@$NewPlayerSpawnZone@"/DropPoints");
+        %group = nameToID("MissionGroup/Realm0/Zones/"@$NewPlayerSpawnZone@"/DropPoints");
     }
     else
     {

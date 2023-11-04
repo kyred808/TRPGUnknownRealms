@@ -382,7 +382,7 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
     $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
-    
+    $funk::var["[\"" @ %name @ "\", 0, 33]"] = IsDead(%clientId);
     
     for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
     {
@@ -552,6 +552,10 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "MyHouse", $HouseName[$funk::var[%name, 0, 30]]);
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
         storeData(%clientId, "MANA", $funk::var[%name, 0, 32]);
+        
+        // Player saved while dead
+        if($funk::var[%name, 0, 33])
+            %clientId.spawnDead = true;
         
         for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
         {
@@ -3118,15 +3122,15 @@ function DotProd(%vec, %scalar)
 	return %return;
 }	
 
-function Sin(%theta)
-{
-	return (%theta - (pow(%theta,3)/6) + (pow(%theta,5)/120) - (pow(%theta,7)/5040) + (pow(%theta,9)/362880) - (pow(%theta,11)/39916800));
-}
-
-function Cos(%theta)
-{
-	return (1 - (pow(%theta,2)/2) + (pow(%theta,4)/24) - (pow(%theta,6)/720) + (pow(%theta,8)/40320) - (pow(%theta,10)/3628800));
-}
+//function Sin(%theta)
+//{
+//	return (%theta - (pow(%theta,3)/6) + (pow(%theta,5)/120) - (pow(%theta,7)/5040) + (pow(%theta,9)/362880) - (pow(%theta,11)/39916800));
+//}
+//
+//function Cos(%theta)
+//{
+//	return (1 - (pow(%theta,2)/2) + (pow(%theta,4)/24) - (pow(%theta,6)/720) + (pow(%theta,8)/40320) - (pow(%theta,10)/3628800));
+//}
 function repackAlert(%clientId)
 {
 	if(%clientId.repack == "")

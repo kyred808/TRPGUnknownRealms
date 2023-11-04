@@ -50,24 +50,24 @@ function remoteRepackKeyOverride(%server, %val)
 	}
 }
 
-/function String::len(%string)
-/{
-/	%chunk = 10;
-/	%length = 0;
-/
-/	for(%i = 0; String::getSubStr(%string, %i, 1) != ""; %i += %chunk)
-/		%length += %chunk;
-/	%length -= %chunk;
-/
-/	%checkstr = String::getSubStr(%string, %length, 99999);
-/	for(%k = 0; String::getSubStr(%checkstr, %k, 1) != ""; %k++)
-/		%length++;
-/
-/	if(%length == -%chunk)
-/		%length = 0;
-/
-/	return %length;
-/}
+function String::len(%string)
+{
+	%chunk = 10;
+	%length = 0;
+
+	for(%i = 0; String::getSubStr(%string, %i, 1) != ""; %i += %chunk)
+		%length += %chunk;
+	%length -= %chunk;
+
+	%checkstr = String::getSubStr(%string, %length, 99999);
+	for(%k = 0; String::getSubStr(%checkstr, %k, 1) != ""; %k++)
+		%length++;
+
+	if(%length == -%chunk)
+		%length = 0;
+
+	return %length;
+}
 
 //=====================================================
 //Buffered Center Print

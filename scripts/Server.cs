@@ -183,6 +183,7 @@ function createServer(%mission, %dedicated)
     exec(CraftingItemDefs);
     exec(RPGItemInterface);
     exec(Farming);
+    exec(Abilities);
 	exec(fix);
     exec(admin_defs);
     

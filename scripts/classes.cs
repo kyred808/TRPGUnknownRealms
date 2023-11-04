@@ -24,7 +24,7 @@ $MinHP[Elf] = 10;
 $MinHP[Minotaur] = 15;
 $MinHP[Uber] = 25;
 $MinHP[Enchanted] = 7;
-$MinHP[DeathKnight] = 5000;
+//$MinHP[DeathKnight] = 5000;
 $MinHP[DeathKnight] = 12;
 
 $ClassName[1, 0] = "Cleric";

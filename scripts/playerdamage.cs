@@ -416,9 +416,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		%damagedClient = Player::getClient(%this);
 		%shooterClient = %object;
         
-        if(fetchData(%damagedClient,"isUberBoss") && fetchData(%aiId,"ubCombatStarted") == "")
+        if(fetchData(%damagedClient,"isUberBoss") && fetchData(%damagedClient,"ubCombatStarted") == "")
         {
-            %swState = fetchData(%aiId,"ubStandWaiting");
+            %swState = fetchData(%damagedClient,"ubStandWaiting");
             if(%swState != "")
             {
                 if(%swState == 1)

@@ -916,13 +916,6 @@ StaticShapeData BiteBug
 	isTranslucent = "True";
 };
 
-StaticShapeData BigRed
-{
-    shapeFile = "BigRed";
-	maxDamage = 999.0;
-	isTranslucent = "True";
-};
-
 StaticShapeData BigTree
 {
     shapeFile = "bigrpgtree1";
@@ -930,3 +923,11 @@ StaticShapeData BigTree
 	isTranslucent = "True";
 };
 
+StaticShapeData AuraCharge
+{
+    //shapeFile = "AURA_LIGHTNING";
+    shapeFile = "pha_portal";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+    disableCollision = true;
+};

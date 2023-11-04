@@ -1731,6 +1731,11 @@ function Belt::ItemCount(%item,%list)
     return %ret;
 }
 
+function Belt::IsUsableItem(%item)
+{
+    return $beltitem[%item, "Special"] != "";
+}
+
 function Belt::AddToList(%list, %item)
 {
 	%list = %list @ %item @ " ";

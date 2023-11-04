@@ -41,7 +41,6 @@ function UberBoss::Spawn(%marker,%pos)
     %rot = Gamebase::getRotation(%marker);
 
     AI::otherCreate(%aiName,%aiName,UberArmor,%pos,%rot);
-    
     setAINumber(%aiName,%n);
     %aiId = AI::getId(%aiName);
     GameBase::setTeam(%aiId,7);
@@ -49,10 +48,26 @@ function UberBoss::Spawn(%marker,%pos)
     UberBoss::setupAIDefaults(%aiName);
     UberBoss::GiveStuff(%aiId);
     
+    AI::CallbackDied(%aiName,UberBoss::doDeath);
+    $ZoneCleanupProtected[%aiId] = true;
     storeData(%aiId,"ubMarker",%marker);
     storeData(%aiId,"isUberBoss",true);
     
     storeData(%aiId,"ubStandWaiting",$UberBoss::StandWaitingSetup);
+}
+
+function UberBoss::doDeath(%aiName)
+{
+    %aiId = AI::getId(%aiName);
+    if(fetchData(%aiId,"ubCombatStarted"))
+    {
+        UberBoss::stopMusic(%aiId);
+    }
+    
+    UberBoss::clearVars(%aiId);
+    storeData(%aiId,"ubMarker","");
+    storeData(%aiId,"isUberBoss","");
+    $ZoneCleanupProtected[%aiId] = false;
 }
 
 function UberBoss::clearVars(%aiId)
@@ -81,7 +96,49 @@ function UberBoss::switchTarget(%aiName,%aiId,%targetClient)
     AI::setVar(%aiName, seekOff, Vector::getFromRot(Gamebase::getRotation(%targetClient),GetRange(WarMaul)-1));
 }
 
+function UberBoss::startMusic(%aiId)
+{
+    //music_antaris_quake3.wav
+    %zone = fetchData(%aiId,"zone");
+    storeData(%aiId,"musicZone",%zone);
+    %zid = $Zone::FolderToID[%zone];
+    $Zone::Music[%zid,1] = "music_antaris_quake3.wav";
+    $Zone::MusicTicks[%zid,1] = 48;
+    
+    for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+    {
+        if(!Player::isAIControlled(%cl) && fetchData(%cl, "zone") == %zone)
+        {
+            //Repack
+            if(%cl.repack)
+            {
+                remoteeval(%cl,RSound,3);
+                %cl.MusicTicksLeft = 0;
+            }
+        }
+    }
+}
 
+function UberBoss::stopMusic(%aiId)
+{
+    %zz = fetchData(%aiId,"musicZone");
+    %zid = $Zone::FolderToID[%zz];
+    $Zone::Music[%zid,1] = "";
+    $Zone::MusicTicks[%zid,1] = "";
+    
+    for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+    {
+        if(!Player::isAIControlled(%cl) && fetchData(%cl, "zone") == %zone)
+        {
+            //Repack zone exit
+            if(%cl.repack)
+            {
+                remoteeval(%cl,RSound,3);
+                %cl.MusicTicksLeft = 0;
+            }
+        }
+    }
+}
 
 function UberBoss::Periodic(%aiName)
 {
@@ -134,6 +191,7 @@ function UberBoss::Periodic(%aiName)
                 if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
                 {
                     storeData(%aiId,"currentTarget",%id);
+                    UberBoss::StartMusic(%aiId);
                     UberBoss::PreCombat(%aiName,%aiId);
                 }
             }
@@ -143,7 +201,7 @@ function UberBoss::Periodic(%aiName)
     else if(%combatStarted)
     {
         //Bash check
-        if(fetchData(%aiId,"blockBash") != "" && OddsAre(4))
+        if(fetchData(%aiId,"blockBash") == "" && OddsAre(4))
             storeData(%aiId,"NextHitBash",true);
             
         %state = fetchData(%aiId,"ubCombatState");
@@ -271,6 +329,9 @@ function UberBoss::StartCombat(%aiName,%aiId,%interrupt)
     storeData(%aiId,"ubCombatStarted",true);
     storeData(%aiId,"NextHitBash",true);
     storeData(%aiId,"ubCombatState",$UberBoss::CombatStateAttacking);
+    
+    %zone = fetchData(%aiId,"zone");
+    
 }
 
 function UberBoss::setReadyFlag(%aiName)

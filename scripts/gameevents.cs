@@ -50,8 +50,8 @@ function Player::leaveMissionArea(%player)
 {
 }
 $TerrainOffset = "-5120 -3072 0";
-$MapExtent[0] = 6000;
-$MapExtent[1] = 6000;
+$MapExtent[0] = 6144;
+$MapExtent[1] = 6144;
 function MeteorWorldEvent()
 {
     //-5120 -3072 0 <- Terrain Offset
@@ -244,6 +244,41 @@ function Meteor::onRemove(%this)
     
 }
 
+function SpawnManaWell()
+{
+    %x = getRandomMT() * (2*$MapExtent[0]);
+    %y = getRandomMT() * $MapExtent[1];
+    
+    %randomPos = Vector::add($TerrainOffset,%x @" "@%y@" 150");
+    echo("Random Pos: "@ %randomPos);
+    %obj = newObject("ManaWell",StaticShape,"AuraCharge",true);//newObject("ManaWell",Marker,PathMarker);
+    Gamebase::setPosition(%obj,%randomPos);
+    addToSet("MissionCleanup", %obj);
+    %fail = false;
+    $los::position = "";
+    %los = Gamebase::getLOSInfo(%obj,1500,"-1.57 0 0");
+    if(!%los)
+        %los = Gamebase::getLOSInfo(%obj,1500,"1.57 0 0");
+    
+    if(!%los)
+        %fail = true;
+        
+    if(!%fail)
+    {
+        if(getObjectType($los::object) == "SimTerrain")
+        {
+            Gamebase::setPosition(%obj,Vector::add($los::position,"0 0 1"));
+            Gamebase::setRotation(%obj,Vector::getRotation(Vector::rotate($los::normal,$pi/2 @" 0 0")));
+            echo("Mana Well spawned at "@ $los::position);
+            Gamebase::playSequence(%obj,0,"power");
+        }
+        else
+            echo("No valid location found for mana well.");
+    }
+    else
+        echo("Unable to find a location to place mana well.");
+        
+}
 
 function RecursiveWorld(%seconds)
 {

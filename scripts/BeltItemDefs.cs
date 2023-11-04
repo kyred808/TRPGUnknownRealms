@@ -337,12 +337,14 @@ function Belt::UseItem(%clientId,%item)
             DrinkHealingPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
             Belt::TakeThisStuff(%clientId,%item,1);
             RefreshAll(%clientId,false);
+            return true;
         }
         else if(getWord($beltitem[%item, "Special"],0) == "DrinkStaminaPotion")
         {
             DrinkStaminaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
             Belt::TakeThisStuff(%clientId,%item,1);
             RefreshAll(%clientId,false);
+            return true;
         }
         else if(String::getWord($beltitem[%item, "Special"],",",0) == "EatFoodItem")
         {
@@ -359,8 +361,14 @@ function Belt::UseItem(%clientId,%item)
             }
             else
                 Client::sendMessage(%clientId, $MsgWhite, "You aren't ready to eat again.");
+                
+            return true;
         }
+        else
+            return false;
     }
+    else
+        return false;
 }
 
 function DrinkHealingPotion(%clientId,%item,%amt)

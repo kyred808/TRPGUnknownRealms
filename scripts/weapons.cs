@@ -3390,7 +3390,20 @@ function ChickenLauncherImage::onFire(%player, %slot)
     Player::unmountItem(%player,%slot);
 }
 
+// For hotkey stuff
 
+ItemData Blaster
+{
+   heading = "zOmg";
+	description = "Blaster";
+	className = "Weapon";
+   shapeFile  = "energygun";
+	hudIcon = "blaster";
+	shadowDetailMask = 4;
+	imageType = BlasterImage;
+	price = 0;
+	showWeaponBar = true;
+};
 
 ItemData PlasmaGun
 {

@@ -459,7 +459,9 @@ function processMenupickclass(%clientId, %opt)
 	%clientId.choosingClass = "";
     %clientId.newPlayer = true;
     if($RealmData::RealmIdToLabel[0] != "")
-        storeData(%clientId,$RealmData::RealmIdToLabel[0]);
+        storeData(%clientId,"Realm",$RealmData::RealmIdToLabel[0]);
+        
+    echo("New Player Dropping in Realm: "@fetchData(%clientId,"Realm"));
 	Game::playerSpawn(%clientId, false);
 
 	//######### set a few start-up variables ########

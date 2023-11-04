@@ -94,7 +94,7 @@ function RPGItem::decItemCount(%clientId,%item,%amt,%showmsg)
     if(%amt == "")
         %amt = 1;
     %type = RPGItem::getItemInternalType(%item);
-    
+    %ret = "";
     if(%type == $RPGItem::InvItemType)
     {
         %ret = Item::takeItem(Client::getOwnedObject(%clientId), %item, %amt, %showmsg);
@@ -106,6 +106,25 @@ function RPGItem::decItemCount(%clientId,%item,%amt,%showmsg)
         %ret = Belt::HasThisStuff(%clientid,%item);
     }
     return %ret;
+}
+
+function RPGItem::useItem(%clientId,%item)
+{
+    %type = RPGItem::getItemInternalType(%item);
+    
+    if(%type == $RPGItem::InvItemType)
+    {
+        //Item::onUse(Client::getOwnedObject(%clientId),%item);
+        Player::useItem(%clientId,%item);
+        return true;
+    }
+    else if(%type == $RPGItem::BeltItemType && Belt::IsUsableItem(%item))
+    {
+        Belt::UseItem(%clientid,%item);
+        return true;
+    }
+    else
+        return false;
 }
 
 function RPGItem::isBeltItem(%item)

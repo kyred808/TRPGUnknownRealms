@@ -1491,6 +1491,41 @@ instant SimGroup "MissionGroup" {
                     };
                 };
             };
+            instant SimGroup "DUNGEON Earth's Shackle" {
+                instant SimGroup "DropPoints" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1872.65 -2455.62 61.3646";
+                        rotation = "0 -0 0.899995";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1912.49 -2416.06 52.6795";
+                        rotation = "0 -0 1.99998";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1982.08 -2583.78 129.392";
+                        rotation = "0 -0 0.759986";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1864.73 -2479.83 64.3314";
+                        rotation = "0 -0 0.359987";
+                    };
+                };
+                instant Marker "480 480 200 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "1708.88 -2331.05 65.5998";
+                    rotation = "0 0 0";
+                };
+                instant SimGroup "MUSIC";
+            };
             instant SimGroup "PROTECTED Delkin Port" {
                 instant SimGroup "DropPoints" {
                     instant Marker "Marker1" {
@@ -1526,7 +1561,8 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
             };
-            instant SimGroup "MUSIC unknownmusic2.wav 6";
+            instant SimGroup "MUSIC area_plains.wav 45";
+            instant SimGroup "AMBIENTSOUND unknownmusic2.wav 15";
         };
         instant SimGroup "Keldrin" {
             locked = "0";
@@ -1889,10 +1925,11 @@ instant SimGroup "MissionGroup" {
             };
             instant Marker "SpawnMarker" {
                 dataBlock = "PathMarker";
-                name = "";
+                name = "Earth's Shackle";
                 position = "1674.06 -2288.29 65";
                 rotation = "0 0 0";
             };
+            //instant SimGroup "ZoneLocation Earth's Shackle";
             instant InteriorShape "tank161" {
                 fileName = "tank16.dis";
                 isContainer = "1";
