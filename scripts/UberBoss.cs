@@ -61,9 +61,9 @@ function UberBoss::Spawn(%marker,%pos)
     storeData(%aiId,"ubStandWaiting",$UberBoss::StandWaitingSetup);
 }
 
-$UberBoss::mobLoadout[0] = "CLASS Fighter COINS 300 Spear 1"
-$UberBoss::mobLoadout[1] = "CLASS Fighter COINS 300 WarAxe 1"
-$UberBoss::mobLoadout[2] = "CLASS Ranger COINS 300 Shortbow 1 SheafArrow 100 Dagger 1"
+$UberBoss::mobLoadout[0] = "CLASS Fighter COINS 300 Spear 1";
+$UberBoss::mobLoadout[1] = "CLASS Fighter COINS 300 WarAxe 1";
+$UberBoss::mobLoadout[2] = "CLASS Ranger COINS 300 Shortbow 1 SheafArrow 100 Dagger 1";
 
 function UberBoss::SpawnAddGroup(%aiId)
 {
@@ -168,7 +168,7 @@ function UberBoss::clearVars(%aiId)
     storeData(%aiId,"ubLeapTime","");
     storeData(%aiId,"ubLeapSetupPos","");
     storeData(%aiId,"isResetting","");
-    storeData(%aiId,"ubAddsSpawned","")
+    storeData(%aiId,"ubAddsSpawned","");
 }
 
 function UberBoss::DoReset(%aiName,%aiId)
