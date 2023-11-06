@@ -13,6 +13,11 @@ $SkillType[UBBlast] = $BludgeoningDamageType;
 $UberBoss::LoseTargetDist = 350;
 
 $UberBoss::CombatStateAttacking = 0;
+$UberBoss::CombatStateTowerLeapSetup = 1;
+$UberBoss::CombatStateTowerLeaping = 2;
+$UberBoss::CombatStateOnTower = 3;
+
+$UberBoss::LeapFudgeFactor = 5; //So their feet clear the tower
 
 function UberBoss::TestSpawn()
 {
@@ -56,9 +61,81 @@ function UberBoss::Spawn(%marker,%pos)
     storeData(%aiId,"ubStandWaiting",$UberBoss::StandWaitingSetup);
 }
 
+$UberBoss::mobLoadout[0] = "CLASS Fighter COINS 300 Spear 1"
+$UberBoss::mobLoadout[1] = "CLASS Fighter COINS 300 WarAxe 1"
+$UberBoss::mobLoadout[2] = "CLASS Ranger COINS 300 Shortbow 1 SheafArrow 100 Dagger 1"
+
+function UberBoss::SpawnAddGroup(%aiId)
+{
+    %pos = Gamebase::getPosition(%aiId);
+    %spMkr = fetchData(%aiId,"ubMarker");
+    %gndZ = getWord(Gamebase::getPosition(%spMkr),2);
+    %aiPosOnGround = Word::getSubWord(%pos,0,2) @" "@%gndZ;
+    
+    %minDist = 20;
+    
+    for(%i = 0; $UberBoss::mobLoadout[%i] != ""; %i++)
+    {
+        %spawnOffset = %minDist + (getRandomMT()*10) @" "@ %minDist + (getRandomMT()*10) @" 0";
+        UberBoss::SpawnAdd(%aiId,"Minion",OrcArmor,Vector::add(%aiPosOnGround,%spawnOffset),"0 0 "@ getRandomMT()*$pi/2,$UberBoss::mobLoadout[%i]);
+    }
+    
+    storeData(%aiId,"ubAddsSpawned",true);
+}
+
+function UberBoss::SpawnAdd(%ubAiId,%name,%armor,%pos,%rot,%loadout)
+{
+    %n = getAInumber();
+    %aiName = %name@%n;
+    
+    AI::otherCreate(%aiName,%aiName,%armor,%pos,%rot);
+    setAINumber(%aiName,%n);
+    %aiId = AI::getId(%aiName);
+    
+    Gamebase::setTeam(%aiId,Gamebase::getTeam(%ubAiId));
+    
+    %loadout = "LVL "@ fetchData(%ubAiId,"LVL")/3 @" "@%loadout;
+    
+    storeData(%aiId,"ubAiId",%ubAiId);
+    %mobList = fetchData(%ubAiId,"mobList");
+    storeData(%ubAiId,"mobList",%mobList @ %aiId @" ");
+    GiveThisStuff(%aiId,%loadout);
+    RPGItem::incItemCount(%aiId,ScaleMail0);
+    AI::CallbackDied(%aiName,UberBoss::mobDeath);
+    $ZoneCleanupProtected[%aiId] = true;
+    
+    HardcodeAIskills(%aiId);
+	Game::refreshClientScore(%aiId);
+    
+    AI::SetVar(%aiName, triggerPct, 1.0 );
+	AI::setVar(%aiName, iq, 100 );
+	AI::setVar(%aiName, attackMode, $AIattackMode);
+    AI::setVar(%aiName, pathType, $AI::defaultPathType);
+    AI::SetVar(%aiName, spotDist, $AIspotDist);
+    AI::setAutomaticTargets(%aiName);
+    Ai::callbackPeriodic(%aiName, 5, AI::Periodic);
+    
+    AI::SelectBestWeapon(%aiId);
+}
+
+function UberBoss::mobDeath(%aiName)
+{
+    %aiId = AI::getId(%aiName);
+    %ubId = fetchData(%aiId,"ubAiId");
+    %list = fetchData(%ubId,"mobList");
+    // Remove from list
+    %nlist = String::removeWords(%list,%aiId);
+    storeData(%ubId,"mobList",%nlist);
+    AI::onDroneKilled(%aiName);
+    $ZoneCleanupProtected[%aiId] = "";
+    if(%nlist == "" && fetchData(%ubId,"isResetting") == "")
+        UberBoss::AllMobsDead(fetchData(%ubId,"BotInfoAiName"));
+}
+
 function UberBoss::doDeath(%aiName)
 {
     %aiId = AI::getId(%aiName);
+    AI::onDroneKilled(%aiName);
     if(fetchData(%aiId,"ubCombatStarted"))
     {
         UberBoss::stopMusic(%aiId);
@@ -67,7 +144,15 @@ function UberBoss::doDeath(%aiName)
     UberBoss::clearVars(%aiId);
     storeData(%aiId,"ubMarker","");
     storeData(%aiId,"isUberBoss","");
-    $ZoneCleanupProtected[%aiId] = false;
+    $ZoneCleanupProtected[%aiId] = "";
+}
+
+function UberBoss::AllMobsDead(%aiName)
+{
+    %aiId = AI::getId(%aiName);
+    storeData(%aiId,"ubAddsSpawned","");
+    storeData(%aiId,"ubCombatState",$UberBoss::CombatStateAttacking);
+    UberBoss::switchTarget(%aiName,%aiId,fetchData(%aiId,"currentTarget"));
 }
 
 function UberBoss::clearVars(%aiId)
@@ -78,10 +163,29 @@ function UberBoss::clearVars(%aiId)
     storeData(%aiId,"ubCombatStarted","");
     storeData(%aiId,"ubStandWaitingTime","");
     storeData(%aiId,"ubCombatState","");
+    storeData(%aiId,"CombatZone","");
+    storeData(%aiId,"ubTowerMarker","");
+    storeData(%aiId,"ubLeapTime","");
+    storeData(%aiId,"ubLeapSetupPos","");
+    storeData(%aiId,"isResetting","");
+    storeData(%aiId,"ubAddsSpawned","")
 }
 
 function UberBoss::DoReset(%aiName,%aiId)
 {
+    //Clean up mobs
+    %list = fetchData(%ubId,"mobList");
+    %mobCnt = GetWordCount(%list);
+    if(GetWordCount(%list) > 0)
+    {
+        storeData(%aiId,"isResetting",true);
+        for(%i = 0; %i < %mobCount; %i++)
+        {
+            %mobId = getWord(%list,%i);
+            storeData(%mobId,"noDropLootbagFlag",true);
+            Player::Kill(%mobId);
+        }
+    }
     UberBoss::clearVars(%aiId);
     AI::newDirectiveRemove(%aiName, 99);
     AI::newDirectiveRemove(%aiName, 100);
@@ -92,15 +196,15 @@ function UberBoss::DoReset(%aiName,%aiId)
 function UberBoss::switchTarget(%aiName,%aiId,%targetClient)
 {
     storeData(%aiId,"currentTarget",%targetClient);
-    AI::newDirectiveFollow(%aiName,%targetClient,0,99);
-    AI::setVar(%aiName, seekOff, Vector::getFromRot(Gamebase::getRotation(%targetClient),GetRange(WarMaul)-1));
+    AI::newDirectiveFollow(%aiName,%targetClient,3,99);
+    AI::setVar(%aiName, seekOff, Vector::getFromRot(Gamebase::getRotation(%targetClient),GetRange(warhammer)));
 }
 
 function UberBoss::startMusic(%aiId)
 {
     //music_antaris_quake3.wav
-    %zone = fetchData(%aiId,"zone");
-    storeData(%aiId,"musicZone",%zone);
+    %zone = fetchData(%aiId,"CombatZone");
+    //storeData(%aiId,"musicZone",%zone);
     %zid = $Zone::FolderToID[%zone];
     $Zone::Music[%zid,1] = "music_antaris_quake3.wav";
     $Zone::MusicTicks[%zid,1] = 48;
@@ -121,7 +225,8 @@ function UberBoss::startMusic(%aiId)
 
 function UberBoss::stopMusic(%aiId)
 {
-    %zz = fetchData(%aiId,"musicZone");
+    %zone = fetchData(%aiId,"CombatZone");
+    %zz = fetchData(%aiId,"CombatZone");
     %zid = $Zone::FolderToID[%zz];
     $Zone::Music[%zid,1] = "";
     $Zone::MusicTicks[%zid,1] = "";
@@ -161,7 +266,7 @@ function UberBoss::Periodic(%aiName)
             AI::newDirectiveWaypoint(%aiName, Gamebase::getPosition(%marker), 100);
             storeData(%aiId,"ubCombatReady",false);
             //AI::DirectiveCallback1(%aiName,UberBoss::setReadyFlag,70); //This might be causing a syntax error.  Not sure yet
-            AI::SetVar(%aiName, spotDist, 500);
+            
             storeData(%aiId,"ubStandWaiting",$UberBoss::StandWaitingMoveToPos);
             storeData(%aiId,"ubStandWaitingTime",getSimTime());
         }
@@ -176,6 +281,7 @@ function UberBoss::Periodic(%aiName)
             if(Vector::getDistance(%aiPos,Gamebase::getPosition(%marker)) < 5)
             {
                 UberBoss::setReadyFlag(%aiName);
+                //schedule("UberBoss::setReadyFlag(\""@%aiName@"\");",2.5);
             }
         }
         
@@ -191,7 +297,6 @@ function UberBoss::Periodic(%aiName)
                 if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
                 {
                     storeData(%aiId,"currentTarget",%id);
-                    UberBoss::StartMusic(%aiId);
                     UberBoss::PreCombat(%aiName,%aiId);
                 }
             }
@@ -257,12 +362,56 @@ function UberBoss::Periodic(%aiName)
                         UberBoss::DoReset(%aiName,%aiId);
                 }
             }
+            %burst = false;
             if(%tgtCnt >= 1 && OddsAre(3))
             {
                 UberBoss::DoUberBurst(%aiId,%aiPos,%set);
+                %burst = true;
+            }
+            
+            if(!%burst && fetchData(%aiId,"ubTowerMarker") != "" && OddsAre(2))
+            {
+                UberBoss::SetupLeapToPoint(%aiId,%aiName);
             }
             
             deleteObject(%set);
+        }
+        else if(%state == $UberBoss::CombatStateTowerLeapSetup)
+        {
+            //Moving to point.
+            %ckPoint = fetchData(%aiId,"ubLeapSetupPos");
+            if(Vector::getDistance(%aiPos,%ckPoint) < 5)
+            {
+                storeData(%aiId,"ubLeapSetupPos","");
+                UberBoss::readyLeap(%aiName,%aiId,fetchData(%aiId,"ubTowerMarker"));
+            }
+        }
+        else if(%state == $UberBoss::CombatStateTowerLeaping)
+        {
+            if(fetchData(%aiId,"ubAddsSpawned") != "")
+            {
+                AI::SetVar(%aiName, spotDist, 300);
+                UberBoss::SpawnAddGroup(%aiId);
+                remotePlayerAnim(%aiId,9);
+            }
+            else
+            {
+                %rng = getIntRandomMT(0,10);
+            
+                if(%rng >=0 && %rng <= 3)
+                {
+                    remotePlayerAnim(%aiId,9);
+                }
+                else if(%rnt < 7)
+                {
+                    remotePlayerAnim(%aiId,5);
+                }
+                else
+                {
+                    remotePlayerAnim(%aiId,6);
+                }
+            }
+            
         }
     }
     
@@ -286,7 +435,6 @@ function UberBoss::DoUberBurst(%aiId,%pos,%set)
             %dist = Vector::getDistance(%ppos,%pos);
             %dir = Vector::Normalize(Vector::sub(%ppos,%pos));
             %imp = ScaleVector(%dir,$UberBurstScale/%dist);
-            echo("Impulse: "@ %imp);
             Player::applyImpulse(%pl,%imp);
             GameBase::virtual(%pl, "onDamage", $BludgeoningDamageType, 350/%dist, "0 0 0", "0 0 0", "0 0 0", "torso", "", %aiId, "UBBlast");
         }
@@ -306,8 +454,8 @@ function UberBoss::PreCombat(%aiName,%aiId)
 
     //OgreAcquired1
     %pos = Gamebase::getPosition(%aiId);
-    playSound(SoundUberBossLaugh1,%pos);
-    
+    //playSound(SoundUberBossLaugh1,%pos);
+    Gamebase::playSound(Client::getOwnedObject(%aiId),SoundUberBossLaugh1,0);
     schedule("Player::mountItem("@%aiId@",warhammer,0);",1.7);
     schedule("UberBoss::StartCombat("@%aiName@","@%aiId@");",2);
 }
@@ -321,16 +469,17 @@ function UberBoss::StartCombat(%aiName,%aiId,%interrupt)
         Player::mountItem(%aiId,"warhammer",0);
     storeData(%aiId,"ubCombatReady","");
     storeData(%aiId,"ubStandWaiting","");
-    playSound(SoundUberBossAcquired1,Gamebase::getPosition(%aiId));
+    //playSound(SoundUberBossAcquired1,Gamebase::getPosition(%aiId));
+    Gamebase::playSound(Client::getOwnedObject(%aiId),SoundUberBossAcquired1,0);
     AI::setVar(%aiName, spotDist, GetRange(warhammer));
     %target = fetchData(%aiId,"currentTarget");
-    AI::newDirectiveFollow(%aiName,%target,0,99);
-    AI::setVar(%aiName, seekOff, Vector::getFromRot(ScaleVector(Gamebase::getRotation(%target),GetRange(WarMaul)-1)));
+    AI::newDirectiveFollow(%aiName,%target,3,99);
+    AI::setVar(%aiName, seekOff, Vector::getFromRot(ScaleVector(Gamebase::getRotation(%target),GetRange(warhammer))));
     storeData(%aiId,"ubCombatStarted",true);
     storeData(%aiId,"NextHitBash",true);
     storeData(%aiId,"ubCombatState",$UberBoss::CombatStateAttacking);
-    
-    %zone = fetchData(%aiId,"zone");
+    schedule("UberBoss::StartMusic("@%aiId@");",0.5);
+    //%zone = fetchData(%aiId,"zone");
     
 }
 
@@ -338,9 +487,25 @@ function UberBoss::setReadyFlag(%aiName)
 {
     dbecho($dbechoMode, "UberBoss::setReadyFlag(" @ %aiName @ ")");
     %aiId = AI::getId(%aiName);
+    AI::SetVar(%aiName, spotDist, 500); //He'll start watching people when he's ready
     // This acts as boss reset.
     UberBoss::clearVars(%aiId);
+    %zone = fetchData(%aiId,"Zone");
+    storeData(%aiId,"CombatZone",%zone);
     storeData(%aiId,"ubStandWaiting",$UberBoss::StandWaitingWaitForTarget);
+    
+    %mkrGrp = getGroup(fetchData(%aiId,"ubMarker"));
+    for(%i = 0; %i < Group::objectCount(%mkrGrp); %i++)
+    {
+        %obj = Group::getObject(%mkrGrp,%i);
+        %name = Object::getName(%obj);
+        if(String::icompare(%name,"TowerMarker") == 0)
+        {
+            storeData(%aiId,"ubTowerMarker",%obj);
+            continue;
+        }
+    }
+    
     storeData(%aiId,"ubCombatReady",true);
 }
 
@@ -353,12 +518,105 @@ function UberBoss::debugState(%aiId)
     echo("Stand Waiting Time: "@fetchData(%aiId,"ubStandWaitingTime"));
     echo("Current Target: "@fetchData(%aiId,"currentTarget"));
     echo("Combat State: "@fetchData(%aiId,"ubCombatState"));
-    
+    echo("Tower Marker: "@fetchData(%aiId,"ubTowerMarker"));
+    echo("Leap Time: "@fetchData(%aiId,"ubLeapTime"));
+    echo("Leap from Pos: "@fetchData(%aiId,"ubLeapSetupPos"));
     if(fetchData(%aiId,"currentTarget") != "")
     {
         %dist = Vector::getDistance(Gamebase::getPosition(%aiId),Gamebase::getPosition(fetchData(%aiId,"currentTarget")));
         echo("Target Dist: "@ %dist);
     }
+}
+
+function UberBoss::SetupLeapToPoint(%aiId,%aiName)
+{
+    echo("Setting Up Leap");
+    %mkr = fetchData(%aiId,"ubTowerMarker");
+    %spMkr = fetchData(%aiId,"ubMarker");
+    %aiPos = Gamebase::getPosition(%aiId);
+    %gndZ = getWord(Gamebase::getPosition(%spMkr),2);
+    %towerMarkerOnGround = Word::getSubWord(Gamebase::getPosition(%mkr),0,2) @" "@%gndZ;
+    %dist = Vector::getDistance(%aiPos, %towerMarkerOnGround);
+    echo(%towerMarkerOnGround);
+    echo("Distance: "@ %dist);
+    
+    if(%dist < 20)
+    {
+        storeData(%aiId,"ubCombatState",$UberBoss::CombatStateTowerLeapSetup);
+        // Place a move position on the ground, 36m out from the tower
+        
+        //%dir = Vector::sub(Word::getSubWord(%aiPos,0,2) @ " 0",Word::getSubWord(%towerMarkerOnGround,0,2) @" 0");
+        //%movePos = Vector::add(%towerMarkerOnGround,ScaleVector(Vector::Normalize(%dir),36));
+        
+        //All that above math would work, and place the marker 36m out, near the ai's position.
+        //But we could also just place it 36m east of the tower.  Just hope they dont' get caught on the tower.
+        
+        %movePos = Vector::add(%towerMarkerOnGround,"20 0 0");
+        AI::newDirectiveWaypoint(%aiName,%movePos,99);
+        storeData(%aiId,"ubLeapSetupPos",%movePos);
+    }
+    else
+    {
+        UberBoss::readyLeap(%aiName,%aiId,%mkr);
+    }
+}
+
+function UberBoss::readyLeap(%aiName,%aiId,%mkr)
+{
+    %mkrPos = Gamebase::getPosition(%mkr);
+    storeData(%aiId,"ubCombatState",$UberBoss::CombatStateTowerLeaping);
+    AI::newDirectiveWaypoint(%aiName,%mkrPos,99);
+    //Start leap check
+    UberBoss::DoLeap(%aiId,%aiName,%mkr,3);
+}
+
+function UberBoss::DoLeap(%clientId,%aiName,%mkr,%time)
+{
+    %cpos = Gamebase::getPosition(%clientId);
+    %mpos = Gamebase::getPosition(%mkr); 
+
+    %dir = Vector::sub(%mpos,%cpos);
+    %dist = Vector::getDistance(%cpos,%mpos);
+    
+    //getWord(%dir,2) is height
+    %vx = getWord(%dir,0) / %time;
+    %vy = getWord(%dir,1) / %time;
+    %vz = ((getWord(%dir,2) - 0.5 + $UberBoss::LeapFudgeFactor) + 0.5*(20 * %time * %time))/%time; // 20 is gravity
+    Gamebase::setPosition(%clientId,Vector::add(%cpos,"0 0 0.5")); // Move a little up to avoid ground friction
+    Item::setVelocity(Client::getOwnedObject(%clientId),%vx @" "@ %vy @" " @ %vz);
+    storeData(%clientId,"ubLeapTime",getSimTime());
+    UB::CheckLeap(%clientId,%mkr);
+    
+}
+
+function UB::CheckLeap(%aiId,%mkr)
+{
+    %time = fetchData(%aiId,"ubLeapTime");//,getSimTime());
+    %mkrPos = Gamebase::getPosition(%mkr);
+    %stopFlag = false;
+    if(Vector::getDistance(Gamebase::getPosition(%aiId),%mkrPos) < 6)
+    {
+        echo("Leap worked!");
+        storeData(%aiId,"ubCombatState",$UberBoss::CombatStateOnTower);
+        Item::setVelocity(Client::getOwnedObject(%aiId),"0 0 0");
+        Gamebase::setPosition(%aiId,%mkrPos);
+        storeData(%aiId,"ubLeapTime","");
+        %stopFlag = true;
+    }
+    
+    if(getSimTime() - %time > 5)
+    {
+        echo("Leap failed!");
+        //Leap failed!
+        // Go back to fighting
+        %aiName = fetchData(%aiId,"BotInfoAiName");
+        storeData(%aiId,"ubLeapTime","");
+        storeData(%aiId,"ubCombatState",$UberBoss::CombatStateAttacking);
+        AI::newDirectiveFollow(%aiName,fetchData(%aiId,"currentTarget"),3,99);
+        %stopFlag = true;
+    }
+    if(!%stopFlag)
+        schedule("UB::CheckLeap("@%aiId@","@%mkr@");",0.2);
 }
 
 function UberBoss::setupAIDefaults(%aiName)

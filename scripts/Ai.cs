@@ -146,6 +146,8 @@ function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
         storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
         storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
+        //prevents AI::setupAI being called after death
+        storeData(%aiId, "SpawnBotInfo","dummyInfo");
         
         refreshHPREGEN(%AiId);
 		refreshStaminaREGEN(%AiId);
@@ -153,8 +155,9 @@ function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
 		storeData(%AiId, "LCK", 0);
         
         //AI::setAutomaticTargets(%aiName);
-        
+        return true;
     }
+    return false;
 }
 
 //----------------------------------
@@ -216,7 +219,7 @@ function AI::setWeapons(%aiName, %loadout, %callback)
 	dbecho($dbechoMode, "AI::setWeapons(" @ %aiName @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("Loadout: "@ %loadout);
+    //echo("Loadout: "@ %loadout);
 	if(%loadout == -1 || %loadout == "" || String::ICompare(%loadout, "default") == 0)
 	{
 		%items = $BotInfo[%aiName, ITEMS];
@@ -1172,6 +1175,7 @@ function AI::onDroneKilled(%aiName)
         Player::setJet(Client::getOwnedObject(%aiId),false);
       	%team = fetchData(%aiId, "botTeam");
 		storeData(%aiId, "botTeam", "");
+        echo(%aiName @" died");
 		$aiNumTable[$tmpbotn[%aiName]] = "";
 		$tmpbotn[%aiName] = "";
         

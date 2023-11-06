@@ -1524,7 +1524,7 @@ instant SimGroup "MissionGroup" {
                     position = "1708.88 -2331.05 65.5998";
                     rotation = "0 0 0";
                 };
-                instant SimGroup "MUSIC";
+                //instant SimGroup "MUSIC";
             };
             instant SimGroup "PROTECTED Delkin Port" {
                 instant SimGroup "DropPoints" {
@@ -1927,6 +1927,12 @@ instant SimGroup "MissionGroup" {
                 dataBlock = "PathMarker";
                 name = "Earth's Shackle";
                 position = "1674.06 -2288.29 65";
+                rotation = "0 0 0";
+            };
+            instant Marker "TowerMarker" {
+                dataBlock = "PathMarker";
+                name = "Earth's Shackle";
+                position = "1656.02 -2283.2 90.3544";
                 rotation = "0 0 0";
             };
             //instant SimGroup "ZoneLocation Earth's Shackle";

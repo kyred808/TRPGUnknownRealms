@@ -302,8 +302,6 @@ function DoZoneCheck(%w, %d)
         
         Zone::SpawnCheck(%z);
 	}
-    
-    
 	
 	Group::iterateRecursive(%mset, UpdateZone);
 	deleteObject(%mset);
@@ -405,23 +403,28 @@ function UpdateZone(%object)
 		//the player is not inside any zone.
 		//if the player has a current zone, then we need to kick him out of it
 		if(fetchData(%clientId, "zone") != "")
+        {
 			Zone::DoExit(Zone::getIndex(fetchData(%clientId, "zone")), %clientId);
+            //play the enter sound for the unknown zone
+            if($Zone::EnterSound[0] != "")
+                Client::sendMessage(%clientId, 0, "~w" @ $Zone::EnterSound[0]);
+        }
 	
+    
+        //start playing the ambient sound for the unknown zone
+		if($Zone::AmbientSound[0] != "")
+		{
+			%m = $Zone::AmbientSoundPerc[0];
+			if(%m == "") %m = 100;
+			
+			%r = floor(getRandomMT() * 100)+1;
+			if(%r <= %m)
+				Client::sendMessage(%clientId, 0, "~w" @ $Zone::AmbientSound[0]);
+		}
+    
 		//start playing the ambient sound for the unknown zone
-		//if($Zone::AmbientSound[0] != "")
 		if($Zone::Music[0, 1] != "")
 		{
-			//%m = $Zone::AmbientSoundPerc[0];
-			//%m = 9;
-			///if(%m == "") %m = 100;
-			///
-            ///
-            ///
-			///%r = floor(getRandom() * 100)+1;
-            ///
-			///if(%r <= %m)
-			///	Client::sendMessage(%clientId, 0, "~w" @ $Zone::Music[0, 1]);
-		//		Client::sendMessage(%clientId, 0, "~w" @ $Zone::AmbientSound[0]);
             if(%clientId.MusicTicksLeft < 1)
             {
                 %clientId.currentMusic = 1;
@@ -432,9 +435,7 @@ function UpdateZone(%object)
         
 		}
 	
-		//play the enter sound for the unknown zone
-		if($Zone::EnterSound[0] != "")
-			Client::sendMessage(%clientId, 0, "~w" @ $Zone::EnterSound[0]);
+		
 
 		//play unknown zone music
 	//	if($Zone::Music[0, 1] != "")
