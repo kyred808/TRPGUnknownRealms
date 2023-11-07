@@ -33,9 +33,10 @@ $Spell::radius[1] = 10;
 $Spell::damageValue[1] = "55";
 $Spell::LOSrange[1] = 80;
 $Spell::manaCost[1] = 5;
+$Spell::auraEffect[1] = SpellEffectAura2;
 $Spell::startSound[1] = ActivateBF;
 $Spell::endSound[1] = ExplodeLM;
-$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
+//$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
 $Spell::groupListCheck[1] = False;
 $Spell::refVal[1] = 55;
 $Spell::graceDistance[1] = 2;
@@ -337,6 +338,7 @@ $Spell::delay[18] = 6;
 $Spell::recoveryTime[18] = 10.5;
 $Spell::radius[18] = 20;
 $Spell::damageValue[18] = "265";
+$Spell::auraEffect[18] = SpellEffectAura2;
 $Spell::LOSrange[18] = 80;
 $Spell::manaCost[18] = 20;
 $Spell::startSound[18] = LoopLS;
@@ -357,6 +359,7 @@ $Spell::radius[19] = 30;
 $Spell::damageValue[19] = "320";
 $Spell::LOSrange[19] = 80;
 $Spell::manaCost[19] = 40;
+$Spell::auraEffect[19] = SpellEffectAura1;
 $Spell::startSound[19] = LaunchLS;
 $Spell::endSound[19] = Explode3FW;
 $Spell::endSoundLoc[19] = $SpellEndSoundLocationPlayer;
@@ -715,20 +718,41 @@ $Spell::keyword[40] = "sunflare";
 $Spell::index[sunflare] = 40;
 $Spell::name[40] = "Sun Flare";
 $Spell::description[40] = "Lauch a fast heat projectile, creating a trail of explosions behind it.";
-$Spell::delay[40] = 0.5;
-$Spell::recoveryTime[40] = 1;
+$Spell::delay[40] = 9.5;
+$Spell::recoveryTime[40] = 11.25;
 $Spell::damageValue[40] = 40;
 $Spell::manaCost[40] = 80;
+$Spell::auraEffect[40] = SpellEffectAura2;
 $Spell::radius[40] = 15;
-$Spell::startSound[40] = ActivateAB;
+$Spell::startSound[40] = LaunchLS;
 $Spell::endSound[40] = LaunchFB;
-$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
+$Spell::endSoundLoc[40] = $SpellEndSoundLocationPlayer;
 $Spell::groupListCheck[40] = False;
 $Spell::refVal[40] = 0;
 $Spell::graceDistance[40] = 2;
 $Spell::effectType[40] = $SpellTypeCustom;
 $SkillType[sunflare] = $SkillOffensiveCasting;
-$SkillRestriction[sunflare] = $SkillOffensiveCasting @ " 800";
+$SkillRestriction[sunflare] = $SkillOffensiveCasting @ " 700";
+
+$Spell::keyword[41] = "piercing";
+$Spell::index[piercing] = 41;
+$Spell::name[41] = "Enchant Piercing";
+$Spell::description[41] = "Lauch a fast heat projectile, creating a trail of explosions behind it.";
+$Spell::delay[41] = 0.5;
+$Spell::recoveryTime[41] = 5;
+$Spell::damageValue[41] = "AMRP 25";
+$Spell::ticks[41] = 120;
+$Spell::manaCost[41] = 25;
+$Spell::radius[41] = 15;
+$Spell::startSound[41] = ActivateTR;
+$Spell::endSound[41] = ActivateAR;
+$Spell::endSoundLoc[41] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[41] = False;
+$Spell::refVal[41] = -13;
+$Spell::graceDistance[41] = 2;
+$Spell::effectType[41] = $SpellTypeCustom;
+$SkillType[piercing] = $SkillNeutralCasting;
+$SkillRestriction[piercing] = $SkillNeutralCasting @ " 250";
 
 //----------------------------------------------------------------------------------------------------------------
 
@@ -739,13 +763,18 @@ function BeginCastSpell(%clientId, %keyword)
 	%w1 = GetWord(%keyword, 0);
 	%w2 = String::getSubStr(%keyword, String::len(%w1)+1, 99999);
 
-	for(%i = 1; $Spell::keyword[%i] != ""; %i++)
-	{
-		if(String::ICompare($Spell::keyword[%i], %w1) == 0)
-		{
+	//for(%i = 1; $Spell::keyword[%i] != ""; %i++)
+	//{
+    %i = $Spell::index[%keyword];
+    if(%i != "")
+    {
+		//if(String::ICompare($Spell::keyword[%i], %w1) == 0)
+		//{
+            echo(%i);
 			if(SkillCanUse(%clientId, $Spell::keyword[%i]))
 			{
-				if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
+                //Need to change later
+				if(fetchData(%clientId, "Stamina") >= $Spell::manaCost[%i])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "Casting " @ $Spell::name[%i] @ ".");
 
@@ -778,6 +807,9 @@ function BeginCastSpell(%clientId, %keyword)
 					%c = %b * %a;
 					%recovTime = $Spell::delay[%i] + Cap(%a + %c, %a, %rt);	//recovery time is never smaller than half of the original and never bigger than the original.
                     
+                    if($Spell::auraEffect[%i] != "")
+                        Player::mountItem(%player,$Spell::auraEffect[%i],$SpellAuraSlot);
+                    
                     if(Player::isAiControlled(%clientId))
                         schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
 					else
@@ -792,10 +824,11 @@ function BeginCastSpell(%clientId, %keyword)
 			else
 				Client::sendMessage(%clientId, $MsgWhite, "You can't cast this spell because you lack the necessary skills.");
 
-			return False;
-		}
+		//	return False;
+		//}
 	}
-	Client::sendMessage(%clientId, $MsgWhite, "This spell seems unfamiliar to you.");
+    else
+        Client::sendMessage(%clientId, $MsgWhite, "This spell seems unfamiliar to you.");
 
 	return False;
 }
@@ -816,6 +849,9 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 
 	%player = Client::getOwnedObject(%clientId);
 
+    if($Spell::auraEffect[%index] != "")
+        Player::unmountItem(%player,$SpellAuraSlot);
+    
 	if(Vector::getDistance(%oldpos, GameBase::getPosition(%clientId)) > $Spell::graceDistance[%index])
 	{
 		Client::sendMessage(%clientId, $MsgBeige, "Your casting was interrupted.");
@@ -889,7 +925,24 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
             %overrideEndSound = False;
             %returnFlag = True;
         }
-        if(%index == 37)
+        else if(%index == 41)
+        {
+            if(getObjectType(%castObj) == "Player" && !Player::isAiControlled(%clientId))
+			%id = Player::getClient(%castObj);
+            else
+                %id = %clientId;
+
+            Client::sendMessage(%clientId, $MsgBeige, "Enchanting " @ Client::getName(%id));
+            if(%clientId != %id)
+                Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
+
+            UpdateBonusState(%id, $Spell::damageValue[%index], $Spell::ticks[%index]);
+
+            %castPos = GameBase::getPosition(%id);
+
+            %returnFlag = True;
+        }
+        else if(%index == 37)
         {
             %sunId = nameToId("MissionGroup\\Landscape\\Sun");
             if(%sunId != "")
@@ -955,7 +1008,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
                 %type = GetWord(%system, 0);
                 %desc = String::getSubStr(%system, String::len(%type)+1, 9999);
 
-                %castPos = TeleportToMarker(%clientId, "Zones\\" @ %system @ "\\DropPoints", False, True);
+                %castPos = TeleportToMarker(%clientId, "Realm0\\Zones\\" @ %system @ "\\DropPoints", False, True);
                 CheckAndBootFromArena(%clientId);
                 NullItemList(%clientId, Lore, $MsgRed, "You lost all %1s you were carrying when you teleported.");
 
@@ -996,8 +1049,8 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
                 %system = Object::getName(%zoneId);
                 %type = GetWord(%system, 0);
                 %desc = String::getSubStr(%system, String::len(%type)+1, 9999);
-
-                %castPos = TeleportToMarker(%id, "Zones\\" @ %system @ "\\DropPoints", False, True);
+                
+                %castPos = TeleportToMarker(%id, "Realm0\\Zones\\" @ %system @ "\\DropPoints", False, True);
                 CheckAndBootFromArena(%id);
                 NullItemList(%clientId, Lore, $MsgRed, "You lost all %1s you were carrying when you teleported.");
 
@@ -1593,7 +1646,7 @@ function DoBotCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 			%type = GetWord(%system, 0);
 			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
 
-			%castPos = TeleportToMarker(%clientId, "Zones\\" @ %system @ "\\DropPoints", False, True);
+			%castPos = TeleportToMarker(%clientId, "Realm0\\Zones\\" @ %system @ "\\DropPoints", False, True);
 			CheckAndBootFromArena(%clientId);
 			NullItemList(%clientId, Lore, $MsgRed, "You lost all %1s you were carrying when you teleported.");
 
@@ -2363,7 +2416,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			%type = GetWord(%system, 0);
 			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
 
-			%castPos = TeleportToMarker(%id, "Zones\\" @ %system @ "\\DropPoints", False, True);
+			%castPos = TeleportToMarker(%id, "Realm0\\Zones\\" @ %system @ "\\DropPoints", False, True);
 			CheckAndBootFromArena(%id);
 			NullItemList(%clientId, Lore, $MsgRed, "You lost all %1s you were carrying when you teleported.");
 

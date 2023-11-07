@@ -16,42 +16,82 @@ $MineDamageType        = 13;
 $NullDamageType        = 14;
 $SpellDamageType        = 15;
 $DragonDamageType      = 16;
+$AIProjDamageType        = 17;
+$BladeBoltDamageType = 18;
+$SlamDamageType = 19;
 
-function Projectile::TrackProjectile(%this,%rate,%owner)
+$ProjectileTrackerCounter = 0;
+
+function Projectile::startTracking(%ownerClient,%proj,%rate,%range)
 {
-    $Projectile::tracking[%this,PrevPos] = $Projectile::tracking[%this,Pos];
-    $Projectile::tracking[%this,PrevTime] = $Projectile::tracking[%this,Time];
+    if($ProjectileTrackerCounter > 5000)
+        $ProjectileTrackerCounter = 0;
+    
+    %trackId = $ProjectileTrackerCounter;
+    $ProjectileTrackerCounter++;
+    
+    $Projectile::trackIdList[%proj] = $Projectile::trackIdList[%proj] @ %trackId @" ";
+    
+    Projectile::TrackProjectile(%proj,%trackId,%rate,%range,%ownerClient);
+}
+
+function Projectile::getTrackId(%this)
+{
+    %trackId = getWord($Projectile::trackIdList[%this],0);
+    $Projectile::trackIdList[%this] = String::removeWords($Projectile::trackIdList[%this],%trackId);
+    return %trackid;
+}
+
+function Projectile::TrackProjectile(%this,%trackId,%rate,%range,%owner)
+{
+    $Projectile::tracking[%this,%trackId,PrevPos] = $Projectile::tracking[%this,%trackId,Pos];
+    $Projectile::tracking[%this,%trackId,PrevTime] = $Projectile::tracking[%this,%trackId,Time];
     if(%owner != "")
-        $Projectile::tracking[%this,Owner] = %owner;
-    $Projectile::tracking[%this,Pos] = Gamebase::getPosition(%this);
-    $Projectile::tracking[%this,Time] = getSimTime();
-    schedule("Projectile::TrackProjectile("@%this@","@%rate@");",%rate,%this);
+        $Projectile::tracking[%this,%trackId,Owner] = %owner;
+    if(%range != "")
+        $Projectile::tracking[%this,%trackid,Range] = %range;
+    $Projectile::tracking[%this,%trackId,Pos] = Gamebase::getPosition(%this);
+    $Projectile::tracking[%this,%trackId,Time] = getSimTime();
+    //echo("Track Pos: "@ $Projectile::tracking[%this,%trackId,Pos]);
+    schedule("Projectile::TrackProjectile("@%this@","@ %trackId @","@%rate@");",%rate,%this);
 }
 
-function Projectile::TrackCleanup(%this)
+//function Projectile::TrackProjectile(%this,%rate,%owner)
+//{
+//    $Projectile::tracking[%this,PrevPos] = $Projectile::tracking[%this,Pos];
+//    $Projectile::tracking[%this,PrevTime] = $Projectile::tracking[%this,Time];
+//    if(%owner != "")
+//        $Projectile::tracking[%this,Owner] = %owner;
+//    $Projectile::tracking[%this,Pos] = Gamebase::getPosition(%this);
+//    $Projectile::tracking[%this,Time] = getSimTime();
+//    schedule("Projectile::TrackProjectile("@%this@","@%rate@");",%rate,%this);
+//}
+
+function Projectile::TrackCleanup(%this,%trackId)
 {
-    $Projectile::tracking[%this,PrevPos] = "";
-    $Projectile::tracking[%this,PrevTime] = "";
-    $Projectile::tracking[%this,Pos] = "";
-    $Projectile::tracking[%this,Time] = "";
-    $Projectile::tracking[%this,Owner] = "";
+    $Projectile::tracking[%this,%trackId,PrevPos] = "";
+    $Projectile::tracking[%this,%trackId,PrevTime] = "";
+    $Projectile::tracking[%this,%trackId,Pos] = "";
+    $Projectile::tracking[%this,%trackId,Time] = "";
+    $Projectile::tracking[%this,%trackId,Owner] = "";
+    $Projectile::tracking[%this,%trackId,Range] = "";
 }
 
-function Projectile::PropagateTrack(%this,%timeLess)
+function Projectile::PropagateTrack(%this,%trackId,%timeLess)
 {
-    %dir = Vector::sub($Projectile::tracking[%this,Pos],$Projectile::tracking[%this,PrevPos]);
-    %dt = $Projectile::tracking[%this,Time] - $Projectile::tracking[%this,PrevTime];
+    %dir = Vector::sub($Projectile::tracking[%this,%trackId,Pos],$Projectile::tracking[%this,%trackId,PrevPos]);
+    %dt = $Projectile::tracking[%this,%trackId,Time] - $Projectile::tracking[%this,%trackId,PrevTime];
     //Divide directon vector by time, to get velocity
     %vel = ScaleVector(%dir,1/%dt);
     
     // Get time difference between last recorded time and now.
-    %newDt = getSimTime() - $Projectile::tracking[%this,Time]; 
+    %newDt = getSimTime() - $Projectile::tracking[%this,%trackId,Time]; 
     
     // Multiply that by the calculated velocity to estimate how far the projectile has travelled
     %propDelta = ScaleVector(%vel,%newDt- %timeLess); // Take off timeless incase we want to back the propagation up a little.
     
     // Add that to the last recorded position to propagate to our estimated position
-    return Vector::add($Projectile::tracking[%this,Pos],%propDelta);
+    return Vector::add($Projectile::tracking[%this,%trackId,Pos],%propDelta);
 }
 
 //--------------------------------------
@@ -829,7 +869,6 @@ RocketData DragonBlast
 	trailWidth  = 5.8;
 };
 
-
 ExplosionData MageBoltExp
 {
 	shapeName = "bluex.dts";
@@ -850,7 +889,7 @@ ExplosionData MageBoltExp
 RocketData MageBoltTail
 {
 	//bulletShapeName = "discb.dts";
-    bulletShapeName = "AUTO_MAGIC.dts";
+    bulletShapeName = "newproj.dts"; //"AUTO_MAGIC.dts";
 	explosionTag = MageBoltExp; //energyExp
 	collisionRadius = 0.0;
 	mass = 2.0;
@@ -874,27 +913,59 @@ RocketData MageBoltTail
 	soundId = SoundDiscSpin;
 };
 
-BulletData MageBoltMain
+RocketData BladeBoltTail
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = MageBoltExp; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 75; 
+	damageType = $BladeBoltDamageType;
+	explosionRadius = 8.0;
+	kickBackStrength = 150.0;
+	muzzleVelocity   = 60.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 3.1;
+	liveTime = 3.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 1;
+	trailLength = 28;
+	trailWidth = 1.2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+};
+
+RocketData UberBossRainProj
 {
-   bulletShapeName    = "enbolt.dts";
-   explosionTag       = MageBoltExp;
-
-   damageClass        = 1;
-   damageValue        = 0;
-   damageType         = $SpellDamageType;
-   explosionRadius    = 7.5;
-   kickBackStrength   = 150.0;
-   
-   muzzleVelocity     = 80.0;
-   totalTime          = 3.1;
-   liveTime           = 3.0;
-
-   lightRange         = 3.0;
-   lightColor         = { 0.25, 0.25, 1.0 };
-   inheritedVelocityScale = 0.5;
-   isVisible          = True;
-
-   rotationPeriod = 1;
+    bulletShapeName = "redorb.dts"; 
+	explosionTag = BigRedExp; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 100; 
+	damageType = $AIProjDamageType;
+	explosionRadius = 13.0;
+	kickBackStrength = 2.0;
+	muzzleVelocity   = 80.0;
+	terminalVelocity = 120.0;
+	acceleration = 2.0;
+	totalTime = 10.0;
+	liveTime = 9.6;
+	lightRange = 20.0;
+	colors = { 10.0, 0.75, 0.75 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 0.3;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+	trailLength = 70;
+	trailWidth  = 5.8;
 };
 
 
@@ -921,6 +992,7 @@ BulletData MiniFusionBolt
 };
 function MiniFusionBolt::onAdd(%this)
 {
+
 }
 
 

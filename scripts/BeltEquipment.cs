@@ -1,4 +1,47 @@
+$BeltEquip::BonusAccessoryTag[$SpecialVarAMR] = "AMR";
+$BeltEquip::BonusAccessoryTag[$SpecialVarMDEF] = "MDEF";
+$BeltEquip::BonusAccessoryTag[$SpecialVarHP] = "HP";
+$BeltEquip::BonusAccessoryTag[$SpecialVarMana] = "MANA";
+$BeltEquip::BonusAccessoryTag[$SpecialVarATK] = "ATK";
+$BeltEquip::BonusAccessoryTag[$SpecialVarDEF] = "DEF";
+$BeltEquip::BonusAccessoryTag[$SpecialVarSPEED] = "SPD";
+$BeltEquip::BonusAccessoryTag[$SpeicalVarHPRegen] = "HPRegen";
+$BeltEquip::BonusAccessoryTag[$SpecialVarManaRegen] = "MANARegen";
+$BeltEquip::BonusAccessoryTag[$SpecialVarManaThief] = "MANAThief";
+$BeltEquip::BonusAccessoryTag[$SpecialVarManaHarvest] = "MANAHarvest";
+$BeltEquip::BonusAccessoryTag[$SpecialVarMaxStam] = "MaxStam";
+$BeltEquip::BonusAccessoryTag[$SpecialVarArmPierce] = "AMRP";
 
+$BeltEquip::AccessoryTag["AMR"] = $SpecialVarAMR;
+$BeltEquip::AccessoryTag["MDEF"] = $SpecialVarMDEF;
+$BeltEquip::AccessoryTag["MaxHP"] = $SpecialVarHP;
+$BeltEquip::AccessoryTag["MaxMANA"] = $SpecialVarMana;
+$BeltEquip::AccessoryTag["ATK"] = $SpecialVarATK;
+$BeltEquip::AccessoryTag["DEF"] = $SpecialVarDEF;
+//$BeltEquip::AccessoryTag[$SpecialVarSPEED] = "SPD";
+$BeltEquip::AccessoryTag["HPRegen"] = $SpeicalVarHPRegen;
+$BeltEquip::AccessoryTag["MANARegen"] = $SpecialVarManaRegen;
+$BeltEquip::AccessoryTag["MANAThief"] = $SpecialVarManaThief;
+$BeltEquip::AccessoryTag["MANAHarvest"] = $SpecialVarManaHarvest;
+$BeltEquip::AccessoryTag["MaxStam"] = $SpecialVarMaxStam;
+$BeltEquip::AccessoryTag["AMRP"] = $SpecialVarArmPierce;
+
+$BeltEquip::SpecVarDesc["AMR"] = "AMR";
+$BeltEquip::SpecVarDesc["MDEF"] = "MDEF";
+$BeltEquip::SpecVarDesc["MaxHP"] = "HP";
+$BeltEquip::SpecVarDesc["MaxMANA"] = "MANA";
+$BeltEquip::SpecVarDesc["ATK"] = "ATK";
+$BeltEquip::SpecVarDesc["DEF"] = "DEF";
+//$BeltEquip::SpecVarDesc[$SpecialVarSPEED] = "SPD";
+$BeltEquip::SpecVarDesc["HPRegen"] = "HPRegen";
+$BeltEquip::SpecVarDesc["MANARegen"] = "MANARegen";
+$BeltEquip::SpecVarDesc["MANAThief"] = "MANA Thief";
+$BeltEquip::SpecVarDesc["MANAHarvest"] = "MANA Harvest";
+$BeltEquip::SpecVarDesc["MaxStam"] = "Max Stamina";
+$BeltEquip::SpecVarDesc["AMRP"] = "AMR Pierce";
+
+for(%i = 1; %i < $NumberOfSkills; %i++)
+    $BeltEquip::SpecVarDesc["SKILL"@%i] = $SkillDesc[%i];
 
 function MenuBeltEquip(%clientid,%type,%page)
 {
@@ -285,9 +328,37 @@ function BeltEquip::AddEquipmentItem(%name,%item,%type,%weight,%cost,%shopIndex,
     %id = BeltItem::Add(%name,%item,%type,%weight,%cost,%shopIndex);
     $BeltEquip::Item[%id,SlotType] = %slotType;
     $BeltEquip::Item[%num,SlotTypeNum,%slotType] = %item;
-    echo($BeltEquip::Item[%num,SlotTypeNum,%slotType]);
+    //echo($BeltEquip::Item[%num,SlotTypeNum,%slotType]);
     $BeltEquip::Item[%id,Special] = %special;
     $BeltEquip::SlotTypeItemCount[%slotType]++;
+}
+
+function BeltEquip::GetSpecialVars(%item)
+{
+    return $BeltEquip::Item[$beltitem[%item, "ItemID"],Special];
+}
+
+function BeltEquip::IsBeltEquipItem(%item)
+{
+    return $BeltEquip::Item[$beltitem[%item, "ItemID"],SlotType] != "";
+}
+
+function BeltEquip::TranslateSpecialVars(%specVars)
+{
+    %txt = "";
+    for(%i = 0; GetWord(%specVars, %i) != -1; %i+=2)
+    {
+        %stat = GetWord(%specVars, %i);
+        %num = GetWord(%specVars,%i+1);
+        
+        
+        %txt = %txt @ $BeltEquip::SpecVarDesc[%stat] @ ": " @ %num @ ", ";
+    }
+    if(%txt == "")
+		%txt = "None";
+	else
+		%txt = String::getSubStr(%txt, 0, String::len(%txt)-2);
+    return %txt;
 }
 
 function BeltEquip::GetList(%clientId,%slotType)

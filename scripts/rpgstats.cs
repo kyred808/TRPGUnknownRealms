@@ -114,7 +114,8 @@ function fetchData(%clientId, %type)
         %a = 100;
         %b = AddBonusStatePoints(%clientId, "MaxStam");
         %c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
-        return floor(%a + %b + %c);
+        %e = AddPoints(%clientId, $SpecialVarMaxStam);
+        return floor(%a + %b + %c + %e);
     }
 	else if(%type == "MaxMANA")
 	{
@@ -149,6 +150,27 @@ function fetchData(%clientId, %type)
         %d = BeltEquip::AddBonusStats(%clientId,"MaxWeight");
 		return FixDecimals(%a + %c);
 	}
+    else if(%type == "MANAThief")
+    {
+        %bonus = AddBonusStatePoints(%clientId, "MANAThief");
+        %belt = BeltEquip::AddBonusStats(%clientId,"MANAThief");
+        %equip = AddPoints(%clientId, $SpecialVarManaThief);
+        return %bonus + %belt + %equip;
+    }
+    else if(%type == "MANAHarvest")
+    {
+        %bonus = AddBonusStatePoints(%clientId, "MANAHarvest");
+        %belt = BeltEquip::AddBonusStats(%clientId,"MANAHarvest");
+        %equip = AddPoints(%clientId, $SpecialVarManaHarvest);
+        return %bonus + %belt + %equip;
+    }
+    else if(%type == "AMRP")
+    {
+        %equip = AddPoints(%clientId, $SpecialVarArmorPiercing);
+        %bonus = AddBonusStatePoints(%clientId, "AMRP");
+        %belt = BeltEquip::AddBonusStats(%clientId,"AMRP");
+        return %bonus + %belt + %equip;
+    }
 	else if(%type == "Weight")
 	{
 		return GetWeight(%clientId);

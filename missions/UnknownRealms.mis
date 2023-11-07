@@ -1562,7 +1562,7 @@ instant SimGroup "MissionGroup" {
                 };
             };
             instant SimGroup "MUSIC area_plains.wav 45";
-            instant SimGroup "AMBIENTSOUND unknownmusic2.wav 15";
+            instant SimGroup "AMBIENTSOUND unknownmusic2.wav 5";
         };
         instant SimGroup "Keldrin" {
             locked = "0";
@@ -3839,7 +3839,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131";
-                instant SimGroup "BELTSHOP 17 27 29";
+                instant SimGroup "BELTSHOP 17 27 29 800";
             };
             //New Player Guide
             instant SimGroup "newquest55" {

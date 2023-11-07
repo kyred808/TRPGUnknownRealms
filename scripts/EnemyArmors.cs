@@ -185,7 +185,7 @@ $spawnIndex[54] = "Bat";
 $spawnIndex[55] = "Ent";
 //------------------------------
 
-$BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 RKnife 1 Quartz 4/-300";
+$BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 RKnife 1 Quartz 4/-300 GobbieBerry 1/-100";
 $BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 RKnife 1 Sling 1 SmallRock 20/50 BlackStatue 1/-100";
 $BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 Turquoise 1/-500";
 $BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 RPickAxe 1 BlackStatue 1/-150 Jade 1/-300";
@@ -237,7 +237,7 @@ $BotEquipment[Reaper] = 	"CLASS Mage LVL 174/50 COINS 105/50 LCK 2 CastingBlade 
 $BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 RLongSword 1 DragonScale 1/-3000 Gold 1/-1000";
 $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000";
 
-$BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 Quartz 4/-300";
+$BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 Grain 1/-500";
 
 $BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 Treeatk 1";
 

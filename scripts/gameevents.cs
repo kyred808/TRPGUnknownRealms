@@ -221,7 +221,7 @@ function Meteor::onRemove(%this)
     echo("Collide!");
     
     %index = FindMeteorIndex(%this);
-    echo(%index);
+    //echo(%index);
     %pos = $MeteorData[%index,LastKnownPos];
     
     ClearMeteorData(%index);

@@ -14,6 +14,7 @@ $WeaponSlot=0;
 $BackpackSlot=1;
 $FlagSlot=2;
 $DefaultSlot=3;
+$SpellAuraSlot=4;
 
 // Limit on number of special Items you can buy
 $TeamItemMax[DepBasePack] = 128;

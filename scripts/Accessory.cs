@@ -20,6 +20,20 @@
 //10: HP regen
 //11: Mana regen	
 
+$SpecialVarAMR = 1;
+$SpecialVarMDEF = 3;
+$SpecialVarHP = 4;
+$SpecialVarMana = 5;
+$SpecialVarATK = 6;
+$SpecialVarDEF = 7;
+$SpecialVarSPEED = 8;
+$SpeicalVarHPRegen = 10;
+$SpecialVarManaRegen = 11;
+$SpecialVarManaThief = 12;
+$SpecialVarManaHarvest = 13;
+$SpecialVarMaxStam = 14;
+$SpecialVarArmorPiercing = 15;
+
 $SpecialVarDesc[1] = "AMR";
 $SpecialVarDesc[2] = "";
 $SpecialVarDesc[3] = "MDEF (Magical)";
@@ -31,6 +45,10 @@ $SpecialVarDesc[8] = "[Internal]";
 $SpecialVarDesc[9] = "";
 $SpecialVarDesc[10] = "HP regen";
 $SpecialVarDesc[11] = "Mana regen";
+$SpecialVarDesc[12] = "Mana Thief";
+$SpecialVarDesc[13] = "Mana Harvest";
+$SpecialVarDesc[14] = "Max Stamina";
+$SpecialVarDesc[15] = "AMR Pierce";
 
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;

@@ -342,7 +342,7 @@ function UpdateZone(%object)
 				%m = $Zone::AmbientSoundPerc[%zoneflag];
 				if(%m == "") %m = 100;
 	
-				%r = floor(getRandom() * 100)+1;
+				%r = floor(getRandomMT() * 100)+1;
 				if(%r <= %m)
 					Client::sendMessage(%clientId, 0, "~w" @ $Zone::AmbientSound[%zoneflag]);
 			}
@@ -544,7 +544,7 @@ function UpdateZone(%object)
             %clientId.isMoving = 0;
             refreshStaminaREGEN(%clientId);
         }
-        if(%clientId.isAtRestCounter > 3)
+        if(%clientId.isAtRestCounter > 2)
         {
             %clientId.isAtRest = 1;
             refreshStaminaREGEN(%clientId);

@@ -105,15 +105,16 @@ $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %
 
 // Ore Items
 
-BeltItem::Add("CopperOre","copperore","OreItems",1,250,200);
-BeltItem::Add("TinOre","tinore","OreItems",1,250,201);
+BeltItem::Add("Copper Ore","copperore","OreItems",1,250,200);
+BeltItem::Add("Tin Ore","tinore","OreItems",1,250,201);
 BeltItem::Add("Galena","galena","OreItems",1,250,202);
 BeltItem::Add("Coal","coal","OreItems",1,3000,203);
-BeltItem::Add("IronOre","ironore","OreItems",1,3000,204);
-BeltItem::Add("CobaltOre","cobaltore","OreItems",1,3000,205);
+BeltItem::Add("Iron Ore","ironore","OreItems",1,3000,204);
+BeltItem::Add("Cobalt Ore","cobaltore","OreItems",1,3000,205);
 BeltItem::Add("Mithrite","mithrite","OreItems",1,3000,206);
 BeltItem::Add("Adamantite","adamantite","OreItems",1,3000,207);
-
+BeltItem::Add("Meteor Chunk","meteorchunk","OreItems",1,600,208);
+BeltItem::Add("Meteor Core","meteorcore","OreItems",1,1200,209);
 // Metal Items
 
 BeltItem::Add("Copper","copper","MetalItems",1,250,300);
@@ -180,7 +181,10 @@ BeltEquip::AddEquipmentItem("Mage's Ring","magesring","EquipItems",0.2,50000,33,
 BeltEquip::AddEquipmentItem("Protection Amulet","protectamulet","EquipItems",0.2,5000,14,"DEF 25 MDEF 25","neck");
 BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,34,"DEF 150","neck");
 BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,35,"ATK 250","arm");
-BeltEquip::AddEquipmentItem("Swordsman Armbad","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
+BeltEquip::AddEquipmentItem("Swordsman Armband","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
+
+BeltEquip::AddEquipmentItem("Energy Band","energyband","EquipItems",0.2,5000,800,"MaxStam 50","arm");
+$AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina by 50";
 
 // Spell Scroll Items
 BeltItem::Add("Enhanced Offensive Casting","enhancedoffcastscroll","ScrollItems",0,5000,600);
@@ -193,7 +197,7 @@ $StealProtectedItem["enhancedneucastscroll"] = true;
 
 // Food Items
 BeltItem::Add("Bread","Bread","FoodItems",0.5,50,750,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.2/$TribesDamageToNumericDamage@" 60");
-BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751);
+BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751,"EatFoodItem,cooldown 60,StamRegen 0.5 60,HPRegen"@0.2/$TribesDamageToNumericDamage@" 60");
 BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752,"EatFoodItem,cooldown 60,StamRegen 0.4 60,HPRegen "@0.5/$TribesDamageToNumericDamage@" 60");
 BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,500,753);
 BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,1200,754);

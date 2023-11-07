@@ -124,12 +124,13 @@ function refreshStaminaREGEN(%clientId)
 
 function calcRechargeRate(%clientId)
 {
-    %a = (CalculatePlayerSkill(%clientId, $SkillEnergy) / 6500) + (CalculatePlayerSkill(%clientId, $SkillEndurance) / 6500);
+    %end = CalculatePlayerSkill(%clientId, $SkillEndurance);
+    %a = (CalculatePlayerSkill(%clientId, $SkillEnergy) / 3250) + (%end / 3250);
 
     %a = %a + AddBonusStatePoints(%clientId, "StamRegen");
     
     if(%clientId.isAtRest && %clientId.sleepMode == "")
-        %a = %a + 0.3;
+        %a = %a + 0.3 + %end/600;
     
 	if(%clientId.sleepMode == 1) //Sleep
 		%b = 1.0 + %a;

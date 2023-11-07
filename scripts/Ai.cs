@@ -574,7 +574,7 @@ function AI::SelectBestWeapon(%aiId)
 	dbecho($dbechoMode, "AI::SelectBestWeapon(" @ %aiId @ ")");
 
 	%weapon = GetBestWeapon(%aiId);
-    echo(%weapon);
+    //echo(%weapon);
 	if(%weapon != -1)
 	{
 		%x = "";
@@ -587,7 +587,7 @@ function AI::SelectBestWeapon(%aiId)
 
 		if(%x != -1)
 		{
-            echo(%weapon);
+            //echo(%weapon);
 			Player::useItem(%aiId, %weapon);
 			AI::SetSpotDist(%aiId);
 		}
@@ -1175,7 +1175,7 @@ function AI::onDroneKilled(%aiName)
         Player::setJet(Client::getOwnedObject(%aiId),false);
       	%team = fetchData(%aiId, "botTeam");
 		storeData(%aiId, "botTeam", "");
-        echo(%aiName @" died");
+        //echo(%aiName @" died");
 		$aiNumTable[$tmpbotn[%aiName]] = "";
 		$tmpbotn[%aiName] = "";
         
@@ -1237,7 +1237,7 @@ function AI::onTargetLOSAcquired(%aiName, %idNum)
     {
         storeData(%aiId,"targetFound",%idNum);
     }
-    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 
@@ -1252,7 +1252,7 @@ function AI::onTargetLOSLost(%aiName, %idNum)
         storeData(%aiId,"targetFound","");
     }
     
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }
 
@@ -1262,7 +1262,7 @@ function AI::onTargetLOSRegained(%aiName, %idNum)
 
 	%aiId = AI::getId(%aiName);
     echo("Target Reacquired");
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 
@@ -1272,7 +1272,7 @@ function AI::onTargetDied(%aiName, %idNum)
 
 	%aiId = AI::getId(%aiName);
     echo("TARGET DIED");
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }                                 
 

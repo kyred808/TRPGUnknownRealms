@@ -114,7 +114,7 @@ function Realms::InitializeZone(%groupPath,%realm)
 			%system = Object::getName(%object);
 			%type = GetWord(%system, 0);
 			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
-            echo(%system);
+            //echo(%system);
 			//---------------------------------------------------------------
 			//THIS PART GATHERS SOUNDS FOR THE GENERIC UNKNOWN ZONE
 			// there is no EXIT sound for the unknown zone.
@@ -217,7 +217,7 @@ function Realms::InitializeTownBots(%groupPath,%realmLabel)
 			{
 				%marker = GatherBotInfo(%object);
 			}
-            echo(%name);
+            //echo(%name);
 			%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
 
 			addToSet("MissionCleanup\\"@%realmLabel, %townbot);

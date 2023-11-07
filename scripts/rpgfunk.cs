@@ -2254,7 +2254,7 @@ function FellOffMap(%id)
 		Item::setVelocity(%id, "0 0 0");
         if($Realms::MapUsesRealms)
         {
-            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"Realm"));
+            Realm::KickPlayerBackInRealm(%id,fetchData(%id,"Realm"));
             return;
         }
         else
@@ -2723,11 +2723,11 @@ function WhatIs(%item)
 	else
 		%sd = "";
 
-    %craftReqs = Crafting::getSkillReqs(%item);
-    %cr = "";
-    if(%craftReqs != "")
-        %cr = WhatSkills(Crafting::GetFullCraftCommand(%item));
-    %craftItems = Crafting::getrecipe(%item);
+    //%craftReqs = Crafting::getSkillReqs(%item);
+    //%cr = "";
+    //if(%craftReqs != "")
+    //    %cr = WhatSkills(Crafting::GetFullCraftCommand(%item));
+    //%craftItems = Crafting::getrecipe(%item);
     
 	if($LocationDesc[%t] != "")
 		%loc = " - Type: " @ $LocationDesc[%t];
@@ -2750,10 +2750,19 @@ function WhatIs(%item)
 		%sm = $Spell::manaCost[%si];
 	}
 
+    %specialVars = "";
+    if(BeltEquip::IsBeltEquipItem(%item))
+    {
+        %specialVars = BeltEquip::TranslateSpecialVars(BeltEquip::GetSpecialVars(%item));
+    }
+    else
+        %specialVars = WhatSpecialVars(%item);
+    
+    
 	//--------- BUILD MSG --------------------
 	%msg = "";
 	%msg = %msg @ "<f1>" @ %desc @ %loc @ "\n";
-	%msg = %msg @ "\nBonuses: " @ WhatSpecialVars(%item);
+	%msg = %msg @ "\nBonuses: " @ %specialVars;
 	if(%s != "")
 		%msg = %msg @ "\nSkill Type: " @ %s;
 	%msg = %msg @ "\nRestrictions: " @ WhatSkills(%item);
@@ -2763,10 +2772,6 @@ function WhatIs(%item)
 		%msg = %msg @ "\nPrice: $" @ %c;
 	if(%sd != "")
 		%msg = %msg @ "\nDelay: " @ %sd @ " sec";
-    if(%cr != "")
-        %msg = %msg @ "\nCraft Skill: "@ %cr;
-    if(%craftItems != "")
-        %msg = %msg @ "\nCraft recipe: "@ %craftItems;
 	if(%sr != "")
 		%msg = %msg @ "\nRecovery: " @ %sr @ " sec";
 	if(%sm != "")

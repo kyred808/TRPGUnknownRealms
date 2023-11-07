@@ -127,12 +127,13 @@ function Game::playerSpawn(%clientId, %respawn)
 		}
 
 		%armor = $RaceToArmorType[fetchData(%clientId, "RACE")];
-
+        %spawnPos = Farming::PlayerSpawnProtection(%spawnPos);
+        
 		%pl = spawnPlayer(%armor, %spawnPos, %spawnRot);
 		PlaySound(SoundSpawn2, %spawnPos);
 		GameBase::startFadeIn(Client::getOwnedObject(%clientId));
 
-        Farming::PlayerSpawnProtection(%spawnPos);
+        
         
 		echo("SPAWN: cl:" @ %clientId @ " pl:" @ %pl @ " marker:" @ %spawnMarker @ " position: " @ %spawnPos @ " armor:" @ %armor);
 

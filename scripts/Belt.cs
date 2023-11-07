@@ -71,6 +71,12 @@ function MenuViewBelt(%clientId, %page)
     for(%i = 0; %i <= $Belt::NumberOfBeltGroups; %i++)
     {
         %group = $Belt::ItemGroup[%i];
+        if(%group == "EquipItems")
+        {
+            %activeGroups[%num] = %group;
+            %num++;
+            continue;
+        }
         if(getWord(fetchData(%clientId,%group),0) != -1)
         {
             %activeGroups[%num] = %group;

@@ -43,6 +43,40 @@ function AI::DumbPeriodic(%aiName)
 
 }
 
+// Callback 1 2 3 4 depend on directives.
+
+// Each Directive that is added can have certain default callbacks added.  
+//void AIObj::Directive::setDefaultCallbacks(void)
+//{
+//   memset( CBs, 0, sizeof(CBs) );
+//   switch( type )
+//   {
+//      case  WaypointDirective:
+//         CBs[WaypointReached] = 0;
+//         CBs[WaypointIntermittent] = 0;  NOT IMPL
+//         CBs[WaypointQueryFace] = 0;  NOT IMPL
+//         break;
+//      
+//      case  TargetDirective:
+//         CBs[TargetAcquired] =      "AI::onTargetLOSAcquired";
+//         CBs[TargetKilled] =        "AI::onTargetDied";
+//         CBs[TargetLOSLost] =       "AI::onTargetLOSLost";
+//         CBs[TargetLOSRegained] =   "AI::onTargetLOSRegained";
+//         break;
+//         
+//      case  FollowDirective:
+//         CBs[FollowDestReached] = 0;    NOT IMPL
+//         CBs[FollowOffsetReached] = 0;  NOT IMPL
+//         break;
+//      
+// Not implemented.
+//      case  GuardDirective:
+//         CBs[GuardBored] = 0;  NOT IMPL
+//         break;
+//   }
+//}
+
+
 function aCallBackTest(%aiName)
 {
     echo("Callback 1");

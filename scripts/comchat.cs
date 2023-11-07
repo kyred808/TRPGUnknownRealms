@@ -663,6 +663,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
         if(%w1 == "#skill")
         {
             Player::useAbility(%TrueClientId,%cropped);
+            return;
         }
         
         if(%w1 == "#use")
@@ -1981,6 +1982,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
             else
                 Client::SendMessage(%TrueClientId,$MsgRed,%item @" is not a farmable item.");
+            return;
         }
         else if(%w1 == "#unplant")
         {
@@ -2008,6 +2010,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
                     Client::SendMessage(%TrueClientId,$MsgWhite,"Removed plant object "@%name@".");
                 }
             }
+            return;
         }
         else if(%w1 == "#harvest")
 		{
@@ -2056,7 +2059,44 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			}
             else
 				Client::SendMessage(%TrueClientId,$MsgWhite,"Need to be looking at a harvestable plant.");
-		}
+            return;
+        }
+        if(%w1 == "#bonus")
+        {
+            %bonuses = GetAllBonusStatesTogether(%TrueClientId);
+            %str = "<f1>Bonus States:\n";
+            if(%bonuses != -1)
+            {
+                for(%i = 0; String::getWord(%bonuses,",",%i) != ","; %i++)
+                {
+                    %bb = String::getWord(%bonuses,",",%i);
+                    %stat = getWord(%bb,0);
+                    %desc = %stat;
+                    if($BonusStateDesc[%stat] != "")
+                        %desc = $BonusStateDesc[%stat];
+                    %str = %str @ "<f1>"@%desc@" ["@%stat@"]: <f0>"@ getWord(%bb,1) @"\n";
+                }
+                bottomprint(%TrueClientId, %str, floor(String::len(%str) / 15));
+            }
+            else
+            {
+                Client::SendMessage(%TrueClientId,$MsgWhite,"You have not temp stat bonuses.");
+            }
+            return;
+        }
+        if(%w1 == "#c")
+        {
+            %item = getCroppedItem(%cropped);
+
+            if(%item == "")
+                  Client::sendMessage(%TrueClientId, 0, "Please specify an item (ex: War Axe = waraxe).");
+            else
+            {
+                %msg = Crafting::WhatIs(%TrueClientId,%item);
+                bottomprint(%TrueClientId, %msg, floor(String::len(%msg) / 20));
+            }
+			return;
+        }
         if(%w1 == "#smith" || %w1 == "#mix" || %w1 == "#smelt" || %w1 == "#cook")
         {
             %item = getWord(%cropped,0);
@@ -2196,6 +2236,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
                     }
                 }
             }
+            return;
         }
         //else if(%w1 == "#mix")
         //{
@@ -5717,7 +5758,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	}
 	
 	//========== BOT TALK ======================================================================================
-
 	if(%botTalk)
 	{
 		//process TownBot talk
@@ -5735,7 +5775,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			%botPos = GameBase::getPosition(%id);
 			%dist = Vector::getDistance(%clientPos, %botPos);
 	
-			if(%dist < %closest)
+			if(%dist < %closest && %closestId != Client::getOwnedObject(%TrueClientId))
 			{
 				%closest = %dist;
 				%closestId = %id;

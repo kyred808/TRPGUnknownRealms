@@ -8,6 +8,13 @@ function Client::onKilled(%clientId, %killerId, %damageType)
 	//we can award the other players exp
 	DistributeExpForKilling(%clientId);
 
+    %mh = fetchData(%killerId,"MANAHarvest");
+    if(%mh > 0)
+    {
+        refreshMANA(%killerId,-1*%mh);
+        Client::sendMessage(%killerId,$MsgWhite,"You restored "@%mh@" mana.");
+    }
+    
 	//The player with the killshot gets the official "kill"
 	if(!IsInCommaList(fetchData(%killerId, "TempKillList"), Client::getName(%clientId)))
 		storeData(%killerId, "TempKillList", AddToCommaList(fetchData(%killerId, "TempKillList"), Client::getName(%clientId)));
@@ -410,11 +417,17 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     %skilltype = $SkillType[%weapon];
-
+    
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
 	{
 		%damagedClient = Player::getClient(%this);
 		%shooterClient = %object;
+        
+        if(%shooterClient == 0)
+        {
+            storeData(%damagedClient,"BufferDamage",%value @" ","strinc");
+            return;
+        }
         
         if(fetchData(%damagedClient,"isUberBoss") && fetchData(%damagedClient,"ubCombatStarted") == "")
         {
@@ -538,26 +551,35 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			//	%rweapondamage = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
 			//else
 			//	%rweapondamage = 0;
+
 			%weapondamage = fetchData(%shooterClient,"ATK"); //GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
             if(%weapon == "UBBlast")
                 %weapondamage = %value;
                 
+            if(%type == $BladeBoltDamageType)
+            {
+                %skilltype = $SkillType[Player::getMountedItem(%shooterClient,$WeaponSlot)];
+                %weapondamage = %weapondamage*0.75;
+            }
+                
 			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
-
-            %dmgRedPct = CalculateDamageReduction(%damagedClient);
-
-            %amr = fetchData(%damagedClient,"AMR");
-            
-            //echo("Value: "@%value @" ","DmgPct: "@ %dmgRedPct*100 @" ","AMR: "@%amr);
-			
-			%value = Cap(%value - %amr, 1, "inf");
-            //echo("Value after red: "@%value);
-			%a = (%value * 0.15);
+            %a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
 			%value += %r;
+            %amrAdj = (1 - Cap(fetchData(%shooterClient,"AMRP"),0,100)/100);
+            //Value before any armor reduction.
+            %trueDmg = %value;
             
-            %value = %value - (%value * (%dmgRedPct));
-            
+            %dmgRedPct = CalculateDamageReduction(%damagedClient);
+
+			%amr = fetchData(%damagedClient,"AMR");
+			%value = Cap(%value - (%amr * %amrAdj), 1, "inf");
+
+            %reductionValue = %value * (%dmgRedPct);
+            //echo("AMRP: "@ %amrp);
+            echo("DR: "@ %reductionValue);
+            %value = %value - ((%reductionValue)*%amrAdj);
+
 			if(%value < 1)
 				%value = 1;
 
@@ -576,6 +598,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             //    %value = %value * %stam/25;
 
 			%value = (%value / $TribesDamageToNumericDamage);
+
 		}
 
 		//------------- DETERMINE MISS OR HIT -------------
@@ -740,6 +763,12 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			%arenaNull = True;
 		}
 
+        if(fetchData(%damagedClient,"ubShielded"))
+        {
+            %isMiss = true;
+            %noImpulse = true;
+        }
+        
 		if(!IsDead(%this))
 		{
 			%armor = Player::getArmor(%this);
@@ -832,12 +861,21 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 }
                 
 				%rhp = refreshHP(%damagedClient, %value);
-
+                if(%shooterClient != %damagedClient && %type != $SpellDamageType)
+                {
+                    %mt = fetchData(%shooterClient,"MANAThief");
+                    if(%mt > 0)
+                    {
+                        refreshMANA(%shooterClient,-1*%mt);
+                        
+                        Client::sendMessage(%shooterClient,$MsgWhite,"You restored "@%mt@" mana.");
+                    }
+                }
+                
 				if(%rhp == -1)
 					%value = -1;	//There was an LCK miss
 				else
 				{
-                    echo("Bashed Impulse: "@ %mom);
 					if(!%noImpulse) Player::applyImpulse(%this,%mom);
 					%noImpulse = "";
 
@@ -859,8 +897,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					if(!IsDead(%damagedClient))
 					{
-						if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
-							AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                        if(fetchData(%damageClient,"CustomAI") == "")
+                        {                        
+                            if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
+                                AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                        }
 					}
 
 					PlaySound(RandomRaceSound(fetchData(%damagedClient, "RACE"), Hit), %damagedClientPos);
@@ -934,7 +975,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					else
 					{
 						if(fetchData(%shooterClient, "invisible"))
-							%sname = "An unknown assailant";
+							//%sname = "An unknown assailant";
+                            %sname = "A smooth criminal";
 						else
 							%sname = Client::getName(%shooterClient);
 						%dname = Client::getName(%damagedClient);
@@ -1034,7 +1076,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 			if(%isMiss)
 			{
-				if(fetchData(%damagedClient, "isBonused"))
+				if(fetchData(%damagedClient, "isBonused") || fetchData(%damagedClient,"ubShielded"))
 				{
 					GameBase::activateShield(%this, "0 0 1.57", 1.47);
 					PlaySound(SoundHitShield, %damagedClientPos);

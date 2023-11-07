@@ -62,6 +62,7 @@ function Farming::PlayerSpawnProtection(%pos)
     %set = newObject("set", SimSet);
     %n = containerBoxFillSet(%set, $StaticObjectType | $SimInteriorObjectType, %pos, 3, 3, 3, 0);
     echo("Spawn Area Check: "@ %n);
+    %found = false;
     for(%i = 0; %i < %n; %i++)
     {
         %obj = Group::getObject(%set,%i);
@@ -72,17 +73,26 @@ function Farming::PlayerSpawnProtection(%pos)
             %type = GameBase::getDataName(%obj);
             if(%type == "PlantedSeed")
             {
-                $Farming::GrowingTime[%obj] = "";
-                deleteObject(%obj);
+                %found = true;
+                //$Farming::GrowingTime[%obj] = "";
+                //deleteObject(%obj);
+                break;
             }
             else if(%type == "PlantedTreeShape" || %type == "PlantedPlantOne" || %type == "PlantedPlantTwo")
             {
-                $Farming::PlantLock[%obj] = "";
-                deleteObject(%obj);
+                %found = true;
+                //$Farming::PlantLock[%obj] = "";
+                //deleteObject(%obj);
+                break;
             }
         }
     }
+    
     deleteObject(%set);
+    if(%found)
+        return Vector::add(%pos,"0 0 5");
+    else
+        return %pos;
 }
 
 // Assumes a LOS check already happened

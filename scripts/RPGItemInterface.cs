@@ -108,6 +108,23 @@ function RPGItem::decItemCount(%clientId,%item,%amt,%showmsg)
     return %ret;
 }
 
+function RPGItem::getDesc(%item)
+{
+    %type = RPGItem::getItemInternalType(%item);
+    %desc = "";
+    if(%type == $RPGItem::InvItemType)
+    {
+        if(%item.description == False)	
+            %desc = %item;
+        else
+            %desc = %item.description;
+    }
+    else if(%type == $RPGItem::BeltItemType)
+    {
+        return $beltitem[%item, "Name"];
+    }
+}
+
 function RPGItem::useItem(%clientId,%item)
 {
     %type = RPGItem::getItemInternalType(%item);

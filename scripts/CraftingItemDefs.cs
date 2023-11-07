@@ -1,4 +1,6 @@
 
+deleteVariables("Crafting::*");
+
 //=================
 // Crafting Types
 //=================
@@ -12,6 +14,9 @@ Crafting::AddCraftingType("cooking","Cooking","#cook","cook","cooked",SoundCanSm
 //===================
 Crafting::Addrecipe("smithing","Knife",$SkillSmithing @" 15","Quartz 6",1,$BaseCraftingDifficulty);
 Crafting::Addrecipe("smithing","Broadsword",$SkillSmithing @" 40","Quartz 6 Jade 2");
+Crafting::Addrecipe("smithing","WarAxe",$SkillSmithing @" 80","Quartz 6 Jade 2");
+Crafting::Addrecipe("smithing","MeteorDagger",$SkillSmithing @" 80","Dagger 1 MeteorChunk 5");
+Crafting::Addrecipe("smithing","MeteorAxe",$SkillSmithing @" 80","WarAxe 1 MeteorCore 5");
 Crafting::Addrecipe("smithing","CrudeAxe",$SkillSmithing @" 0.1","SmallRock 3 Splint 5",1,1000);
 Crafting::SetCraftSound("Broadsword",SoundCanSmith2);
 

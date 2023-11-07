@@ -6,6 +6,14 @@
 
 $maxBonusStates = 50;
 
+$BonusStateDesc["ATK"] = "Attack";
+$BonusStateDesc["DEF"] = "Defense";
+$BonusStateDesc["MDEF"] = "Magic Defense";
+$BonusStateDesc["AMRP"] = "Armor Piercing";
+$BonusStateDesc["AMR"] = "Armor";
+
+$BonusStateNegative["SecondWindCD"] = true;
+
 function DecreaseBonusStateTicks(%clientId, %b)
 {
 	if(%b != "")
@@ -63,6 +71,63 @@ function DecreaseBonusStateTicks(%clientId, %b)
 			storeData(%clientId, "isBonused", "");
 			
 	}
+}
+
+function GetAllBonusStatesTogether(%clientId)
+{
+    %statCnt = 0;
+    for(%i = 1; %i <= $maxBonusStates; %i++)
+	{
+        if($BonusStateCnt[%clientId, %i] > 0)
+		{
+            %stat = String::getWord($BonusState[%clientId, %i]," ",0);
+            echo(%stat);
+            if(%stat != " ")
+            {
+                %amt = String::getWord($BonusState[%clientId, %i]," ",1);
+                if(%bonus[%stat] == "")
+                {
+                    %bonus[%stat] = %amt;
+                    %bonusStat[%statCnt] = %stat;
+                    %statCnt++;
+                }
+                else
+                {
+                    %bonus[%stat] += %amt;
+                }
+            }
+        }
+    }
+    
+    %msg = "";
+    if(%statCnt > 0)
+    {
+        for(%i = 0; %i < %statCnt; %i++)
+        {
+            %stat = %bonusStat[%i];
+            if(!$BonusStateNegative[%stat])
+                %msg = %msg @ %stat @ " " @ %bonus[%stat] @",";
+        }
+        return %msg;
+    }
+    return -1;
+}
+
+function GetBonusStateTicks(%clientId,%filter)
+{
+    %add = 0;
+	for(%i = 1; %i <= $maxBonusStates; %i++)
+	{
+        if($BonusStateCnt[%clientId, %i] > 0)
+		{
+            %substr = $BonusState[%clientId, %i];
+            %wx = Word::FindWord(%substr,%filter);
+            if(%wx != -1)
+            {
+                return $BonusStateCnt[%clientId, %i];
+            }
+        }
+    }
 }
 
 function AddBonusStatePoints(%clientId, %filter)

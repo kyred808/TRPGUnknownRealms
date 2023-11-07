@@ -93,6 +93,8 @@ $AccessoryVar[Talon, $AccessoryType] = $ProjectileAccessoryType;
 $AccessoryVar[CeraphumsFeather, $AccessoryType] = $ProjectileAccessoryType;
 $AccessoryVar[BoneClub, $AccessoryType] = $BludgeonAccessoryType;
 $AccessoryVar[SpikedBoneClub, $AccessoryType] = $BludgeonAccessoryType;
+$AccessoryVar[MeteorDagger, $AccessoryType] = $ShortBladeAccessoryType;
+$AccessoryVar[MeteorAxe, $AccessoryType] = $AxeAccessoryType;
 
 $AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";	
 $AccessoryVar[Hatchet, $SpecialVar] = "6 20";			//12 (5)
@@ -104,6 +106,7 @@ $AccessoryVar[BastardSword, $SpecialVar] = "6 133";		//57 (7)
 $AccessoryVar[Halberd, $SpecialVar] = "6 176";			//66 (8)
 $AccessoryVar[Claymore, $SpecialVar] = "6 188";			//75.2 (7.5)
 $AccessoryVar[KeldriniteLS, $SpecialVar] = "6 90";		//90 (0.5)
+$AccessoryVar[MeteorAxe, $SpecialVar] = "6 110 13 5"; //Mana harvest
 //.................................................................................
 $AccessoryVar[Club, $SpecialVar] = "6 12";			//12 (3)
 $AccessoryVar[QuarterStaff, $SpecialVar] = "6 35";		//21 (5)
@@ -126,6 +129,7 @@ $AccessoryVar[Gladius, $SpecialVar] = "6 80";			//48 (5)
 $AccessoryVar[Trident, $SpecialVar] = "6 114";			//57 (6)
 $AccessoryVar[Rapier, $SpecialVar] = "6 110";			//66 (5)
 $AccessoryVar[AwlPike, $SpecialVar] = "6 200";			//75 (8)
+$AccessoryVar[MeteorDagger, $SpecialVar] = "6 40 12 1"; // Mana theif
 //.................................................................................
 $AccessoryVar[CastingBlade, $SpecialVar] = "6 18";
 //.................................................................................
@@ -161,6 +165,7 @@ $AccessoryVar[BastardSword, $Weight] = 7;
 $AccessoryVar[Halberd, $Weight] = 8;
 $AccessoryVar[Claymore, $Weight] = "7.5";
 $AccessoryVar[KeldriniteLS, $Weight] = "0.5";
+$AccessoryVar[MeteorAxe, $Weight] = 7;
 //.................................................................................
 $AccessoryVar[Club, $Weight] = 3;
 $AccessoryVar[QuarterStaff, $Weight] = 5;
@@ -183,6 +188,7 @@ $AccessoryVar[Gladius, $Weight] = 5;
 $AccessoryVar[Trident, $Weight] = 6;
 $AccessoryVar[Rapier, $Weight] = 5;
 $AccessoryVar[AwlPike, $Weight] = 8;
+$AccessoryVar[MeteorDagger, $Weight] = 4;
 //.................................................................................
 $AccessoryVar[Sling, $Weight] = 2;
 $AccessoryVar[ShortBow, $Weight] = 3;
@@ -258,6 +264,8 @@ $AccessoryVar[Talon, $MiscInfo] = "A gemmed talon. It is terribly sharp";
 $AccessoryVar[CeraphumsFeather, $MiscInfo] = "Said to have come from the wing of a ceraphum. But we all knew that it came from the forge";
 $AccessoryVar[BoneClub, $MiscInfo] = "A club made made of skeleton bones";
 $AccessoryVar[SpikedBoneClub, $MiscInfo] = "A spiked club made of skeleton bones";
+$AccessoryVar[MeteorDagger, $MiscInfo] = "A dagger enhanced with meteorite. Restores a little mana with every hit.";
+$AccessoryVar[MeteorAxe, $MiscInfo] = "An axe enhanced with meteorite. Restores a little mana with each kill.";
 
 //NOTE: See shopping.cs for the shopIndexes
 $SkillType[CrudeAxe] = $SkillSlashing;
@@ -297,6 +305,8 @@ $SkillType[HeavyCrossbow] = $SkillArchery;
 $SkillType[RepeatingCrossbow] = $SkillArchery;
 $SkillType[BoneClub] = $SkillBludgeoning;
 $SkillType[SpikedBoneClub] = $SkillBludgeoning;
+$SkillType[MeteorDagger] = $SkillPiercing;
+$SkillType[MeteorAxe] = $SkillSlashing;
 
 $WeaponRange[Sling] = 35;
 $WeaponRange[ShortBow] = 120;
@@ -379,7 +389,9 @@ function GenerateAllWeaponCosts()
 	//$ItemCost[CeraphumsFeather] = GenerateItemCost(CeraphumsFeather);
 	$ItemCost[BoneClub] = GenerateItemCost(BoneClub);
 	$ItemCost[SpikedBoneClub] = GenerateItemCost(SpikedBoneClub);
-
+    $ItemCost[MeteorDagger] = GenerateItemCost(MeteorDagger) + 500;
+    $ItemCost[MeteorAxe] = GenerateItemCost(MeteorAxe) + 500;
+    
 	$ItemCost[RHatchet] = round($ItemCost[Hatchet] * $RustyCostAmp);
 	$ItemCost[RBroadSword] = round($ItemCost[BroadSword] * $RustyCostAmp);
 	$ItemCost[RLongSword] = round($ItemCost[LongSword] * $RustyCostAmp);
@@ -678,16 +690,15 @@ function tree::chop(%client, %player, %obj, %harvest)
     }
 }
 
-$MeteorMiningListLength = 5;
+$MeteorMiningListLength = 4;
 $MeteorMiningList[1] = "Sapphire";
-$MeteorMiningList[2] = "Gold";
-$MeteorMiningList[3] = "Emerald";
+$MeteorMiningList[2] = "MeteorChunk";
+$MeteorMiningList[3] = "MeteorCore";
 $MeteorMiningList[4] = "Diamond";
-$MeteorMiningList[5] = "Keldrinite";
 
 function MineMeteorCrystal()
 {
-    %i = round(1+getRandom()*($MeteorMiningListLength-1));
+    %i = round(1+getRandomMT()*($MeteorMiningListLength-1));
     echo("Roll: " @ %i);
     return %i;
 }
@@ -941,6 +952,118 @@ function DaggerImage::onFire(%player, %slot)
 {
 	MeleeAttack(%player, GetRange(Dagger), Dagger);
 }
+
+
+ItemImageData MeteorDaggerImage
+{
+	shapeFile  = "dagger";
+	mountPoint = 0;
+
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(MeteorDagger);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing1;
+	sfxActivate = AxeSlash2;
+};
+ItemData MeteorDagger
+{
+	heading = "bWeapons";
+	description = "Meteor Dagger";
+	className = "Weapon";
+	shapeFile  = "dagger";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = MeteorDaggerImage;
+	price = 0;
+	showWeaponBar = true;
+};
+function MeteorDaggerImage::onFire(%player, %slot)
+{
+	MeleeAttack(%player, GetRange(MeteorDagger), MeteorDagger);
+}
+
+
+ItemImageData SpellEffectAura1Image
+{
+	shapeFile  = "AURA_ENERGY"; //"AURA_FIRE_2";
+	mountPoint = 4;
+    mountOffset = {0.0, 0.0, 0.0};
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(MeteorDagger);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+};
+ItemData SpellEffectAura1
+{
+	heading = "bWeapons";
+	description = "SpellEffectAura";
+	className = "Weapon";
+	shapeFile  = "dagger";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = SpellEffectAura1Image;
+	price = 0;
+	showWeaponBar = true;
+};
+
+ItemImageData SpellEffectAura2Image
+{
+	shapeFile  = "AURA_FIRE_2";
+	mountPoint = 4;
+    mountOffset = {0.0, 0.0, 0.0};
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(MeteorDagger);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+
+};
+ItemData SpellEffectAura2
+{
+	heading = "bWeapons";
+	description = "SpellEffectAura";
+	className = "Weapon";
+	shapeFile  = "dagger";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = SpellEffectAura2Image;
+	price = 0;
+	showWeaponBar = true;
+};
+
+ItemImageData SpellEffectAura3Image
+{
+	shapeFile  = "AURA_ABSORB";
+	mountPoint = 4;
+    mountOffset = {0.0, 0.0, 0.0};
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(MeteorDagger);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+
+};
+ItemData SpellEffectAura3
+{
+	heading = "bWeapons";
+	description = "SpellEffectAura";
+	className = "Weapon";
+	shapeFile  = "dagger";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = SpellEffectAura3Image;
+	price = 0;
+	showWeaponBar = true;
+};
 
 //****************************************************************************************************
 //   GLADIUS
@@ -1310,6 +1433,39 @@ ItemData WarAxe
 function WarAxeImage::onFire(%player, %slot)
 {
 	MeleeAttack(%player, GetRange(WarAxe), WarAxe);
+}
+
+ItemImageData MeteorAxeImage
+{
+	shapeFile  = "axe";
+	mountPoint = 0;
+
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(MeteorAxe);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing3;
+	sfxActivate = AxeSlash2;
+};
+ItemData MeteorAxe
+{
+	heading = "bWeapons";
+	description = "Meteor Axe";
+	className = "Weapon";
+	shapeFile  = "axe";
+	hudIcon = "axe";
+	shadowDetailMask = 4;
+	imageType = MeteorAxeImage;
+	price = 0;
+	showWeaponBar = true;
+};
+function MeteorAxeImage::onFire(%player, %slot)
+{
+	MeleeAttack(%player, GetRange(MeteorAxe), MeteorAxe);
 }
 
 //****************************************************************************************************
@@ -3321,13 +3477,15 @@ function ChickenWeaponImage::onFire(%player, %slot)
 {
 	MeleeAttack(%player, GetRange(ChickenWeapon), ChickenWeapon);
 }
-$ChickenSpawn = 30;
+$ChickenSpawn = 15;
 function Chkn::onRemove(%this)
 {
     echo("Removing Chkn");
     // Projectile was already cleaned up, so we have to estimate its position
-    %pos = Projectile::PropagateTrack(%this,0.5);
-    %player = $Projectile::tracking[%this,Owner];
+    %trkId = Projectile::getTrackId(%this);
+    %pos = Projectile::PropagateTrack(%this,%trkId,0.5);
+    %client = $Projectile::tracking[%this,%trkId,Owner];
+    %player = Client::getOwnedObject(%client);
     %trans = "0 0 0 0 0 1 0 0 0 "@ %pos;
     for(%i = 0; %i < $ChickenSpawn; %i++)
     {
@@ -3337,16 +3495,18 @@ function Chkn::onRemove(%this)
         %vel = %x@" "@%y@" "@%z;
         %proj = Projectile::spawnProjectile("Eggie",%trans,%player,%vel);
         //$EggieNum[%proj] = %i;
-        Projectile::TrackProjectile(%proj,0.2,%player);
+        Projectile::startTracking(%client,%proj,0.2,3);
+        //Projectile::TrackProjectile(%proj,0.2,%player);
     }
     
-    Projectile::TrackCleanup(%this);
+    Projectile::TrackCleanup(%this,%trkId);
 }
 
 function Eggie::onRemove(%this)
 {
-    %pos = Projectile::PropagateTrack(%this,0.5);
-    %player = $Projectile::tracking[%this,Owner];
+    %trkId = Projectile::getTrackId(%this);
+    %pos = Projectile::PropagateTrack(%this,%trkId,0.5);
+    %client = $Projectile::tracking[%this,%trkId,Owner];
     
     %rot = "0 0 "@ 2*$pi*getRandom();
     
@@ -3364,17 +3524,17 @@ function Eggie::onRemove(%this)
     
     echo("AI Client:" @%aiCL);
     storeData(%aiCl,"SpawnBotInfo","NotBlank");
-    Gamebase::setTeam(%aiCl,7);
+    Gamebase::setTeam(%aiCl,5);
     AI::SetVar(%aiName, spotDist, 40);
     
     GiveThisStuff(%aiCl,"Dagger 1 EXP 20000");
     HardcodeAIskills(%aiCl);
     AI::SelectBestWeapon(%aiCl);
-    AI::newDirectiveFollow(%aiName, Player::getClient(%player), 0, 99);
+    AI::newDirectiveFollow(%aiName, %client, 0, 99);
     
     $AICount++;
     
-    Projectile::TrackCleanup(%this);
+    Projectile::TrackCleanup(%this,%trkId);
     //$EggieNum[%this] = "";
 }
 
@@ -3385,8 +3545,9 @@ function ChickenLauncherImage::onFire(%player, %slot)
     %clientId = Player::getClient(%player);
 	%trans = GameBase::getMuzzleTransform(%player);
     
-    %proj = Projectile::spawnProjectile("Chkn",%trans,%player,%vel);
-    Projectile::TrackProjectile(%proj,0.2,%player);
+    %proj = Projectile::spawnProjectile("Chkn",%trans,%player,"0 0 0");
+    Projectile::startTracking(%clientId,%proj,0.2,3);
+    //Projectile::TrackProjectile(%proj,0.2,%clientId);
     Player::unmountItem(%player,%slot);
 }
 
