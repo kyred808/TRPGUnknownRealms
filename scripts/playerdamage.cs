@@ -488,8 +488,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		{
             %skilltype = $skilloffensivecasting;
 			//For the case of SPELLS, the initial damage has already been determined before calling this function
-
-			%dmg = %value;
+            %sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
+			%dmg = %value + %sdm;
 			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
 
 			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10)) + 1;

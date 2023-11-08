@@ -685,6 +685,13 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
             return;
         }
+        
+        //if(%w1 == "#createpack")
+        //{
+        //    %cropped = GetWord(%cropped, 0);
+            
+        //}
+        
 	      if(%w1 == "#whatismyclientid")
 		{
 	            Client::sendMessage(%TrueClientId, 0, "Your clientId is " @ %TrueClientId);
@@ -5775,7 +5782,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			%botPos = GameBase::getPosition(%id);
 			%dist = Vector::getDistance(%clientPos, %botPos);
 	
-			if(%dist < %closest && %closestId != Client::getOwnedObject(%TrueClientId))
+			if(%dist < %closest && %closestId != Client::getOwnedObject(%TrueClientId)) //I dunno how that happened ._.
 			{
 				%closest = %dist;
 				%closestId = %id;

@@ -171,6 +171,11 @@ function Zone::addZone(%group)
     $Zone::FolderToID[%tmpgroup] = %zcnt;
     
     $Zone::Active[%zcnt] = false;
+    
+    // Just something silly
+    if(Object::getName(%group) == "FREEFORALL Top of Well")
+        Zone::setupSpookyWell(%group);
+    
     return %zcnt;
 }
 
@@ -275,6 +280,8 @@ function RecursiveZone(%delay)
 	{
 		DoZoneCheck(2, %delay);
 		$zoneTicker[1] = "";
+        
+        DoSpookyZoneUpdate();
 	}
 //	if($zoneTicker[2] >= 15)	//check zone every 30 seconds for bots
 //	{
@@ -289,6 +296,8 @@ function DoZoneCheck(%w, %d)
 {
 	dbecho($dbechoMode, "DoZoneCheck(" @ %w @ ", " @ %d @ ")");
 
+    $Zone::SpookyWellPlayerCount = 0;
+    $Zone::SomeoneIsLookingAtWell = false;
 	//Massive zone check for entire world
 	%mset = newObject("set", SimSet);
 	%n = containerBoxFillSet(%mset, $SimPlayerObjectType, "0 0 0", 99999, 99999, 99999, 0);
@@ -306,12 +315,38 @@ function DoZoneCheck(%w, %d)
 	Group::iterateRecursive(%mset, UpdateZone);
 	deleteObject(%mset);
 }
+
+echo("Spooky Well Object: "@ $Zone::SpookyWell[0,Objects]);
+    echo("Spooky Well Object: "@ $Zone::SpookyWell[1,Objects]);
+    echo("Spooky Well Marker: "@ $Zone::SpookyWell["WellMarker"]);
+    echo("Spooky Well Marker: "@ $Zone::SpookyWell["RockMarker"]);
+
+function DoSpookyZoneUpdate()
+{
+    if(!$Zone::SomeoneIsLookingAtWell)
+    {
+        if(OddsAre(2))
+        {
+            Gamebase::setPosition($Zone::SpookyWell[0,Objects],Gamebase::getPosition($Zone::SpookyWell["WellMarker"]));
+            Gamebase::setPosition($Zone::SpookyWell[1,Objects],Gamebase::getPosition($Zone::SpookyWell["RockMarker"]));
+        }
+        else
+        {
+            Gamebase::setPosition($Zone::SpookyWell[1,Objects],Gamebase::getPosition($Zone::SpookyWell["WellMarker"]));
+            Gamebase::setPosition($Zone::SpookyWell[0,Objects],Gamebase::getPosition($Zone::SpookyWell["RockMarker"]));
+        }
+    }
+}
+
 function setzoneflags(%object, %z)
 {
 	dbecho($dbechoMode, "setzoneflags(" @ %object @ ", " @ %z @ ")");
 
 	%clientId = Player::getClient(%object);
 	storeData(%clientId, "tmpzone", %z);
+    
+    if($Zone::SpookyWellZone[$Zone::FolderID[%z]])
+        DoSpookyZoneCalc(%object);
 }
 
 function UpdateZone(%object)
@@ -596,6 +631,62 @@ function gravWorkaround(%clientId, %method)
 
 		Item::setVelocity(%clientId, %nvel);
 	}
+}
+
+function DoSpookyZoneCalc(%object)
+{
+    $Zone::SpookyWellPlayerCount++;
+    
+    if(!$Zone::SomeoneIsLookingAtWell)
+    {
+        $los::object = "";
+        %fov = deg2rad(90);
+        %cast = RaycastCheck(%object,"",$Zone::SpookyWell["WellMarker"],100,"0 0 0"); //Offset by 1.5 so we aren't checking feet
+        %vecRot = $RayCast::Rotation;
+        //echo("Cast Check: "@ %cast);
+        if(%vecRot < %fov && %vecRot >= -1*%fov)
+        {
+            $Zone::SomeoneIsLookingAtWell = true;
+        }
+    }
+}
+
+function DebugSpookyWell()
+{
+    echo("Spooky Well Object: "@ $Zone::SpookyWell[0,Objects]);
+    echo("Spooky Well Object: "@ $Zone::SpookyWell[1,Objects]);
+    echo("Spooky Well Marker: "@ $Zone::SpookyWell["WellMarker"]);
+    echo("Spooky Well Marker: "@ $Zone::SpookyWell["RockMarker"]);
+}
+
+function Zone::setupSpookyWell(%zoneGrp)
+{
+
+    $Zone::SpookyWellZone[%zoneGrp] = true;
+    for(%i = 0; %i < Group::objectCount(%zoneGrp); %i++)
+    {
+        %obj = Group::getObject(%zoneGrp,%i);
+        
+        %name = Object::getName(%obj);
+        
+        if(%name == "Objs")
+        {
+            
+            for(%k = 0; %k < Group::objectCount(%obj); %k++)
+            {
+                %wellObjs = Group::getObject(%obj,%k);
+                $Zone::SpookyWell[%k,Objects] = %wellObjs;
+            }
+        }
+        else if(%name == "Markers")
+        {
+            for(%k = 0; %k < Group::objectCount(%obj); %k++)
+            {
+                %wellMkrs = Group::getObject(%obj,%k);
+                $Zone::SpookyWell[Object::getName(%wellMkrs)] = %wellMkrs;
+            }
+        }
+    }
 }
 
 function Zone::DoEnter(%z, %clientId)

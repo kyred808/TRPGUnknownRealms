@@ -11,8 +11,11 @@ $BonusStateDesc["DEF"] = "Defense";
 $BonusStateDesc["MDEF"] = "Magic Defense";
 $BonusStateDesc["AMRP"] = "Armor Piercing";
 $BonusStateDesc["AMR"] = "Armor";
+$BonusStateDesc["SDM"] = "Spell Dmg";
 
 $BonusStateNegative["SecondWindCD"] = true;
+$BonusStateNegative["RageCD"] = true;
+$BonusStateNegative["ManaFlareCD"] = true;
 
 function DecreaseBonusStateTicks(%clientId, %b)
 {

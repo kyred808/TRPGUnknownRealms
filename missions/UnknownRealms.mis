@@ -901,6 +901,53 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
             };
+            
+            instant SimGroup "FREEFORALL Top of Well" {
+                instant SimGroup "MUSIC minemusic.wav 24";
+                instant SimGroup "MUSIC minemusic2.wav 24";
+                instant Marker "200 200 75 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-369.036 -235.377 75";
+                    rotation = "0 0 0";
+                    locked = "0";
+                };
+                instant SimGroup "Markers" {
+                    instant Marker "WellMarker" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-389.268 -235.532 63.7988";
+                        rotation = "0 0 0";
+                        locked = "1";
+                    };
+                    instant Marker "RockMarker" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-359.268 -235.532 0";
+                        rotation = "0 0 0";
+                        locked = "1";
+                    };
+                };
+                instant SimGroup "Objs" {
+                    instant InteriorShape "well1" {
+                        fileName = "WELL.0.dis";
+                        isContainer = "1";
+                        position = "-389.268 -235.532 63.7988";
+                        rotation = "0 0 0";
+                        lightParams = "0 ";
+                        locked = "0";
+                    };
+                    
+                    instant InteriorShape "jrock1" {
+                        fileName = "jrock.dis";
+                        isContainer = "1";
+                        position = "-359.268 -235.532 0";
+                        rotation = "0 0 0";
+                        lightParams = "0 ";
+                    };
+                };
+                    
+            };
             instant SimGroup "DUNGEON Keldrin Mine" {
                 instant SimGroup "MUSIC minemusic.wav 24";
                 instant SimGroup "MUSIC minemusic2.wav 24";
@@ -4745,14 +4792,14 @@ instant SimGroup "MissionGroup" {
             lightParams = "0 ";
             locked = "1";
         };
-        instant InteriorShape "well1" {
-            fileName = "WELL.0.dis";
-            isContainer = "1";
-            position = "-389.269 -235.533 63.7989";
-            rotation = "0 0 0";
-            lightParams = "0 ";
-            locked = "1";
-        };
+        //instant InteriorShape "well1" {
+        //    fileName = "WELL.0.dis";
+        //    isContainer = "1";
+        //    position = "-389.269 -235.533 63.7989";
+        //    rotation = "0 0 0";
+        //    lightParams = "0 ";
+        //    locked = "1";
+        //};//-389.268 -235.532 63.7988
         instant InteriorShape "lrock41" {
             fileName = "lrock4.14.dis";
             isContainer = "1";
