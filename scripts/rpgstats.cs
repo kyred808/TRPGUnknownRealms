@@ -171,6 +171,12 @@ function fetchData(%clientId, %type)
         %belt = BeltEquip::AddBonusStats(%clientId,"AMRP");
         return %bonus + %belt + %equip;
     }
+    else if(%type == "TrueShot")
+    {
+        //In case we want another method of giving trueshot
+        %a = AddBonusStatePoints(%clientId, "TrueShot") > 0;
+        return %a;
+    }
 	else if(%type == "Weight")
 	{
 		return GetWeight(%clientId);

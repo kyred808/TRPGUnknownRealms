@@ -454,10 +454,22 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 		return;
     if(belt::hasthisstuff(%clientId, %loadedProjectile) <= 0)
 		return;
-	//if(Player::getItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon)) <= 0)
-	//	return;
 
-//	%losflag = "";
+    if(fetchData(%clientId,"TrueShot"))
+    {
+        Weapon::FireTrueShot(%clientId,%weapon,%vel,%loadedProjectile);
+    }
+    else
+    {
+        Weapon::FireItemProjectile(%clientId,%weapon,%vel,%loadedProjectile);
+    }
+
+	PostAttack(%clientId, %weapon);
+}
+
+function Weapon::FireItemProjectile(%clientId,%weapon,%vel,%loadedProjectile)
+{
+    //	%losflag = "";
 //	if(GameBase::getLOSinfo(Client::getOwnedObject(%clientId), 50000))
 //	{
 //		%target = $los::object;
@@ -480,8 +492,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 //	{
 		%zoffset = 0.44;
 //	}
-    
-	%arrow = newObject("", "Item", $ProjItemData[%loadedProjectile], 1, false);
+    %arrow = newObject("", "Item", $ProjItemData[%loadedProjectile], 1, false);
 	%arrow.owner = %clientId;
 	%arrow.delta = 1;
 	%arrow.weapon = %weapon;
@@ -503,9 +514,12 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 	GameBase::setRotation(%clientId, %rot);
 
     Belt::TakeThisStuff(%clientId, %loadedProjectile,1);
-	//RPGItem::decItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon));
+}
 
-	PostAttack(%clientId, %weapon);
+function Weapon::FireTrueShot(%clientId,%weapon,%vel,%loadedProjectile)
+{
+    %trans = Gamebase::getMuzzleTransform(%clientId);
+    Projectile::spawnProjectile(TrueShotArrow,%trans,Client::getOwnedObject(%clientId),%vel);
 }
 
 function PickAxeSwing(%player, %length, %weapon)

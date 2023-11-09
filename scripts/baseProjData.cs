@@ -968,6 +968,26 @@ RocketData UberBossRainProj
 	trailWidth  = 5.8;
 };
 
+BulletData TrueShotArrow
+{
+   bulletShapeName    = "tracer.dts";
+   explosionTag       = arrowExp0;
+
+   damageClass        = 0;
+   damageValue        = 1;
+   damageType         = $MissileDamageType;
+
+   muzzleVelocity     = 180.0;
+   totalTime          = 4.0;
+   liveTime           = 4.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   //inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 1;
+};
 
 //--------------------------------------
 BulletData MiniFusionBolt
@@ -994,6 +1014,7 @@ function MiniFusionBolt::onAdd(%this)
 {
 
 }
+
 
 
 

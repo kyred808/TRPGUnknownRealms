@@ -246,6 +246,27 @@ ExplosionData turretExp
    radFactors = { 1.0, 1.0, 1.0 };
 };
 
+ExplosionData arrowExp0
+{
+   shapeName = "chainspk.dts";
+   soundId   = SoundArrowHit2;
+
+   faceCamera = true;
+   randomSpin = true;
+   hasLight   = true;
+   lightRange = 1.0;
+
+   timeZero = 0.100;
+   timeOne  = 0.900;
+
+   colors[0]  = { 0.0, 0.0, 0.0 };
+   colors[1]  = { 1.0, 1.0, 1.0 };
+   colors[2]  = { 1.0, 1.0, 1.0 };
+   radFactors = { 0.0, 1.0, 0.0 };
+
+   shiftPosition = True;
+};
+
 ExplosionData bulletExp0
 {
    shapeName = "chainspk.dts";

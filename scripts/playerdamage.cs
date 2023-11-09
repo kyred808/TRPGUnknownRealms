@@ -521,11 +521,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					}
 				}
 				if(%shooterClient.adminLevel < 5)
-					UnHide(%shooterClient);
+					UnHide(%shooterClient,"Attacking has revealed you!");
 			}
 			if(fetchData(%damagedClient, "invisible") && %damagedClient.adminLevel < 5)
 			{
-				UnHide(%damagedClient);
+				UnHide(%damagedClient,"An attack has revealed you!");
 			}
 
 			//Bash

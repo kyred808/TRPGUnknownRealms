@@ -2624,21 +2624,20 @@ function WalkSlowInvisLoop(%clientId, %delay, %grace)
 	if(fetchData(%clientId, "lastPos") == "")
 		storeData(%clientId, "lastPos", %pos);
 
-	if(Vector::getDistance(%pos, fetchData(%clientId, "lastPos")) <= %grace && fetchData(%clientId, "invisible"))
-	{
-		storeData(%clientId, "lastPos", GameBase::getPosition(%clientId));
-		schedule("WalkSlowInvisLoop(" @ %clientId @ ", " @ %delay @ ", " @ %grace @ ");", %delay, %clientId);
-	}
-	else
-	{
-		if(fetchData(%clientId, "invisible"))
-			UnHide(%clientId);
-
-		Client::sendMessage(%clientId, $MsgRed, "You are no longer Hiding In Shadows.");
-
-	}
+    if(fetchData(%clientId, "invisible"))
+    {
+        if(Vector::getDistance(%pos, fetchData(%clientId, "lastPos")) <= %grace && fetchData(%clientId, "invisible"))
+        {
+            storeData(%clientId, "lastPos", GameBase::getPosition(%clientId));
+            schedule("WalkSlowInvisLoop(" @ %clientId @ ", " @ %delay @ ", " @ %grace @ ");", %delay, %clientId);
+        }
+        else
+        {
+            UnHide(%clientId);
+        }
+    }
 }
-function UnHide(%clientId)
+function UnHide(%clientId, %reason)
 {
 	dbecho($dbechoMode, "UnHide(" @ %clientId @ ")");
 
@@ -2648,6 +2647,11 @@ function UnHide(%clientId)
 		storeData(%clientId, "invisible", "");
 	}
 
+    if(%reason)
+        Client::sendMessage(%clientId, $MsgRed,%reason);
+    else
+        Client::sendMessage(%clientId, $MsgRed,"You are no longer Hiding In Shadows.");
+        
 	storeData(%clientId, "lastPos", "");
 	storeData(%clientId, "blockHide", True);
 	schedule("storeData(" @ %clientId @ ", \"blockHide\", \"\");", 10);
@@ -2749,6 +2753,13 @@ function WhatIs(%item)
 		%sr = $Spell::recoveryTime[%si];
 		%sm = $Spell::manaCost[%si];
 	}
+    
+    %si = $Ability::index[%item];
+    if(%si != "")
+    {
+        %desc = $Ability::name[%si];
+        %nfo = $Ability::description[%si];
+    }
 
     %specialVars = "";
     if(BeltEquip::IsBeltEquipItem(%item))

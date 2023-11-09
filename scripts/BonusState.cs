@@ -16,6 +16,7 @@ $BonusStateDesc["SDM"] = "Spell Dmg";
 $BonusStateNegative["SecondWindCD"] = true;
 $BonusStateNegative["RageCD"] = true;
 $BonusStateNegative["ManaFlareCD"] = true;
+$BonusStateNegative["TrueShotCD"] = true;
 
 function DecreaseBonusStateTicks(%clientId, %b)
 {
