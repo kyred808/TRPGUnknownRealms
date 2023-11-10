@@ -686,11 +686,22 @@ function remoteSay(%clientId, %team, %message, %senderName)
             return;
         }
         
-        //if(%w1 == "#createpack")
-        //{
-        //    %cropped = GetWord(%cropped, 0);
-            
-        //}
+        if(%w1 == "#createpack")
+		{
+			if(fetchData(%TrueClientId, "TempPack") != "")
+			{
+				if(HasThisStuff(%TrueClientId, fetchData(%TrueClientId, "TempPack")))
+				{
+					TakeThisStuff(%TrueClientId, fetchData(%TrueClientId, "TempPack"));
+					%namelist = %TCsenderName @ ",";
+					TossLootbag(%TrueClientId, fetchData(%TrueClientId, "TempPack"), 5, %namelist, 0);
+					RefreshAll(%TrueClientId);
+	
+					remotePlayMode(%TrueClientId);
+				}
+			}
+			return;
+		}
         
 	      if(%w1 == "#whatismyclientid")
 		{

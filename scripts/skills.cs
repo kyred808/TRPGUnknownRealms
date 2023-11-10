@@ -6,7 +6,6 @@ $NumberOfSkills = 24;
 $SkillSlashing = 1;
 $SkillPiercing = 2;
 $SkillBludgeoning = 3;
-//$SkillDodging = 4;
 $SkillWeightCapacity = 4;
 $SkillBashing = 5;
 $SkillStealing = 6;
@@ -19,7 +18,6 @@ $SkillHealing = 12;
 $SkillArchery = 13;
 $SkillEndurance = 14;
 $SkillMining = 15;
-//$SkillSpeech = 18;
 $SkillSenseHeading = 16;
 $SkillEnergy = 17;
 $SkillHaggling = 18;
@@ -29,6 +27,7 @@ $SkillAlchemy = 21;
 $SkillWoodCutting = 22;
 $SkillFarming = 23;
 $SkillCooking = 24;
+//$SkillEnchantment = 25;
 $MinLevel = "L";
 $MinGroup = "G";
 $MinClass = "C";
@@ -41,7 +40,6 @@ $SkillFlurryDelay = 15;
 $SkillDesc[1] = "Slashing";
 $SkillDesc[2] = "Piercing";
 $SkillDesc[3] = "Bludgeoning";
-//$SkillDesc[4] = "Dodging";
 $SkillDesc[4] = "Weight Capacity";
 $SkillDesc[5] = "Bashing";
 $SkillDesc[6] = "Stealing";
@@ -53,9 +51,7 @@ $SkillDesc[11] = "Spell Resistance";
 $SkillDesc[12] = "Healing";
 $SkillDesc[13] = "Archery";
 $SkillDesc[14] = "Endurance";
-//$SkillDesc[16] = "(no longer used)";
 $SkillDesc[15] = "Mining";
-//$SkillDesc[18] = "Speech";
 $SkillDesc[16] = "Sense Heading";
 $SkillDesc[17] = "Energy";
 $SkillDesc[18] = "Haggling";
@@ -71,6 +67,7 @@ $SkillDesc[C] = "Class";
 $SkillDesc[R] = "Remort";
 $SkillDesc[A] = "Admin Level";
 $SkillDesc[H] = "House";
+
 
 //######################################################################################
 // Class multipliers
@@ -567,9 +564,6 @@ $SkillRestriction[advshield3] = $SkillDefensiveCasting @ " 290";
 $SkillRestriction[advshield4] = $SkillDefensiveCasting @ " 420";
 $SkillRestriction[advshield5] = $SkillDefensiveCasting @ " 635";
 $SkillRestriction[massshield] = $SkillDefensiveCasting @ " 680";
-
-//Planting
-//$SkillRestriction["#plant "@
 
 //######################################################################################
 // Skill functions
