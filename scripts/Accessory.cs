@@ -33,6 +33,9 @@ $SpecialVarManaThief = 12;
 $SpecialVarManaHarvest = 13;
 $SpecialVarMaxStam = 14;
 $SpecialVarArmorPiercing = 15;
+$SpecialVarStamRegen = 16;
+$SpecialVarRestStamRegen = 17;
+$SpecialVarIdleStamRegen = 18;
 
 $SpecialVarDesc[1] = "AMR";
 $SpecialVarDesc[2] = "";
@@ -49,6 +52,9 @@ $SpecialVarDesc[12] = "Mana Thief";
 $SpecialVarDesc[13] = "Mana Harvest";
 $SpecialVarDesc[14] = "Max Stamina";
 $SpecialVarDesc[15] = "AMR Pierce";
+$SpecialVarDesc[16] = "Stam Regen";
+$SpecialVarDesc[17] = "Rest Stam";
+$SpecialVarDesc[18] = "Idle Stam";
 
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;
@@ -64,6 +70,7 @@ $RangedAccessoryType = 11;
 $ProjectileAccessoryType = 12;
 $ShortBladeAccessoryType = 13;
 $PickAxeAccessoryType = 14;
+$MageStaffAccessoryType = 15;
 
 $LocationDesc[$RingAccessoryType] = "Ring";
 $LocationDesc[$BodyAccessoryType] = "Body";
@@ -79,6 +86,7 @@ $LocationDesc[$RangedAccessoryType] = "Ranged";
 $LocationDesc[$ProjectileAccessoryType] = "Projectile";
 $LocationDesc[$ShortBladeAccessoryType] = "ShortBlade";
 $LocationDesc[$PickAxeAccessoryType] = "PickAxe";
+$LocationDesc[$MageStaffAccessoryType] = "Staff";
 
 $maxAccessory[$RingAccessoryType] = 2;
 $maxAccessory[$BodyAccessoryType] = 1;
@@ -1410,6 +1418,25 @@ ItemData OrbOfBreath0
 	imageType = OrbOfBreathImage;
 
 	heading = "aArmor";
+};
+
+ItemData MeteorBits
+{
+    description = "MeteorBit";
+	shapeFile = "saphire";
+	heading = "eMiscellany";
+	shadowDetailMask = 4;
+	price = 5;
+	className = "HandAmmo";
+};
+ItemData MeteorBitsRed
+{
+    description = "MeteorBit";
+	shapeFile = "ruby";
+	heading = "eMiscellany";
+	shadowDetailMask = 4;
+	price = 5;
+	className = "HandAmmo";
 };
 
 ItemData Grenade

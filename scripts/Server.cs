@@ -184,6 +184,7 @@ function createServer(%mission, %dedicated)
     exec(RPGItemInterface);
     exec(Farming);
     exec(Abilities);
+    exec(SkillBook);
 	exec(fix);
     exec(admin_defs);
     

@@ -396,32 +396,36 @@ function RPG::gameMenu(%clientId,%page)
                 Client::addMenuItem(%clientId, %curItem++ @ "Ranged weapons..." , "rweapons");
                 
             Client::addMenuItem(%clientId, %curItem++ @ "Skill points..." , "sp");
+            Client::addMenuItem(%clientId, %curItem++ @ "Skill Book..." , "skillbook");
             Client::addMenuItem(%clientId, %curItem++ @ "Spell Book..." , "spellbook");
-            Client::addMenuItem(%clientId, %curItem++ @ "Belt","viewbelt");
-            if(fetchData(%clientId, "ignoreGlobal"))
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-            else
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+            Client::addMenuItem(%clientId, %curItem++ @ "Belt...","viewbelt");
+            
                 
             
             
             if(%curItem < 7)
             {
-                if(fetchData(%clientId, "LCKconsequence") == "miss")
-                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
-                else if(fetchData(%clientId, "LCKconsequence") == "death")
-                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
+                if(fetchData(%clientId, "ignoreGlobal"))
+                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+                else
+                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+                
             }
             
             Client::addMenuItem(%clientId, "nNext >>" , "page "@ %page+1);
         }
         else if(%page == 2)
         {
+            if(fetchData(%clientId, "ignoreGlobal"))
+                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+            else
+                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
             if(fetchData(%clientId, "LCKconsequence") == "miss")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
             else if(fetchData(%clientId, "LCKconsequence") == "death")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
             Client::addMenuItem(%clientId, %curItem++ @ "Party options..." , "partyoptions");
+            
             
             
             Client::addMenuItem(%clientId, "pPrev <<" , "page "@ %page-1);
@@ -546,6 +550,11 @@ function processMenuOptions(%clientId, %option)
     else if(%opt == "spellbook")
     {
         MenuViewSpellBook(%clientid, 1);
+        return;
+    }
+    else if(%opt == "skillbook")
+    {
+        MenuViewSkillBook(%clientId,"root",1);
         return;
     }
     else if(%opt == "page")

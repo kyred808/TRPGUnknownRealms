@@ -19,6 +19,8 @@ $DragonDamageType      = 16;
 $AIProjDamageType        = 17;
 $BladeBoltDamageType = 18;
 $SlamDamageType = 19;
+$StaffDamageType = 20;
+$MeteorDamageType = 21;
 
 $ProjectileTrackerCounter = 0;
 
@@ -114,31 +116,53 @@ BulletData FusionBolt
 };
 
 //Thorn
-RocketData Thorn
-{ 
-	bulletShapeName = "bullet.dts"; 
-	explosionTag = bulletExp0; 
-	collisionRadius = 0.0; 
-	mass = 2.0;
-	damageClass = 1;
-	damageValue = 20;
-	damageType = $SpellDamageType;
-	explosionRadius = 6.0;
-	kickBackStrength = 0.0;
-	muzzleVelocity   = 50.0;
-	terminalVelocity = 50.0;
-	acceleration = 2.0;
-	totalTime = 3.1;
-	liveTime = 3.0;
-	lightRange = 20.0;
-	colors[0] = { 10.0, 0.75, 0.75 };
-	colors[1] = { 1.0, 0.25, 10.25 };
-	inheritedVelocityScale = 0.5;
-	trailType = 0;
-	trailString = "MortarTrail.dts";
-	smokeDist = 0;
-	soundId = SoundJetHeavy;
-	rotationPeriod = 0.1;
+//RocketData Thorn
+//{ 
+//	bulletShapeName = "bullet.dts"; 
+//	explosionTag = bulletExp0; 
+//	collisionRadius = 0.0; 
+//	mass = 2.0;
+//	damageClass = 1;
+//	damageValue = 20;
+//	damageType = $SpellDamageType;
+//	explosionRadius = 6.0;
+//	kickBackStrength = 0.0;
+//	muzzleVelocity   = 50.0;
+//	terminalVelocity = 50.0;
+//	acceleration = 2.0;
+//	totalTime = 3.1;
+//	liveTime = 3.0;
+//	lightRange = 20.0;
+//	colors[0] = { 10.0, 0.75, 0.75 };
+//	colors[1] = { 1.0, 0.25, 10.25 };
+//	inheritedVelocityScale = 0.5;
+//	trailType = 0;
+//	trailString = "MortarTrail.dts";
+//	smokeDist = 0;
+//	soundId = SoundJetHeavy;
+//	rotationPeriod = 0.1;
+//};
+
+BulletData Thorn
+{
+   bulletShapeName    = "bullet.dts";
+   explosionTag       = bulletExp0;
+
+   damageClass        = 1;
+   damageValue        = 26;
+   damageType         = $SpellDamageType;
+   explosionRadius = 6.0;
+   kickBackStrength = 0.0;
+   muzzleVelocity     = 50.0;
+   totalTime          = 3.1;
+   liveTime           = 3.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 10.0, 0.75, 0.75 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 0.1;
 };
 
 //FireBall
@@ -200,7 +224,7 @@ RocketData Fireball
 GrenadeData FireBomb
 {
    bulletShapeName    = "mortar.dts";
-   explosionTag       = mortarExp;
+   explosionTag       = FireBombExp;
    collideWithOwner   = True;
    ownerGraceMS       = 250;
    collisionRadius    = 0.1;
@@ -467,11 +491,11 @@ RocketData Meteor
 	collisionRadius = 0.0; 
 	mass = 0.5;
 	damageClass = 1;
-	damageValue = 0.0; 
-	damageType = $NullDamageType;
-	explosionRadius = 0.0;
-	kickBackStrength = 0.0;
-	muzzleVelocity   = 80.0;
+	damageValue = 1.8; 
+	damageType = $MeteorDamageType;
+	explosionRadius = 120.0;
+	kickBackStrength = 200.0;
+	muzzleVelocity   = 175.0;
 	terminalVelocity = 7000.0;
 	acceleration = 200.0;
 	totalTime = 80.0;
@@ -487,6 +511,30 @@ RocketData Meteor
 	rotationPeriod = 0.01;
 	trailLength = 30;
 	trailWidth  = 0.8;
+};
+
+GrenadeData MeteorChunkDebris
+{
+   bulletShapeName    = "ruby.dts";
+   explosionTag       = FireBombExp;
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 0.1;
+   mass               = 5.0;
+   elasticity         = 0.1;
+
+   damageClass        = 1;       // 0 impact, 1, radius
+   damageValue        = 1;
+   damageType         = $MeteorDamageType;
+   explosionRadius    = 80.0;
+   kickBackStrength   = 100.0;
+   maxLevelFlightDist = 175;
+   totalTime          = 30.0;
+   liveTime           = 1.0;
+   projSpecialTime    = 0.01;
+
+   inheritedVelocityScale = 0.5;
+   smokeName              = "fiery.dts";
 };
 
 function BombSpread(%objpos)
@@ -558,11 +606,11 @@ RocketData Meteor2
 	collisionRadius = 0.0; 
 	mass = 0.5;
 	damageClass = 1;
-	damageValue = 0.0; 
-	damageType = $NullDamageType;
-	explosionRadius = 0.0;
-	kickBackStrength = 0.0;
-	muzzleVelocity   = 80.0;
+	damageValue = 2.2; 
+	damageType = $MeteorDamageType;
+	explosionRadius = 50.0;
+	kickBackStrength = 80.0;
+	muzzleVelocity   = 175.0;
 	terminalVelocity = 7000.0;
 	acceleration = 200.0;
 	totalTime = 80.0;
@@ -977,7 +1025,7 @@ BulletData TrueShotArrow
    damageValue        = 1;
    damageType         = $MissileDamageType;
 
-   muzzleVelocity     = 180.0;
+   muzzleVelocity     = 200.0;
    totalTime          = 4.0;
    liveTime           = 4.0;
 
@@ -988,6 +1036,92 @@ BulletData TrueShotArrow
 
    rotationPeriod = 1;
 };
+
+
+BulletData BlueStaffBolt
+{
+   bulletShapeName    = "enbolt.dts";
+   explosionTag       = energyExp;
+
+   damageClass        = 0;
+   damageValue        = 1;
+   damageType         = $StaffDamageType;
+
+   muzzleVelocity     = 80.0;
+   totalTime          = 2.0;
+   liveTime           = 2.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 1;
+};
+
+//BulletData FireBallBolt
+//{
+//   bulletShapeName    = "PlasmaBolt.dts";
+//   explosionTag       = plasmaExpBoom;
+//
+//   damageClass        = 1;
+//   explosionRadius    = 8.0;
+//   kickBackStrength   = 0.1;
+//   damageValue        = 1;
+//   damageType         = $StaffDamageType;
+//
+//   muzzleVelocity     = 80.0;
+//   totalTime          = 2.0;
+//   liveTime           = 0.1;
+//
+//   lightRange         = 3.0;
+//   lightColor         = { 0.25, 0.25, 1.0 };
+//   inheritedVelocityScale = 0.5;
+//   isVisible          = True;
+//
+//   rotationPeriod = 1;
+//};
+
+RocketData FireBallBolt
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = PlasmaEXPBoom; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 1; 
+	damageType = $StaffDamageType;
+	explosionRadius = 8.0;
+	kickBackStrength = 0.1;
+	muzzleVelocity   = 80.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 2.0;
+	liveTime = 1.9;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 0; // needs a trail =X
+	trailString = "plasmaex.dts";
+	smokeDist = 2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+};
+
+RepairEffectData HealBolt
+{
+	bitmapName = "lightningNew.bmp";//"repairadd.bmp";
+	boltLength = 7.5;
+	segmentDivisions = 4;
+	beamWidth = 0.125;
+	updateTime = 450;
+	skipPercent = 0.6;
+	displaceBias = 0.15;
+	lightRange = 3.0;
+	lightColor = { 0.85, 0.25, 0.25 };
+};
+
 
 //--------------------------------------
 BulletData MiniFusionBolt

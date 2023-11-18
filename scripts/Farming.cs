@@ -106,9 +106,9 @@ function Farming::PlantCrop(%clientId,%crop)
     %mod = (80 + 40*getRandom())/100; //Random 80-120%
     %time = Cap($Farming::BaseGrowTime[%crop]*((1.2*%skillReq)/%pskill)*%mod,$Farming::BaseGrowTime[%crop]/2,"inf");
     echo("Grow Time: "@ %time @" "@%mod);
-    
-    %amnt = Cap(floor(getRandom()*($Farming::PlantBaseHarvestAmnt[%crop]+floor((%pskill - %skillReq)/(3*%skillReq)*getRandom()))),1,$Farming::MaxHarvestAmnt);
-    
+    %skillDiff = (%pskill - %skillReq);
+    %amnt = Cap(floor(getRandomMT()*($Farming::PlantBaseHarvestAmnt[%crop]+floor(%skillDiff/(1.3*%skillReq)*getRandomMT()))),1,$Farming::MaxHarvestAmnt);
+    echo(%amnt);
     %rot = Vector::add(Vector::getRotation($los::normal),"1.57 0 0");
     Farming::PlantSeedObj(%crop,"PlantedSeed",$los::position,%rot,%time,%amnt,Client::getName(%clientId));
 }
@@ -140,9 +140,9 @@ function Farming::GrowPant(%object,%ownerName)
     
     %pos = Gamebase::getPosition(%object);
     %rot = Vector::add(Gamebase::getRotation(%object),"-1.57 0 0");
-    deleteObject(%object);
     Farming::PlantCropObj(%type,$Farming::PlantShape[%type],%pos,%rot,$Farming::SeedHarvestAmnt[%object],$Farming::PlantLockTime,%ownerName);
     $Farming::SeedHarvestAmnt[%object] = "";
+    deleteObject(%object);
 }
 
 function Farming::PlantCropObj(%cropType,%cropObjType,%pos,%rot,%amnt,%lockTime,%ownerName)
@@ -165,6 +165,46 @@ function Farming::PlantCropObj(%cropType,%cropObjType,%pos,%rot,%amnt,%lockTime,
     if(%lockTime != "")
         $Farming::PlantLock[%nobj] = %ownerName@","@getSimTime()@","@%lockTime;
     
+}
+
+function Farming::MassHarvest(%obj,%clientId)
+{
+    if($massharvestcnt < 15)
+        schedule("Farming::HarvestPlantObject("@%obj@","@%clientId@");",0.2*$massharvestcnt,%obj);
+    $massharvestcnt++;
+}
+
+function Farming::HarvestPlantObject(%obj,%clientId)
+{
+    %type = GameBase::getDataName(%obj);
+    if (%type == "PlantedPlantOne" || %type == "PlantedPlantTwo")
+    {
+        %objName = Object::getName(%obj);
+        %cropType = String::getWord(%objName,",",0);
+        if(Word::findWord($FarmingItems,%cropType,",") != -1)
+        {
+            %skillRestrict = $SkillRestriction["#plant "@%cropType];
+            %skillReq = getWord(%skillRestrict,Word::findWord(%skillRestrict,$SkillFarming)+1);
+            %pskill = CalculatePlayerSkill(%clientId,$SkillFarming);
+            if (%pskill >= %skillReq || %clientId.adminlevel > 4)
+            {
+                %amnt = $Farming::harvestAmnt[%obj];
+                if(%amnt > 0)
+                {
+                    Client::SendMessage(%clientId,0,"You harvested " @ %amnt @ " " @ %cropType @ ".");
+                    GiveThisStuff(%clientId,%cropType@" "@%amnt);
+                    //Need to rework so the difficulty gets harder if you are harvesting easy plants
+                    UseSkill(%clientId, $SkillFarming, True, True, 8/%amnt);
+                }
+                else
+                {
+                    Client::SendMessage(%clientId,$MsgWhite,"You fail to find anything.");
+                    UseSkill(%clientId, $SkillFarming, True, True, 35);
+                }
+                Farming::deleteCrop(%obj);
+            }
+        }
+    }
 }
 
 function Farming::deleteCrop(%cropObj)
@@ -259,7 +299,7 @@ function Farming::SavePlantData(%plant)
             $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,Owner] = %owner;
         $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,Pos] = Gamebase::getPosition(%plant);
         $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,Rot] = Gamebase::getRotation(%plant);
-        $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,HarvestAmnt] = $Farming::harvestAmnt[%plant] = %amnt;
+        $FarmingWorldSave::crop[$FarmingWorldSave::cropCount,HarvestAmnt] = $Farming::harvestAmnt[%plant];
         %lock = $Farming::PlantLock[%plant];
         if(%lock != "")
         {

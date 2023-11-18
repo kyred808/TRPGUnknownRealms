@@ -384,6 +384,10 @@ $AccessoryVar[QuarterStaff, $ShopIndex] = 131;
 $AccessoryVar[LongStaff, $ShopIndex] = 132;
 $AccessoryVar[JusticeStaff, $ShopIndex] = 133;
 
+$AccessoryVar[NoviceStaff, $ShopIndex] = 134;
+$AccessoryVar[MagesStaff, $ShopIndex] = 135;
+$AccessoryVar[FireStaff, $ShopIndex] = 136;
+
 $Shop::IndexItem[1] = BluePotion;
 $Shop::IndexItem[2] = CrystalBluePotion;
 $Shop::IndexItem[3] = EnergyVial;
@@ -488,3 +492,7 @@ $Shop::IndexItem[130] = KeldrinArmor;
 $Shop::IndexItem[131] = QuarterStaff;
 $Shop::IndexItem[132] = LongStaff;
 $Shop::IndexItem[133] = JusticeStaff;
+
+$Shop::IndexItem[134] = NoviceStaff;
+$Shop::IndexItem[135] = MagesStaff;
+$Shop::IndexItem[136] = FireStaff;

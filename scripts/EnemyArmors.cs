@@ -185,10 +185,10 @@ $spawnIndex[54] = "Bat";
 $spawnIndex[55] = "Ent";
 //------------------------------
 
-$BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 RKnife 1 Quartz 4/-300 GobbieBerry 1/-100";
-$BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 RKnife 1 Sling 1 SmallRock 20/50 BlackStatue 1/-100";
-$BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 Turquoise 1/-500";
-$BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 RPickAxe 1 BlackStatue 1/-150 Jade 1/-300";
+$BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 RKnife 1 Quartz 4/-300 GobbieBerry 1/-150 GoblinEar 1/-500";
+$BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 RKnife 1 Sling 1 SmallRock 20/50 BlackStatue 1/-100 GoblinEar 1/-500";
+$BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 Turquoise 1/-500 GoblinEar 1/-500";
+$BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 RPickAxe 1 BlackStatue 1/-150 Jade 1/-300 GoblinEar 1/-400";
 
 $BotEquipment[Pup] = 		"CLASS Fighter LVL 10/50 COINS 6/50 LCK 0 RClub 1 CrystalBluePotion 1 Ruby 1/-2000";
 $BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 RClub 1";
@@ -197,36 +197,36 @@ $BotEquipment[Hunter] = 	"CLASS Ranger LVL 17/50 COINS 9/50 LCK 0 RWarAxe 1 Slin
 
 $BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 10/50 LCK 0 CastingBlade 1 Sling 1 SmallRock 20/50 EnchantedStone 1/-100";
 $BotEquipment[Berserker] = 	"CLASS Fighter LVL 20/50 COINS 13/50 LCK 0 RBroadSword 1 Topaz 4/-500";
-$BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 RBroadSword 1 BluePotion 3/30 Opal 4/-300";
-$BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 RBroadSword 1 RShortBow 1 BasicArrow 20/50 Opal 5/-250";
+$BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 HideArmor0/x 1 RBroadSword 1 BluePotion 3/30 Opal 4/-300";
+$BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 HideArmor0/x 1/-20 RBroadSword 1 RShortBow 1 BasicArrow 20/50 Opal 5/-250";
 
-$BotEquipment[Ruffian] = 	"CLASS Fighter LVL 22/50 COINS 20/50 LCK 0 RBroadSword 1 Quartz 8/-200";
-$BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 23/50 LCK 0 RSpikedClub 1";
-$BotEquipment[Halberdier] = 	"CLASS Fighter LVL 31/50 COINS 26/50 LCK 0 RBroadSword 1 BluePotion 3/30";
-$BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 29/50 LCK 1 RWarAxe 1 RShortBow 1 BasicArrow 15/75";
-$BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 50/50 LCK 1 CastingBlade 1 Emerald 1/-6000 Quartz 10/-200";
+$BotEquipment[Ruffian] = 	"CLASS Fighter LVL 22/50 COINS 80/50 LCK 0 RBroadSword 1 Quartz 8/-200 Yuccavera 4/-300";
+$BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 90/50 LCK 0 RSpikedClub 1 Yuccavera 4/-300";
+$BotEquipment[Halberdier] = 	"CLASS Fighter LVL 31/50 COINS 120/50 LCK 0 RBroadSword 1 BluePotion 3/30";
+$BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 310/50 LCK 1 RWarAxe 1 RShortBow 1 BasicArrow 15/75";
+$BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1 Emerald 1/-6000 Quartz 10/-200";
 
-$BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 20/50 LCK 0 RSpikedClub 1 Granite 10/-300";
-$BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 23/50 LCK 0 RLongSword 1 Opal 3/-300";
-$BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 26/50 LCK 0 RWarAxe 1 SkeletonBone 1/-250 Turquoise 4/-300";
-$BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 29/50 LCK 1 CastingBlade 1 Sling 1 SmallRock 20/50 Diamond 1/-3000";
-$BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 500/50 LCK 2 Gladius 1 Diamond 1/-1000 Emerald 1/-700";
+$BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 200/50 LCK 0 RSpikedClub 1 Granite 10/-300";
+$BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 RLongSword 1 Opal 3/-300";
+$BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 260/50 LCK 0 RWarAxe 1 SkeletonBone 1/-250 Turquoise 4/-300";
+$BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Sling 1 SmallRock 20/50 Diamond 1/-3000";
+$BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 590/50 LCK 2 Gladius 1 Diamond 1/-1000 Emerald 1/-700";
 
-$BotEquipment[Protector] = 	"CLASS Ranger LVL 50/50 COINS 25/50 LCK 0 RShortSword 1 Ruby 2/-500";
+$BotEquipment[Protector] = 	"CLASS Ranger LVL 50/50 COINS 25/50 LCK 0 ScaleMail/x 1/-20 RShortSword 1 Ruby 2/-500";
 $BotEquipment[Peacekeeper] =	"CLASS Ranger LVL 54/50 COINS 28/50 LCK 0 RLongSword 1 RShortBow 1 SheafArrow 40/50 Jade 5/-500";
 $BotEquipment[Lord] = 		"CLASS Ranger LVL 59/50 COINS 31/50 LCK 1 RSpikedClub 1 RLightCrossbow 1 LightQuarrel 25/75 Emerald 1/-2800";
-$BotEquipment[Champion] = 	"CLASS Ranger LVL 63/50 COINS 34/50 LCK 1 RLongSword 1 RLightCrossbow 1 HeavyQuarrel 25/75 Sapphire 3/-1000";
+$BotEquipment[Champion] = 	"CLASS Ranger LVL 63/50 COINS 34/50 LCK 1 ScaleMail/x 1/-20 RLongSword 1 RLightCrossbow 1 HeavyQuarrel 25/75 Sapphire 3/-1000";
 $BotEquipment[Conjurer] =	"CLASS Mage LVL 70/50 COINS 32/50 LCK 0 CastingBlade 1 Topaz 2/-300";
 
-$BotEquipment[Brigand] = 	"CLASS Fighter LVL 75/50 COINS 30/50 LCK 0 RLongSword 1 Sapphire 2/-3000";
-$BotEquipment[Marauder] =	"CLASS Fighter LVL 79/50 COINS 33/50 LCK 0 RLongSword 1 Opal 4/-300 Turquoise 1/-800";
-$BotEquipment[Knight] = 	"CLASS Fighter LVL 83/50 COINS 36/50 LCK 0 RBroadSword 1 RShortBow 1 SheafArrow 40/50 Jade 2/-600";
+$BotEquipment[Brigand] = 	"CLASS Fighter LVL 75/50 COINS 30/50 LCK 0 LongSword 1 Sapphire 2/-3000";
+$BotEquipment[Marauder] =	"CLASS Fighter LVL 79/50 COINS 33/50 LCK 0 LongSword 1 Opal 4/-300 Turquoise 1/-800";
+$BotEquipment[Knight] = 	"CLASS Fighter LVL 83/50 COINS 36/50 LCK 0 ChainMail/x 1/-20 LongSword 1 ShortBow 1 SheafArrow 40/50 Jade 2/-600";
 $BotEquipment[Paladin] = 	"CLASS Mage LVL 87/50 COINS 39/50 LCK 1 CastingBlade 1 Topaz 1/-300";
 
-$BotEquipment[Civilian] = 	"CLASS Fighter LVL 1 COINS 5/50 LCK 0 RBroadSword 1";
+$BotEquipment[Civilian] = 	"CLASS Fighter LVL 1 COINS 5/50 LCK 0 BroadSword 1";
 $BotEquipment[Gladiator] =	"CLASS Fighter LVL 1 LCK 0";
-$BotEquipment[Mercenary] = 	"CLASS Ranger LVL 65/50 COINS 32/50 LCK 0 RBroadSword 1";
-$BotEquipment[Militia] = 	"CLASS Paladin LVL 75/50 COINS 35/50 LCK 1 RLongSword 1";
+$BotEquipment[Mercenary] = 	"CLASS Ranger LVL 65/50 COINS 32/50 LCK 0 BroadSword 1";
+$BotEquipment[Militia] = 	"CLASS Paladin LVL 75/50 COINS 35/50 LCK 1 LongSword 1";
 
 $BotEquipment[Thug] = 		"CLASS Thief LVL 65/50 COINS 32/50 LCK 1 RBroadSword 1 Jade 5/-500";
 $BotEquipment[Miner] = 		"CLASS Paladin LVL 29/50 COINS 35/50 LCK 0 RPickAxe 1 Parchment 1/-16000 Quartz 10/50 Opal 5/50 Turquoise 2/-50 Emerald 1/-1000";
@@ -237,7 +237,7 @@ $BotEquipment[Reaper] = 	"CLASS Mage LVL 174/50 COINS 105/50 LCK 2 CastingBlade 
 $BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 RLongSword 1 DragonScale 1/-3000 Gold 1/-1000";
 $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000";
 
-$BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 Grain 1/-500";
+$BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 Grain 1/-100";
 
 $BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 Treeatk 1";
 

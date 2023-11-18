@@ -168,8 +168,21 @@ function RefreshWeight(%clientId)
 		}
 		else
 		{
+            %mod = "";
+            if(AddBonusStatePoints(%clientId,"SPD") > 0)
+            {
+                %mod = 4;
+            }
 			//when not overweight, the special armor-modifying items come in
 			%x = $GetWeight::ArmorMod;
+            if(%mod == 4)
+            {
+                if(%x == 1)
+                    %x = 5; //Haste + Paws
+                else
+                    %x = 4;
+            }
+            //echo(%x);
 			if(%x > 0)
 				%newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %x];
 		}

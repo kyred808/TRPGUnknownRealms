@@ -38,7 +38,7 @@ function Crafting::GetPastTenseVerb(%craftedItem)
     return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],PastTenseVerb];
 }
 
-function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty)
+function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty,%nofail)
 {
     if(%amnt < 1)
         %amnt = 1;
@@ -46,6 +46,9 @@ function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skil
     // Cannot be 0
     if(%skillDifficulty < 1)
         %skillDifficulty = $BaseCraftingDifficulty;
+        
+    if(%nofail == "")
+        %nofail = false;
 
     $Crafting::recipe[%craftedItem,Type] = %type;
     $Crafting::recipe[%craftedItem,Items] = %stuff;
@@ -54,6 +57,7 @@ function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skil
     $Crafting::recipe[%craftedItem,Amount] = %amnt;
     $Crafting::recipe[%craftedItem,Difficulty] = %skillDifficulty; //For skill levelling
     $Crafting::recipe[%craftedItem,Sound] = $Crafting::Type[%type,DefaultSound];
+    $Crafting::recipe[%craftedItem,NoFailFlag] = %nofail;
     $SkillRestriction[Crafting::GetFullCraftCommand(%craftedItem)] = %requirements;
 }
 
@@ -165,17 +169,22 @@ function Crafting::RollCrafting(%clientId,%craftedItem)
 //  = 0.5+35[lvl/min - 1]/difficulty]  
 function Crafting::CalculateSuccessChance(%clientId,%craftedItem)
 {
-    %skillId = Crafting::GetSkill(%craftedItem);
-    %skillLvl = CalculatePlayerSkill(%clientId, %skillId);
-    %minSkill = GetSkillAmount(Crafting::GetFullCraftCommand(%craftedItem), %skillId);
-    %difficulty = $Crafting::recipe[%craftedItem,Difficulty];
+    if(!$Crafting::recipe[%craftedItem,NoFailFlag])
+    {
+        %skillId = Crafting::GetSkill(%craftedItem);
+        %skillLvl = CalculatePlayerSkill(%clientId, %skillId);
+        %minSkill = GetSkillAmount(Crafting::GetFullCraftCommand(%craftedItem), %skillId);
+        %difficulty = $Crafting::recipe[%craftedItem,Difficulty];
 
-    //echo("SkillLvl: "@%skillLvl@" MinSkill: "@%minSkill@" Diffi: "@ %difficulty);
-    //echo(" 0.5 + "@ (%difficulty/$BaseCraftingDifficulty) @" * "@ (%skillLvl/%minSkill) - 1);
-    %pSuccess = 0.5 + (%difficulty/$BaseCraftingDifficulty)*( (%skillLvl/%minSkill) - 1);
-    
-    //echo("Percent Success: "@ %pSuccess * 100 @"%");
-    
+        //echo("SkillLvl: "@%skillLvl@" MinSkill: "@%minSkill@" Diffi: "@ %difficulty);
+        //echo(" 0.5 + "@ (%difficulty/$BaseCraftingDifficulty) @" * "@ (%skillLvl/%minSkill) - 1);
+        %pSuccess = 0.5 + (%difficulty/$BaseCraftingDifficulty)*( (%skillLvl/%minSkill) - 1);
+        
+        //echo("Percent Success: "@ %pSuccess * 100 @"%");
+    }
+    else
+        %pSuccess = 1;
+        
     return %pSuccess;
 }
 

@@ -30,8 +30,28 @@ function RPGmountItem(%player, %item, %slot)
 	dbecho($dbechoMode, "RPGmountItem(" @ %player @ ", " @ %item @ ", " @ %slot @ ")");
 
 	%clientId = Player::getClient(%player);
+    
 	if(SkillCanUse(%clientId, %item))
 	{
+        if(fetchData(%clientId,"attuningToWeapon"))
+        {
+            CancelAttunement(%clientId);
+        }
+        
+        if(%slot == $WeaponSlot)
+        {
+            %bottomText = "<jc><f1>Weapon: <f0>" @RPGItem::getDesc(%item);
+            %ammo = fetchData(%clientId, "LoadedProjectile " @ %item);
+            if(%ammo != "")
+                %bottomText = %bottomText @"\n<f1>Ammo: <f0>"@RPGItem::getDesc(%ammo);
+            if(fetchData(%clientId,"attunedWeapon") == %item)
+            {
+                %weapMana = fetchData(%clientId,"attunedWeaponMana");
+                %maxMana = $MageStaff[%item,MaxMana];
+                %bottomText = %bottomText @"\n<f1>Mana: <f0>"@%weapMana @"<f1>/<f0>"@%maxMana;
+            }
+            bottomprint(%clientId,%bottomText,String::len(%bottomText)/20);
+        }
 		Player::mountItem(%player, %item, %slot);
 		return True;
 	}

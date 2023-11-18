@@ -63,7 +63,7 @@ function HealHPCheck(%clientId)
         if(%clientId.healTick > 10)
         {
             %clientId.healTick = 0;
-            UseSkill(%clientId, $SkillHealing, True, True);
+            UseSkill(%clientId, $SkillHealing, True, True,12);
         }
         else
             %clientId.healTick++;
@@ -129,13 +129,21 @@ function calcRechargeRate(%clientId)
 
     %a = %a + AddBonusStatePoints(%clientId, "StamRegen");
     
+    %a = %a + BeltEquip::AddBonusStats(%clientId,"StamRegen");
+    
     if(%clientId.isAtRest && %clientId.sleepMode == "")
+    {
         %a = %a + 0.3 + %end/600;
+        %a = %a + BeltEquip::AddBonusStats(%clientId,"IdleStam");
+    }
     
 	if(%clientId.sleepMode == 1) //Sleep
 		%b = 1.0 + %a;
 	else if(%clientId.sleepMode == 2) //Rest
+    {
 		%b = 2.25 + %a;
+        %b = %b + BeltEquip::AddBonusStats(%clientId,"RestStam");
+    }
     else if(%clientId.sleepMode == 3) //Heal
         %b = -2 + %a;
 	else
@@ -144,7 +152,8 @@ function calcRechargeRate(%clientId)
 	%c = AddPoints(%clientId, 11) / 800;
 
 	%r = %b + %c;
-    
+    if(%clientId.sleepMode == 3)
+        %r = Cap(%r,"inf",-1);
     return %r;
 }
 
@@ -174,13 +183,18 @@ function refreshStamina(%clientId,%value)
     setStamina(%clientId, (fetchData(%clientId, "Stamina") - %value));
 }
 
-function WeaponStamina(%clientId,%weapon)
+$WeaponStamina::ScaleFactor = 1.5;
+$WeaponStamina::MinStamUsage = 0.5;
+function WeaponStamina(%clientId,%weapon,%mult)
 {
     dbecho($dbechoMode, "WeaponStamina(" @ %clientId @ ", " @ %weapon @ ")");
     if(Player::isAiControlled(%clientId))
     {
         return;
     }
+    
+    if(%mult == "")
+        %mult = 1;
     
     %skillType = $SkillType[%weapon];
     %skill = CalculatePlayerSkill(%clientId, %skillType);
@@ -197,8 +211,19 @@ function WeaponStamina(%clientId,%weapon)
     if(%wx != -1)
         %minSkill = Cap(getWord($SkillRestriction[%weapon],%wx+1),1,"inf");
         
-    %stamCost = Cap(GetAccessoryVar(%weapon, $Weight) + (%minSkill-%skill)/(1.5*%minSkill),0.5,"inf");
-    //echo(%stamCost);
+    //%stamCost = Cap(GetAccessoryVar(%weapon, $Weight) + (%minSkill-%skill)/(1.5*%minSkill),$WeaponStamina::MinStamUsage,"inf");
+    
+    %w = GetAccessoryVar(%weapon, $Weight);
+    %weightFactor = $WeaponStamina::MinStamUsage-%w;
+    %growthFactor = $WeaponStamina::ScaleFactor-1;
+    
+    %m = %weightFactor/(%minSkill*%growthFactor);
+    %b = %w-%weightFactor/%growthFactor;
+    %stamCost = Cap(%m*%skill+%b,$WeaponStamina::MinStamUsage,"inf");
+    //%m = ($WeaponStamina::MinStamUsage-%w)/(%minSkill*($WeaponStamina::ScaleFactor-1));
+    //%b = %w-($WeaponStamina::MinStamUsage-%w)/($WeaponStamina::ScaleFactor-1);
+    //%y = %m*%skill+%b;
+    %stamCost *= %mult;
     refreshStamina(%clientId,%stamCost);
 }
 
@@ -231,7 +256,14 @@ function setMANA(%clientId, %val)
 function refreshMANA(%clientId, %value)
 {
 	dbecho($dbechoMode, "refreshMANA(" @ %clientId @ ", " @ %value @ ")");
-	setMANA(%clientId, (fetchData(%clientId, "MANA") - %value));
+    %amnt = fetchData(%clientId, "MANA") - %value;
+    if(%amnt < 0)
+        %amnt = 0;
+    
+    %max = fetchData(%clientId,"MaxMANA");
+    if(%amnt > fetchData(%clientId,"MaxMANA"))
+        %amnt = %max;
+	setMANA(%clientId,%amnt);
 }
 
 function ManaRegenTick(%clientId)

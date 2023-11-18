@@ -60,7 +60,7 @@ function GroupTrigger::onTrigEnter(%object, %this)
 		{
 			TakeThisStuff(%clientId, %take);
 
-			%pos = TeleportToMarker(%clientId, "TeleportBoxes\\" @ Object::getName(%group) @ "\\Output", False, True);
+			%pos = TeleportToMarker(%clientId, "Realm0\\TeleportBoxes\\" @ Object::getName(%group) @ "\\Output", False, True);
 			Player::setDamageFlash(%clientId, 0.9);
 			if(!fetchData(%clientId, "invisible"))
 				GameBase::startFadeIn(%clientId);

@@ -25,6 +25,7 @@ $DelayFactorTable[$RangedAccessoryType] = "1.0";
 $DelayFactorTable[$ProjectileAccessoryType] = "1.0";
 $DelayFactorTable[$ShortBladeAccessoryType] = "1.0";
 $DelayFactorTable[$PickAxeAccessoryType] = "1.0";
+$DelayFactorTable[$MageStaffAccessoryType] = "1.0";
 
 $CostFactorTable[$RingAccessoryType] = "1.0";
 $CostFactorTable[$BodyAccessoryType] = "1.0";
@@ -40,7 +41,7 @@ $CostFactorTable[$RangedAccessoryType] = "1.0";
 $CostFactorTable[$ProjectileAccessoryType] = "0.01";
 $CostFactorTable[$ShortBladeAccessoryType] = "1.0";
 $CostFactorTable[$PickAxeAccessoryType] = "1.0";
-
+$CostFactorTable[$MageStaffAccessoryType] = "1.0";
 //****************************************************************************************************
 $AccessoryVar[CrudeAxe, $AccessoryType] = $AxeAccessoryType;
 $AccessoryVar[Hatchet, $AccessoryType] = $AxeAccessoryType;
@@ -95,6 +96,11 @@ $AccessoryVar[BoneClub, $AccessoryType] = $BludgeonAccessoryType;
 $AccessoryVar[SpikedBoneClub, $AccessoryType] = $BludgeonAccessoryType;
 $AccessoryVar[MeteorDagger, $AccessoryType] = $ShortBladeAccessoryType;
 $AccessoryVar[MeteorAxe, $AccessoryType] = $AxeAccessoryType;
+$AccessoryVar[NoviceStaff, $AccessoryType] = $MageStaffAccessoryType;
+$AccessoryVar[MagesStaff, $AccessoryType] = $MageStaffAccessoryType;
+$AccessoryVar[FireStaff, $AccessoryType] = $MageStaffAccessoryType;
+$AccessoryVar[DruidStaff, $AccessoryType] = $MageStaffAccessoryType;
+$AccessoryVar[HealerStaff, $AccessoryType] = $MageStaffAccessoryType;
 
 $AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";	
 $AccessoryVar[Hatchet, $SpecialVar] = "6 20";			//12 (5)
@@ -154,6 +160,12 @@ $AccessoryVar[HeavyQuarrel, $SpecialVar] = "6 44";
 $AccessoryVar[MetalFeather, $SpecialVar] = "6 60";
 $AccessoryVar[Talon, $SpecialVar] = "6 80";
 $AccessoryVar[CeraphumsFeather, $SpecialVar] = "6 105";
+
+$AccessoryVar[NoviceStaff, $SpecialVar] = "6 15";
+$AccessoryVar[MagesStaff, $SpecialVar] = "6 30";
+$AccessoryVar[FireStaff, $SpecialVar] = "6 45";
+$AccessoryVar[DruidStaff, $SpecialVar] = "6 20";
+$AccessoryVar[HealerStaff, $SpecialVar] = "6 10";
 //.................................................................................
 $AccessoryVar[CrudeAxe, $Weight] = 1;
 $AccessoryVar[Hatchet, $Weight] = 5;
@@ -199,6 +211,12 @@ $AccessoryVar[RepeatingCrossbow, $Weight] = 3;
 $AccessoryVar[ElvenBow, $Weight] = 3;
 $AccessoryVar[AeolusWing, $Weight] = 2;
 $AccessoryVar[HeavyCrossbow, $Weight] = 8;
+
+$AccessoryVar[NoviceStaff, $Weight] = 5;
+$AccessoryVar[MagesStaff, $Weight] = 5;
+$AccessoryVar[FireStaff, $Weight] = 5;
+$AccessoryVar[DruidStaff, $Weight] = 5;
+$AccessoryVar[HealerStaff, $Weight] = 5;
 //.................................................................................
 $AccessoryVar[SmallRock, $Weight] = "0.2";
 $AccessoryVar[BasicArrow, $Weight] = "0.1";
@@ -266,7 +284,11 @@ $AccessoryVar[BoneClub, $MiscInfo] = "A club made made of skeleton bones";
 $AccessoryVar[SpikedBoneClub, $MiscInfo] = "A spiked club made of skeleton bones";
 $AccessoryVar[MeteorDagger, $MiscInfo] = "A dagger enhanced with meteorite. Restores a little mana with every hit.";
 $AccessoryVar[MeteorAxe, $MiscInfo] = "An axe enhanced with meteorite. Restores a little mana with each kill.";
-
+$AccessoryVar[NoviceStaff, $MiscInfo] = "An entry level mage's staff. Use #attune to recharge.";
+$AccessoryVar[MagesStaff, $MiscInfo] = "A stronger staff with higher mana capacity";
+$AccessoryVar[FireStaff, $MiscInfo] = "A staff that shoots fireballs";
+$AccessoryVar[DruidStaff, $MiscInfo] = "A staff attuned with nature";
+$AccessoryVar[HealerStaff, $MiscInfo] = "A staff that heals";
 //NOTE: See shopping.cs for the shopIndexes
 $SkillType[CrudeAxe] = $SkillSlashing;
 $SkillType[Hatchet] = $SkillSlashing;
@@ -307,6 +329,12 @@ $SkillType[BoneClub] = $SkillBludgeoning;
 $SkillType[SpikedBoneClub] = $SkillBludgeoning;
 $SkillType[MeteorDagger] = $SkillPiercing;
 $SkillType[MeteorAxe] = $SkillSlashing;
+
+$SkillType[NoviceStaff] = $SkillOffensiveCasting;
+$SkillType[MagesStaff] = $SkillOffensiveCasting;
+$SkillType[FireStaff] = $SkillOffensiveCasting;
+$SkillType[DruidStaff] = $SkillNeutralCasting;
+$SkillType[HealerStaff] = $SkillDefensiveCasting;
 
 $WeaponRange[Sling] = 35;
 $WeaponRange[ShortBow] = 120;
@@ -392,6 +420,12 @@ function GenerateAllWeaponCosts()
     $ItemCost[MeteorDagger] = GenerateItemCost(MeteorDagger) + 500;
     $ItemCost[MeteorAxe] = GenerateItemCost(MeteorAxe) + 500;
     
+    $ItemCost[NoviceStaff] = GenerateItemCost(NoviceStaff);
+    $ItemCost[MagesStaff] = GenerateItemCost(MagesStaff);
+    $ItemCost[FireStaff] = GenerateItemCost(FireStaff);
+    $ItemCost[DruidStaff] = GenerateItemCost(DruidStaff);
+    $ItemCost[HealerStaff] = GenerateItemCost(HealerStaff) + 1500;
+    
 	$ItemCost[RHatchet] = round($ItemCost[Hatchet] * $RustyCostAmp);
 	$ItemCost[RBroadSword] = round($ItemCost[BroadSword] * $RustyCostAmp);
 	$ItemCost[RLongSword] = round($ItemCost[LongSword] * $RustyCostAmp);
@@ -422,8 +456,17 @@ function MeleeAttack(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-	
-    WeaponStamina(%clientId,%weapon);
+	%mult = 1;
+    //I don't want to iterate over all bonuses every weapon swing. Making it a fetchData flag is less costly
+    if(fetchData(%clientId,"DoubleStrikeFlag") != "")
+    {
+        %to = fetchData(%clientId,"DoubleStrikeTimeout");
+        if(getSimTime() <= %to)
+            %mult = 2;
+        else
+            storeData(%clientId,"DoubleStrikeFlag",false);
+    }
+    WeaponStamina(%clientId,%weapon,%mult);
 	
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
@@ -432,6 +475,13 @@ function MeleeAttack(%player, %length, %weapon)
 		if(%obj == "Player")
 		{
 			GameBase::virtual($los::object, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+            if(%mult > 1)
+            {
+                for(%i = 1; %i < %mult; %i++)
+                {
+                    schedule("GameBase::virtual("@$los::object@", \"onDamage\", \"\", 1.0, \"0 0 0\", \"0 0 0\", \"0 0 0\", \"torso\", \"\", "@%clientId@", "@%weapon@");",0.2*%i,%player);
+                }
+            }
 		}
 	}
 
@@ -448,13 +498,12 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 		return;
 	%clientId.lastFireTime = %time;
 	
-    WeaponStamina(%clientId,%weapon);
+    WeaponStamina(%clientId,%weapon,1);
     %loadedProjectile = fetchData(%clientId, "LoadedProjectile " @ %weapon);
 	if(%loadedProjectile == "")
 		return;
-    if(belt::hasthisstuff(%clientId, %loadedProjectile) <= 0)
+    if(RPGItem::getItemCount(%clientId,%loadedProjectile) <= 0) //belt::hasthisstuff(%clientId, %loadedProjectile) <= 0)
 		return;
-
     if(fetchData(%clientId,"TrueShot"))
     {
         Weapon::FireTrueShot(%clientId,%weapon,%vel,%loadedProjectile);
@@ -512,14 +561,84 @@ function Weapon::FireItemProjectile(%clientId,%weapon,%vel,%loadedProjectile)
 	GameBase::throw(%arrow, Client::getOwnedObject(%clientId), %vel, false);
 	GameBase::setRotation(%arrow, %rot);
 	GameBase::setRotation(%clientId, %rot);
-
-    Belt::TakeThisStuff(%clientId, %loadedProjectile,1);
+    
+    RPGItem::decItemCount(%clientId,%loadedProjectile,1);
+    //Belt::TakeThisStuff(%clientId, %loadedProjectile,1);
 }
 
 function Weapon::FireTrueShot(%clientId,%weapon,%vel,%loadedProjectile)
 {
-    %trans = Gamebase::getMuzzleTransform(%clientId);
-    Projectile::spawnProjectile(TrueShotArrow,%trans,Client::getOwnedObject(%clientId),%vel);
+    %player = Client::getOwnedObject(%clientId);
+    $los::position = "";
+    %trans = Gamebase::getMuzzleTransform(%player);
+    if(Gamebase::getLOSInfo(%player,$TrueShotMaxRange))
+    {
+        %pos = Word::getSubWord(%trans,9,3);
+        %dir = Vector::Normalize(Vector::sub($los::position,%pos));
+        %trans = "0 0 0 "@ %dir @" 0 0 0 "@ %pos;
+    }
+    Projectile::spawnProjectile(TrueShotArrow,%trans,%player,%vel);
+    RPGItem::decItemCount(%clientId,%loadedProjectile,1);
+}
+
+function DoMiningSwing(%clientId,%target,%weapon)
+{
+    %obj = getObjectType(%target);
+    %type = GameBase::getDataName(%target);
+
+    if(%type == "Crystal")
+    {
+        %brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
+        if(Vector::getDistance(%clientId.lastMinePos, GameBase::getPosition(%clientId)) > 1.0 && %brflag != -1)
+        {
+            playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
+
+            %score = DoRandomMining(%clientId, %target);
+            if(%score != "")
+            {
+                belt::givethisstuff(%clientId, %score, 1, 1, 1);
+                //Player::incItemCount(%clientId, %score, 1);
+                RefreshAll(%clientId,false);
+                //Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
+
+                if( floor(getRandom() * 10) == 5)
+                    %clientId.lastMinePos = GameBase::getPosition(%clientId);
+            }
+            UseSkill(%clientId, $SkillMining, True, True);
+        }
+        else
+            playSound(SoundHitore2, GameBase::getPosition(%target));
+    }
+    else if(%type == "MeteorCrystal")
+    {
+        %brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
+        if(%brflag)
+        {
+            playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
+            %rewardIdx = MineMeteorCrystal();
+            %item = $MeteorMiningList[%rewardIdx];
+            //Player::incItemCount(%clientId, %item, 1);
+            belt::givethisstuff(%clientId, %item, 1, 1, 1);
+            if(OddsAre($MeteorMineChunkOdds))
+            {
+                belt::givethisstuff(%clientId, "MeteorChunk", 1, 1, 1);
+            }
+            RefreshAll(%clientId,false);
+            
+            //Client::sendMessage(%clientId, 0, "You found " @ %item.description @ ".");
+            
+            UseSkill(%clientId, $SkillMining, True, True,5);
+            
+            //if( floor(getRandom() * 10) == 5)
+            //{
+                //Damage crystal
+            GameBase::virtual(%target, "onDamage", %clientId, 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+            //}
+        }
+    }
+
+    if(%obj == "Player")
+        GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
 }
 
 function PickAxeSwing(%player, %length, %weapon)
@@ -536,66 +655,56 @@ function PickAxeSwing(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-    WeaponStamina(%clientId,%weapon);
+    %mult = 1;
+    if(fetchData(%clientId,"DoubleStrikeFlag"))
+    {
+        %to = fetchData(%clientId,"DoubleStrikeTimeout");
+        if(getSimTime() <= %to)
+            %mult = 2;
+        else
+            storeData(%clientId,"DoubleStrikeFlag",false);
+    }
+    WeaponStamina(%clientId,%weapon,%mult);
+
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
 		%target = $los::object;
-		%obj = getObjectType(%target);
-		%type = GameBase::getDataName(%target);
-
-        if(%type == "Crystal")
-		{
-			%brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
-			if(Vector::getDistance(%clientId.lastMinePos, GameBase::getPosition(%clientId)) > 1.0 && %brflag != -1)
-			{
-				playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
-
-				%score = DoRandomMining(%clientId, %target);
-				if(%score != "")
-				{
-                    belt::givethisstuff(%clientId, %score, 1, 1, 1);
-					//Player::incItemCount(%clientId, %score, 1);
-					RefreshAll(%clientId,false);
-					//Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
-
-					if( floor(getRandom() * 10) == 5)
-						%clientId.lastMinePos = GameBase::getPosition(%clientId);
-				}
-				UseSkill(%clientId, $SkillMining, True, True);
-			}
-			else
-				playSound(SoundHitore2, GameBase::getPosition(%target));
-		}
-        else if(%type == "MeteorCrystal")
+        DoMiningSwing(%clientId,%target,%weapon);
+		for(%i = 1; %i < %mult; %i++)
         {
-            %brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
-            if(%brflag)
-            {
-                playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
-                %rewardIdx = MineMeteorCrystal();
-                %item = $MeteorMiningList[%rewardIdx];
-                //Player::incItemCount(%clientId, %item, 1);
-                belt::givethisstuff(%clientId, %score, 1, 1, 1);
-                RefreshAll(%clientId,false);
-                
-                //Client::sendMessage(%clientId, 0, "You found " @ %item.description @ ".");
-                
-                UseSkill(%clientId, $SkillMining, True, True);
-                
-                //if( floor(getRandom() * 10) == 5)
-                //{
-                    //Damage crystal
-                GameBase::virtual(%target, "onDamage", %clientId, 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
-                //}
-            }
+            schedule("DoMiningSwing("@%clientId@","@%target@","@%weapon@");",0.2*%i,%player);
         }
-
-		if(%obj == "Player")
-			GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
 	}
 
 	PostAttack(%clientId, %weapon);
+}
+
+function DoWoodChopSwing(%clientId,%target,%weapon)
+{
+    %obj = getObjectType(%target);
+    %type = GameBase::getDataName(%target);
+    if(%type == "TreeShape" || %type == "TreeShapeTwo")
+    {
+        PlaySound(SoundHitLeather, GameBase::getPosition(%clientId));
+        
+        if(Player::isAIcontrolled(%clientId)) return;
+        
+        %score = tree::chop(%clientId, Client::getOwnedObject(%clientId), %target);
+        if(%score != "")
+        {
+            GiveThisStuff(%clientId, %score @" 1", this);
+            RefreshAll(%clientId,false);
+            Client::sendMessage(%clientId, 0, "You found " @ $beltitem[%score, "Name"] @ ".");
+
+            useskill(%clientId, $SkillWoodCutting, True, True);
+        }
+        else
+            useskill(%clientId, $SkillWoodCutting, False, True);
+    }
+    
+    if(%obj == "Player")
+        GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
 }
 
 function WoodAxeSwing(%player, %length, %weapon)
@@ -617,34 +726,25 @@ function WoodAxeSwing(%player, %length, %weapon)
 		return;
 	%clientId.lastFireTime = %time;
 	//=======================================================
-    WeaponStamina(%clientId,%weapon);
+    %mult = 1;
+    if(fetchData(%clientId,"DoubleStrikeFlag"))
+    {
+        %to = fetchData(%clientId,"DoubleStrikeTimeout");
+        if(getSimTime() <= %to)
+            %mult = 2;
+        else
+            storeData(%clientId,"DoubleStrikeFlag",false);
+    }
+    WeaponStamina(%clientId,%weapon,%mult);
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
 		%target = $los::object;
-		%obj = getObjectType(%target);
-		%type = GameBase::getDataName(%target);
-        if(%type == "TreeShape" || %type == "TreeShapeTwo")
-		{
-            PlaySound(SoundHitLeather, GameBase::getPosition(%clientId));
-            
-            if(Player::isAIcontrolled(%clientId)) return;
-            
-            %score = tree::chop(%clientId, %player, %target);
-            if(%score != "")
-            {
-                GiveThisStuff(%clientId, %score @" 1", this);
-                RefreshAll(%clientId,false);
-                Client::sendMessage(%clientId, 0, "You found " @ $beltitem[%score, "Name"] @ ".");
-
-                useskill(%clientId, $SkillWoodCutting, True, True);
-            }
-            else
-                useskill(%clientId, $SkillWoodCutting, False, True);
-		}
-		
-		if(%obj == "Player")
-			GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+		DoWoodChopSwing(%clientId,%target,%weapon);
+        for(%i = 1; %i < %mult; %i++)
+        {
+            schedule("DoWoodChopSwing("@%clientId@","@%target@","@%weapon@");",0.2*%i,%player);
+        }
 	}
 	PostAttack(%clientId, %weapon);
 }
@@ -704,16 +804,34 @@ function tree::chop(%client, %player, %obj, %harvest)
     }
 }
 
-$MeteorMiningListLength = 4;
-$MeteorMiningList[1] = "Sapphire";
-$MeteorMiningList[2] = "MeteorChunk";
-$MeteorMiningList[3] = "MeteorCore";
-$MeteorMiningList[4] = "Diamond";
-
+$MeteorMiningListLength = 23;
+$MeteorMiningList[1] = "Jade";
+$MeteorMiningList[2] = "Turquoise";
+$MeteorMiningList[3] = "Ruby";
+$MeteorMiningList[4] = "Ruby";
+$MeteorMiningList[5] = "Ruby";
+$MeteorMiningList[6] = "Ruby";
+$MeteorMiningList[7] = "Ruby"; //More likely to find this one
+$MeteorMiningList[8] = "Topaz";
+$MeteorMiningList[9] = "Topaz";
+$MeteorMiningList[10] = "Topaz";
+$MeteorMiningList[11] = "Sapphire";
+$MeteorMiningList[12] = "Sapphire";
+$MeteorMiningList[13] = "Sapphire";
+$MeteorMiningList[14] = "Gold";
+$MeteorMiningList[15] = "Gold";
+$MeteorMiningList[16] = "Emerald";
+$MeteorMiningList[17] = "Emerald";
+$MeteorMiningList[18] = "Diamond";
+$MeteorMiningList[19] = "Jade";
+$MeteorMiningList[20] = "Turquoise";
+$MeteorMiningList[21] = "Jade";
+$MeteorMiningList[22] = "Turquoise";
+$MeteorMiningList[23] = "Jade";
+$MeteorMineChunkOdds = 10;
 function MineMeteorCrystal()
 {
-    %i = round(1+getRandomMT()*($MeteorMiningListLength-1));
-    echo("Roll: " @ %i);
+    %i = getIntRandomMT(1,$MeteorMiningListLength);//round(1+getRandomMT()*($MeteorMiningListLength-1));
     return %i;
 }
 
@@ -1078,6 +1196,548 @@ ItemData SpellEffectAura3
 	price = 0;
 	showWeaponBar = true;
 };
+
+ItemImageData StaffPoleImage
+{
+	shapeFile  = "quarterstaff";
+	mountPoint = 0;
+    mountOffset = { 0, 0, 0 };
+	//mountRotation = { 0, 1.01, 0};
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(LongStaff);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	//sfxFire = SoundSwing3;
+	//sfxActivate = AxeSlash2;
+};
+ItemData StaffPole
+{
+	heading = "bWeapons";
+	description = "Long Staff";
+	className = "Weapon";
+	shapeFile  = "longstaff";
+	hudIcon = "spear";
+	shadowDetailMask = 4;
+	imageType = StaffPoleImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+$MageStaff[NoviceStaff,MaxMana] = 50;
+$MageStaff[NoviceStaff,ManaCost] = 1;
+$MageStaff[NoviceStaff,AttunementCost] = 10;
+$MageStaff[NoviceStaff,AttunementTime] = 2;
+
+ItemImageData NoviceStaffImage
+{
+	shapeFile  = "saphire";
+	mountPoint = 0;
+    mountOffset = { 0, -0.2, 0 };
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(NoviceStaff);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = NoSound;
+	sfxActivate = AxeSlash2;
+};
+
+ItemData NoviceStaff
+{
+    heading = "bWeapons";
+	description = "Novice Staff";
+	className = "Weapon";
+	shapeFile  = "saphire";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = NoviceStaffImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+function NoviceStaff::onMount(%player,%item)
+{
+    %clientId = Player::getClient(%player);
+    //if(fetchData(%clientId,"attunedWeapon") == %item)
+    //{
+    //    %clientId = Player::getClient(%player);
+    //    %weapMana = fetchData(%clientId,"attunedWeaponMana");
+    //    %maxMana = $MageStaff[%item,MaxMana];
+    //    bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%item) @" Mana: <f0>"@ %weapMana @"<f1>/<f0>"@%maxMana,2);
+    //    
+    //}
+    Player::mountItem(%player,StaffPole,$ExtraImageSlot1);
+}
+
+function NoviceStaff::onUnmount(%player,%item)
+{
+    Player::unmountItem(%player,$ExtraImageSlot1);
+}
+
+function NoviceStaffImage::onFire(%player,%slot)
+{
+    MagesStaffAttack(%player,NoviceStaff,$MageStaff[NoviceStaff,ManaCost],SoundEnergyTurretFire,BlueStaffBolt,80*2);
+}
+
+$MageStaff[MagesStaff,MaxMana] = 500;
+$MageStaff[MagesStaff,ManaCost] = 5;
+$MageStaff[MagesStaff,AttunementCost] = 30;
+$MageStaff[MagesStaff,AttunementTime] = 4;
+
+ItemImageData MagesStaffImage
+{
+	shapeFile  = "emerald";
+	mountPoint = 0;
+    mountOffset = { 0, -0.2, 0 };
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(MagesStaff);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = NoSound;
+	sfxActivate = AxeSlash2;
+};
+
+ItemData MagesStaff
+{
+    heading = "bWeapons";
+	description = "Mage's Staff";
+	className = "Weapon";
+	shapeFile  = "emerald";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = MagesStaffImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+function MagesStaff::onMount(%player,%item)
+{
+    %clientId = Player::getClient(%player);
+    if(fetchData(%clientId,"attunedWeapon") == %item)
+    {
+        %clientId = Player::getClient(%player);
+        %weapMana = fetchData(%clientId,"attunedWeaponMana");
+        %maxMana = $MageStaff[%item,MaxMana];
+        bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%item) @" Mana: <f0>"@ %weapMana @"<f1>/<f0>"@%maxMana,2);
+        
+    }
+    Player::mountItem(%player,StaffPole,$ExtraImageSlot1);
+}
+
+function MagesStaff::onUnmount(%player,%item)
+{
+    Player::unmountItem(%player,$ExtraImageSlot1);
+}
+
+function MagesStaffImage::onFire(%player,%slot)
+{
+    MagesStaffAttack(%player,MagesStaff,$MageStaff[MagesStaff,ManaCost],SoundEnergyTurretFire,BlueStaffBolt,80*2);
+}
+
+$MageStaff[FireStaff,MaxMana] = 600;
+$MageStaff[FireStaff,ManaCost] = 15;
+$MageStaff[FireStaff,AttunementCost] = 45;
+$MageStaff[FireStaff,AttunementTime] = 5;
+
+ItemImageData FireStaffImage
+{
+	shapeFile  = "ruby";
+	mountPoint = 0;
+    mountOffset = { 0, -0.2, 0 };
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	fireTime = GetDelay(FireStaff);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = NoSound;
+	sfxActivate = AxeSlash2;
+};
+
+ItemData FireStaff
+{
+    heading = "bWeapons";
+	description = "Fire Staff";
+	className = "Weapon";
+	shapeFile  = "ruby";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = FireStaffImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+function FireStaff::onMount(%player,%item)
+{
+    %clientId = Player::getClient(%player);
+    
+    Player::mountItem(%player,StaffPole,$ExtraImageSlot1);
+}
+
+function FireStaff::onUnmount(%player,%item)
+{
+    Player::unmountItem(%player,$ExtraImageSlot1);
+}
+
+function FireStaffImage::onFire(%player,%slot)
+{
+    MagesStaffAttack(%player,FireStaff,$MageStaff[FireStaff,ManaCost],LaunchFB,FireBallBolt,80*2);
+}
+
+$MageStaff[HealerStaff,MaxMana] = 600;
+$MageStaff[HealerStaff,ManaCost] = 15;
+$MageStaff[HealerStaff,AttunementCost] = 45;
+$MageStaff[HealerStaff,AttunementTime] = 5;
+$MageStaff[HealerStaff,Rate] = 2;
+ItemImageData HealerStaffImage
+{
+	shapeFile = "ruby";
+	mountPoint = 0;
+	weaponType = 2;
+	projectileType = HealBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
+	lightType = 3;
+	lightRadius = 1;
+	lightTime = 1;
+	lightColor = { 0.25, 1, 0.25 };
+
+	sfxFire = DeActivateWA;//SoundRepairItem;
+	sfxActivate = AxeSlash2;
+};
+
+ItemData HealerStaff
+{
+    heading = "bWeapons";
+	description = "Healer Staff";
+	className = "Weapon";
+	shapeFile  = "ruby";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = HealerStaffImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+function HealerStaff::onMount(%player,%item)
+{
+    %clientId = Player::getClient(%player);
+    if(fetchData(%clientId,"attunedWeapon") == %item)
+    {
+        %weapMana = fetchData(%clientId,"attunedWeaponMana");
+        %maxMana = $MageStaff[%item,MaxMana];
+        bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%item) @" Mana: <f0>"@ %weapMana @"<f1>/<f0>"@%maxMana,2);
+        
+    }
+    Player::mountItem(%player,StaffPole,$ExtraImageSlot1);
+}
+
+function HealerStaff::onUnmount(%player,%item)
+{
+    Player::unmountItem(%player,$ExtraImageSlot1);
+}
+
+function HealBolt::onAcquire(%this, %player, %target)
+{
+    echo("HealBolt::onAcquire("@%this@","@%player@","@%target@")");
+	%client = Player::getClient(%player);
+	%player.fixingDisabled = false;
+	
+    %weap = Player::getMountedItem(%player,$WeaponSlot);
+    %player.healingThing = %weap;
+    %player.healTime = getSimTime() + $MageStaff[%weap,Rate];
+    %mana = fetchData(%client,"attunedWeaponMana");
+    %cost = $MageStaff[%weap,ManaCost];
+    
+    if(%mana < %cost)
+    {
+        Client::sendMessage(%client, $MsgRed, "Your staff is too low on mana. Use #recharge");
+        Player::trigger(%player, $WeaponSlot, false);
+        return;
+    }
+    
+	if(%target == %player) 
+	{
+		%player.repairTarget = -1;
+        
+        
+		if(GameBase::getDamageLevel(%player) != 0) 
+		{
+			
+            %player.repairTarget = %player;
+            Client::sendMessage(%client, 0, "Heal self...");
+			
+		}
+		else 
+		{
+			Client::sendMessage(%client,0,"Nothing in range");
+			Player::trigger(%player, $WeaponSlot, false);
+			return;
+		}
+	}
+	else 
+	{
+		%player.repairTarget = %target;
+		if(getObjectType(%player.repairTarget) == "Player") 
+		{
+			%rclient = Player::getClient(%player.repairTarget);
+			%name = Client::getName(%rclient);
+		}
+		else 
+        {%player.fixingDisabled = true;Player::trigger(%player,$WeaponSlot,false);return;}
+        
+		if(GameBase::getDamageLevel(%player.repairTarget) == 0) 
+		{
+			Client::sendMessage(%client,0,%name @ " is already healed.");
+			Player::trigger(%player,$WeaponSlot,false);
+			%player.repairTarget = -1;
+			return;
+		}
+		if(getObjectType(%player.repairTarget) == "Player") 
+		{
+			Client::sendMessage(%rclient,0,"Being healed by " @ Client::getName(%client));
+		}
+		Client::sendMessage(%client,0,"Healing " @ %name @"...");
+	}
+    
+	//HealCheckLoop(%client,%player,%weap,1);
+}
+
+//function HealCheckLoop(%clientId,%player,%item,%delay)
+//{
+//    %mana = fetchData(%clientId,"MANA");
+//    %cost = $MageStaff[%item,ManaCost];
+//    if(%mana < %cost)
+//    {
+//        
+//    }
+//    if(%player.repairTarget == -1)
+//    {
+//        
+//    }
+//    else
+//    {
+//    
+//    }
+//}
+function HealBolt::onRelease(%this, %player)
+{
+    echo("HealBolt::onRelease("@%this@","@%player@")");
+	%object = %player.repairTarget;
+	if(%object != -1) 
+	{
+		%client = Player::getClient(%player);
+		if(%object == %player) 
+		{
+			Client::sendMessage(%client,0,"Healing Stopped");
+		}
+		else 
+		{
+			if(GameBase::getDamageLevel(%object) == 0) 
+			{
+				Client::sendMessage(%client,0,"Healing Done");
+			}
+			else 
+			{
+				Client::sendMessage(%client,0,"Healing Stopped");
+			}
+		}
+	}
+    %player.healTime = "";
+    %player.healingThing = "";
+}
+
+function HealBolt::checkDone(%this, %player)
+{
+    echo("HealBolt::checkDone("@%this@","@%player@")");
+	if(Player::isTriggered(%player,$WeaponSlot) && Player::getMountedItem(%player,$WeaponSlot) == %player.healingThing && %player.repairTarget != -1) 
+	{
+        %weap = %player.healingThing;
+        %client = Player::getClient(%player);
+        
+        %cost = $MageStaff[%weap,ManaCost];
+        
+        %object = %player.repairTarget;
+        
+        if(getSimTime() >= %player.healTime)
+        {
+            %defCast = CalculatePlayerSkill(%client,$SkillDefensiveCasting);
+            %atkIdx = Word::FindWord($AccessoryVar[%weap, $SpecialVar],$SpecialVarATK)+1;
+            %value = getWord($AccessoryVar[%weap, $SpecialVar],%atkIdx);
+            %amnt = %value + floor(%defCast/20);
+            %rclient = Player::getClient(%object);
+            
+            refreshHP(%rclient,-%amnt/$TribesDamageToNumericDamage);
+            storeData(%client,"attunedWeaponMana",%cost,"dec");
+            
+            if(%rclient != %client)
+            {
+                Client::sendMessage(%rclient, $MsgWhite, "You healed for "@%amnt@" HP");
+                Client::sendMessage(%client, $MsgWhite, "You healed "@ Client::getName(%rclient) @" for "@%amnt@" HP");
+            }
+            else
+            {
+                Client::sendMessage(%client, $MsgWhite, "You healed yourself for "@%amnt@" HP");
+            }
+            
+            playSound(ActivateAR,Gamebase::getPosition(%rclient));
+            bottomprint(%client,"<jc><f1>"@RPGItem::getDesc(%weap) @" Mana: <f0>"@ fetchData(%client,"attunedWeaponMana") @"<f1>/<f0>"@$MageStaff[%weap,MaxMana],2);
+            %player.healTime = getSimTime() + $MageStaff[%weap,Rate];
+        }
+        
+        %mana = fetchData(%client,"attunedWeaponMana");
+        if(%mana < %cost)
+        {
+            Client::sendMessage(%client, $MsgRed, "Your staff is too low on mana. Use #recharge");
+            Player::trigger(%player, $WeaponSlot, false);
+            return;
+        }
+
+		if(%object == %player) 
+		{
+			if(GameBase::getDamageLevel(%player) == 0) 
+			{
+				Player::trigger(%player,$WeaponSlot,false);
+				return;
+			}
+		}
+		else 
+		{
+			if(GameBase::getDamageLevel(%object) == 0) 
+			{
+				Player::trigger(%player,$WeaponSlot,false);
+				return;
+			}
+		}
+	}
+}
+
+//function FireStaffImage::onFire(%player,%slot)
+//{
+//    MagesStaffAttack(%player,FireStaff,$MageStaff[FireStaff,ManaCost],LaunchFB,FireBallBolt,80*2);
+//}
+
+function MagesStaffAttack(%player,%item,%manacost,%sound,%projectile,%tgtRange)
+{
+    dbecho($dbechoMode, "MagesStaffAttack(" @ %player @ ", " @ %item @ ", "@ %projectile @")");
+
+	%clientId = Player::getClient(%player);
+	if(%clientId == "")
+		%clientId = 0;
+
+	//==== ANTI-SPAM CHECK, CAUSE FOR SPAM UNKNOWN ==========
+	%time = getIntegerTime(true) >> 5;
+	if(%time - %clientId.lastFireTime <= $fireTimeDelay)
+		return;
+	%clientId.lastFireTime = %time;
+	//=======================================================
+    
+    if(fetchData(%clientId,"attuningToWeapon"))
+    {
+        CancelAttunement(%clientId);
+        return;
+    }
+    
+    if(fetchData(%clientId,"attunedWeapon") != %item)
+    {
+        Client::sendMessage(%clientId,$MsgRed,"You are not attuned to this staff!");
+        return;
+    }
+    
+    %weapMana = fetchData(%clientId,"attunedWeaponMana");
+    
+    if(%weapMana >= %manacost)
+    {
+        storeData(%clientId,"attunedWeaponMana",%manacost,"dec");
+        %tgt = "";
+        %tgtPos = "";
+        if(%tgtRange != "")
+        {
+            $los::object = "";
+            $los::position = "";
+            if(Gamebase::getLOSInfo(%player,%tgtRange))
+            {
+                %tgt = $los::object;
+                %tgtPos = $los::position;
+            }
+        }
+        playSound(%sound,Gamebase::getPosition(%clientId));
+        if(%tgtPos != "")
+        {
+            %pos = Word::getSubWord(Gamebase::getMuzzleTransform(%player),9,3);
+            %dir = Vector::Normalize(Vector::sub(%tgtPos,%pos));
+            %trans = "0 0 0 "@ %dir @" 0 0 0 "@ %pos;
+        }
+        else
+            %trans = Gamebase::getMuzzleTransform(%player);
+            
+        Projectile::spawnProjectile(%projectile,%trans,%player,Item::getVelocity(%player),%tgt);
+    }
+    else
+        Client::sendMessage(%clientId,$MsgRed,"Your staff is too low on mana. Use #recharge");
+    
+    if(%weapMana != "")
+    {
+        %newMana = fetchData(%clientId,"attunedWeaponMana");
+        %maxMana = $MageStaff[%item,MaxMana];
+        bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%item) @" Mana: <F0>"@ %newMana @"<F1>/<F0>"@%maxMana,1);
+    }
+    
+    PostAttack(%clientId,%item);
+}
+
+function CancelAttunement(%clientId)
+{
+    storeData(%clientId,"attuningToWeapon","");
+    playSound(UnravelAM,Gamebase::getPosition(%clientId));
+    Client::sendMessage(%clientId,$MsgWhite,"Attunement cancelled.");
+}
+
+function BeginAttuningWeapon(%clientId,%item)
+{
+    %mana = fetchData(%clientId,"MANA");
+    if(%mana >= $MageStaff[%item,AttunementCost])
+    {
+        storeData(%clientId,"attuningToWeapon",true);
+        %atw = fetchData(%clientId,"attunedWeapon");
+        if(%atw != "")
+            Client::sendMessage(%clientId,$MsgWhite,"Unattuning to "@RPGItem::getDesc(%atw)@" and attuning to "@RPGItem::getDesc(%item)@". (Attack to cancel)");
+        else
+            Client::sendMessage(%clientId,$MsgWhite,"Attuning to "@RPGItem::getDesc(%item)@". (Attack to cancel)");
+            
+        playSound(ActivateTR,Gamebase::getPosition(%clientId));
+        schedule("FinishWeaponAttunement("@%clientId@","@%item@");",$MageStaff[%item,AttunementTime]);
+        //refreshMANA(%clientId,$MageStaff[%item,AttunementCost]);
+    }
+    else
+        Client::sendMessage(%clientId,$MsgRed,"Not enough mana to attune to "@RPGItem::getDesc(%item)@". ("@%mana@"/"@$MageStaff[%item,AttunementCost]@")");
+}
+
+function FinishWeaponAttunement(%clientId,%item)
+{
+    if(fetchData(%clientId,"attuningToWeapon"))
+    {
+        playSound(ActivateTD,Gamebase::getPosition(%clientId));
+        Client::sendMessage(%clientId,$MsgBeige,"You attuned to "@RPGItem::getDesc(%item)@". Current Weapon Mana: "@$MageStaff[%item,AttunementCost]@"/"@$MageStaff[%item,MaxMana]);
+        storeData(%clientId,"attunedWeapon",%item);
+        storeData(%clientId,"attunedWeaponMana",$MageStaff[%item,AttunementCost]);
+        storeData(%clientId,"attuningToWeapon","");
+        refreshMANA(%clientId,$MageStaff[%item,AttunementCost]);
+    }
+}
 
 //****************************************************************************************************
 //   GLADIUS

@@ -59,79 +59,79 @@ function Item::onCollision(%this,%object)
 
 		%item = Item::getItemData(%this);
         
-        if(%item == "belt")
-        {
-            %msg = "";
-
-            %ownerName = GetWord($loot[%this], 0);
-            %namelist = GetWord($loot[%this], 1);
-
-            if($loot[%this] == "")
-                %msg = "You found an empty belt.";
-            else
-            {
-                if(IsInCommaList(%namelist, Client::getName(%clientId)) || %namelist == "*")
-                {
-                    if(String::ICompare(%ownerName, Client::getName(%clientId)) == 0)
-                        %msg = "You found one of your backpacks.";
-                    else if(%ownerName == "*")
-                        %msg = "You found a belt.";
-                    else
-                        %msg = "You found one of " @ %ownerName @ "'s belts.";
-                }
-            }
-
-            if(%msg != "")
-            {
-                %newloot = String::getSubStr($loot[%this], String::len(%ownerName)+String::len(%namelist)+2, 99999);
-                %r = String::replace(%newloot, "belt", "");
-                %newloot = String::NEWgetSubStr(%r, 1, 99999);
-
-                Client::sendMessage(%clientId, 0, %msg);
-                GiveThisStuff(%clientId, %newloot, True);
-
-            if(%this.tag != "")
-            {
-                $tagToObjectId[%this.tag] = "";
-                $SpawnPackList = RemoveFromCommaList($SpawnPackList, %this.tag);
-            }
-
-            Item::playPickupSound(%this);
-            $loot[%this] = "";
-
-            if(%ownerName != "*")
-            {
-                %ownerId = NEWgetClientByName(%ownerName);
-                storeData(%ownerId, "lootbaglist", RemoveFromCommaList(fetchData(%ownerId, "lootbaglist"), %this));
-            }
-
-            //event stuff
-            %i = GetEventCommandIndex(%this, "onpickup");
-            if(%i != -1)
-            {
-                %name = GetWord($EventCommand[%this, %i], 0);
-                %type = GetWord($EventCommand[%this, %i], 1);
-                %cl = NEWgetClientByName(%name);
-                if(%cl == -1)
-                    %cl = 2048;
-
-                %cmd = String::NEWgetSubStr($EventCommand[%this, %i], String::findSubStr($EventCommand[%this, %i], ">")+1, 99999);
-                %pcmd = ParseBlockData(%cmd, %clientId, "");
-                $EventCommand[%this, %i] = "";
-                remoteSay(%cl, 0, %pcmd, %name);
-            }
-
-            deleteObject(%this);
-            ClearEvents(%this);
-			}
-			else
-			{
-				if(%ownerName == "*")
-					Client::sendMessage(%clientId, $MsgRed, "You do not have the right to take this belt.");
-				else
-					Client::sendMessage(%clientId, $MsgRed, "You do not have the right to take " @ %ownerName @ "'s belt.");
-			}
-		}
+        //if(%item == "belt")
+        //{
+        //    %msg = "";
+        //
+        //    %ownerName = GetWord($loot[%this], 0);
+        //    %namelist = GetWord($loot[%this], 1);
+        //
+        //    if($loot[%this] == "")
+        //        %msg = "You found an empty belt.";
+        //    else
+        //    {
+        //        if(IsInCommaList(%namelist, Client::getName(%clientId)) || %namelist == "*")
+        //        {
+        //            if(String::ICompare(%ownerName, Client::getName(%clientId)) == 0)
+        //                %msg = "You found one of your backpacks.";
+        //            else if(%ownerName == "*")
+        //                %msg = "You found a belt.";
+        //            else
+        //                %msg = "You found one of " @ %ownerName @ "'s belts.";
+        //        }
+        //    }
+        //
+        //    if(%msg != "")
+        //    {
+        //        %newloot = String::getSubStr($loot[%this], String::len(%ownerName)+String::len(%namelist)+2, 99999);
+        //        %r = String::replace(%newloot, "belt", "");
+        //        %newloot = String::NEWgetSubStr(%r, 1, 99999);
+        //
+        //        Client::sendMessage(%clientId, 0, %msg);
+        //        GiveThisStuff(%clientId, %newloot, True);
+        //
+        //    if(%this.tag != "")
+        //    {
+        //        $tagToObjectId[%this.tag] = "";
+        //        $SpawnPackList = RemoveFromCommaList($SpawnPackList, %this.tag);
+        //    }
+        //
+        //    Item::playPickupSound(%this);
+        //    $loot[%this] = "";
+        //
+        //    if(%ownerName != "*")
+        //    {
+        //        %ownerId = NEWgetClientByName(%ownerName);
+        //        storeData(%ownerId, "lootbaglist", RemoveFromCommaList(fetchData(%ownerId, "lootbaglist"), %this));
+        //    }
+        //
+        //    //event stuff
+        //    %i = GetEventCommandIndex(%this, "onpickup");
+        //    if(%i != -1)
+        //    {
+        //        %name = GetWord($EventCommand[%this, %i], 0);
+        //        %type = GetWord($EventCommand[%this, %i], 1);
+        //        %cl = NEWgetClientByName(%name);
+        //        if(%cl == -1)
+        //            %cl = 2048;
+        //
+        //        %cmd = String::NEWgetSubStr($EventCommand[%this, %i], String::findSubStr($EventCommand[%this, %i], ">")+1, 99999);
+        //        %pcmd = ParseBlockData(%cmd, %clientId, "");
+        //        $EventCommand[%this, %i] = "";
+        //        remoteSay(%cl, 0, %pcmd, %name);
+        //    }
+        //
+        //    deleteObject(%this);
+        //    ClearEvents(%this);
+		//	}
+		//	else
+		//	{
+		//		if(%ownerName == "*")
+		//			Client::sendMessage(%clientId, $MsgRed, "You do not have the right to take this belt.");
+		//		else
+		//			Client::sendMessage(%clientId, $MsgRed, "You do not have the right to take " @ %ownerName @ "'s belt.");
+		//	}
+		//}
         if(%item == "Lootbag")
         {
             %msg = "";
@@ -263,6 +263,17 @@ function Item::onCollision(%this,%object)
                     deleteObject(%this);
                 }
 		}
+        else if(%item == "MeteorBits" || %item == "MeteorBitsRed")
+        {
+            %itemType = %this.itemObj;
+            if(%itemType != "")
+            {
+                RPGItem::incItemCount(%clientId,%itemType,1,true);
+                Item::playPickupSound(%this);
+                RefreshAll(%clientId,false);
+            }
+            deleteObject(%this);
+        }
 		else if(%item.className == "TownBot")
 		{
 			//do nothing.

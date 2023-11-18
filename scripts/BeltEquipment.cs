@@ -10,7 +10,11 @@ $BeltEquip::BonusAccessoryTag[$SpecialVarManaRegen] = "MANARegen";
 $BeltEquip::BonusAccessoryTag[$SpecialVarManaThief] = "MANAThief";
 $BeltEquip::BonusAccessoryTag[$SpecialVarManaHarvest] = "MANAHarvest";
 $BeltEquip::BonusAccessoryTag[$SpecialVarMaxStam] = "MaxStam";
-$BeltEquip::BonusAccessoryTag[$SpecialVarArmPierce] = "AMRP";
+$BeltEquip::BonusAccessoryTag[$SpecialVarArmorPiercing] = "AMRP";
+
+$BeltEquip::BonusAccessoryTag[$SpecialVarStamRegen] = "StamRegen";
+$BeltEquip::BonusAccessoryTag[$SpecialVarRestStamRegen] = "RestStam";
+$BeltEquip::BonusAccessoryTag[$SpecialVarIdleStamRegen] = "IdleStam";
 
 $BeltEquip::AccessoryTag["AMR"] = $SpecialVarAMR;
 $BeltEquip::AccessoryTag["MDEF"] = $SpecialVarMDEF;
@@ -24,7 +28,10 @@ $BeltEquip::AccessoryTag["MANARegen"] = $SpecialVarManaRegen;
 $BeltEquip::AccessoryTag["MANAThief"] = $SpecialVarManaThief;
 $BeltEquip::AccessoryTag["MANAHarvest"] = $SpecialVarManaHarvest;
 $BeltEquip::AccessoryTag["MaxStam"] = $SpecialVarMaxStam;
-$BeltEquip::AccessoryTag["AMRP"] = $SpecialVarArmPierce;
+$BeltEquip::AccessoryTag["AMRP"] = $SpecialVarArmorPiercing;
+$BeltEquip::AccessoryTag["StamRegen"] = $SpecialVarStamRegen;
+$BeltEquip::AccessoryTag["RestStam"] = $SpecialVarRestStamRegen;
+$BeltEquip::AccessoryTag["IdleStam"] = $SpecialVarIdleStamRegen;
 
 $BeltEquip::SpecVarDesc["AMR"] = "AMR";
 $BeltEquip::SpecVarDesc["MDEF"] = "MDEF";
@@ -39,10 +46,15 @@ $BeltEquip::SpecVarDesc["MANAThief"] = "MANA Thief";
 $BeltEquip::SpecVarDesc["MANAHarvest"] = "MANA Harvest";
 $BeltEquip::SpecVarDesc["MaxStam"] = "Max Stamina";
 $BeltEquip::SpecVarDesc["AMRP"] = "AMR Pierce";
+$BeltEquip::SpecVarDesc["StamRegen"] = "Stamina Regen";
+$BeltEquip::SpecVarDesc["RestStam"] = "Rest Stamina";
+$BeltEquip::SpecVarDesc["IdleStam"] = "Idle Stamina";
 
 for(%i = 1; %i < $NumberOfSkills; %i++)
     $BeltEquip::SpecVarDesc["SKILL"@%i] = $SkillDesc[%i];
 
+$EquipItemsType = "EquipItems";
+    
 function MenuBeltEquip(%clientid,%type,%page)
 {
     Client::buildMenu(%clientId, "Belt Equipment:", "BeltEquip", true);
@@ -105,7 +117,7 @@ function processMenuBeltEquip(%clientid, %opt)
 // Need to test %indexOffset when more than 6 equip items for a type exist
 function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
 {
-    echo("MenuBeltEquipmentSlot("@%clientid@","@%slotId@","@%prevType@","@%page@")");
+    //echo("MenuBeltEquipmentSlot("@%clientid@","@%slotId@","@%prevType@","@%page@")");
     %slotDisp = $BeltEquip::Slot[%slotId,Disp];
     %curItem = Player::GetEquippedBeltItem(%clientId,$BeltEquip::Slot[%slotId,Name]);
     
@@ -122,8 +134,8 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
     %slotType = $BeltEquip::Slot[%slotId,Type];
     %nf = BeltEquip::GetList(%clientId,%slotType);
     %numItems = GetWord(%nf,0);
-    echo("Num Items: "@ %numItems);
-    echo("Item NS: "@ %nf);
+    //echo("Num Items: "@ %numItems);
+    //echo("Item NS: "@ %nf);
     
     if(%curItem != "")
         Client::addMenuItem(%clientId, "eUnequip "@ $beltitem[%curItem, "Name"],"unequip " @ %curItem @" "@ %slotId @" "@%prevType);
@@ -166,7 +178,7 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
 
 function processMenuBeltEquipSlot(%clientid, %opt)
 {
-    echo("processMenuBeltEquipSlot("@%clientid@","@ %opt@")");
+    //echo("processMenuBeltEquipSlot("@%clientid@","@ %opt@")");
 	%o = GetWord(%opt, 0);
 	%pageOrItem = GetWord(%opt, 1);
 	%slotId = GetWord(%opt, 2);
@@ -207,7 +219,7 @@ function processMenuBeltEquipSlot(%clientid, %opt)
 
 function MenuBeltEquipmentDropOrSlot(%clientid,%slotId,%prevType,%item)
 {
-    echo("MenuBeltEquipmentDropOrSlot("@%clientid@","@%slotId@","@%prevType@","@%item@")");
+    //echo("MenuBeltEquipmentDropOrSlot("@%clientid@","@%slotId@","@%prevType@","@%item@")");
     %slotDisp = "Slot - "@ $BeltEquip::Slot[%slotId,Name];
     Client::buildMenu(%clientId, %slotDisp@":", "BeltEquipmentDropOrSlot", true);
     %cmnt = Belt::HasThisStuff(%clientid,%item);
@@ -335,12 +347,12 @@ function BeltEquip::AddEquipmentItem(%name,%item,%type,%weight,%cost,%shopIndex,
 
 function BeltEquip::GetSpecialVars(%item)
 {
-    return $BeltEquip::Item[$beltitem[%item, "ItemID"],Special];
+    return $BeltEquip::Item[$beltitem[%item, "ItemID",$EquipItemsType],Special];
 }
 
 function BeltEquip::IsBeltEquipItem(%item)
 {
-    return $BeltEquip::Item[$beltitem[%item, "ItemID"],SlotType] != "";
+    return $BeltEquip::Item[$beltitem[%item, "ItemID",$EquipItemsType],SlotType] != "";
 }
 
 function BeltEquip::TranslateSpecialVars(%specVars)
@@ -363,7 +375,7 @@ function BeltEquip::TranslateSpecialVars(%specVars)
 
 function BeltEquip::GetList(%clientId,%slotType)
 {
-    echo("BeltEquip::GetList("@%clientId@","@%slotType@")");
+    //echo("BeltEquip::GetList("@%clientId@","@%slotType@")");
     //"EquipItems"
     %bn = 0;
     for(%i = 0; %i < $BeltEquip::SlotTypeItemCount[%slotType]; %i++)
@@ -393,11 +405,11 @@ function BeltEquip::AddBonusStats(%clientId,%statType)
     {
         %slotName = $BeltEquip::Slot[%i,Name];
         %item = $ClientData::BeltEquip[%clientId,%slotName];
-        %w = Word::FindWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%statType);
+        %w = Word::FindWord($BeltEquip::Item[$beltitem[%item, "ItemID",$EquipItemsType],Special],%statType);
         //echo($BeltEquip::Item[$beltitem[%item, "ItemID"],Special] @ " "@ %w);
         //echo("BB: "@%item@" "@ getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w) @" "@%val);
         if(%w != -1)
-            %val += getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w+1);
+            %val += getWord($BeltEquip::Item[$beltitem[%item, "ItemID", $EquipItemsType],Special],%w+1);
     }
     return %val;
 }
@@ -439,7 +451,7 @@ function BeltEquip::EquipItem(%clientId,%item,%location,%echo)
 
 function BeltEquip::UnequipItem(%clientId,%location,%echo)
 {
-    echo("BeltEquip::UnequipItem("@%clientId@","@%location@","@%echo@")");
+    //echo("BeltEquip::UnequipItem("@%clientId@","@%location@","@%echo@")");
     %curItem = $ClientData::BeltEquip[%clientId,%location];
     if(%curItem != "")
     {

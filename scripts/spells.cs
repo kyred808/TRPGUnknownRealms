@@ -35,8 +35,8 @@ $Spell::LOSrange[1] = 80;
 $Spell::manaCost[1] = 5;
 $Spell::auraEffect[1] = SpellEffectAura2;
 $Spell::startSound[1] = ActivateBF;
-$Spell::endSound[1] = ExplodeLM;
-//$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
+$Spell::endSound[1] = NoSound;
+$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
 $Spell::groupListCheck[1] = False;
 $Spell::refVal[1] = 55;
 $Spell::graceDistance[1] = 2;
@@ -754,6 +754,26 @@ $Spell::effectType[41] = $SpellTypeCustom;
 $SkillType[piercing] = $SkillNeutralCasting;
 $SkillRestriction[piercing] = $SkillNeutralCasting @ " 250";
 
+$Spell::keyword[42] = "haste";
+$Spell::index[haste] = 42;
+$Spell::name[42] = "Enchant Haste";
+$Spell::description[42] = "Increases movement speed for 240s. Cannot fly while hasted. Use #unhaste to stop early.";
+$Spell::delay[42] = 0.5;
+$Spell::recoveryTime[42] = 15;
+$Spell::damageValue[42] = "SPD 1";
+$Spell::ticks[42] = 120;
+$Spell::manaCost[42] = 25;
+$Spell::radius[42] = 15;
+$Spell::startSound[42] = ActivateTR;
+$Spell::endSound[42] = ActivateAR;
+$Spell::endSoundLoc[42] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[42] = False;
+$Spell::refVal[42] = -13;
+$Spell::graceDistance[42] = 2;
+$Spell::effectType[42] = $SpellTypeCustom;
+$SkillType[haste] = $SkillNeutralCasting;
+$SkillRestriction[haste] = $SkillNeutralCasting @ " 15";
+
 //----------------------------------------------------------------------------------------------------------------
 
 function BeginCastSpell(%clientId, %keyword)
@@ -765,7 +785,7 @@ function BeginCastSpell(%clientId, %keyword)
 
 	//for(%i = 1; $Spell::keyword[%i] != ""; %i++)
 	//{
-    %i = $Spell::index[%keyword];
+    %i = $Spell::index[%w1];
     if(%i != "")
     {
 		//if(String::ICompare($Spell::keyword[%i], %w1) == 0)
@@ -935,6 +955,23 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
             Client::sendMessage(%clientId, $MsgBeige, "Enchanting " @ Client::getName(%id));
             if(%clientId != %id)
                 Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
+
+            UpdateBonusState(%id, $Spell::damageValue[%index], $Spell::ticks[%index]);
+
+            %castPos = GameBase::getPosition(%id);
+
+            %returnFlag = True;
+        }
+        else if(%index == 42)
+        {
+            if(getObjectType(%castObj) == "Player" && !Player::isAiControlled(%clientId))
+            {
+                %id = Player::getClient(%castObj);
+                Client::sendMessage(%clientId, $MsgBeige, "Enchanting " @ Client::getName(%id));
+                Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
+            }
+            else
+                %id = %clientId;
 
             UpdateBonusState(%id, $Spell::damageValue[%index], $Spell::ticks[%index]);
 
@@ -1688,7 +1725,7 @@ function DoBotCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 			%type = GetWord(%system, 0);
 			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
 
-			%castPos = TeleportToMarker(%id, "Zones\\" @ %system @ "\\DropPoints", False, True);
+			%castPos = TeleportToMarker(%id, "Realm0\\Zones\\" @ %system @ "\\DropPoints", False, True);
 			CheckAndBootFromArena(%id);
 			NullItemList(%clientId, Lore, $MsgRed, "You lost all %1s you were carrying when you teleported.");
 

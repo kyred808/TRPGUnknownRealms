@@ -985,13 +985,13 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
                 instant SimGroup "SpawnPoints" {
-                    instant Marker ".4 1 2 20 50 16" {
+                    instant Marker ".5 1 2 20 50 15" {
                         dataBlock = "PathMarker";
-                        name = "mine thief";
+                        name = "mine runt";
                         position = "-1765 -1137 277.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker "1.5 1 2 10 30 54 54 15 16" {
+                    instant Marker "2 1 2 10 30 54 54 15 16" {
                         dataBlock = "PathMarker";
                         name = "mine more runt and less thief";
                         position = "-1755.75 -1085.5 277.125";
@@ -1003,13 +1003,13 @@ instant SimGroup "MissionGroup" {
                         position = "-1743.5 -1160.5 278.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".2 1 2 20 50 15 16 17 18" {
+                    instant Marker "1 1 2 20 50 15 16 17 18" {
                         dataBlock = "PathMarker";
                         name = "mine all goblins 2";
                         position = "-1764.25 -1161.25 277.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 1 2 20 50 15 16 17 18" {
+                    instant Marker "1 1 2 20 50 15 16 17 18" {
                         dataBlock = "PathMarker";
                         name = "mine all goblins";
                         position = "-1739.25 -1241.25 283.125";
@@ -1027,7 +1027,7 @@ instant SimGroup "MissionGroup" {
                         position = "-1707 -1145 243.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".4 1 2 20 50 22" {
+                    instant Marker ".5 1 2 20 50 22" {
                         dataBlock = "PathMarker";
                         name = "gnoll hunter 2";
                         position = "-1627 -1186 252.125";
@@ -1045,7 +1045,7 @@ instant SimGroup "MissionGroup" {
                         position = "-1631.25 -1061 221.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".4 1 2 20 50 27 28 29 30" {
+                    instant Marker ".5 1 2 20 50 27 28 29 30" {
                         dataBlock = "PathMarker";
                         name = "ogre all but magi";
                         position = "-1631.75 -1172.75 221.125";
@@ -1204,7 +1204,7 @@ instant SimGroup "MissionGroup" {
                         position = "-1546.01 -279.973 352.109";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".4 1 2 30 50 23" {
+                    instant Marker ".5 1 2 30 50 23" {
                         dataBlock = "PathMarker";
                         name = "Yolanda Orc Wizard spawn";
                         position = "-1565.75 -300.341 352.109";
@@ -1420,13 +1420,13 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
                 instant SimGroup "SpawnPoints" {
-                    instant Marker ".5 0.5 1 40 60 47" {
+                    instant Marker "1 0.5 1 40 60 47" {
                         dataBlock = "PathMarker";
                         name = "minotaur goliath spawn";
                         position = "-1901.61 -2844.01 161.92";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 0.5 1 50 70 48" {
+                    instant Marker "1 0.5 1 50 70 48" {
                         dataBlock = "PathMarker";
                         name = "minotaur reaper spawn";
                         position = "-1904.27 -2843.9 161.898";
@@ -1697,6 +1697,13 @@ instant SimGroup "MissionGroup" {
                 destroyable = "True";
                 deleteOnDestroy = "False";
                 locked = "0";
+            };
+            instant InteriorShape "table1" {
+                fileName = "table.dis";
+                isContainer = "0";
+                position = "-2399.83 -256.244 65";
+                rotation = "0 -0 -0.879993";
+                lightParams = "0 ";
             };
             instant StaticShape "TreeTwo1" {
                 dataBlock = "TreeShapeTwo";
@@ -3885,7 +3892,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131";
+                instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131 134";
                 instant SimGroup "BELTSHOP 17 27 29 800";
             };
             //New Player Guide
@@ -4087,7 +4094,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 I see you have five Enchanted Stones, will you hand them to me?";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 You have my thanks.  Here is your reward.";
-                instant SimGroup "SHOP 34 79 80 81 82";
+                instant SimGroup "SHOP 34 79 80 81 82 134";
                 instant SimGroup "BELTSHOP 28 30";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
@@ -4109,9 +4116,9 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 Incredible, you have three skeleton bones!  Do you still want to hand them to me?";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 Thank you, here is your reward.";
-                instant SimGroup "CSAY I do not need your help.";
-                instant SimGroup "LSAY I do not need your help.";
-                instant SimGroup "SHOP 83 84";
+                instant SimGroup "CSAY I do not need your help. Or perhaps you are looking to BUY?";
+                instant SimGroup "LSAY I do not need your help. Or perhaps you are looking to BUY?";
+                instant SimGroup "SHOP 83 84 135 136";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4338,6 +4345,17 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NCUE1 indeed";
                 instant SimGroup "NSAY2 For being such a brave adventurer, here is a gift I'm sure you will appreciate.";
                 instant SimGroup "CSAY Good luck on your adventures!";
+            };
+            instant SimGroup "merchant6" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2401.68 -253.268 65";
+                    rotation = "0 0 0";
+                };
+                instant SimGroup "NAME Doric";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "BELTSHOP 900 901 902 914 915 903 904 905 906 907 908 909 910 911 912 913 800";
             };
         };
         instant InteriorShape "RemorterHall1" {

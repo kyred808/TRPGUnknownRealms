@@ -113,8 +113,9 @@ BeltItem::Add("Iron Ore","ironore","OreItems",1,3000,204);
 BeltItem::Add("Cobalt Ore","cobaltore","OreItems",1,3000,205);
 BeltItem::Add("Mithrite","mithrite","OreItems",1,3000,206);
 BeltItem::Add("Adamantite","adamantite","OreItems",1,3000,207);
-BeltItem::Add("Meteor Chunk","meteorchunk","OreItems",1,600,208);
-BeltItem::Add("Meteor Core","meteorcore","OreItems",1,1200,209);
+BeltItem::Add("Meteor Chunk","meteorchunk","OreItems",1,15702,208);
+BeltItem::Add("Meteor Core","meteorcore","OreItems",1,25042,209);
+
 // Metal Items
 
 BeltItem::Add("Copper","copper","MetalItems",1,250,300);
@@ -183,7 +184,41 @@ BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0
 BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,35,"ATK 250","arm");
 BeltEquip::AddEquipmentItem("Swordsman Armband","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
 
-BeltEquip::AddEquipmentItem("Energy Band","energyband","EquipItems",0.2,5000,800,"MaxStam 50","arm");
+BeltEquip::AddEquipmentItem("Ring of Harm","ringofharm","EquipItems",0.2,8000,900,"ATK 5","finger");
+BeltEquip::AddEquipmentItem("Ring of Defense","ringofdefense","EquipItems",0.2,8000,901,"DEF 50","finger");
+BeltEquip::AddEquipmentItem("Ring of Stamina","ringofstamina","EquipItems",0.2,12000,902,"MaxStam 10","finger");
+BeltEquip::AddEquipmentItem("Blade Ring","bladering","EquipItems",0.2,15000,903,"SKILL"@$SkillSlashing@" 20","finger");
+BeltEquip::AddEquipmentItem("Sharp Ring","sharpring","EquipItems",0.2,15000,904,"SKILL"@$SkillPiercing@" 20","finger");
+BeltEquip::AddEquipmentItem("Blunt Ring","bluntring","EquipItems",0.2,15000,905,"SKILL"@$SkillBludgeoning@" 20","finger");
+BeltEquip::AddEquipmentItem("Bash Ring","bashring","EquipItems",0.2,15000,906,"SKILL"@$SkillBashing@" 20","finger");
+BeltEquip::AddEquipmentItem("Backstab Ring","backstabring","EquipItems",0.2,15000,907,"SKILL"@$SkillBackstabbing@" 20","finger");
+BeltEquip::AddEquipmentItem("Hide Ring","hidering","EquipItems",0.2,15000,908,"SKILL"@$SkillHiding@" 20","finger");
+BeltEquip::AddEquipmentItem("Wizard Ring","wizardring","EquipItems",0.2,15000,909,"SKILL"@$SkillOffensiveCasting@" 25","finger");
+BeltEquip::AddEquipmentItem("Healer Ring","healerring","EquipItems",0.2,15000,910,"SKILL"@$SkillDefensiveCasting@" 25","finger");
+BeltEquip::AddEquipmentItem("Nature Ring","naturering","EquipItems",0.2,15000,911,"SKILL"@$SkillNeutralCasting@" 25","finger");
+BeltEquip::AddEquipmentItem("Harvest Ring","harvestring","EquipItems",0.2,15000,912,"SKILL"@$SkillFarming@" 25","finger");
+BeltEquip::AddEquipmentItem("Chef Ring","chefring","EquipItems",0.2,15000,913,"SKILL"@$SkillCooking@" 25","finger");
+BeltEquip::AddEquipmentItem("Ring of Rest","ringofrest","EquipItems",0.2,8000,914,"RestStam 0.8","finger");
+BeltEquip::AddEquipmentItem("Ring of Idle","ringofidle","EquipItems",0.2,8000,915,"IdleStam 0.2","finger");
+
+$AccessoryVar[ringofharm, $MiscInfo] = "Ring that gives <f0>+5 ATK";
+$AccessoryVar[ringofdefense, $MiscInfo] = "Ring that gives <f0>+50 DEF";
+$AccessoryVar[ringofstamina, $MiscInfo] = "Ring that gives <f0>+10 Max Stamina";
+$AccessoryVar[bladering, $MiscInfo] = "Ring that gives <f0>+20 Slashing";
+$AccessoryVar[sharpring, $MiscInfo] = "Ring that gives <f0>+20 Piercing";
+$AccessoryVar[bluntring, $MiscInfo] = "Ring that gives <f0>+20 Bludgeoning";
+$AccessoryVar[bashring, $MiscInfo] = "Ring that gives <f0>+20 Bashing";
+$AccessoryVar[backstabring, $MiscInfo] = "Ring that gives <f0>+20 Backstabbing";
+$AccessoryVar[hidering, $MiscInfo] = "Ring that gives <f0>+20 Hiding";
+$AccessoryVar[wizardring, $MiscInfo] = "Ring that gives <f0>+25 Offensive Casting";
+$AccessoryVar[healerring, $MiscInfo] = "Ring that gives <f0>+25 Defensive Casting";
+$AccessoryVar[naturering, $MiscInfo] = "Ring that gives <f0>+25 Neutral Casting";
+$AccessoryVar[harvestring, $MiscInfo] = "Ring that gives <f0>+25 Farming";
+$AccessoryVar[chefring, $MiscInfo] = "Ring that gives <f0>+25 Cooking";
+$AccessoryVar[ringofrest, $MiscInfo] = "Ring that gives <f0>+0.8 stamina regen when resting.";
+$AccessoryVar[ringofidle, $MiscInfo] = "Ring that gives <f0>+0.2 stamina regen idle (no moving or attacking).";
+
+BeltEquip::AddEquipmentItem("Energy Band","energyband","EquipItems",0.2,25000,800,"MaxStam 50","arm");
 $AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina by 50";
 
 // Spell Scroll Items
@@ -196,13 +231,15 @@ $StealProtectedItem["enhanceddefcastscroll"] = true;
 $StealProtectedItem["enhancedneucastscroll"] = true;
 
 // Food Items
-BeltItem::Add("Bread","Bread","FoodItems",0.5,50,750,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.2/$TribesDamageToNumericDamage@" 60");
-BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751,"EatFoodItem,cooldown 60,StamRegen 0.5 60,HPRegen"@0.2/$TribesDamageToNumericDamage@" 60");
-BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752,"EatFoodItem,cooldown 60,StamRegen 0.4 60,HPRegen "@0.5/$TribesDamageToNumericDamage@" 60");
-BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,500,753);
-BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,1200,754);
+BeltItem::Add("Bread","Bread","FoodItems",0.5,200,1200,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+BeltItem::Add("Ear Bread?","EarBread","FoodItems",0.5,6000,750,"EatFoodItem,cooldown 80,StamRegen 0.3 80,HPRegen "@0.45/$TribesDamageToNumericDamage@" 80,ATK 10 80");
+BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,1200,751,"EatFoodItem,cooldown 60,StamRegen 0.5 60,HPRegen"@0.32/$TribesDamageToNumericDamage@" 60");
+BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,7500,752,"EatFoodItem,cooldown 100,StamRegen 0.4 100,HPRegen "@0.5/$TribesDamageToNumericDamage@" 100");
+BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,12500,753);
+BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,25000,754);
 
 $AccessoryVar[Bread, $MiscInfo] = "A loaf of bread.  Eating it will boost health and stamina regen slightly.";
+$AccessoryVar[EarBread, $MiscInfo] = "Is this edible? Boosts health and stam regen and raises ATK by 10";
 $AccessoryVar[GobCookie, $MiscInfo] = "A cookie made of Gobbie Berries.  Eating it will boost stamina regen";
 $AccessoryVar[YucJuice, $MiscInfo] = "A flask of healthy yuccavera juice.  Eating it will boost health and stamina regen."; 
 $AccessoryVar[RedBerryPie, $MiscInfo] = "Delicious red berry pie. Eating it will boost stamina regen.";
@@ -294,10 +331,12 @@ $AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
 // Rare and Quest Items
 
 BeltItem::Add("Black Statue","BlackStatue","RareItems",3,1);
-BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,250);
+BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,12000);
 BeltItem::Add("Skeleton Bone","SkeletonBone","RareItems",1,1);
 BeltItem::Add("Enchanted Stone","EnchantedStone","RareItems",2,1);
 BeltItem::Add("Dragon Scale","DragonScale","RareItems",8,245310);
+
+BeltItem::Add("Magicite","Magicite","RareItems",0.2,55000);
 //BeltItem::Add("Testing Anvil","Anvil","RareItems",20,5000);
 
 $AccessoryVar[blackstatue, $MiscInfo] = "A strange black statue.";
@@ -305,7 +344,7 @@ $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";
 $AccessoryVar[EnchantedStone, $MiscInfo] = "A weird glowing stone.";
 $AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale.";
 
-$AccessoryVar[blackstatue, $MiscInfo] = "Ear of a goblin.";
+$AccessoryVar[goblinear, $MiscInfo] = "Ear of a goblin.";
 
 
 BeltItem::Add("Blue Potion","BluePotion","PotionItems",4,80,27,"DrinkHealingPotion 15");

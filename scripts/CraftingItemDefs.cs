@@ -15,9 +15,9 @@ Crafting::AddCraftingType("cooking","Cooking","#cook","cook","cooked",SoundCanSm
 Crafting::Addrecipe("smithing","Knife",$SkillSmithing @" 15","Quartz 6",1,$BaseCraftingDifficulty);
 Crafting::Addrecipe("smithing","Broadsword",$SkillSmithing @" 40","Quartz 6 Jade 2");
 Crafting::Addrecipe("smithing","WarAxe",$SkillSmithing @" 80","Quartz 6 Jade 2");
-Crafting::Addrecipe("smithing","MeteorDagger",$SkillSmithing @" 80","Dagger 1 MeteorChunk 5");
-Crafting::Addrecipe("smithing","MeteorAxe",$SkillSmithing @" 80","WarAxe 1 MeteorCore 5");
-Crafting::Addrecipe("smithing","CrudeAxe",$SkillSmithing @" 0.1","SmallRock 3 Splint 5",1,1000);
+Crafting::Addrecipe("smithing","MeteorDagger",$SkillSmithing @" 0","Dagger 1 MeteorChunk 5",1,1,true);
+Crafting::Addrecipe("smithing","MeteorAxe",$SkillSmithing @" 0","WarAxe 1 MeteorCore 5",1,1,true);
+Crafting::Addrecipe("smithing","CrudeAxe",$SkillSmithing @" 0.1","SmallRock 3 Splint 5",1,1000,true);
 Crafting::SetCraftSound("Broadsword",SoundCanSmith2);
 
 
@@ -25,20 +25,33 @@ Crafting::SetCraftSound("Broadsword",SoundCanSmith2);
 // Alchemy recipes
 //===================
 
-Crafting::Addrecipe("alchemy","EnergyShot",$SkillAlchemy @" 15","GobbieBerry 3 quartz 1",1);
-Crafting::Addrecipe("alchemy","EnergyVial",$SkillAlchemy @" 60","GoblinEar 2 GobbieBerry 3",1);
-Crafting::Addrecipe("alchemy","CrystalEnergyVial",$SkillAlchemy @" 250","turquoise 2 redberry 3",1);
-Crafting::Addrecipe("alchemy","EnergizedPotion",$SkillAlchemy @" 500","sapphire 3 skeletonbone 2 yuccavera 5",1);
+Crafting::Addrecipe("alchemy","EnergyShot",$SkillAlchemy @" 0","GobbieBerry 3 quartz 1",1,1,true);
+Crafting::Addrecipe("alchemy","EnergyVial",$SkillAlchemy @" 0","GoblinEar 2 GobbieBerry 3",1,1,true);
+Crafting::Addrecipe("alchemy","CrystalEnergyVial",$SkillAlchemy @" 0","turquoise 2 redberry 3",1,1,true);
+Crafting::Addrecipe("alchemy","EnergizedPotion",$SkillAlchemy @" 0","sapphire 3 skeletonbone 2 yuccavera 5",1,1,true);
+
+//Crafting::Addrecipe("alchemy","EnergyShot",$SkillAlchemy @" 5","GobbieBerry 3 quartz 1",1);
+//Crafting::Addrecipe("alchemy","EnergyVial",$SkillAlchemy @" 60","GoblinEar 2 GobbieBerry 3",1);
+//Crafting::Addrecipe("alchemy","CrystalEnergyVial",$SkillAlchemy @" 250","turquoise 2 redberry 3",1);
+//Crafting::Addrecipe("alchemy","EnergizedPotion",$SkillAlchemy @" 500","sapphire 3 skeletonbone 2 yuccavera 5",1);
 
 //===================
 // Cooking Recipes
 //===================
 
-Crafting::Addrecipe("cooking","Bread",$SkillCooking @" 15","Grain 20",1);
-Crafting::Addrecipe("cooking","GobCookie",$SkillCooking @" 50","Grain 10 GobbieBerry 5",3);
-Crafting::Addrecipe("cooking","YucJuice",$SkillCooking @" 180","Yuccavera 5",1);
-Crafting::Addrecipe("cooking","RedBerryPie",$SkillCooking @" 220","Yuccavera 2 RedBerry 10 Grain 50",1);
-Crafting::Addrecipe("cooking","StrawberryCake",$SkillCooking @" 400","Bread 10 Eggs 5 Strawberry 15",1);
+Crafting::Addrecipe("cooking","Bread",$SkillCooking @" 0","Grain 20",1,1,true);
+Crafting::Addrecipe("cooking","EarBread",$SkillCooking @" 0","Grain 15 GoblinEar 2",1,1,true);
+Crafting::Addrecipe("cooking","GobCookie",$SkillCooking @" 0","Grain 10 GobbieBerry 5",3,1,true);
+Crafting::Addrecipe("cooking","YucJuice",$SkillCooking @" 0","Yuccavera 5",1,1,true);
+Crafting::Addrecipe("cooking","RedBerryPie",$SkillCooking @" 0","Yuccavera 2 RedBerry 10 Grain 50",1,1,true);
+Crafting::Addrecipe("cooking","StrawberryCake",$SkillCooking @" 0","Bread 10 Eggs 5 Strawberry 15",1,1,true);
+
+//Crafting::Addrecipe("cooking","Bread",$SkillCooking @" 15","Grain 20",1);
+//Crafting::Addrecipe("cooking","EarBread",$SkillCooking @" 20","Grain 15 GoblinEar 2",1);
+//Crafting::Addrecipe("cooking","GobCookie",$SkillCooking @" 50","Grain 10 GobbieBerry 5",3);
+//Crafting::Addrecipe("cooking","YucJuice",$SkillCooking @" 180","Yuccavera 5",1);
+//Crafting::Addrecipe("cooking","RedBerryPie",$SkillCooking @" 220","Yuccavera 2 RedBerry 10 Grain 50",1);
+//Crafting::Addrecipe("cooking","StrawberryCake",$SkillCooking @" 400","Bread 10 Eggs 5 Strawberry 15",1);
 
 //===================
 // Smelting recipes

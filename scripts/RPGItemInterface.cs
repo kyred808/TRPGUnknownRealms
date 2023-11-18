@@ -36,7 +36,6 @@ function RPGItem::incItemCount(%clientId,%item,%amt,%showmsg)
     if(%amt == "")
         %amt = 1;
     %type = RPGItem::getItemInternalType(%item);
-    
     if(%type == $RPGItem::InvItemType)
     {
         %ret = Item::giveItem(Client::getOwnedObject(%clientId), %item, %amt, %showmsg);
@@ -127,21 +126,25 @@ function RPGItem::getDesc(%item)
 
 function RPGItem::useItem(%clientId,%item)
 {
-    %type = RPGItem::getItemInternalType(%item);
-    
-    if(%type == $RPGItem::InvItemType)
+    if(!IsDead(%clientId))
     {
-        //Item::onUse(Client::getOwnedObject(%clientId),%item);
-        Player::useItem(%clientId,%item);
-        return true;
-    }
-    else if(%type == $RPGItem::BeltItemType && Belt::IsUsableItem(%item))
-    {
-        Belt::UseItem(%clientid,%item);
-        return true;
+        %type = RPGItem::getItemInternalType(%item);
+        if(%type == $RPGItem::InvItemType)
+        {
+            //Item::onUse(Client::getOwnedObject(%clientId),%item);
+            Player::useItem(%clientId,%item);
+            return true;
+        }
+        else if(%type == $RPGItem::BeltItemType && Belt::IsUsableItem(%item))
+        {
+            Belt::UseItem(%clientid,%item);
+            return true;
+        }
+        else
+            return false;
     }
     else
-        return false;
+        Client::sendMessage(%clientId,$MsgRed,"You can't use items while dead.");
 }
 
 function RPGItem::isBeltItem(%item)
@@ -156,6 +159,8 @@ function RPGItem::isInventoryItem(%item)
 
 function RPGItem::getItemInternalType(%item)
 {
+    if(%item == "SmallRock") //One exception
+        return $RPGItem::BeltItemType;
     if(RPGItem::isInventoryItem(%item))
         return $RPGItem::InvItemType;
     else if(RPGItem::isBeltItem(%item))

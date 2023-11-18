@@ -459,11 +459,11 @@ SoundData SoundHFootLSnow
 //   profile = Profile3dNear;
 //};
 
-//SoundData SoundEnergyTurretFire
-//{
-//   wavFileName = "rifle1.wav";
-//   profile = Profile3dMedium;
-//};
+SoundData SoundEnergyTurretFire
+{
+   wavFileName = "rifle1.wav";
+   profile = Profile3dMedium;
+};
 
 //
 //SoundData SoundRemoteTurretOn
@@ -835,11 +835,11 @@ SoundData SoundPDAButtonSoft
 //   profile = Profile3dNearLoop;
 //};
 
-//SoundData SoundRepairItem
-//{
-//   wavFileName = "repair.wav";
-//   profile = Profile3dNearLoop;
-//};
+SoundData SoundRepairItem
+{
+   wavFileName = "repair.wav";
+   profile = Profile3dNearLoop;
+};
 
 //SoundData SoundFlagCaptured
 //{

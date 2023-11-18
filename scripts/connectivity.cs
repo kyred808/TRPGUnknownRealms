@@ -173,8 +173,8 @@ function Server::onClientDisconnect(%clientId)
 			DoCampSetup(%clientId, 5);
 
 		SaveCharacter(%clientId);
-
-		ClearEvents(%clientId);
+        ClearVariables(%clientId);
+		//ClearEvents(%clientId);
 	}
 
 	for(%i = 0; %i < 10; %i++)
@@ -227,6 +227,7 @@ function Server::onClientConnect(%clientId)
 
 	ClearVariables(%clientId);			//this needs to be done so the profile is as clean as possible...
 	Game::refreshClientScore(%clientId);	//so the player appears in the score list right away
+    //remoteeval(%clientId, "CSA::CheckFeatures");
 }
 
 function Game::onPlayerConnected(%playerId)

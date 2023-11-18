@@ -184,6 +184,7 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	}
 	else
 	{
+        echo(fetchData(%clientId, "spawnStuff"));
 		GiveThisStuff(%clientId, fetchData(%clientId, "spawnStuff"), False);
 	}
 

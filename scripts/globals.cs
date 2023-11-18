@@ -39,8 +39,6 @@ $initHaze = 900;
 $currentHaze = $initHaze;
 $currentSky = "lushdayclear.dml";
 
-$SlowDownHitEnabled = false;
-
 $dayCycleSky[1] = "lushdayclear.dml";
 $dayCycleSky[2] = "litesky.dml";
 $dayCycleSky[3] = "lushsky_night.dml";
@@ -57,11 +55,18 @@ $dayCycleHaze[5] = -900;
 if($fullCycleTime == "") $fullCycleTime = 60 * 60;
 if($nightDayCycle == "") $nightDayCycle = False;
 //--------------------------------------
+$SlowDownHitEnabled = false;
+$PlayerLevelLimitForExp = 300;
 
 $CleanUpBotsOnZoneEmpty = true;
 $PlayersFastHealInProtectedZones = true;
 $BotsCanPickupPlayerPacks = true;
 $MessagePlayerIfBotStolePack = true;
+
+$SkillBoostMax = 5;
+$SkillBoostNumPrimary = 3; //Rest are secondary
+$SkillPrimaryBonus = 30;
+$SkillSecondaryBonus = 10;
 
 //Toggle if you can craft anywhere or need to look at or have certain objects.
 $ExtraCraftingRequirements = true;

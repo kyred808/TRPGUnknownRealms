@@ -40,7 +40,13 @@ missionRegDis(MiscObj, doorc);
 missionRegDis(MiscObj, doord);
 missionRegDis(MiscObj, doore);
 missionRegDis(MiscObj, doorf);
-
+missionRegDis(MiscObj, lrock1);
+missionRegDis(MiscObj, lrock3);
+missionRegDis(MiscObj, lrock2);
+missionRegDis(MiscObj, lrock4);
+missionRegDis(MiscObj, lrock5);
+missionRegDis(MiscObj, lrock6);
+missionRegDis(MiscObj, EXPBRIDGE);
 //vectrex's stuff
 missionRegDis(RPG, water1);
 missionRegDis(RPG, house1);

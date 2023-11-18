@@ -281,7 +281,7 @@ function RecursiveZone(%delay)
 		DoZoneCheck(2, %delay);
 		$zoneTicker[1] = "";
         
-        DoSpookyZoneUpdate();
+        //DoSpookyZoneUpdate();
 	}
 //	if($zoneTicker[2] >= 15)	//check zone every 30 seconds for bots
 //	{
@@ -345,8 +345,8 @@ function setzoneflags(%object, %z)
 	%clientId = Player::getClient(%object);
 	storeData(%clientId, "tmpzone", %z);
     
-    if($Zone::SpookyWellZone[$Zone::FolderID[%z]])
-        DoSpookyZoneCalc(%object);
+    //if($Zone::SpookyWellZone[$Zone::FolderID[%z]])
+    //    DoSpookyZoneCalc(%object);
 }
 
 function UpdateZone(%object)
@@ -569,6 +569,7 @@ function UpdateZone(%object)
 			if(OddsAre(floor(CalculatePlayerSkill(%clientId, $SkillSenseHeading) / 100)+1))
 			{
 				storeData(%clientId, "lastScent", GameBase::getPosition(%clientId));
+                storeData(%clientId, "lastScentZone", fetchData(%clientId,"zone"));
 			}
 		}
 	}
@@ -579,7 +580,7 @@ function UpdateZone(%object)
             %clientId.isMoving = 0;
             refreshStaminaREGEN(%clientId);
         }
-        if(%clientId.isAtRestCounter > 2)
+        if(%clientId.isAtRestCounter > 1)
         {
             %clientId.isAtRest = 1;
             refreshStaminaREGEN(%clientId);
@@ -695,13 +696,8 @@ function Zone::DoEnter(%z, %clientId)
     
 	%oldZone = fetchData(%clientId, "zone");
 	%newZone = $Zone::FolderID[%z];
-
 	storeData(%clientId, "zone", $Zone::FolderID[%z]);
-    if(!$Zone::Active[%z])
-    {
-        Zone::RollAllSpawnDelays(%z);
-        $Zone::Active[%z] = true;
-    }
+
 	if($Zone::Type[%z] == "PROTECTED")
 	{
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".  This is protected territory.";
@@ -730,7 +726,14 @@ function Zone::DoEnter(%z, %clientId)
 		Client::sendMessage(%clientId, %color, %msg);
 
 	if(!Player::isAiControlled(%clientId))
+    {
 		Game::refreshClientScore(%clientId);	//this is so players can see which zone this client is in
+        if(!$Zone::Active[%z])
+        {
+            Zone::RollAllSpawnDelays(%z);
+            $Zone::Active[%z] = true;
+        }
+    }
 
 	Zone::onEnter(%clientId, %oldZone, %newZone);
 }
@@ -940,10 +943,11 @@ function Zone::onEnter(%clientId, %oldZone, %newZone)
 	dbecho($dbechoMode, "Zone::onEnter(" @ %clientId @ ", " @ %oldZone @ ", " @ %newZone @ ")");
 
 	refreshHPREGEN(%clientId,%newZone);	//this is because you regen faster or slower depending on the zone you are in
-
+    
 	if(Zone::getType(%newZone) == "WATER")
 	{
 		//Client::sendMessage(%clientId, $MsgBeige, "You have entered water!");
+        remoteeval(%clientId, "client::setOverlayColor", 0, 0, 1, 0.5);
 		storeData(%clientId, "drownCounter", "");
 	}
 	if(Zone::getType(%newZone) == "PROTECTED")
@@ -965,6 +969,12 @@ function Zone::onExit(%clientId, %zoneLeft)
 	dbecho($dbechoMode, "Zone::onExit(" @ %clientId @ ", " @ %zoneLeft @ ")");
 
 	refreshHPREGEN(%clientId);	//this is because you regen faster or slower depending on the zone you are in
+    
+    if(getWordCount(Zone::getPlayerList(%zoneLeft, 2)) == 0)
+    {
+        $Zone::Active[Zone::getIndex(%zoneLeft)] = false;
+    }
+    
     if($CleanUpBotsOnZoneEmpty && Zone::getType(%zoneLeft) == "DUNGEON")
     {
         %isAi = Player::isAiControlled(%clientId);
@@ -976,9 +986,9 @@ function Zone::onExit(%clientId, %zoneLeft)
         }
         
         
-        if(getWordCount(Zone::getPlayerList(%zoneLeft, 2)) == 0)
+        if(!$Zone::Active[Zone::getIndex(%zoneLeft)])
         {
-            $Zone::Active[Zone::getIndex(%zoneLeft)] = false;
+            
             %bots = Zone::getPlayerList(%zoneLeft, 3);
             for(%i = 0; %i < getWordCount(%bots); %i++)
             {
@@ -996,6 +1006,7 @@ function Zone::onExit(%clientId, %zoneLeft)
 	{
 		//Client::sendMessage(%clientId, $MsgBeige, "You have left water!");
 		storeData(%clientId, "drownCounter", "");
+        remoteeval(%clientId, "client::setOverlayColor", 0, 0, 0, 0);
 	}
 }
 

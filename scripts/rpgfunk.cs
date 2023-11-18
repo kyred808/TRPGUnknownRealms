@@ -383,7 +383,8 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
     $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
     $funk::var["[\"" @ %name @ "\", 0, 33]"] = IsDead(%clientId);
-    
+    $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "attunedWeapon");
+    $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "attunedWeaponMana");
     for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
     {
         $funk::var["[\"" @ %name @ "\", 9, "@%i@"]"] = fetchData(%clientId, $Belt::ItemGroup[%i]);
@@ -556,6 +557,9 @@ function LoadCharacter(%clientId)
         // Player saved while dead
         if($funk::var[%name, 0, 33])
             %clientId.spawnDead = true;
+            
+        storeData(%clientId,"attunedWeapon",$funk::var[%name, 0, 34]);
+        storeData(%clientId,"attunedWeaponMana",$funk::var[%name, 0, 35]);
         
         for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
         {
@@ -685,7 +689,7 @@ function LoadCharacter(%clientId)
 
 		SetAllSkills(%clientId, 0);
 
-		storeData(%clientId, "spawnStuff", "PickAxe 1 BluePotion 1 CrystalBluePotion 3");
+		storeData(%clientId, "spawnStuff", "PickAxe 1 BluePotion 1 CrystalBluePotion 3 ");
 	}
 
 	ClearFunkVar(%name);
@@ -847,6 +851,7 @@ function SaveWorld()
 	}
     
     Farming::SaveWorld();
+    MeteorData::SaveWorld();
     
 	echo("Deleting old file before save for '" @ $missionName @ "_worldsave_.cs'...");
 	File::delete("temp\\" @ $missionName @ "_worldsave_.cs");
@@ -862,6 +867,7 @@ function LoadWorld()
 	%filename = $missionName @ "_worldsave_.cs";
 
     Farming::LoadWorld();
+    MeteorData::LoadWorld();
     
 	if(isFile("temp\\" @ %filename))
 	{
@@ -1215,6 +1221,7 @@ function ClearVariables(%clientId)
 	deleteVariables("BonusStateCnt" @ %clientId @ "*");
 
 	deleteVariables("ClientData" @ %clientId @ "*");
+    deleteVariables("ClientData::BeltEquip"@ %clientId @"*");
 }
 function ClearFunkVar(%name)
 {
@@ -2096,6 +2103,24 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 	return True;
 }
 
+function SlashTest(%w2)
+{
+    %spos = String::findSubStr(%w2, "/");
+    if(%spos > 0)
+    {
+        %original = String::getSubStr(%w2, 0, %spos);
+        %perc = String::getSubStr(%w2, %spos+1, 99999);
+
+        %r = floor(getRandom() * (100-%perc))+%perc+1;
+        if(%r > 100) %r = 100;
+
+        %w2 = round(%original * (%r/100));
+        if(%w2 < 0) %w2 = 0;
+    }
+    
+    return %w2;
+}
+
 function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 {
 	dbecho($dbechoMode, "GiveThisStuff(" @ %clientId @ ", " @ %list @ ", " @ %echo @ ")");
@@ -2112,6 +2137,14 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		%w = GetWord(%list, %i);
 		%w2 = GetWord(%list, %i+1);
 
+        %wsPos = String::findSubStr(%w, "/x");
+        if(%wsPos > 0 && Player::isAIControlled(%clientId))
+        {
+            %original = String::getSubStr(%w, 0, %wsPos);
+            storeData(%clientId,"NoDropLootList",%original @", ","strinc");
+            %w = %original;
+        }
+        
 		//if there is a / in %w2, then what trails after the / is the minimum random number between 0 and 100 which
 		//is applied as a percentage to the starting number of %w2
 		%spos = String::findSubStr(%w2, "/");
@@ -2198,6 +2231,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 		else
 		{
+            //echo("Inc Item Count: "@ %w @" "@%w2);
             RPGItem::incItemCount(%clientId,%w,%w2,%echo);
 			//Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
 		}
@@ -2645,16 +2679,18 @@ function UnHide(%clientId, %reason)
 	{
 		GameBase::startFadeIn(%clientId);
 		storeData(%clientId, "invisible", "");
-	}
 
-    if(%reason)
-        Client::sendMessage(%clientId, $MsgRed,%reason);
-    else
-        Client::sendMessage(%clientId, $MsgRed,"You are no longer Hiding In Shadows.");
-        
-	storeData(%clientId, "lastPos", "");
-	storeData(%clientId, "blockHide", True);
-	schedule("storeData(" @ %clientId @ ", \"blockHide\", \"\");", 10);
+
+        if(%reason)
+            Client::sendMessage(%clientId, $MsgRed,%reason);
+        else
+            Client::sendMessage(%clientId, $MsgRed,"You are no longer Hiding In Shadows.");
+            
+        storeData(%clientId, "lastPos", "");
+        storeData(%clientId, "blockHide", True);
+        Game::refreshClientScore(%clientId); //So their true zone updates
+    }
+    schedule("storeData(" @ %clientId @ ", \"blockHide\", \"\");", 10);
 }
 
 function DisplayGetInfo(%clientId, %id, %obj)
@@ -2754,11 +2790,16 @@ function WhatIs(%item)
 		%sm = $Spell::manaCost[%si];
 	}
     
-    %si = $Ability::index[%item];
-    if(%si != "")
+    %abi = $Ability::index[%item];
+    if(%abi != "")
     {
-        %desc = $Ability::name[%si];
-        %nfo = $Ability::description[%si];
+        %desc = $Ability::name[%abi];
+        %nfo = $Ability::description[%abi];
+        %coolD = "";
+        if($Ability::cooldownTime[%abi] != "")
+            %coolD = $Ability::cooldownTime[%abi] @"s";
+        else if($Ability::cooldownTicks[%abi] != "")
+            %coolD = 2*$Ability::cooldownTicks[%abi] @"s";
     }
 
     %specialVars = "";
@@ -2769,14 +2810,18 @@ function WhatIs(%item)
     else
         %specialVars = WhatSpecialVars(%item);
     
-    
+    %restrict = WhatSkills(%item);
 	//--------- BUILD MSG --------------------
 	%msg = "";
 	%msg = %msg @ "<f1>" @ %desc @ %loc @ "\n";
-	%msg = %msg @ "\nBonuses: " @ %specialVars;
+    if(%abi == "" && %specialVars != "None")
+        %msg = %msg @ "\nBonuses: " @ %specialVars;
+    if(%coolD != "")
+        %msg = %msg @ "\nCooldown: " @ %coolD;
 	if(%s != "")
 		%msg = %msg @ "\nSkill Type: " @ %s;
-	%msg = %msg @ "\nRestrictions: " @ WhatSkills(%item);
+    if(%restrict != "None")
+	%msg = %msg @ "\nRestrictions: " @ %restrict;
 	if(%w != "")
 		%msg = %msg @ "\nWeight: " @ %w;
 	if(%c != "")

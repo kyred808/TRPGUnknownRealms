@@ -12,11 +12,13 @@ $BonusStateDesc["MDEF"] = "Magic Defense";
 $BonusStateDesc["AMRP"] = "Armor Piercing";
 $BonusStateDesc["AMR"] = "Armor";
 $BonusStateDesc["SDM"] = "Spell Dmg";
+$BonusStateDesc["SPD"] = "Haste";
 
 $BonusStateNegative["SecondWindCD"] = true;
 $BonusStateNegative["RageCD"] = true;
 $BonusStateNegative["ManaFlareCD"] = true;
 $BonusStateNegative["TrueShotCD"] = true;
+$BonusStateNegative["BraceCD"] = true;
 
 function DecreaseBonusStateTicks(%clientId, %b)
 {
@@ -85,7 +87,7 @@ function GetAllBonusStatesTogether(%clientId)
         if($BonusStateCnt[%clientId, %i] > 0)
 		{
             %stat = String::getWord($BonusState[%clientId, %i]," ",0);
-            echo(%stat);
+            //echo(%stat);
             if(%stat != " ")
             {
                 %amt = String::getWord($BonusState[%clientId, %i]," ",1);

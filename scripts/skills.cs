@@ -27,7 +27,6 @@ $SkillAlchemy = 21;
 $SkillWoodCutting = 22;
 $SkillFarming = 23;
 $SkillCooking = 24;
-//$SkillEnchantment = 25;
 $MinLevel = "L";
 $MinGroup = "G";
 $MinClass = "C";
@@ -35,7 +34,7 @@ $MinRemort = "R";
 $MinAdmin = "A";
 $MinHouse = "H";
 
-$SkillFlurryDelay = 15;
+$SkillFlurryDelay = 150;
 
 $SkillDesc[1] = "Slashing";
 $SkillDesc[2] = "Piercing";
@@ -381,7 +380,7 @@ $SkillMultiplier[Mage, $SkillSmithing] = 1.0;
 $SkillMultiplier[Mage, $SkillAlchemy] = 1.5;
 $SKillMultiplier[Mage, $SkillWoodCutting] = 1.0;
 $SKillMultiplier[Mage, $SkillFarming] = 1.5;
-$SKillMultiplier[Mage, $SkillFarming] = 1.0;
+$SKillMultiplier[Mage, $SkillCooking] = 1.0;
 $EXPmultiplier[Mage] = 1.0;
 
 //######################################################################################
@@ -509,6 +508,8 @@ $SkillRestriction[RDagger] = $SkillRestriction[Dagger];
 $SkillRestriction[RShortSword] = $SkillRestriction[ShortSword];
 $SkillRestriction[RShortBow] = $SkillRestriction[ShortBow];
 $SkillRestriction[RLightCrossbow] = $SkillRestriction[LightCrossbow];
+
+$SkillRestriction[NoviceStaff] = $SkillOffensiveCasting @ " 5 "@ $SkillEnergy @" 0";
 
 // Chat functions
 $SkillRestriction["#steal"] = $SkillStealing @ " 15";

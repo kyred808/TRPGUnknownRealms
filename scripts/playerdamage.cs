@@ -143,7 +143,12 @@ function Player::onKilled(%this)
                 
 				if($StealProtectedItem[%a])
 					%flag = False;
-
+                
+                if(Player::isAiControlled(%clientId) && String::getWord(fetchData(%clientId,"NoDropLootList"),",",%a) != ",")
+                {
+                    %flag = False;
+                }
+                
 				if(%flag)
 				{
 					%b = %a;
@@ -338,7 +343,6 @@ function Player::onKilled(%this)
 		schedule("Game::autoRespawn(" @ %clientId @ ");",$AutoRespawn,%clientId);
 
 	Player::setDamageFlash(%this,0.75);
-
 	if(%clientId != -1)
 	{
 		if(%this.vehicle != "")
@@ -384,15 +388,29 @@ function CalculateDamageReduction(%clientId)
 {
     %def = fetchData(%clientId, "DEF");
     
-    if(%def <= 500)
+    if(%def <= 150)
     {
-        return (%def /1000);
+        return %def / 1000;
+    }
+    else if(%def <= 500)
+    {
+        %upper = ((%def - 150) / 20)/100;
+        return 0.15 + %upper;
     }
     else
     {
-        %upper = ((%def-500)/15)/100;
-        return 0.5 + %upper;
+        %upper = ((%def - 500) / 30)/100;
+        return 0.15 + 0.175 + %upper;
     }
+    //if(%def <= 500)
+    //{
+    //    return (%def /1000);
+    //}
+    //else
+    //{
+    //    %upper = ((%def-500)/15)/100;
+    //    return 0.5 + %upper;
+    //}
    //if(%def <= 300)
    //{
    //    return (%def/1000);
@@ -416,6 +434,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+  
     %skilltype = $SkillType[%weapon];
     
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
@@ -423,10 +442,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		%damagedClient = Player::getClient(%this);
 		%shooterClient = %object;
         
-        if(%shooterClient == 0)
+        if(%shooterClient == 0 && %type != $MeteorDamageType)
         {
             storeData(%damagedClient,"BufferDamage",%value @" ","strinc");
             return;
+        }
+        
+        if(%type == $MissileDamageType)
+        {
+            %weapon = Player::getMountedItem(%shooterClient,$WeaponSlot);
+            %skilltype = $SkillType[%weapon];  
         }
         
         if(fetchData(%damagedClient,"isUberBoss") && fetchData(%damagedClient,"ubCombatStarted") == "")
@@ -482,22 +507,32 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 return;
             }
         }
-
 		//------------- CREATE DAMAGE VALUE -------------
-		if(%type == $SpellDamageType)
+		if(%type == $SpellDamageType || %type == $StaffDamageType)
 		{
-            %skilltype = $skilloffensivecasting;
-			//For the case of SPELLS, the initial damage has already been determined before calling this function
-            %sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
+            //For the case of SPELLS, the initial damage has already been determined before calling this function
+            
+            if(%type == $StaffDamageType)
+            {
+                %staffWeap = Player::getMountedItem(%shooterClient,$WeaponSlot);
+                %skilltype = $SkillType[%staffWeap];
+                %atkIdx = Word::FindWord($AccessoryVar[%staffWeap, $SpecialVar],$SpecialVarATK)+1;
+                %value = getWord($AccessoryVar[%staffWeap, $SpecialVar],%atkIdx) * %value; //Projectile damage should always be 1 for staff proj
+            }
+            else
+                %skilltype = $skilloffensivecasting;
+                
+			%sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
 			%dmg = %value + %sdm;
 			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
 
-			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10)) + 1;
+			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10));
 			%value = Cap(%value - %ab, 0, "inf");
 
 			%value = (%value / $TribesDamageToNumericDamage);
+            echo("Spell Damage: "@%value);
 		}
-		else if(%type != $LandingDamageType)
+		else if(%type != $LandingDamageType && %type != $MeteorDamageType)
 		{
 			%multi = 1;
             
@@ -598,7 +633,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             //    %value = %value * %stam/25;
 
 			%value = (%value / $TribesDamageToNumericDamage);
-
+            
 		}
 
 		//------------- DETERMINE MISS OR HIT -------------
@@ -654,6 +689,18 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		{
 			if(Zone::getType(fetchData(%damagedClient, "zone")) == "WATER")
 				%value *= $waterDamageAmp;
+                
+            if(fetchData(%damagedClient,"CatsFeetFlag"))
+            {
+                if(getSimTime() <= fetchData(%damagedClient,"CatsFeetTimeout") )
+                {
+                    %value = 0;
+                }
+                else
+                {
+                    storeData(%damagedClient,"CatsFeetFlag","");
+                }
+            }
 		}
 		//============================================================================================
 
@@ -833,6 +880,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				}
 				else
 				{
+                    UseSkill(%damagedClient, $SkillEndurance, True, True, 80);
 					UseSkill(%shooterClient, %skilltype, True, True, %base1);
 					if(%type == $SpellDamageType)
 						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
@@ -876,7 +924,13 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					%value = -1;	//There was an LCK miss
 				else
 				{
-					if(!%noImpulse) Player::applyImpulse(%this,%mom);
+					if(!%noImpulse)
+                    {
+                        %brace = fetchData(%damagedClient,"Brace");
+                        if(%brace > 0)
+                            %mom = ScaleVector(%mom,%brace/100);
+                        Player::applyImpulse(%this,%mom);
+                    }
 					%noImpulse = "";
 
 					if(%damagedCurrentArmor != "")
@@ -897,8 +951,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					if(!IsDead(%damagedClient))
 					{
-                        if(fetchData(%damageClient,"CustomAI") == "")
-                        {                        
+                        if(fetchData(%damagedClient,"customAIFlag") == "")
+                        {
                             if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
                                 AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
                         }
@@ -922,7 +976,12 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 							%hitby = "yourself";
 					}
 					else if(%shooterClient == 0)
-						%hitby = "an NPC";
+                    {
+                        if(%type == $MeteorDamageType)
+                            %hitby = "meteor";
+                        else
+                            %hitby = "an NPC";
+                    }
 					else
 					{
 						if(fetchData(%shooterClient, "invisible"))

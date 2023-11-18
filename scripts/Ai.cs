@@ -223,7 +223,7 @@ function AI::setWeapons(%aiName, %loadout, %callback)
 	if(%loadout == -1 || %loadout == "" || String::ICompare(%loadout, "default") == 0)
 	{
 		%items = $BotInfo[%aiName, ITEMS];
-        echo("Items: "@ %items);
+        //echo("Items: "@ %items);
 		if(%items == "")
 			GiveThisStuff(%aiId, $BotEquipment[clipTrailingNumbers(%aiName)], False);
 		else
@@ -1237,7 +1237,7 @@ function AI::onTargetLOSAcquired(%aiName, %idNum)
     {
         storeData(%aiId,"targetFound",%idNum);
     }
-    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
+    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag") && !fetchData(%idNum,"invisible"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 
@@ -1261,8 +1261,8 @@ function AI::onTargetLOSRegained(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSRegained(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("Target Reacquired");
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
+    echo("Target Reacquired: "@%idNum);
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag") && !fetchData(%idNum,"invisible"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 

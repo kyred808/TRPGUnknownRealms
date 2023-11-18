@@ -227,6 +227,29 @@ ExplosionData mortarExp
    radFactors = { 0.0, 1.0, 1.0 };
 };
 
+ExplosionData FireBombExp
+{
+   shapeName = "mortarex.dts";
+   soundId   = ExplodeLM;
+
+   faceCamera = true;
+   randomSpin = false;
+//   faceCamera = true;
+//   randomSpin = true;
+   hasLight   = true;
+   lightRange = 8.0;
+
+   timeScale = 1.5;
+
+   timeZero = 0.0;
+   timeOne  = 0.500;
+
+   colors[0]  = { 0.0, 0.0, 0.0 };
+   colors[1]  = { 1.0, 1.0, 1.0 };
+   colors[2]  = { 1.0, 1.0, 1.0 };
+   radFactors = { 0.0, 1.0, 1.0 };
+};
+
 ExplosionData turretExp
 {
    shapeName = "fusionex.dts";
