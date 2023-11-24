@@ -253,15 +253,36 @@ function Item::onCollision(%this,%object)
 
             deleteObject(%this);
 		}
-            else if(%item.className == "Accessory" || $LoreItem[%item] == True)
+        else if(%item == "BeltLoot" && !Player::isAIControlled(%clientId)) //Needs to come before the item.className == accessory check
+        {
+            %itemType = %this.itemType;
+            echo(%item @" "@ %itemType);
+            if(%itemType != "")
             {
-                //if(Item::giveItem(%clientId, %item, 1, True))
-                if(RPGItem::incItemCount(%clientId, %item, 1, True))
+                %amnt = %this.delta;
+                if(%amnt == "")
+                    %amnt = 1;
+                if(%amnt < 0)
+                    %amnt = 0;
+                    
+                if(%amnt > 0)
                 {
+                    RPGItem::incItemCount(%clientId,%itemType,%amnt,true);
                     Item::playPickupSound(%this);
                     RefreshAll(%clientId,false);
-                    deleteObject(%this);
                 }
+                deleteObject(%this);
+            }
+        }
+        else if(%item.className == "Accessory" || $LoreItem[%item] == True)
+        {
+            //if(Item::giveItem(%clientId, %item, 1, True))
+            if(RPGItem::incItemCount(%clientId, %item, 1, True))
+            {
+                Item::playPickupSound(%this);
+                RefreshAll(%clientId,false);
+                deleteObject(%this);
+            }
 		}
         else if(%item == "MeteorBits" || %item == "MeteorBitsRed")
         {
@@ -271,23 +292,25 @@ function Item::onCollision(%this,%object)
                 RPGItem::incItemCount(%clientId,%itemType,1,true);
                 Item::playPickupSound(%this);
                 RefreshAll(%clientId,false);
+                deleteObject(%this);
             }
-            deleteObject(%this);
+            
         }
 		else if(%item.className == "TownBot")
 		{
 			//do nothing.
 		}
-            else
+        else
+        {
+            //%count = Player::getItemCount(%object,%item);
+            //if(Item::giveItem(%object, %item, %this.delta, True))
+            //Bots seem to not pickup the full item?
+            if(RPGItem::incItemCount(%clientId, %item, %this.delta, True))
             {
-            	//%count = Player::getItemCount(%object,%item);
-            	//if(Item::giveItem(%object, %item, %this.delta, True))
-                if(RPGItem::incItemCount(%clientId, %item, %this.delta, True))
-                {
-                  	Item::playPickupSound(%this);
-                    RefreshAll(%clientId);
-                    Item::respawn(%this);
-                }
+                Item::playPickupSound(%this);
+                RefreshAll(%clientId);
+                Item::respawn(%this);
+            }
 		}
 	}
 }

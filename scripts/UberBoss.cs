@@ -577,7 +577,7 @@ function UberBoss::LaunchProjRain(%aiId)
         %name = Object::getName(%mkr);
         %sizex = getWord(%name,0)/4;
         %sizey = getWord(%name,1)/4;
-        for(%i = 0; %i < 12; %i++)
+        for(%i = 0; %i < 24; %i++)
         {
             //%randPos = %pos;
             %randPos = Vector::add(%pos,getRandomMT()*%sizex*2 - %sizex @" "@ getRandomMT()*%sizey*2 - %sizey @" 0");
@@ -588,37 +588,8 @@ function UberBoss::LaunchProjRain(%aiId)
             %trans = "0 0 0 "@ %dir @" 0 0 0 "@ %randSkyPos;
             //echo(%trans);
             %proj = Projectile::spawnProjectile(UberBossRainProj,%trans,Client::getOwnedObject(%aiId),"0 0 0");
-            Projectile::startTracking(%aiId,%proj,0.2,13);
         }
     }
-}
-
-function UberBossRainProj::onRemove(%this)
-{
-    %trackId = getWord($Projectile::trackIdList[%this],0);
-    $Projectile::trackIdList[%this] = String::removeWords($Projectile::trackIdList[%this],%trackId);
-    echo(%trackId @ " " @ %this @" Remove!");
-    %pos = Projectile::PropagateTrack(%this,%trackId,0);
-    
-    %range = 2* $Projectile::tracking[%this,%trackid,Range];
-    %set = newObject("set", SimSet);
-    %n = containerBoxFillSet(%set, $SimPlayerObjectType, %pos, %range, %range, %range, 0);
-    echo(%pos);
-    for(%i = 0; %i < Group::objectCount(%set); %i++)
-    {
-        %player = Group::getObject(%set,%i);
-        %dmg = fetchData(Player::getClient(%player),"BufferDamage");
-        storeData(%player,"BufferDamage","");
-        %val = getWord(%dmg,0);
-        %plPos = Gamebase::getPosition(%player);
-        %dist = vector::getdistance(%plPos,%pos);
-        echo(%plpos);
-        %imp = ScaleVector(Vector::Normalize(Vector::sub(%plPos,%pos)),1800/%dist);
-        GameBase::virtual(%player,"onDamage",$BludgeoningDamageType, %val, "0 0 0", "0 0 0", %imp, "torso", "", $Projectile::tracking[%this,%trackid,Owner], "UBBlast");
-    }
-    deleteObject(%set);
-    
-    Projectile::TrackCleanup(%this,%trackId);
 }
 
 function UberBoss::SetupLeapToPoint(%aiId,%aiName)
@@ -748,7 +719,7 @@ function UberBoss::SkillSetup(%aiId)
 
 	%a = (  (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel)  ) / 4;
 	%sr = round(%a * GetSkillMultiplier(%aiId, $SkillOffensiveCasting));
-	$PlayerSkill[%aiId, $SkillSpellResistance] = %sr;
+	$PlayerSkill[%aiId, $SkillManaManipulation] = %sr;
     //=============================================================
 }
 

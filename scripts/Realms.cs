@@ -16,6 +16,12 @@
 //$RealmData["oldworld", MaxHeight] = -2000;
 //$RealmData["oldworld", Name] = "Old World";
 
+$RealmBounds[0,Xmin] = -5120;
+$RealmBounds[0,Xmax] = -5120 + $MapExtent[0] + 1000; //2x
+$RealmBounds[0,Ymin] = -3072;
+$RealmBounds[0,Ymax] = -3072 + $MapExtent[1];
+
+
 function Realms::getRealmGroupName(%realmId)
 {
     return "MissionGroup\\Realm"@%i;
@@ -93,6 +99,7 @@ function InitRealms()
 
 function Realms::InitZones()
 {
+    deleteVariables("Zone::*");
     $ZoneData::NumberZones = 0;
     for(%i = 0; nameToID("MissionGroup\\Realm"@%i) != -1; %i++)
     {
@@ -305,16 +312,16 @@ function PlayerRealmCheck()
 	{
         if(fetchData(%c,"HasLoadedAndSpawned") && fetchData(%c,"noRealmCheck") == "")
         {
-            %zpos = getWord(Gamebase::getPosition(%c),2);
+            //%pos = Gamebase::getPosition(%c);
+            //%zpos = getWord(%pos,2);
             %currentRealm = fetchData(%c,"Realm");
-            %realmList[$RealmData[%currentRealm, ID]] = true;
+            %rid = $RealmData[%currentRealm, ID];
+            %realmList[%rid] = true;
             // Find player's current Realm by Z position
-            //echo("MaxH: "@ $RealmData[%currentRealm,MaxHeight]@" MinH: "@ $RealmData[%currentRealm,MinHeight]);
-            //echo("ZPos: "@ %zpos);
-            if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
-            {
-                Realm::KickPlayerBackInRealm(%c,%currentRealm);
-            }
+            //if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
+            //{
+            //    Realm::KickPlayerBackInRealm(%c,%currentRealm);
+            //}
         }
 	}
     

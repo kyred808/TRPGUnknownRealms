@@ -221,6 +221,14 @@ function Item::deployShape(%player,%name,%shape,%item)
 
 //----------------------------------------------------------------------------
 
+ItemData BeltLoot
+{
+	description = "Belt Loot";
+    className = "Accessory";
+    shapeFile = "discammo";
+	showInventory = false;
+};
+
 ItemData RepairPatch
 {
 	description = "Repair Patch";

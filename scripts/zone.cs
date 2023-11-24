@@ -117,6 +117,7 @@ function Zone::addZone(%group)
     %system = Object::getName(%group);
     %type = getWord(%system,0);
     %desc = Word::getSubWord(%system,1,999);
+    echo("new zone: "@%zcnt);
     for(%z = 0; %z <= %tmpcount-1; %z++)
     {
         %tmpobject = Group::getObject(%tmpgroup, %z);
@@ -136,7 +137,9 @@ function Zone::addZone(%group)
             %w0 = GetWord(%n, 0);
             if(%w0 == "ENTERSOUND")
             {	
+                echo("EnterSound "@ %zcnt);
                 $Zone::EnterSound[%zcnt] = GetWord(%n, 1);
+                echo($Zone::EnterSound[%zcnt]);
             }
             else if(%w0 == "AMBIENTSOUND")
             {
@@ -171,6 +174,8 @@ function Zone::addZone(%group)
     $Zone::FolderToID[%tmpgroup] = %zcnt;
     
     $Zone::Active[%zcnt] = false;
+    
+    echo($Zone::Desc[%zcnt] @" "@ %zcnt);
     
     // Just something silly
     if(Object::getName(%group) == "FREEFORALL Top of Well")
@@ -347,6 +352,7 @@ function setzoneflags(%object, %z)
     
     //if($Zone::SpookyWellZone[$Zone::FolderID[%z]])
     //    DoSpookyZoneCalc(%object);
+
 }
 
 function UpdateZone(%object)
@@ -354,7 +360,7 @@ function UpdateZone(%object)
 	dbecho($dbechoMode, "UpdateZone(" @ %object @ ")");
 	%clientId = Player::getClient(%object);
 	%zoneflag = fetchData(%clientId, "tmpzone");
-    
+
 	//check if the player was found inside a zone
 	if(%zoneflag != "")
 	{
@@ -445,6 +451,41 @@ function UpdateZone(%object)
                 Client::sendMessage(%clientId, 0, "~w" @ $Zone::EnterSound[0]);
         }
 	
+        //Been a little crashy on startup
+        //Wrap around world
+        //%rid = $RealmData[fetchData(%clientId,"Realm"), ID];
+        ////echo("Check "@ %rid);
+        //if($RealmBounds[%rid,Xmin] != "" && fetchData(%clientId,"HasLoadedAndSpawned") && !Player::isAIControlled(%clientId))
+        //{
+        //    %pos = Gamebase::getPosition(%object);
+        //    %xpos = getWord(%pos,0);
+        //    %ypos = getWord(%pos,1);
+        //    %zpos = getWord(%pos,2);
+        //    
+        //    if(%xpos > $RealmBounds[%rid,Xmax]-10)
+        //        %npos = $RealmBounds[%rid,Xmin]+10 @ " "@ %ypos @ " "@ %zpos;
+        //    else if(%ypos > $RealmBounds[%rid,Ymax]-10)
+        //        %npos = %xpos @" "@ $RealmBounds[%rid,Ymin]+10 @ " " @ %zpos;
+        //    else if(%xpos < $RealmBounds[%rid,Xmin]+10)
+        //        %npos = $RealmBounds[%rid,Xmax]-10 @ " "@ %ypos @ " "@ %zpos;
+        //    else if(%ypos < $RealmBounds[%rid,Ymin]+10)
+        //        %npos = %xpos @" "@ $RealmBounds[%rid,Ymax]-10 @ " " @ %zpos;
+        //    
+        //    if(%npos != "")
+        //    {
+        //        Gamebase::setPosition(%clientId,%npos);
+        //        %los = RaycastUp(%clientId,500);
+        //        if(%los)
+        //        {
+        //            if(getObjectType($los::object) == "SimTerrain")
+        //            {
+        //                Gamebase::setPosition(%clientId,$los::position);
+        //                Item::setVelocity(%object,"0 0 0");
+        //            }
+        //        }
+        //        Client::sendMessage(%clientId,0,"~wCapturedTower.wav");
+        //    }
+        //}
     
         //start playing the ambient sound for the unknown zone
 		if($Zone::AmbientSound[0] != "")
@@ -470,7 +511,16 @@ function UpdateZone(%object)
         
 		}
 	
-		
+		if(!Player::isAIControlled(%clientId))
+        {
+            %pos = Gamebase::getPosition(%clientId);
+            %zpos = getWord(%pos,2);
+            %currentRealm = fetchData(%clientId,"Realm");
+            if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
+            {
+                Realm::KickPlayerBackInRealm(%clientId,%currentRealm);
+            }
+        }
 
 		//play unknown zone music
 	//	if($Zone::Music[0, 1] != "")
@@ -502,6 +552,11 @@ function UpdateZone(%object)
 	// Do passive mana regen ticks
 	//-----------------------------------------------------------
     ManaRegenTick(%clientId);
+    
+    if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
+    {
+        UseSkill(%clientId, $SkillEnergy, True, True,12);
+    }
     
 	//-----------------------------------------------------------
 	// Check if the player has moved since last ZoneCheck
@@ -720,7 +775,7 @@ function Zone::DoEnter(%z, %clientId)
 
 	if($Zone::EnterSound[%z] != "")
 		%msg = %msg @ "~w" @ $Zone::EnterSound[%z];
-
+    
     //echo(%z @" "@ %msg);
 	if(%msg != "")
 		Client::sendMessage(%clientId, %color, %msg);
@@ -1023,12 +1078,11 @@ function GetNearestZone(%clientId, %zonetype, %returnType)
     
     %realm = fetchData(%clientId,"Realm");
     
-    for(%i = 0; %i < getWordCount($RealmData[%realm,ZoneList]); %i++)
+    for(%i = 0; %i <= getWordCount($RealmData[%realm,ZoneList]); %i++)
     {
         %zid = getWord($RealmData[%realm,ZoneList],%i);
         %type = $Zone::Type[%zid];
-        
-        if(%type == "PROTECTED" && String::ICompare(%zonetype, "town") == 0 || %type == "DUNGEON" && String::ICompare(%zonetype, "dungeon") == 0 || %type == "FREEFORALL" && String::ICompare(%zonetype, "freeforall") == 0 || %zonetype == -1)
+        if( (%type == "PROTECTED" && String::ICompare(%zonetype, "town") == 0 ) || (%type == "DUNGEON" && String::ICompare(%zonetype, "dungeon") == 0 ) || (%type == "FREEFORALL" && String::ICompare(%zonetype, "freeforall") == 0 ) || %zonetype == -1)
 		{
             %finalpos = $Zone::Marker[%zid];
             
@@ -1036,8 +1090,8 @@ function GetNearestZone(%clientId, %zonetype, %returnType)
             if(%dist < %closestDist)
 			{
 				%closestDist = %dist;
-				%closestZoneDesc = $Zone::Desc[%i];
-				%closestZone = $Zone::FolderID[%i];
+				%closestZoneDesc = $Zone::Desc[%zid];
+				%closestZone = $Zone::FolderID[%zid];
 				%mpos = %finalpos;
 			}
         }

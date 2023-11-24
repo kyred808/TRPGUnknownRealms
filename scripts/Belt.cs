@@ -244,7 +244,7 @@ function MenuBeltDrop(%clientid, %item, %type)
 
 	Client::buildMenu(%clientId, %name@" ("@%cmnt@")", "BeltDrop", true);
     Client::addMenuItem(%clientId, "eExamine", %type@" examine "@%item);
-    if($beltitem[%item, "Special"] != "")
+    if($beltitem[%item, "UseTag"] != "")
         Client::addMenuItem(%clientId, "uUse", %type@" use "@%item);
 	if(!$LoreItem[%item])
     {
@@ -717,13 +717,14 @@ function MenuSellBeltItem(%clientid, %type, %page)
     %numPages = getWord(%menuULB,0);
     %lb = getWord(%menuULB,1);
     %ub = getWord(%menuULB,2);
-
+    echo(%nf);
 	%x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
 	{
 		%x++;
 		%item = getword(%nf,%x);
 		%amnt = Belt::HasThisStuff(%clientid,%item);
+        echo(%item);
 		Client::addMenuItem(%clientId, %cnt++ @%amnt@" "@ $beltitem[%item, "Name"], %item @ " " @ %page @" "@%type);
 	}
 
@@ -1611,7 +1612,7 @@ function BeltItem::Add(%name,%item,%type,%weight,%cost,%shopIndex,%specialVars)
 	$beltitem[%item, "Name"] = %name;
 	$beltitem[%item, "Type"] = %type;
     $beltitem[%item, "ItemID", %type] = %num;
-    $beltitem[%item, "Special"] = %specialVars;
+    $beltitem[%item, "UseTag"] = %specialVars;
 	$AccessoryVar[%item, $Weight] = %weight;
 	$HardcodedItemCost[%item] = %cost;
     if(%shopIndex != "")
@@ -1768,7 +1769,7 @@ function Belt::ItemCount(%item,%list)
 
 function Belt::IsUsableItem(%item)
 {
-    return $beltitem[%item, "Special"] != "";
+    return $beltitem[%item, "UseTag"] != "";
 }
 
 function Belt::AddToList(%list, %item)

@@ -432,6 +432,7 @@ function GetAccessoryList(%clientId, %type, %filter)
             %item = getItemData($RPGItem::InvItem[%itemName,Index]);
             %flag = "";
             %class = %item.className;
+            
 			if(%type == 1)
 			{
 				if(%class == "Accessory")
@@ -506,6 +507,11 @@ function GetAccessoryList(%clientId, %type, %filter)
             {
                 if($AccessoryVar[%item, $AccessoryType] == $PickAxeAccessoryType)
                     %flag = True;
+            }
+            else if(%type == 13)
+            {
+                if(%class == "Equipped" && $AccessoryVar[getCroppedItem(%item), $AccessoryType] == $BodyAccessoryType)
+                    %flag = true;
             }
 			else if(%type == -1)
 				%flag = True;
@@ -622,7 +628,7 @@ function NullItemList(%clientId, %type, %msgcolor, %msg)
 	for(%z = 1; $ItemList[%type, %z] != ""; %z++)
 	{
 		%item = $ItemList[%type, %z];
-		if(Player::getItemCount(%clientId, %item))
+		if(RPGItem::getItemCount(%clientId, %item))
 		{
 			RPGItem::setItemCount(%clientId, %item, 0);
 

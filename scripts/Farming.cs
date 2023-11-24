@@ -67,7 +67,11 @@ function Farming::PlayerSpawnProtection(%pos)
     {
         %obj = Group::getObject(%set,%i);
         if(clipTrailingNumbers(Object::getName(%obj)) == "anvil")
-            deleteObject(%obj);
+        {
+            %found = true;
+            break;
+            //deleteObject(%obj);
+        }
         else
         {
             %type = GameBase::getDataName(%obj);

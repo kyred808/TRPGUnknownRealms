@@ -65,8 +65,8 @@ $MessagePlayerIfBotStolePack = true;
 
 $SkillBoostMax = 5;
 $SkillBoostNumPrimary = 3; //Rest are secondary
-$SkillPrimaryBonus = 30;
-$SkillSecondaryBonus = 10;
+$SkillPrimaryBonus = 40;
+$SkillSecondaryBonus = 20;
 
 //Toggle if you can craft anywhere or need to look at or have certain objects.
 $ExtraCraftingRequirements = true;

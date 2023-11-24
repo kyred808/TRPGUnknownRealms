@@ -54,9 +54,21 @@ function ForceWakeUp(%clientId)
 
 function HealHPCheck(%clientId)
 {
-    if(fetchData(%clientId, "HP") == fetchData(%clientId, "MaxHP") || fetchData(%clientId, "Stamina") == 0)
+    
+    if(fetchData(%clientId, "HP") == fetchData(%clientId, "MaxHP")) // || fetchData(%clientId, "Stamina") == 0)
     {
-        ForceWakeUp(%clientId);
+        Client::sendMessage(%clientId, $MsgWhite, "Health full. Automatically switching to #rest");
+        %clientId.sleepMode = 2;
+        refreshHPREGEN(%clientId);
+		refreshStaminaREGEN(%clientId);
+        //ForceWakeUp(%clientId);
+    }
+    else if( fetchData(%clientId, "Stamina") == 0 )
+    {
+        Client::sendMessage(%clientId, $MsgWhite, "Stamina empty. Automatically switching to #rest");
+        %clientId.sleepMode = 2;
+        refreshHPREGEN(%clientId);
+		refreshStaminaREGEN(%clientId);
     }
     else if(%clientId.sleepMode == 3)
     {

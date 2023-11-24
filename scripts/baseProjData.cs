@@ -151,6 +151,28 @@ BulletData Thorn
    damageClass        = 1;
    damageValue        = 26;
    damageType         = $SpellDamageType;
+   explosionRadius = 3.0;
+   kickBackStrength = 0.0;
+   muzzleVelocity     = 90.0;
+   totalTime          = 3.1;
+   liveTime           = 3.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 10.0, 0.75, 0.75 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 0.1;
+};
+
+BulletData Firebolt
+{
+   bulletShapeName    = "shotgunbolt.dts";
+   explosionTag       = blasterExpBoom;
+
+   damageClass        = 1;
+   damageValue        = 32;
+   damageType         = $SpellDamageType;
    explosionRadius = 6.0;
    kickBackStrength = 0.0;
    muzzleVelocity     = 50.0;
@@ -253,7 +275,7 @@ RocketData IceSpike
 	collisionRadius = 0.0; 
 	mass = 2.0;
 	damageClass = 1;
-	damageValue = 28; 
+	damageValue = 35; 
 	damageType = $SpellDamageType;
 	explosionRadius = 6.0;
 	kickBackStrength = 0.0;
@@ -482,6 +504,60 @@ RocketData DimensionRift4
 	rotationPeriod = 0.01;
 	trailLength = 30;
 	trailWidth  = 0.8;
+};
+
+RocketData Fireblast
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = fireBlastExpBoom; 
+	collisionRadius = 0.0; //Having a collision radius on non-grenades make them not collide.  I don't know why, but okay.
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 240; 
+	damageType = $SpellDamageType;
+	explosionRadius = 85;
+	kickBackStrength = 500;
+	muzzleVelocity   = 60.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 8.1;
+	liveTime = 8.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.4;
+};
+
+RocketData FireblastInvis
+{ 
+	bulletShapeName = "invisable.dts"; 
+	explosionTag = LargeShockwaveBoom; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 0; 
+	damageType = $NullDamageType;
+	explosionRadius = 20.0;
+	kickBackStrength = 250;
+	muzzleVelocity   = 60.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 8.1;
+	liveTime = 8.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 8;
+	soundId = NoSound;
+	rotationPeriod = 0.1;
 };
 
 RocketData Meteor

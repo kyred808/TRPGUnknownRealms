@@ -111,11 +111,20 @@ function fetchData(%clientId, %type)
     }
     else if(%type == "MaxStam")
     {
+        %temp = fetchData(%clientId,"tempMaxStam");
+        if(%temp != "")
+            return %temp;
         %a = 100;
-        %b = AddBonusStatePoints(%clientId, "MaxStam");
         %c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
-        %e = AddPoints(%clientId, $SpecialVarMaxStam);
-        return floor(%a + %b + %c + %e);
+        //echo("Check");
+        //Lots of resource use for something that doesn't exist yet.
+        //%b = AddBonusStatePoints(%clientId, "MaxStam");
+        //%e = AddPoints(%clientId, $SpecialVarMaxStam);
+        //return floor(%a + %b + %c + %e);
+        %result = floor(%a + %c);
+        storeData(%clientId,"tempMaxStam",%result);
+        schedule("storeData("@%clientId@",\"tempMaxStam\",\"\");",1,%clientId);
+        return %result;
     }
 	else if(%type == "MaxMANA")
 	{
@@ -503,7 +512,7 @@ function processMenupickclass(%clientId, %opt)
 function MenuPickSkillBonus(%clientId,%class,%num,%page)
 {
     %primary = false;
-    echo(%num);
+    //echo(%num);
     if(%num < $SkillBoostNumPrimary)
     {
         Client::buildMenu(%clientId, "Pick "@ $SkillBoostNumPrimary @" Primary Skills ("@ $SkillBoostNumPrimary - %num @")", "PickSkillBonus", true);
@@ -524,8 +533,8 @@ function MenuPickSkillBonus(%clientId,%class,%num,%page)
     %prim = fetchData(%clientId,"tempPrimarySkills");
     %sec = fetchData(%clientId,"tempSecondarySkills");
     
-    echo("Primary: "@ %prim);
-    echo("Secondary: "@ %sec);
+    //echo("Primary: "@ %prim);
+    //echo("Secondary: "@ %sec);
 	for(%i = %lb; %i <= %ub; %i++)
     {
         if(Word::findWord(%prim,%i) != -1)
@@ -649,12 +658,13 @@ function CreateNewPlayer(%clientId)
         %c = GetPlayerSkill(%clientId, %skill) + ($SkillMultiplier[%class,%skill]*($SkillPrimaryBonus-1));
         %d = round(%c * 10);
         %e = (%d / 10) * 1.000001;
+        echo("Primary: "@$SkillDesc[%skill]@ " "@ GetPlayerSkill(%clientId, %skill) @" -> "@ %e);
         $PlayerSkill[%clientId, %skill] = %e;
     }
     
     for(%i = 0; %i < getWordCount(%sec); %i++)
     {
-        %skill = getWord(%prim,%i);
+        %skill = getWord(%sec,%i);
         %c = GetPlayerSkill(%clientId, %skill) + ($SkillMultiplier[%class,%skill]*($SkillSecondaryBonus-1));
         %d = round(%c * 10);
         %e = (%d / 10) * 1.000001;

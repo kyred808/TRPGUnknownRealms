@@ -686,6 +686,48 @@ function remoteSay(%clientId, %team, %message, %senderName)
             return;
         }
         
+        if(%w1 == "#drop") //WIP
+        {
+            %item = getWord(%cropped,%i);
+            %amnt = getWord(%cropped,%i+1);
+            if(%amnt == "" || %amnt < 1)
+                %amnt = 1;
+            if(RPGItem::isValidItem(%item))
+            {
+                if(RPGItem::getItemCount(%TrueClientId,%item) >= %amnt)
+                {
+                    %player = Client::getOwnedObject(%TrueClientId);
+                    %type = RPGItem::getItemInternalType(%item);
+                    if(%type == $RPGItem::InvItemType)
+                    {
+                        %obj = newObject("", "Item", %item, 1, false);
+                        %obj.delta = %amnt;
+                        playSound(SoundPickupItem,Gamebase::getPosition(%player));
+                        addToSet("MissionCleanup", %obj);
+                        GameBase::throw(%obj, %player, 15, false);
+                    }
+                    else if(%type == $RPGItem::BeltItemType)
+                    {
+                        %obj = newObject("", "Item", "BeltLoot", 1, false);
+                        %obj.itemType = %item;
+                        %obj.delta = %amnt;
+                        playSound(SoundPickupHealth,Gamebase::getPosition(%player));
+                        addToSet("MissionCleanup", %obj);
+                        GameBase::throw(%obj, %player, 15, false);
+                    }
+                    schedule("Item::Pop(" @ %obj @ ");", 120, %obj);
+                    
+                    TakeThisStuff(%TrueClientId,%item @" "@ %amnt);
+                    RefreshAll(%TrueClientId);
+                }
+                else
+                    Client::sendMessage(%TrueClientId, 0, "You do not have "@ %amnt @" "@ RPGItem::getDesc(%item));
+            }
+            else
+                Client::sendMessage(%TrueClientId, 0, %item @" is not a valid item.");
+            return;
+        }
+        
         if(%w1 == "#createpack")
 		{
             %invList = "";
@@ -838,14 +880,32 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	//	}
 		if(%w1 == "#w")
 		{
-	            %item = getCroppedItem(%cropped);
-	
-	            if(%item == "")
-	                  Client::sendMessage(%TrueClientId, 0, "Please specify an item (ex: Black Statue = BlackStatue).");
-	            else
-	            {
-				%msg = WhatIs(%item);
-				bottomprint(%TrueClientId, %msg, floor(String::len(%msg) / 20));
+            %item = getCroppedItem(%cropped);
+
+            if(%item == "")
+                  Client::sendMessage(%TrueClientId, 0, "Please specify an item, skill, or spell (ex: Black Statue = BlackStatue).");
+            else
+            {
+                if($Spell::index[%item] != "")
+                {
+                    %msg = Spell::WhatIsSpell(%TrueClientId,%item);
+                    %len = String::len(%msg);
+                    if(%len > 255)
+                    {
+                        %substr = String::getsubstr(%msg,0,255);
+                        remoteEval(%TrueClientId,"BufferedCenterPrint",%substr, floor(String::len(%msg) / 20), 1);
+                        %substr = String::getSubstr(%msg,255,%len);
+                        remoteEval(%TrueClientId,"BufferedCenterPrint",%substr, -1, 1);
+                    }
+                    else 
+                        bottomprint(%TrueClientId, %msg, floor(String::len(%msg) / 20));
+                    //function remoteBufferedCenterPrint(%server, %string, %timeout, %location) {
+                }
+                else
+                {
+                    %msg = WhatIs(%item);
+                    bottomprint(%TrueClientId, %msg, floor(String::len(%msg) / 20));
+                }
 			}
 			return;
 		}
@@ -942,6 +1002,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					Client::sendMessage(%TrueClientId, 0, "Specify a spell.");
 		            else
 		            {
+                        //Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
 					BeginCastSpell(%TrueClientId, escapestring(%cropped));
 					if(String::findSubStr(%cropped, "\"") != -1){
 						%ip = Client::getTransportAddress(%ClientId);
@@ -2243,7 +2304,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
 			return;
         }
-        if(%w1 == "#smith" || %w1 == "#mix" || %w1 == "#smelt" || %w1 == "#cook")
+        if(%w1 == "#smith" || %w1 == "#craft") //|| %w1 == "#smelt" || %w1 == "#cook")
         {
             %item = getWord(%cropped,0);
             %amnt = getWord(%cropped,1);
@@ -2323,62 +2384,21 @@ function remoteSay(%clientId, %team, %message, %senderName)
                             {
                                 if(%w1 == "#smith")
                                     Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smith that.");
-                                else if(%w1 == "#mix")
-                                    Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at a fire to craft that.");
-                                else if(%w1 == "#smelt")
-                                    Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smelt that.");
-                                else if(%w1 == "#cook")
-                                    Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at a fire to cook that.");
                             }
                         }
                         else
                         {
                             %skillRestrict = $SkillRestriction[%w1@" "@%item];
-                            %skill = -1;
-                            %verb = "";
-                            if(%w1 == "#smith")
-                            {
-                                %skill = $SkillSmithing;
-                                %verb = "smith";
-                            }
-                            else if(%w1 == "#mix")
-                            {
-                                %skill = $SkillAlchemy;
-                                %verb = "mix";
-                            }
-                            else if(%w1 == "#smelt")
-                            {
-                                %skill = $SkillSmithing;
-                                %verb = "smelt";
-                            }
-                            else if(%w1 == "#cook")
-                            {
-                                %skill = $SkillCooking;
-                                %verb = "cook";
-                            }
-                            
-                            if(%skill != -1)
-                            {
-                                %skillReq = getWord(%skillRestrict,Word::findWord(%skillRestrict,%skill)+1);
-                                Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary skills to "@ %verb @" "@ %item @". ("@ %skillReq @")");
-                            }
-                            else
-                            {
-                                Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary skills to craft "@ %item @".");
-                                echo("Error: Invalid skill.");
-                            }
+                            %skillReq = getWord(%skillRestrict,Word::findWord(%skillRestrict,%skill)+1);
+                            Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary skills to craft that item. ("@ %skillReq @")");
                         }
                     }
                     else
                     {
                         if(%w1 == "#smith")
                             Client::sendMessage(%TrueClientId, $MsgRed, "That is not a smithable item.");
-                        else if(%w1 == "#mix")
-                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not an alchemical item.");
-                        else if(%w1 == "#smelt")
-                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not a smeltable item.");
-                        else if(%w1 == "#mix")
-                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not a cookable item.");
+                        else if(%w1 == "#craft")
+                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not a craftable item.");
                     }
                 }
             }

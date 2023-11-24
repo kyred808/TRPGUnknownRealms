@@ -1803,6 +1803,7 @@ function RefreshAll(%clientId, %equip)
 	refreshHPREGEN(%clientId);
 	refreshStaminaREGEN(%clientId);
 	Game::refreshClientScore(%clientId);
+    storeData(%clientId,"tempMaxStam","");
 }
 
 function RefreshEquipment(%clientId)
@@ -2102,7 +2103,9 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 
 	return True;
 }
-
+//====================
+//DropRateCalc tests
+//====================
 function SlashTest(%w2)
 {
     %spos = String::findSubStr(%w2, "/");
@@ -2111,7 +2114,7 @@ function SlashTest(%w2)
         %original = String::getSubStr(%w2, 0, %spos);
         %perc = String::getSubStr(%w2, %spos+1, 99999);
 
-        %r = floor(getRandom() * (100-%perc))+%perc+1;
+        %r = floor(getRandomMT() * (100-%perc))+%perc;
         if(%r > 100) %r = 100;
 
         %w2 = round(%original * (%r/100));
@@ -2120,6 +2123,25 @@ function SlashTest(%w2)
     
     return %w2;
 }
+
+function DropRateTest(%w2,%num)
+{
+    deleteVariables("STestResult*");
+    %cnt = 0;
+    for(%i = 0; %i < %num; %i++)
+    {
+        %check = SlashTest(%w2);
+        if(%check > 0)
+            %cnt++;
+        
+    }
+    
+    return ((%cnt/%num) * 100) @"%";
+}
+//======================
+//End DropRateCalc tests
+//======================
+
 
 function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 {
@@ -2141,7 +2163,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
         if(%wsPos > 0 && Player::isAIControlled(%clientId))
         {
             %original = String::getSubStr(%w, 0, %wsPos);
-            storeData(%clientId,"NoDropLootList",%original @", ","strinc");
+            storeData(%clientId,"NoDropLootList",%original @" ","strinc");
             %w = %original;
         }
         
@@ -2747,7 +2769,7 @@ function WhatIs(%item)
 {
 	dbecho($dbechoMode, "WhatIs(" @ %item @ ")");
 
-	//--------- GATHER INFO ------------------
+	//--------- GATHER INFO ------------------    
 	if(%item.description == False)	
 		%desc = %item;
 	else

@@ -147,6 +147,11 @@ function RPGItem::useItem(%clientId,%item)
         Client::sendMessage(%clientId,$MsgRed,"You can't use items while dead.");
 }
 
+function RPGItem::isValidItem(%item)
+{
+    return RPGItem::isBeltItem(%item) || RPGItem::isInventoryItem(%item);
+}
+
 function RPGItem::isBeltItem(%item)
 {
     return isBeltItem(%item);
@@ -154,7 +159,11 @@ function RPGItem::isBeltItem(%item)
 
 function RPGItem::isInventoryItem(%item)
 {
-    return $RPGItem::InvItem[%item,Index] != "";
+    //The one weird exception
+    if(String::icompare(%item,"smallrock") == 0)
+        return false;
+    else
+        return $RPGItem::InvItem[%item,Index] != "";
 }
 
 function RPGItem::getItemInternalType(%item)

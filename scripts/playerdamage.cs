@@ -144,8 +144,10 @@ function Player::onKilled(%this)
 				if($StealProtectedItem[%a])
 					%flag = False;
                 
-                if(Player::isAiControlled(%clientId) && String::getWord(fetchData(%clientId,"NoDropLootList"),",",%a) != ",")
+                if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
                 {
+                    
+                    //echo(%a," "@fetchData(%clientId,"NoDropLootList"));
                     %flag = False;
                 }
                 
@@ -433,7 +435,7 @@ function CalculateDamageReduction(%clientId)
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-    //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+    echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
   
     %skilltype = $SkillType[%weapon];
     
@@ -441,12 +443,6 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 	{
 		%damagedClient = Player::getClient(%this);
 		%shooterClient = %object;
-        
-        if(%shooterClient == 0 && %type != $MeteorDamageType)
-        {
-            storeData(%damagedClient,"BufferDamage",%value @" ","strinc");
-            return;
-        }
         
         if(%type == $MissileDamageType)
         {
@@ -865,7 +861,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					UseSkill(%shooterClient, %skilltype, False, True);
 					UseSkill(%damagedClient, $SkillEndurance, True, True, 60);
 					if(%type == $SpellDamageType)
-						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
+						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 					//else
 						//UseSkill(%damagedClient, $SkillDodging, True, True, %base2 * (3/5));
 				}
@@ -874,7 +870,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					UseSkill(%shooterClient, %skilltype, False, True);
 					UseSkill(%damagedClient, $SkillEndurance, True, True, 60);
 					if(%type == $SpellDamageType)
-						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
+						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 					//else
 						//UseSkill(%damagedClient, $SkillDodging, True, True, %base2 * (3/5));
 				}
@@ -883,7 +879,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                     UseSkill(%damagedClient, $SkillEndurance, True, True, 80);
 					UseSkill(%shooterClient, %skilltype, True, True, %base1);
 					if(%type == $SpellDamageType)
-						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
+						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 				}
 
 				if(%Backstab)

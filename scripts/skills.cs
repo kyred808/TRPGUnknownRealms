@@ -2,7 +2,7 @@
 // Skills
 //######################################################################################
 
-$NumberOfSkills = 24;
+$NumberOfSkills = 21;
 $SkillSlashing = 1;
 $SkillPiercing = 2;
 $SkillBludgeoning = 3;
@@ -13,7 +13,7 @@ $SkillHiding = 7;
 $SkillBackstabbing = 8;
 $SkillOffensiveCasting = 9;
 $SkillDefensiveCasting = 10;
-$SkillSpellResistance = 11;
+$SkillManaManipulation = 11;
 $SkillHealing = 12;
 $SkillArchery = 13;
 $SkillEndurance = 14;
@@ -22,11 +22,11 @@ $SkillSenseHeading = 16;
 $SkillEnergy = 17;
 $SkillHaggling = 18;
 $SkillNeutralCasting = 19;
-$SkillSmithing = 20;
-$SkillAlchemy = 21;
-$SkillWoodCutting = 22;
-$SkillFarming = 23;
-$SkillCooking = 24;
+//$SkillSmithing = 20;
+//$SkillAlchemy = 21;
+$SkillWoodCutting = 20;
+$SkillFarming = 21;
+//$SkillCooking = 24;
 $MinLevel = "L";
 $MinGroup = "G";
 $MinClass = "C";
@@ -46,7 +46,7 @@ $SkillDesc[7] = "Hiding";
 $SkillDesc[8] = "Backstabbing";
 $SkillDesc[9] = "Offensive Casting";
 $SkillDesc[10] = "Defensive Casting";
-$SkillDesc[11] = "Spell Resistance";
+$SkillDesc[11] = "(WIP)Mana Manipulation";
 $SkillDesc[12] = "Healing";
 $SkillDesc[13] = "Archery";
 $SkillDesc[14] = "Endurance";
@@ -55,18 +55,18 @@ $SkillDesc[16] = "Sense Heading";
 $SkillDesc[17] = "Energy";
 $SkillDesc[18] = "Haggling";
 $SkillDesc[19] = "Neutral Casting";
-$SkillDesc[20] = "Smithing";
-$SkillDesc[21] = "Alchemy";
-$SkillDesc[22] = "Wood Cutting";
-$SkillDesc[23] = "Farming";
-$SkillDesc[24] = "Cooking";
+//$SkillDesc[20] = "Smithing";
+//$SkillDesc[21] = "Alchemy";
+$SkillDesc[20] = "Wood Cutting";
+$SkillDesc[21] = "Farming";
+//$SkillDesc[24] = "Cooking";
 $SkillDesc[L] = "Level";
 $SkillDesc[G] = "Group";
 $SkillDesc[C] = "Class";
 $SkillDesc[R] = "Remort";
 $SkillDesc[A] = "Admin Level";
 $SkillDesc[H] = "House";
-
+$SkillDesc[I] = "Item";
 
 //######################################################################################
 // Class multipliers
@@ -109,7 +109,7 @@ $SkillMultiplier[Cleric, $SkillBackstabbing] = 0.2;
 $SkillMultiplier[Cleric, $SkillOffensiveCasting] = 0.9;
 $SkillMultiplier[Cleric, $SkillDefensiveCasting] = 2.0;
 $SkillMultiplier[Cleric, $SkillNeutralCasting] = 1.2;
-$SkillMultiplier[Cleric, $SkillSpellResistance] = 1.5;
+$SkillMultiplier[Cleric, $SkillManaManipulation] = 1.5;
 $SkillMultiplier[Cleric, $SkillHealing] = 2.0;
 $SkillMultiplier[Cleric, $SkillArchery] = 0.5;
 $SkillMultiplier[Cleric, $SkillEndurance] = 1.1;
@@ -118,11 +118,11 @@ $SkillMultiplier[Cleric, $SkillMining] = 1.0;
 $SkillMultiplier[Cleric, $SkillSenseHeading] = 1.0;
 $SkillMultiplier[Cleric, $SkillEnergy] = 1.5;
 $SkillMultiplier[Cleric, $SkillHaggling] = 1.0;
-$SkillMultiplier[Cleric, $SkillSmithing] = 1.2;
-$SkillMultiplier[Cleric, $SkillAlchemy] = 0.8;
+//$SkillMultiplier[Cleric, $SkillSmithing] = 1.2;
+//$SkillMultiplier[Cleric, $SkillAlchemy] = 0.8;
 $SKillMultiplier[Cleric, $SkillWoodCutting] = 1.0;
 $SKillMultiplier[Cleric, $SkillFarming] = 1.0;
-$SKillMultiplier[Cleric, $SkillCooking] = 1.0;
+//$SKillMultiplier[Cleric, $SkillCooking] = 1.0;
 $EXPmultiplier[Cleric] = 0.85;
 
 //--------------
@@ -146,7 +146,7 @@ $SkillMultiplier[Druid, $SkillBackstabbing] = 0.5;
 $SkillMultiplier[Druid, $SkillOffensiveCasting] = 0.7;
 $SkillMultiplier[Druid, $SkillDefensiveCasting] = 0.7;
 $SkillMultiplier[Druid, $SkillNeutralCasting] = 2.0;
-$SkillMultiplier[Druid, $SkillSpellResistance] = 1.0;
+$SkillMultiplier[Druid, $SkillManaManipulation] = 1.0;
 $SkillMultiplier[Druid, $SkillHealing] = 1.3;
 $SkillMultiplier[Druid, $SkillArchery] = 0.7;
 $SkillMultiplier[Druid, $SkillEndurance] = 0.8;
@@ -155,11 +155,11 @@ $SkillMultiplier[Druid, $SkillMining] = 2.0;
 $SkillMultiplier[Druid, $SkillSenseHeading] = 1.7;
 $SkillMultiplier[Druid, $SkillEnergy] = 1.2;
 $SkillMultiplier[Druid, $SkillHaggling] = 1.3;
-$SkillMultiplier[Druid, $SkillSmithing] = 1.0;
-$SkillMultiplier[Druid, $SkillAlchemy] = 2.0;
+//$SkillMultiplier[Druid, $SkillSmithing] = 1.0;
+//$SkillMultiplier[Druid, $SkillAlchemy] = 2.0;
 $SKillMultiplier[Druid, $SkillWoodCutting] = 2.0;
 $SKillMultiplier[Druid, $SkillFarming] = 2.0;
-$SKillMultiplier[Druid, $SkillCooking] = 1.0;
+//$SKillMultiplier[Druid, $SkillCooking] = 1.0;
 $EXPmultiplier[Druid] = 0.8;
 
 //--------------
@@ -183,7 +183,7 @@ $SkillMultiplier[Thief, $SkillBackstabbing] = 2.0;
 $SkillMultiplier[Thief, $SkillOffensiveCasting] = 0.2;
 $SkillMultiplier[Thief, $SkillDefensiveCasting] = 0.2;
 $SkillMultiplier[Thief, $SkillNeutralCasting] = 0.2;
-$SkillMultiplier[Thief, $SkillSpellResistance] = 0.3;
+$SkillMultiplier[Thief, $SkillManaManipulation] = 0.3;
 $SkillMultiplier[Thief, $SkillHealing] = 0.5;
 $SkillMultiplier[Thief, $SkillArchery] = 1.6;
 $SkillMultiplier[Thief, $SkillEndurance] = 1.0;
@@ -192,11 +192,11 @@ $SkillMultiplier[Thief, $SkillMining] = 1.0;
 $SkillMultiplier[Thief, $SkillSenseHeading] = 1.0;
 $SkillMultiplier[Thief, $SkillEnergy] = 0.5;
 $SkillMultiplier[Thief, $SkillHaggling] = 1.5;
-$SkillMultiplier[Thief, $SkillSmithing] = 1.2;
-$SkillMultiplier[Thief, $SkillAlchemy] = 1.5;
+//$SkillMultiplier[Thief, $SkillSmithing] = 1.2;
+//$SkillMultiplier[Thief, $SkillAlchemy] = 1.5;
 $SKillMultiplier[Thief, $SkillWoodCutting] = 1.0;
 $SKillMultiplier[Thief, $SkillFarming] = 1.0;
-$SKillMultiplier[Thief, $SkillCooking] = 1.0;
+//$SKillMultiplier[Thief, $SkillCooking] = 1.0;
 $EXPmultiplier[Thief] = 0.8;
 
 //--------------
@@ -219,7 +219,7 @@ $SkillMultiplier[Bard, $SkillBackstabbing] = 1.8;
 $SkillMultiplier[Bard, $SkillOffensiveCasting] = 0.3;
 $SkillMultiplier[Bard, $SkillDefensiveCasting] = 0.3;
 $SkillMultiplier[Bard, $SkillNeutralCasting] = 0.5;
-$SkillMultiplier[Bard, $SkillSpellResistance] = 0.5;
+$SkillMultiplier[Bard, $SkillManaManipulation] = 0.5;
 $SkillMultiplier[Bard, $SkillHealing] = 2.0;
 $SkillMultiplier[Bard, $SkillArchery] = 1.4;
 $SkillMultiplier[Bard, $SkillEndurance] = 2.0;
@@ -228,11 +228,11 @@ $SkillMultiplier[Bard, $SkillMining] = 2.0;
 $SkillMultiplier[Bard, $SkillSenseHeading] = 1.5;
 $SkillMultiplier[Bard, $SkillEnergy] = 0.6;
 $SkillMultiplier[Bard, $SkillHaggling] = 2.0;
-$SkillMultiplier[Bard, $SkillSmithing] = 1.0;
-$SkillMultiplier[Bard, $SkillAlchemy] = 1.0;
+//$SkillMultiplier[Bard, $SkillSmithing] = 1.0;
+//$SkillMultiplier[Bard, $SkillAlchemy] = 1.0;
 $SKillMultiplier[Bard, $SkillWoodCutting] = 2.0;
 $SKillMultiplier[Bard, $SkillFarming] = 1.5;
-$SKillMultiplier[Bard, $SkillCooking] = 2.0;
+//$SKillMultiplier[Bard, $SkillCooking] = 2.0;
 $EXPmultiplier[Bard] = 0.8;
 
 //--------------
@@ -257,7 +257,7 @@ $SkillMultiplier[Fighter, $SkillBackstabbing] = 0.2;
 $SkillMultiplier[Fighter, $SkillOffensiveCasting] = 0.1;
 $SkillMultiplier[Fighter, $SkillDefensiveCasting] = 0.1;
 $SkillMultiplier[Fighter, $SkillNeutralCasting] = 0.1;
-$SkillMultiplier[Fighter, $SkillSpellResistance] = 0.2;
+$SkillMultiplier[Fighter, $SkillManaManipulation] = 0.2;
 $SkillMultiplier[Fighter, $SkillHealing] = 1.2;
 $SkillMultiplier[Fighter, $SkillArchery] = 1.6;
 $SkillMultiplier[Fighter, $SkillEndurance] = 1.6;
@@ -266,11 +266,11 @@ $SkillMultiplier[Fighter, $SkillMining] = 1.0;
 $SkillMultiplier[Fighter, $SkillSenseHeading] = 0.4;
 $SkillMultiplier[Fighter, $SkillEnergy] = 0.2;
 $SkillMultiplier[Fighter, $SkillHaggling] = 1.0;
-$SkillMultiplier[Fighter, $SkillSmithing] = 2.0;
-$SkillMultiplier[Fighter, $SkillAlchemy] = 1.0;
+//$SkillMultiplier[Fighter, $SkillSmithing] = 2.0;
+//$SkillMultiplier[Fighter, $SkillAlchemy] = 1.0;
 $SKillMultiplier[Fighter, $SkillWoodCutting] = 1.0;
 $SKillMultiplier[Fighter, $SkillFarming] = 1.0;
-$SKillMultiplier[Fighter, $SkillCooking] = 1.2;
+//$SKillMultiplier[Fighter, $SkillCooking] = 1.2;
 $EXPmultiplier[Fighter] = 1.0;
 
 //--------------
@@ -293,7 +293,7 @@ $SkillMultiplier[Paladin, $SkillBackstabbing] = 0.3;
 $SkillMultiplier[Paladin, $SkillOffensiveCasting] = 0.2;
 $SkillMultiplier[Paladin, $SkillDefensiveCasting] = 1.2;
 $SkillMultiplier[Paladin, $SkillNeutralCasting] = 0.3;
-$SkillMultiplier[Paladin, $SkillSpellResistance] = 0.9;
+$SkillMultiplier[Paladin, $SkillManaManipulation] = 0.9;
 $SkillMultiplier[Paladin, $SkillHealing] = 1.3;
 $SkillMultiplier[Paladin, $SkillArchery] = 1.2;
 $SkillMultiplier[Paladin, $SkillEndurance] = 1.5;
@@ -302,11 +302,11 @@ $SkillMultiplier[Paladin, $SkillMining] = 1.0;
 $SkillMultiplier[Paladin, $SkillSenseHeading] = 0.5;
 $SkillMultiplier[Paladin, $SkillEnergy] = 0.9;
 $SkillMultiplier[Paladin, $SkillHaggling] = 1.3;
-$SkillMultiplier[Paladin, $SkillSmithing] = 1.5;
-$SkillMultiplier[Paladin, $SkillAlchemy] = 1.0;
+//$SkillMultiplier[Paladin, $SkillSmithing] = 1.5;
+//$SkillMultiplier[Paladin, $SkillAlchemy] = 1.0;
 $SKillMultiplier[Paladin, $SkillWoodCutting] = 1.0;
 $SKillMultiplier[Paladin, $SkillFarming] = 1.0;
-$SKillMultiplier[Paladin, $SkillCooking] = 0.5;
+//$SKillMultiplier[Paladin, $SkillCooking] = 0.5;
 $EXPmultiplier[Paladin] = 1.0;
 
 //--------------
@@ -330,7 +330,7 @@ $SkillMultiplier[Ranger, $SkillBackstabbing] = 0.4;
 $SkillMultiplier[Ranger, $SkillOffensiveCasting] = 0.2;
 $SkillMultiplier[Ranger, $SkillDefensiveCasting] = 0.4;
 $SkillMultiplier[Ranger, $SkillNeutralCasting] = 0.3;
-$SkillMultiplier[Ranger, $SkillSpellResistance] = 0.2;
+$SkillMultiplier[Ranger, $SkillManaManipulation] = 0.2;
 $SkillMultiplier[Ranger, $SkillHealing] = 0.8;
 $SkillMultiplier[Ranger, $SkillArchery] = 2.0;
 $SkillMultiplier[Ranger, $SkillEndurance] = 1.2;
@@ -339,11 +339,11 @@ $SkillMultiplier[Ranger, $SkillMining] = 1.0;
 $SkillMultiplier[Ranger, $SkillSenseHeading] = 2.0;
 $SkillMultiplier[Ranger, $SkillEnergy] = 0.7;
 $SkillMultiplier[Ranger, $SkillHaggling] = 0.7;
-$SkillMultiplier[Ranger, $SkillSmithing] = 1.3;
-$SkillMultiplier[Ranger, $SkillAlchemy] = 2.0;
+//$SkillMultiplier[Ranger, $SkillSmithing] = 1.3;
+//$SkillMultiplier[Ranger, $SkillAlchemy] = 2.0;
 $SKillMultiplier[Ranger, $SkillWoodCutting] = 2.0;
 $SKillMultiplier[Ranger, $SkillFarming] = 1.5;
-$SKillMultiplier[Ranger, $SkillCooking] = 1.5;
+//$SKillMultiplier[Ranger, $SkillCooking] = 1.5;
 $EXPmultiplier[Ranger] = 0.95;
 
 //--------------
@@ -367,7 +367,7 @@ $SkillMultiplier[Mage, $SkillBackstabbing] = 0.2;
 $SkillMultiplier[Mage, $SkillOffensiveCasting] = 2.0;
 $SkillMultiplier[Mage, $SkillDefensiveCasting] = 1.0;
 $SkillMultiplier[Mage, $SkillNeutralCasting] = 1.8;
-$SkillMultiplier[Mage, $SkillSpellResistance] = 1.5;
+$SkillMultiplier[Mage, $SkillManaManipulation] = 1.5;
 $SkillMultiplier[Mage, $SkillHealing] = 0.7;
 $SkillMultiplier[Mage, $SkillArchery] = 0.8;
 $SkillMultiplier[Mage, $SkillEndurance] = 0.4;
@@ -376,11 +376,11 @@ $SkillMultiplier[Mage, $SkillMining] = 1.0;
 $SkillMultiplier[Mage, $SkillSenseHeading] = 0.7;
 $SkillMultiplier[Mage, $SkillEnergy] = 2.0;
 $SkillMultiplier[Mage, $SkillHaggling] = 1.0;
-$SkillMultiplier[Mage, $SkillSmithing] = 1.0;
-$SkillMultiplier[Mage, $SkillAlchemy] = 1.5;
+//$SkillMultiplier[Mage, $SkillSmithing] = 1.0;
+//$SkillMultiplier[Mage, $SkillAlchemy] = 1.5;
 $SKillMultiplier[Mage, $SkillWoodCutting] = 1.0;
 $SKillMultiplier[Mage, $SkillFarming] = 1.5;
-$SKillMultiplier[Mage, $SkillCooking] = 1.0;
+//$SKillMultiplier[Mage, $SkillCooking] = 1.0;
 $EXPmultiplier[Mage] = 1.0;
 
 //######################################################################################
@@ -516,7 +516,7 @@ $SkillRestriction["#steal"] = $SkillStealing @ " 15";
 $SkillRestriction["#pickpocket"] = $SkillStealing @ " 270";
 $SkillRestriction["#mug"] = $SkillStealing @ " 620";
 $SkillRestriction["#mugbelt"] = $SkillStealing @ " 640"; //$MinRemort @ " 15 " @ $MinGroup @ " Rouge " @ $SkillStealing @ " 1000";
-$SkillRestriction["#compass"] = $SkillSenseHeading @ " 3";
+$SkillRestriction["#compass"] = $SkillSenseHeading @ " 3 | I quartz";
 $SkillRestriction["#track"] = $SkillSenseHeading @ " 15";
 $SkillRestriction["#trackpack"] = $SkillSenseHeading @ " 85";
 $SkillRestriction["#hide"] = $SkillHiding @ " 15";
@@ -664,6 +664,84 @@ function SetAllSkills(%clientId, %n)
 		$PlayerSkill[%clientId, %i] = %n;
 }
 
+function NewSkillCanUse(%clientId, %thing)
+{
+	dbecho($dbechoMode, "SkillCanUse(" @ %clientId @ ", " @ %thing @ ")");
+
+	if(%clientId.adminLevel >= 5)
+		return True;
+
+    %sep = String::findSubStr(%clientId,"|");
+    
+    if(%sep == -1)
+    {
+        return SkillCheckString(%clientId,%thing);
+    }
+	
+    // NEED TO TEST
+    %flag = true;
+    for(%i = 0; (%str = Word::getSubWord(%thing,%i,1,"|")) != -1; %i++)
+    {
+        %str = String::clipTrailing(%str,"|");
+        %flag = %flag || SkillCheckString(%clientId,%str);
+    }
+    
+    return %flag;
+}
+
+function SkillCheckString(%clientId,%thing)
+{
+    %flag = true;
+	for(%i = 0; GetWord($SkillRestriction[%thing], %i) != -1 && %flag; %i+=2)
+	{
+		%s = GetWord($SkillRestriction[%thing], %i);
+		%n = GetWord($SkillRestriction[%thing], %i+1);
+
+		if(%s == "L")
+		{
+			if(fetchData(%clientId, "LVL") < %n)
+				%flag = false;
+		}
+		else if(%s == "R")
+		{
+			if(fetchData(%clientId, "RemortStep") < %n)
+				%flag = false;
+		}
+		else if(%s == "A")
+		{
+			if(%clientId.adminLevel < %n)
+				%flag = false;
+		}
+		else if(%s == "G")
+		{
+			if(String::ICompare(fetchData(%clientId, "GROUP"), %n) == 0)
+				%flag = false;
+		}
+		else if(%s == "C")
+		{
+			if(String::ICompare(fetchData(%clientId, "CLASS"), %n) == 0)
+				%flag = false;
+		}
+		else if(%s == "H")
+		{
+			if(String::ICompare(fetchData(%clientId, "MyHouse"), %n) == 0)
+				%flag = false;
+		}
+        else if(%s == "I")
+        {
+            if(RPGItem::getItemCount(%clientId,%n) < 1)
+                %flag = false;
+        }
+		else
+		{
+			if(CalculatePlayerSkill(%clientId, %s) < %n)
+				%flag = false;
+		}
+	}
+
+	return %flag;
+}
+
 function SkillCanUse(%clientId, %thing)
 {
 	dbecho($dbechoMode, "SkillCanUse(" @ %clientId @ ", " @ %thing @ ")");
@@ -712,6 +790,11 @@ function SkillCanUse(%clientId, %thing)
 			if(String::ICompare(fetchData(%clientId, "MyHouse"), %n) == 0)
 				%hh = 1;
 		}
+        else if(%s == "I")
+        {
+            if(RPGItem::getItemCount(%clientId,%n) < 1)
+                %flag = 1;
+        }
 		else
 		{
 			if(CalculatePlayerSkill(%clientId, %s) < %n)
@@ -779,6 +862,15 @@ function WhatSkills(%thing)
 	for(%i = 0; GetWord($SkillRestriction[%thing], %i) != -1; %i+=2)
 	{
 		%s = GetWord($SkillRestriction[%thing], %i);
+        
+        if(%s == "|")
+        {
+            %t = String::getSubStr(%t,0,String::len(%t)-2);
+            %t = %t @ " OR ";
+            %i += 1;
+            %s = GetWord($SkillRestriction[%thing], %i);
+        }
+        
 		%n = GetWord($SkillRestriction[%thing], %i+1);
 
 		%t = %t @ $SkillDesc[%s] @ ": " @ %n @ ", ";

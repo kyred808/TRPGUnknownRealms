@@ -19,6 +19,7 @@ $BonusStateNegative["RageCD"] = true;
 $BonusStateNegative["ManaFlareCD"] = true;
 $BonusStateNegative["TrueShotCD"] = true;
 $BonusStateNegative["BraceCD"] = true;
+$BonusStateNegative["SHELL"] = true;
 
 function DecreaseBonusStateTicks(%clientId, %b)
 {
@@ -30,8 +31,13 @@ function DecreaseBonusStateTicks(%clientId, %b)
 		if($BonusStateCnt[%clientId, %b] <= 0)
 		{
 			$BonusStateCnt[%clientId, %b] = "";
-            if(Word::FindWord($BonusState[%clientId, %i],"FoodCoolDown") != -1)
+            if(Word::FindWord($BonusState[%clientId, %i],"FoodCooldown") != -1)
                 Client::sendMessage(%clientId,$MsgBeige,"You are able to eat again.");
+            if(Word::FindWord($BonusState[%clientId, %i],"SHELL") != -1)
+            {
+                if(Player::getMountedItem(%clientId,$SpellAuraSlot+3) == SpellEffectAura3)
+                    Player::unmountItem(%clientId,$SpellAuraSlot+3);
+            }
 			$BonusState[%clientId, %b] = "";
 			playSound(BonusStateExpire, GameBase::getPosition(%clientId));
             refreshHPREGEN(%clientId);
@@ -56,6 +62,11 @@ function DecreaseBonusStateTicks(%clientId, %b)
 					$BonusStateCnt[%clientId, %i] = "";
                     if(Word::FindWord($BonusState[%clientId, %i],"FoodCoolDown") != -1)
                         Client::sendMessage(%clientId,$MsgBeige,"You are able to eat again.");
+                    if(Word::FindWord($BonusState[%clientId, %i],"SHELL") != -1)
+                    {
+                        if(Player::getMountedItem(%clientId,$SpellAuraSlot+3) == SpellEffectAura3)
+                            Player::unmountItem(%clientId,$SpellAuraSlot+3);
+                    }
 					$BonusState[%clientId, %i] = "";
 					playSound(BonusStateExpire, GameBase::getPosition(%clientId));
                     refreshHPREGEN(%clientId);
@@ -64,6 +75,12 @@ function DecreaseBonusStateTicks(%clientId, %b)
 				}
 				else
 				{
+                    if(Word::FindWord($BonusState[%clientId, %i],"SHELL") != -1)
+                    {
+                        
+                        if(Player::getMountedItem(%clientId,$SpellAuraSlot+3) == -1)
+                            Player::mountItem(%clientId,SpellEffectAura3,$SpellAuraSlot+3);
+                    }
 					%totalbcnt++;
 					if($BonusState[%clientId, %i] != "Jail" && $BonusState[%clientId, %i] != "Theft")
 						%truebcnt++;

@@ -145,8 +145,6 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
     %numFullPages = getWord(%menuULB,0);
     %lb = getWord(%menuULB,1);
     %ub = getWord(%menuULB,2);
-    //echo(%lb);
-    //echo(%ub);
 	%x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
     {
@@ -392,6 +390,11 @@ function BeltEquip::GetList(%clientId,%slotType)
     return %bn@%list;
 }
 
+function BeltEquip::AddUseAbility(%item,%info)
+{
+    $beltitem[%item, "UseTag"] = %info;
+}
+
 // WIP
 function BeltEquip::CanUseItem(%clientId,%itemName)
 {
@@ -427,6 +430,24 @@ function BeltEquip::UnequipAll(%clientId)
     }
     RefreshAll(%clientId,true);
 }
+
+function BeltEquip::IsItemEquipped(%clientId,%item)
+{
+    %ret = false;
+    if(BeltEquip::IsBeltEquipItem(%item))
+    {
+    
+        for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+        {
+            %equipped = BeltEquip::GetEquippedItem(%clientId,%i);
+            %ret = %equipped == %item;
+            if(%ret)
+                break;
+        }
+    }
+    return %ret;
+}
+
 
 //%location is slot name
 function BeltEquip::EquipItem(%clientId,%item,%location,%echo)

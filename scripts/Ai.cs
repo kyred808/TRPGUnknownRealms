@@ -265,6 +265,16 @@ function CalcVecRotToObj(%startPos,%obj,%offset)
     return Vector::getRotation(Vector::Normalize(Vector::sub(Vector::add(Gamebase::getPosition(%obj),%offset), %startPos)));
 }
 
+function RaycastUp(%clientId,%range)
+{
+    %pitch = Player::getPitch(%clientId);
+    %upRot = $pi/2;
+    
+    %diff = %upRot - %pitch;
+    
+    return Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),%range,%diff@" 0 0");
+}
+
 function RaycastCheck(%player,%eyeTrans,%otherObj,%range,%offset)
 {
     $RayCast::Rotation = "";
@@ -1430,7 +1440,7 @@ function HardcodeAIskills(%aiId)
 
 	%a = (  (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel)  ) / 2;
 	%sr = round(%a * GetSkillMultiplier(%aiId, $SkillOffensiveCasting));
-	$PlayerSkill[%aiId, $SkillSpellResistance] = %sr;
+	$PlayerSkill[%aiId, $SkillManaManipulation] = %sr;
 	//=============================================================
 }
 

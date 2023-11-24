@@ -103,6 +103,27 @@ ExplosionData blasterExp
    shiftPosition = True;
 };
 
+ExplosionData blasterExpBoom
+{
+   shapeName = "shotgunex.dts";
+   soundId   = LaunchFB;
+
+   faceCamera = true;
+   randomSpin = true;
+   hasLight   = true;
+   lightRange = 3.0;
+
+   timeZero = 0.450;
+   timeOne  = 0.750;
+
+   colors[0]  = { 1.0, 0.25, 0.25 };
+   colors[1]  = { 1.0, 0.25, 0.25 };
+   colors[2]  = { 1.0, 0.25, 0.25 };
+   radFactors = { 1.0, 1.0, 1.0 };
+
+   shiftPosition = True;
+};
+
 ExplosionData plasmaExp
 {
    shapeName = "plasmaex.dts";
@@ -166,6 +187,27 @@ ExplosionData grenadeExpBoom
 {
    shapeName = "fiery.dts";
    soundId   = explosion3;
+
+   faceCamera = true;
+   randomSpin = true;
+   hasLight   = true;
+   lightRange = 10.0;
+
+   timeScale = 1.5;
+
+   timeZero = 0.150;
+   timeOne  = 0.500;
+
+   colors[0]  = { 0.0, 0.0,  0.0 };
+   colors[1]  = { 1.0, 0.63, 0.0 };
+   colors[2]  = { 1.0, 0.63, 0.0 };
+   radFactors = { 0.0, 1.0, 0.9 };
+};
+
+ExplosionData fireBlastExpBoom
+{
+   shapeName = "fiery.dts";
+   soundId   = ExplodeLM;
 
    faceCamera = true;
    randomSpin = true;

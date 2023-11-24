@@ -1296,6 +1296,41 @@ instant SimGroup "MissionGroup" {
                     };
                 };
             };
+            instant SimGroup "PROTECTED Feltz" {
+                instant SimGroup "DropPoints" {
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4436.14 1755.75 65.9999";
+                        rotation = "0 -0 0.719996";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4491.75 1802.57 74.1016";
+                        rotation = "0 -0 -2.27997";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4394.59 1766.44 65.7999";
+                        rotation = "0 -0 1.29999";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4457.38 1860.78 65.9999";
+                        rotation = "0 -0 3.09998";
+                    };
+                };
+                instant SimGroup "MUSIC rmr3.wav 63";
+                instant Marker "110 110 90 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-4460.7 1785.6 69.8515";
+                    rotation = "0 -0 0.699994";
+                };
+            };
             instant SimGroup "WATER water" {
                 instant Marker "6200 6200 79 0" {
                     dataBlock = "PathMarker";
@@ -3587,6 +3622,75 @@ instant SimGroup "MissionGroup" {
                 locked = "0";
             };
         };
+        instant SimGroup "Feltz" {
+            instant InteriorShape "ctown1" {
+                fileName = "ctown.dis";
+                isContainer = "1";
+                position = "-4484.03 1767.54 72.6018";
+                rotation = "0 -0 2.2832";
+                lightParams = "2 2.000000 1 1.000000 1 ";
+                locked = "1";
+            };
+            instant InteriorShape "bed1" {
+                fileName = "bed.dis";
+                isContainer = "0";
+                position = "-4448.63 1817.14 65";
+                rotation = "0 -0 2.27996";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "bed1" {
+                fileName = "bed.dis";
+                isContainer = "0";
+                position = "-4473.54 1753.54 65.1018";
+                rotation = "0 -0 -0.880025";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "bed1" {
+                fileName = "bed.dis";
+                isContainer = "0";
+                position = "-4435.8 1801.8 65.1018";
+                rotation = "0 -0 2.27994";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "desk1" {
+                fileName = "desk.dis";
+                isContainer = "0";
+                position = "-4431.06 1796.94 65.1645";
+                rotation = "0 -0 0.699995";
+                lightParams = "0 ";
+            };
+            instant Marker "TownMayorMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4495.13 1810.92 66.1527";
+                rotation = "0 -0 -0.86323";
+            };
+            instant Marker "TownEccentricMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4489.18 1812.83 71.1779";
+                rotation = "0 -0 -0.863228";
+            };
+            instant InteriorShape "desk1" {
+                fileName = "desk.dis";
+                isContainer = "0";
+                position = "-4500.48 1808.68 65.6013";
+                rotation = "0 -0 2.27996";
+                lightParams = "0 ";
+            };
+            instant Marker "MayorShopNPCMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4501.91 1810.66 65.9618";
+                rotation = "0 -0 -2.40321";
+            };
+            instant Marker "TownJailNPCMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4493.35 1776.14 65.386";
+                rotation = "0 -0 -0.903216";
+            };
+        };
         instant SimGroup "ElfHideout" {
             instant InteriorShape "w64long1" {
                 fileName = "W64long.0.dis";
@@ -4355,7 +4459,18 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NAME Doric";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "BELTSHOP 900 901 902 914 915 903 904 905 906 907 908 909 910 911 912 913 800";
+                instant SimGroup "BELTSHOP 900 901 902 916 914 915 903 904 905 906 907 908 909 910 911 912 800";
+            };
+            instant SimGroup "merchant7" { //Feltz merchant
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-4429.36 1798.22 65.3666";
+                    rotation = "0 -0 2.23997";
+                };
+                instant SimGroup "NAME Sarah";
+                instant SimGroup "RACE FemaleHuman";
+                instant SimGroup "BELTSHOP 900 901 902 916 914 915 903 904 905 906 907 908 909 910 911 912 800";
             };
         };
         instant InteriorShape "RemorterHall1" {

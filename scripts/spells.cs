@@ -672,11 +672,11 @@ $Spell::manaCost[37] = 1;
 $Spell::startSound[37] = ActivateAB;
 $Spell::endSound[37] = LaunchFB;
 $Spell::groupListCheck[37] = False;
-$Spell::refVal[37] = 35;
+$Spell::refVal[37] = 0;
 $Spell::graceDistance[37] = 2;
 $Spell::effectType[37] = $SpellTypeCustom;
 $SkillType[explodesun] = $SkillNeutralCasting;
-$SkillRestriction[explodesun] = $SkillOffensiveCasting @ " 0";
+$SkillRestriction[explodesun] = $SkillOffensiveCasting @ " 1500";
 
 $Spell::keyword[38] = "batman";
 $Spell::index[batman] = 38;
@@ -790,7 +790,6 @@ function BeginCastSpell(%clientId, %keyword)
     {
 		//if(String::ICompare($Spell::keyword[%i], %w1) == 0)
 		//{
-            echo(%i);
 			if(SkillCanUse(%clientId, $Spell::keyword[%i]))
 			{
                 //Need to change later
@@ -830,9 +829,9 @@ function BeginCastSpell(%clientId, %keyword)
                     if($Spell::auraEffect[%i] != "")
                         Player::mountItem(%player,$Spell::auraEffect[%i],$SpellAuraSlot);
                     
-                    if(Player::isAiControlled(%clientId))
-                        schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
-					else
+                    //if(Player::isAiControlled(%clientId))
+                    //    schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+					//else
                         schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
                     schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
 		
@@ -972,9 +971,19 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
             }
             else
                 %id = %clientId;
-
-            UpdateBonusState(%id, $Spell::damageValue[%index], $Spell::ticks[%index]);
-
+            if(AddBonusStatePoints(%id, "HasteCD") == 0)
+            {
+                UpdateBonusState(%id, $Spell::damageValue[%index], $Spell::ticks[%index]);
+                UpdateBonusState(%id, "HasteCD 1", $Spell::ticks[%index] + 60);
+                refreshAll(%id,false);
+            }
+            else
+            {
+                %ticks = GetBonusStateTicks(%id,"HasteCD 1");
+                Client::sendMessage(%id, $MsgRed, "You are too exhausted to be hasted. ("@ %ticks*2 @"s)");
+                %overrideEndSound = True;
+            }
+            
             %castPos = GameBase::getPosition(%id);
 
             %returnFlag = True;
@@ -1438,7 +1447,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
                 if(getObjectType(%castObj) == "Player")
                 {
                     %skilltype = $SkillType[$Spell::keyword[%index]];
-                    %troll = fetchData(%id, "LVL") + floor(getRandom() * (CalculatePlayerSkill(%id, %skilltype) + (CalculatePlayerSkill(%id, $SkillSpellResistance) * (1/2)) ));
+                    %troll = fetchData(%id, "LVL") + floor(getRandom() * (CalculatePlayerSkill(%id, %skilltype) + (CalculatePlayerSkill(%id, $SkillManaManipulation) * (1/2)) ));
                     %yroll = fetchData(%clientId, "LVL") + floor(getRandom() * CalculatePlayerSkill(%clientId, %skilltype));
 
                     if(%yroll > %troll)
@@ -2132,7 +2141,7 @@ function DoBotCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 			if(getObjectType(%castObj) == "Player")
 			{
 				%skilltype = $SkillType[$Spell::keyword[%index]];
-				%troll = fetchData(%id, "LVL") + floor(getRandom() * (CalculatePlayerSkill(%id, %skilltype) + (CalculatePlayerSkill(%id, $SkillSpellResistance) * (1/2)) ));
+				%troll = fetchData(%id, "LVL") + floor(getRandom() * (CalculatePlayerSkill(%id, %skilltype) + (CalculatePlayerSkill(%id, $SkillManaManipulation) * (1/2)) ));
 				%yroll = fetchData(%clientId, "LVL") + floor(getRandom() * CalculatePlayerSkill(%clientId, %skilltype));
 
 				if(%yroll > %troll)
@@ -2468,6 +2477,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 	}
 }
 
+//For remote functions
 function SpellCanCast(%clientId, %keyword)
 {
 	dbecho($dbechoMode, "SpellCanCast(" @ %clientId @ ", " @ %keyword @ ")");

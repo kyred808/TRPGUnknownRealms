@@ -51,7 +51,7 @@ $ClassSpawnStuff[Thief] = "dagger 1";
 $ClassSpawnStuff[Bard] = "knife 1 pickaxe 1";
 $ClassSpawnStuff[Fighter] = "knife 1 broadsword 1 club 1 paddedarmor 1";
 $ClassSpawnStuff[Paladin] = "broadsword 1 club 1 paddedarmor 1";
-$ClassSpawnStuff[Ranger] = "shortbow 1 knife 1 basicarrow 50";
+$ClassSpawnStuff[Ranger] = "shortbow 1 hatchet 1 basicarrow 50";
 $ClassSpawnStuff[Mage] = "novicestaff 1 knife 1";
 
 //===================================

@@ -128,6 +128,7 @@ function createServer(%mission, %dedicated)
     exec(Realms);
 	exec(zone);
 	exec(spells);
+    //exec(NewSpells);
     exec(SpellBook);
 	exec(classes);
 	exec(party);
