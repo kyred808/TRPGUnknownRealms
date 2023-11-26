@@ -10,7 +10,7 @@ $SkillRestriction["brace"] = $MinLevel @" 10 C Paladin";
 $SkillRestriction["rage"] = $MinLevel @" 5 C Fighter";
 $SkillRestriction["bladebolt"] = $MinLevel @" 15 G Warrior";
 $SkillRestriction["secondwind"] = $MinLevel @" 30 C Fighter";
-
+$SkillRestriction["heavystrike"] = $MinLevel @" 5";
 $SkillRestriction["catsfeet"] = $MinLevel @" 5 G Rogue";
 $SkillRestriction["doublestrike"] = $MinLevel @" 10 G Rogue";
 $SkillRestriction["fade"] = $MinLevel @" 15 G Rogue";
@@ -119,11 +119,24 @@ $Ability::index[catsfeet] = 9;
 $Ability::name[9] = "Cat's Feet";
 $Ability::description[9] = "Negate fall damage for 1 minute.";
 $Ability::cooldownTicks[9] = 300;
-$Ability::ticks[9] = 30; // 30s
+$Ability::ticks[9] = 30; // 60s
 $Ability::SoundId[9] = ActivateTD;
 $Ability::cost[9,Mana] = 25;
 $Ability::cost[9,Stam] = 20;
 $Ability::cost[9,Item] = "";
+
+$Ability::keyword[10] = "heavystrike";
+$Ability::index[heavystrike] = 10;
+$Ability::name[10] = "Heavy Strike";
+$Ability::description[10] = "Your next swing with a melee attack swings hard. Hit 33% harder and reduce the target's AMR by 5 for 20 seconds.";
+$Ability::cooldownTicks[10] = 30;
+$Ability::ticks[10] = 10; // 20s
+$Ability::SoundId[10] = ActivateTD;
+$Ability::cost[10,Mana] = 15;
+$Ability::cost[10,Stam] = 1;
+$Ability::cost[10,Item] = "";
+
+$Ability::heavyStrikeForce = 125;
 
 $FadeAttackJumpImpulse = -275;
 $FadeAttackJumpForce = 100;
@@ -280,6 +293,27 @@ function Player::useAbility(%clientId,%ability)
                         %ticks = GetBonusStateTicks(%clientId,"CatsFeetCD 1");
                         Client::sendMessage(%clientId, $MsgWhite, "That ability is still on cooldown. ("@%ticks*2@"s)");
                     }
+                }
+                else if(%idx == 10)
+                {
+                    if(fetchData(%clientId,"HeavyStrikeFlag") == "")
+                    {
+                        if(AddBonusStatePoints(%clientId, "HeavyStrikeCD") == 0)
+                        {
+                            Client::sendMessage(%clientId, $MsgBeige,"Next Swing "@ $Ability::name[$Ability::index[heavystrike]]);
+                            UpdateBonusState(%clientId,"HeavyStrikeCD 1",$Ability::cooldownTicks[%idx]);
+                            storeData(%clientId,"HeavyStrikeFlag",true);
+                            playSound($Ability::SoundId[%idx],Gamebase::getPosition(%clientId));
+                            Ability::DoAbilityCost(%clientId,%idx);
+                        }
+                        else
+                        {
+                            %ticks = GetBonusStateTicks(%clientId,"HeavyStrikeCD 1");
+                            Client::sendMessage(%clientId, $MsgWhite, "That ability is still on cooldown. ("@%ticks*2@"s)");
+                        }
+                    }
+                    else
+                        Client::sendMessage(%clientId, $MsgWhite, "You are already prepared to Heavy Strike.");
                 }
             }
             else

@@ -1033,12 +1033,18 @@ instant SimGroup "MissionGroup" {
                         position = "-1627 -1186 252.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 1 2 20 50 19" {
+                    instant Marker ".5 1 2 20 50 19 20" {
                         dataBlock = "PathMarker";
                         name = "gnoll pup";
                         position = "-1715.5 -1172.25 255.125";
                         rotation = "0 0 0";
                     };
+                    instant Marker "1 1 2 20 50 20" {
+                        dataBlock = "PathMarker";
+                        name = "gnoll shawman";
+                        position = "-1709.24 -1181.11 255.125";
+                        rotation = "0 0 0";
+                    }; //
                     instant Marker ".5 1 2 20 50 27 27 28 28 29 29 30 30 52" {
                         dataBlock = "PathMarker";
                         name = "ogre all less magi";

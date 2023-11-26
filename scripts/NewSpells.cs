@@ -84,8 +84,8 @@ $Spell::startSound[1] = ActivateFK;
 $Spell::overrideEndSound[1] = true; //Optional if false
 $Spell::aiRefVal[1] = 20;
 $Spell::useSkillOnCast[1] = false;
-$SkillType[thorn] = $SkillOffensiveCasting;
-$SkillRestriction[thorn] = $SkillOffensiveCasting @ " 15";
+$SkillType[thorn] = $SkillNatureCasting;
+$SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
 
 $Spell::keyword[2] = "firebolt";
 $Spell::index[firebolt] = 2;
@@ -219,8 +219,8 @@ $Spell::castType[7] = $SpellCastTypeScripted;
 $Spell::overrideEndSound[7] = true;
 $Spell::aiRefVal[7] = 0;
 $Spell::useSkillOnCast[7] = true;
-$SkillType[teleport] = $SkillNeutralCasting;
-$SkillRestriction[teleport] = $SkillNeutralCasting @ " 60";
+$SkillType[teleport] = $SkillNatureCasting;
+$SkillRestriction[teleport] = $SkillNatureCasting @ " 60";
 
 //WIP
 $Spell::keyword[8] = "heal";
@@ -533,8 +533,8 @@ $Spell::castType[20] = $SpellCastTypeScripted;
 $Spell::overrideEndSound[20] = false;
 $Spell::aiRefVal[20] = 0;
 $Spell::useSkillOnCast[20] = true;
-$SkillType[transport] = $SkillNeutralCasting;
-$SkillRestriction[transport] = $SkillNeutralCasting @ " 200";
+$SkillType[transport] = $SkillNatureCasting;
+$SkillRestriction[transport] = $SkillNatureCasting @ " 200";
 
 //Grouplist test needs testing
 $Spell::keyword[21] = "advtransport";
@@ -559,8 +559,8 @@ $Spell::groupListCheck[21] = true;
 $Spell::teamTargetOnly[21] = true;
 $Spell::aiRefVal[21] = 0;
 $Spell::useSkillOnCast[21] = true;
-$SkillType[advtransport] = $SkillNeutralCasting;
-$SkillRestriction[advtransport] = $SkillNeutralCasting @ " 350";
+$SkillType[advtransport] = $SkillNatureCasting;
+$SkillRestriction[advtransport] = $SkillNatureCasting @ " 350";
 
 $Spell::keyword[22] = "translocate";
 $Spell::index[translocate] = 22;
@@ -583,8 +583,8 @@ $Spell::overrideEndSound[22] = false;
 $Spell::groupListCheck[22] = false;
 $Spell::aiRefVal[22] = 0;
 $Spell::useSkillOnCast[22] = true;
-$SkillType[translocate] = $SkillNeutralCasting;
-$SkillRestriction[translocate] = $SkillNeutralCasting @ " 100";
+$SkillType[translocate] = $SkillNatureCasting;
+$SkillRestriction[translocate] = $SkillNatureCasting @ " 100";
 
 $Spell::keyword[23] = "fasttranslocate";
 $Spell::index[fasttranslocate] = 23;
@@ -606,8 +606,8 @@ $Spell::overrideEndSound[23] = false;
 $Spell::groupListCheck[23] = false;
 $Spell::aiRefVal[23] = 0;
 $Spell::useSkillOnCast[23] = true;
-$SkillType[fasttranslocate] = $SkillNeutralCasting;
-$SkillRestriction[fasttranslocate] = $SkillNeutralCasting @ " 500";
+$SkillType[fasttranslocate] = $SkillNatureCasting;
+$SkillRestriction[fasttranslocate] = $SkillNatureCasting @ " 500";
 
 $Spell::keyword[24] = "advtranslocate";
 $Spell::index[advtranslocate] = 24;
@@ -629,8 +629,169 @@ $Spell::overrideEndSound[24] = false;
 $Spell::groupListCheck[24] = false;
 $Spell::aiRefVal[24] = 0;
 $Spell::useSkillOnCast[24] = true;
-$SkillType[advtranslocate] = $SkillNeutralCasting;
-$SkillRestriction[advtranslocate] = $SkillNeutralCasting @ " 750";
+$SkillType[advtranslocate] = $SkillNatureCasting;
+$SkillRestriction[advtranslocate] = $SkillNatureCasting @ " 750";
+
+$Spell::keyword[25] = "manashot";
+$Spell::index[manashot] = 25;
+$Spell::name[25] = "Mana Shot";
+$Spell::damageValue[25] = 20;
+$Spell::description[25] = "Shoots a small bolt of mana.";
+$Spell::type[25] = $SpellTypeMagic;
+$Spell::baseStamina[25] = 5;
+$Spell::manaCost[25] = 2;
+$Spell::delay[25] = 0.1;
+$Spell::recoveryTime[25] = 2.625;
+$Spell::canMove[25] = true;
+$Spell::castType[25] = $SpellCastTypeProjectile;
+$Spell::projectileData[25] = Thorn;
+$Spell::startSound[25] = ActivateFK;
+$Spell::overrideEndSound[25] = true; //Optional if false
+$Spell::aiRefVal[25] = 15;
+$Spell::useSkillOnCast[25] = false;
+$SkillType[manashot] = $SkillOffensiveCasting;
+$SkillRestriction[manashot] = $SkillOffensiveCasting @ " 15";
+
+$Spell::keyword[26] = "soften";
+$Spell::index[soft] = 26;
+$Spell::name[26] = "Soften";
+$Spell::description[26] = "Softens the target's armor, lowering their DEF by 150 and AMR by 3 for 1 minute.";
+$Spell::message[26] = "Softening %s";
+$Spell::type[26] = $SpellTypeCantrip;
+$Spell::baseStamina[26] = 35;
+$Spell::minStamina[26] = 5;
+$Spell::staminaFalloffFactor[26] = 5;
+$Spell::delay[26] = 2.0;
+$Spell::recoveryTime[26] = 3;
+$Spell::castType[26] = $SpellCastTypeTarget;
+$Spell::LOSrange[26] = 80;
+$Spell::effectVars[26] = "BONUS DEF -150 30,BONUS ARM -3 30";
+$Spell::startSound[26] = ActivateTR;
+$Spell::endSound[26] = ActivateTD;
+$Spell::groupListCheck[26] = false;
+$Spell::refVal[26] = -12;
+$Spell::canMove[26] = false;
+$Spell::graceDistance[26] = 2;
+$Spell::useSkillOnCast[26] = true;
+$SkillType[soften] = $SkillNatureCasting;
+$SkillRestriction[soften] = $SkillNatureCasting @ " 30";
+
+$Spell::keyword[27] = "haste";
+$Spell::index[haste] = 27;
+$Spell::name[27] = "Enchant Haste";
+$Spell::description[27] = "Increases movement speed for 240s. Cannot fly while hasted, but stacks with CheetaursPaws. Use #unhaste to stop early.";
+$Spell::type[27] = $SpellTypeMagic;
+$Spell::baseStamina[27] = 25;
+$Spell::manaCost[27] = 25;
+$Spell::delay[27] = 4;
+$Spell::recoveryTime[27] = 15;
+$Spell::castType[27] = $SpellCastTypeScripted;
+$Spell::forceLOSCheck[27] = true; //Needed to be able to access los::object on scripted spells
+$Spell::LOSrange[27] = 80;
+$Spell::ticks[27] = 120;
+$Spell::startSound[27] = ActivateTR;
+$Spell::endSound[27] = UnravelAM;
+$Spell::groupListCheck[27] = False;
+$Spell::teamTargetOnly[27] = true;
+$Spell::aiRefVal[27] = 0;
+$Spell::useSkillOnCast[27] = true;
+$Spell::canMove[27] = true;
+$SkillType[haste] = $SkillNatureCasting;
+$SkillRestriction[haste] = $SkillNatureCasting @ " 50";
+
+$Spell::keyword[28] = "repent";
+$Spell::index[repent] = 28;
+$Spell::name[28] = "Repent";
+$Spell::description[28] = "Casts a holy explosion. Spell tracks the target.";
+$Spell::type[28] = $SpellTypeMagic;
+$Spell::baseStamina[28] = 15;
+$Spell::manaCost[28] = 10;
+$Spell::delay[28] = 1.5;
+$Spell::recoveryTime[28] = 4.65;
+$Spell::castType[28] = $SpellCastTypeBomb;
+$Spell::bombData[28] = Bomb2;
+$Spell::radius[28] = 15;
+$Spell::damageValue[28] = 50;
+$Spell::trackTarget[28] = true;
+$Spell::LOSrange[28] = 80;
+$Spell::startSound[28] = DeActivateWA;
+$Spell::endSound[28] = Reflected;
+$Spell::groupListCheck[28] = False;
+$Spell::aiRefVal[28] = 30;
+$Spell::useSkillOnCast[28] = false;
+$Spell::canMove[28] = false;
+$Spell::graceDistance[28] = 2;
+$SkillType[repent] = $SkillDefensiveCasting;
+$SkillRestriction[repent] = $SkillDefensiveCasting @ " 50";
+
+$Spell::keyword[29] = "smite";
+$Spell::index[smite] = 29;
+$Spell::name[29] = "Smite";
+$Spell::description[29] = "Casts a large holy explosion. Spell tracks the target.";
+$Spell::type[29] = $SpellTypeMagic;
+$Spell::baseStamina[29] = 15;
+$Spell::manaCost[29] = 30;
+$Spell::delay[29] = 2.625;
+$Spell::recoveryTime[29] = 10;
+$Spell::castType[29] = $SpellCastTypeBomb;
+$Spell::bombData[29] = Bomb1;
+$Spell::radius[29] = 25;
+$Spell::damageValue[29] = 175;
+$Spell::LOSrange[29] = 80;
+$Spell::startSound[29] = SpellCastSnd;
+$Spell::endSound[29] = holysmite;
+$Spell::groupListCheck[29] = False;
+$Spell::aiRefVal[29] = 45;
+$Spell::useSkillOnCast[29] = false;
+$Spell::canMove[29] = false;
+$Spell::graceDistance[29] = 2;
+$SkillType[smite] = $SkillDefensiveCasting;
+$SkillRestriction[smite] = $SkillDefensiveCasting @ " 300";
+
+$Spell::keyword[30] = "wrath";
+$Spell::index[wrath] = 30;
+$Spell::name[30] = "Enchant Wrath";
+$Spell::message[15] = "Casting Wrath on %s";
+$Spell::description[30] = "Boost you or your target's ATK by +15 for 2 minutes";
+$Spell::type[30] = $SpellTypeMagic;
+$Spell::baseStamina[30] = 15;
+$Spell::manaCost[30] = 20;
+$Spell::delay[30] = 2.625;
+$Spell::recoveryTime[30] = 5;
+$Spell::castType[30] = $SpellCastTypeSelfOrLOS;
+$Spell::LOSrange[30] = 80;
+$Spell::effectVars[30] = "BONUS ATK 15 60";//2 minutes
+$Spell::startSound[30] = DeActivateWA;
+$Spell::endSound[30] = ActivateTD;
+$Spell::groupListCheck[30] = False;
+$Spell::aiRefVal[30] = 45;
+$Spell::useSkillOnCast[30] = true;
+$Spell::canMove[30] = false;
+$Spell::graceDistance[30] = 2;
+$SkillType[wrath] = $SkillDefensiveCasting;
+$SkillRestriction[wrath] = $SkillDefensiveCasting @ " 140";
+
+$Spell::keyword[31] = "breeze";
+$Spell::index[breeze] = 31;
+$Spell::name[31] = "Healing Breeze";
+$Spell::description[31] = "Lightly heal yourself and all allies around you for 15 HP.";
+$Spell::damageValue[31] = -15;
+$Spell::type[31] = $SpellTypeMagic;
+$Spell::baseStamina[31] = 15;
+$Spell::manaCost[31] = 20;
+$Spell::delay[31] = 1.5;
+$Spell::recoveryTime[31] = 4.25;
+$Spell::castType[31] = $SpellCastTypeScripted;
+$Spell::radius[31] = 25;
+$Spell::startSound[31] = DeActivateWA;
+$Spell::endSound[31] = ActivateAR;
+$Spell::groupListCheck[31] = False;
+$Spell::aiRefVal[31] = 45;
+$Spell::useSkillOnCast[31] = true;
+$Spell::canMove[31] = false;
+$Spell::graceDistance[31] = 2;
+$SkillType[breeze] = $SkillNatureCasting;
+$SkillRestriction[breeze] = $SkillNatureCasting @ " 120";
 
 //$Spell::keyword[1] = "firebomb";
 //$Spell::index[firebomb] = 1;
@@ -714,14 +875,18 @@ function Spell::BeginCastSpell(%clientId, %keyword)
                         
                         if(getObjectType(%losobj) == "Player")
                         {
-                            %cl = Player::getClient(%losobj);
-                            if($Spell::teamTargetOnly[%i])
+                            %bombType = %castType == $SpellCastTypeBomb;
+                            if(!%bombType || (%bombType && $Spell::trackTarget[%i]))
                             {
-                                if(Gamebase::getTeam(%castObj) == Gamebase::getTeam(%clientId))
+                                %cl = Player::getClient(%losobj);
+                                if($Spell::teamTargetOnly[%i])
+                                {
+                                    if(Gamebase::getTeam(%castObj) == Gamebase::getTeam(%clientId))
+                                        %extraText = %extraText @" on "@ Client::getName(Player::getClient(%losobj));
+                                }
+                                else
                                     %extraText = %extraText @" on "@ Client::getName(Player::getClient(%losobj));
                             }
-                            else
-                                %extraText = %extraText @" on "@ Client::getName(Player::getClient(%losobj));
                         }
                     }
                     else
@@ -865,7 +1030,8 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
 		}
     }
     
-    
+    if($Spell::trackTarget[%index])
+        %castPos = Gamebase::getPosition(%castObj);
     
     //WIP
     //if($Spell::targetAllies[%index])
@@ -924,14 +1090,44 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
     {
         if(getObjectType(%castObj) == "Player")
         {
-            //Client::sendMessage(%clientId, $MsgBeige, "Shielding " @ Client::getName(%id));
-            //if(%clientId != %id)
-            //    Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
-        
+            %tgtCl = Player::getClient(%castObj);
+            %msg = $Spell::message[%index];
+            if(%msg != "")
+            {
+                if(Word::FindWord(%msg,"%s") != -1)
+                {
+                    %msg = String::replace(%msg,"%s",Client::getName(%tgtCl));
+                }
+                Client::sendMessage(%clientId, $MsgBeige, %msg);
+            }
+            Client::sendMessage(%tgtCl, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
+            
             Spell::ApplyEffectVars(%clientId,Player::getClient(%castObj),%index);
             %overrideEndSound = $Spell::overrideEndSound[%index];
             %returnFlag = true;
         }
+        else
+        {
+            Client::sendMessage(%clientId, $MsgRed,"Could not find a target.");
+            %overrideEndSound = false;
+            %returnFlag = false;
+        }
+    }
+    else if(%castType == $SpellCastTypeBomb)
+    {
+        if(%castPos != "")
+		{
+			CreateAndDetBomb(%clientId, $Spell::BombData[%index], %castPos, true, %index);
+
+			%overrideEndSound = True;
+			%returnFlag = True;
+		}
+		else
+		{
+			Client::sendMessage(%clientId, $MsgBeige, "Could not find a target.");
+
+			%returnFlag = False;
+		}
     }
     else if(%castType == $SpellCastTypeSelfOrLOS)
     {
@@ -954,7 +1150,7 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
                 }
                 Client::sendMessage(%clientId, $MsgBeige, %msg);
             }
-            Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
+            Client::sendMessage(%tgtCl, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
             Spell::ApplyEffectVars(%clientId,%tgtCl,%index);
             %overrideEndSound = $Spell::overrideEndSound[%index];
             %returnFlag = true;
@@ -1188,7 +1384,49 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
                 %returnFlag = false;
             }
         }
-        
+        else if(%index == $Spell::index[haste])
+        {
+            if(getObjectType(%castObj) == "Player" && !Player::isAiControlled(%clientId))
+            {
+                %id = Player::getClient(%castObj);
+                Client::sendMessage(%clientId, $MsgBeige, "Enchanting " @ Client::getName(%id));
+                Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
+            }
+            else
+            {
+                %id = %clientId;
+                %castPos = %casterPos;
+            }
+            if(AddBonusStatePoints(%id, "HasteCD") == 0)
+            {
+                UpdateBonusState(%id, "SPD 1", $Spell::ticks[%index]);
+                UpdateBonusState(%id, "HasteCD 1", $Spell::ticks[%index] + 90);
+                refreshAll(%id,false);
+            }
+            else
+            {
+                %ticks = GetBonusStateTicks(%id,"HasteCD 1");
+                Client::sendMessage(%id, $MsgRed, "You are too exhausted to be hasted. ("@ %ticks*2 @"s)");
+                %overrideEndSound = true;
+                %returnFlag = false;
+            }
+            
+            %overrideEndSound = false;
+            %returnFlag = true;
+        }
+        else if(%index == $Spell::index[breeze])
+        {
+            %b = $Spell::radius[%index] * 2;
+            %set = newObject("set", SimSet);
+            %n = containerBoxFillSet(%set, $SimPlayerObjectType, GameBase::getPosition(%clientId), %b, %b, %b, 0);
+
+            Group::iterateRecursive(%set, DoBoxFunction, %clientId, %index, %w2);
+            deleteObject(%set);
+
+            %overrideEndSound = True;
+
+            %returnFlag = True;
+        }
     }
     
     Player::setAnimation(%clientId, 39);
@@ -1425,10 +1663,33 @@ function SpellCalcRadiusDamage(%dist, %radius, %dmg, %percMin, %percMax)
 
 	return %newdmg;
 }
-
 //=========================
 //END Bomb spell functions
 //=========================
+
+function DoBoxFunction(%object, %clientId, %index, %extra)
+{
+	dbecho($dbechoMode, "DoBoxFunction(" @ %object @ ", " @ %clientId @ ", " @ %index @ ", " @ %extra @ ")");
+    %id = Player::getClient(%object);
+
+	if(%index == $Spell::index[breeze])
+	{
+        if(GameBase::getTeam(%clientId) == GameBase::getTeam(%id))
+		{
+			Client::sendMessage(%clientId, $MsgBeige, "Healing Breeze on " @ Client::getName(%id));
+			if(%clientId != %id)
+				Client::sendMessage(%id, $MsgBeige, "You are being healed by " @ Client::getName(%clientId));
+
+			%r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
+			refreshHP(%id, %r);
+
+			%castPos = GameBase::getPosition(%id);
+
+			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
+			playSound($Spell::endSound[%index], %castPos);
+		}
+    }
+}
 
 function GetBestSpell(%clientId, %type, %semiRandomSpell)
 {
@@ -1448,7 +1709,7 @@ function GetBestSpell(%clientId, %type, %semiRandomSpell)
 			if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
 			{
 				%d = ( ($Spell::delay[%i] / %wdelay) + ($Spell::recoveryTime[%i] / %wrecov) );
-				%x = (100 / %d) * $Spell::refVal[%i];
+				%x = (100 / %d) * $Spell::aiRefVal[%i];
 				%v =  %x * %type;
 
 				if(%semiRandomSpell)

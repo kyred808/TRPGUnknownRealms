@@ -210,6 +210,7 @@ SkillBook::AddSkillToList("secondwind",$Ability::name[$Ability::index[secondwind
 SkillBook::AddSkillToList("rage",$Ability::name[$Ability::index[rage]],"rage","#skill rage");
 SkillBook::AddSkillToList("fade",$Ability::name[$Ability::index[fade]],"fade","#skill fade");
 SkillBook::AddSkillToList("doublestrike",$Ability::name[$Ability::index[doublestrike]],"doublestrike","#skill doublestrike");
+SkillBook::AddSkillToList("heavystrike",$Ability::name[$Ability::index[heavystrike]],"heavystrike","#skill heavystrike");
 SkillBook::AddSkillToList("trueshot",$Ability::name[$Ability::index[trueshot]],"trueshot","#skill trueshot");
 
 //Top of the tree
@@ -261,6 +262,7 @@ SkillBook::FillSkillGroup("Thief",$MinGroup,$ClassGroup[Thief]);
 
 SkillBook::FillSkillGroup("Combat",$SkillBashing);
 SkillBook::AddSkillToGroup("flurry","Combat");
+SkillBook::AddSkillToGroup("heavystrike","Combat");
 SkillBook::FillSkillGroup("SenseHeading",$SkillSenseHeading);
 SkillBook::FillSkillGroup("Stealing",$SkillStealing);
 

@@ -2736,6 +2736,28 @@ function DisplayGetInfo(%clientId, %id, %obj)
 	bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
 }
 
+function DisplayTargetStats(%clientId,%id,%obj)
+{
+    %str = "<f1>" @ Client::getName(%id) @ ", LEVEL " @ fetchData(%id, "LVL") @ " " @ fetchData(%id, "RACE") @ " " @ fetchData(%id, "CLASS") @ "<f0>\n\n";
+    %str = %str@"ATK: " @ Number::Beautify(fetchData(%id, "ATK"),0,2) @ "\n";
+    %str = %str@"DEF: " @ Number::Beautify(fetchData(%id, "DEF"),0,2) @ " ("@ round(CalculateDamageReduction(%id)*100) @"%)\n";
+    %str = %str@"AMR: " @ Number::Beautify(fetchData(%id, "AMR"),0,2) @ "\n";
+    %str = %str@"MDEF: " @ Number::Beautify(fetchData(%id, "MDEF"),0,2) @ "\n";
+    %str = %str@"Hit Pts: " @ fetchData(%id, "HP") @ " / " @ fetchData(%id, "MaxHP") @ "\n";
+    %str = %str@"LCK: " @ fetchData(%id, "LCK") @ "\n";
+    
+    %len = String::len(%str);
+    if(%len > 255)
+    {
+        %substr = String::getsubstr(%str,0,255);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%str) / 20), 1);
+        %substr = String::getSubstr(%str,255,%len);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+    }
+    else 
+        bottomprint(%clientId, %str, floor(String::len(%str) / 20));
+}
+
 function AddToTargetList(%clientId, %cl)
 {
 	dbecho($dbechoMode, "AddToTargetList(" @ %clientId @ ", " @ %cl @ ")");

@@ -17,15 +17,17 @@ function SpellBook::AddSpellToType(%spellTypeLabel,%spellIndex)
 $SpellType::NumSpellTypes = 0;
 SpellBook::AddSpellType("offcast","Offensive Casting",$SkillOffensiveCasting,0);
 SpellBook::AddSpellType("defcast","Defensive Casting",$SkillDefensiveCasting,1);
-SpellBook::AddSpellType("neucast","Neutral Casting",$SkillNeutralCasting,2);
+SpellBook::AddSpellType("neucast","Nature Casting",$SkillNatureCasting,2);
 
-SpellBook::AddSpellToType("offcast",$Spell::index[thorn]);
+SpellBook::AddSpellToType("offcast",$Spell::index[manashot]);
 SpellBook::AddSpellToType("offcast",$Spell::index[firebolt]);
 SpellBook::AddSpellToType("offcast",$Spell::index[icespike]);
 SpellBook::AddSpellToType("offcast",$Spell::index[cloud]);
 SpellBook::AddSpellToType("offcast",$Spell::index[melt]);
 
+SpellBook::AddSpellToType("defcast",$Spell::index[repent]);
 SpellBook::AddSpellToType("defcast",$Spell::index[heal]);
+SpellBook::AddSpellToType("defcast",$Spell::index[wrath]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal1]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal2]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal3]);
@@ -35,11 +37,14 @@ SpellBook::AddSpellToType("defcast",$Spell::index[advshield1]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield2]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield3]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield4]);
+SpellBook::AddSpellToType("defcast",$Spell::index[smite]);
 SpellBook::AddSpellToType("defcast",$Spell::index[shell]);
 SpellBook::AddSpellToType("defcast",$Spell::index[shell2]);
 
-
+SpellBook::AddSpellToType("neucast",$Spell::index[thorn]);
+SpellBook::AddSpellToType("neucast",$Spell::index[soft]);
 SpellBook::AddSpellToType("neucast",$Spell::index[teleport]);
+SpellBook::AddSpellToType("neucast",$Spell::index[breeze]);
 SpellBook::AddSpellToType("neucast",$Spell::index[transport]);
 SpellBook::AddSpellToType("neucast",$Spell::index[advtransport]);
 SpellBook::AddSpellToType("neucast",$Spell::index[translocate]);
@@ -275,8 +280,19 @@ function processMenuSelectSpellInfo(%clientId,%opt)
         %prevType = getWord(%opt,2);
         %prevPage = getWord(%opt,3);
         
-        %msg = WhatIs($Spell::keyword[%spellIndex]);
-		bottomprint(%clientId, %msg, floor(String::len(%msg) / 15));
+        %msg = Spell::WhatIsSpell(%clientId,$Spell::keyword[%spellIndex]);
+        
+        %len = String::len(%msg);
+        if(%len > 255)
+        {
+            %substr = String::getsubstr(%msg,0,255);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%msg) / 20), 1);
+            %substr = String::getSubstr(%msg,255,%len);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+        }
+        else 
+            bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+
         MenuSelectSpellInfo(%clientId,%spellIndex,%prevType,%prevPage);
     }
     else if(%option == "cast")

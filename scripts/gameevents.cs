@@ -3,18 +3,26 @@ $MapExtent[0] = 6144;
 $MapExtent[1] = 6144;
 
 
-$MeteorMinimumTime = 25*60; //25 mins
-$MeteorTimeVariance = 12*60;
+$MeteorMinimumTime = 25*60;//25 mins
+$MeteorTimeVariance = 12*60;//+/-6mins
+
+$MeteorStrikeRadius = 750;
 
 $MeteorNextTime = "";
 
-$MaxMeteorsAtOnce = 15;
+$MaxMeteorsAtOnce = 30;
 $MaxMeteorCrystals = 35;
 $MeteorCrystalCount = 0;
 $MeteorCrystalLightTimeInSeconds = 120;
 
 $MeteorCrystalData::MaxTicks = 2160; //3 hours in 5s ticks
 $MeteorCrystalData::HitMax = 8;
+
+//3 to 5 mins in 5 sec ticks
+$MeteorStorm::MinTicks = 36;
+$MeteorStorm::MaxTicks = 60;
+$MeteorStorm::Ticks = 0;
+$MeteorStormEvent = false;
 
 function Mission::init()
 {
@@ -75,28 +83,40 @@ function WorldEventsCheck()
     if($MeteorNextTime == "")
         $MeteorNextTime = getSimTime() + $MeteorMinimumTime + getIntRandomMT(($MeteorTimeVariance / -2),($MeteorTimeVariance/2));
         
+    if($MeteorStormEvent)
+    {
+        MeteorStormUpdate();
+    }
+        
     if(getSimTime() >= $MeteorNextTime)
     {
         
         if($MeteorCrystalCount <= $MaxMeteorCrystals)
         {
-            MeteorWorldEvent();
-            %msg = "A meteor is falling!~wAAODSFX50.wav";
-            if(oddsAre(3)) //Chance to spawn 3
+            if(!oddsAre(30))
             {
-                if($MeteorCrystalCount + 3 < $MaxMeteorCrystals)
+                MeteorWorldEvent();
+                %msg = "A meteor is falling!";
+                if(oddsAre(3)) //Chance to spawn 3
                 {
-                    %msg = "A group of meteors are falling!~wAAODSFX50.wav";
-                    schedule("MeteorWorldEvent();",1);
-                    schedule("MeteorWorldEvent();",2);
+                    if($MeteorCrystalCount + 3 < $MaxMeteorCrystals)
+                    {
+                        %msg = "A group of meteors are falling!";
+                        schedule("MeteorWorldEvent();",1);
+                        schedule("MeteorWorldEvent();",2);
+                    }
                 }
+                messageAll($MsgBeige,%msg);
             }
-            messageAll($MsgBeige,%msg);
+            else
+            {
+                MeteorStormEvent();
+            }
         }
             
         $MeteorNextTime = getSimTime() + $MeteorMinimumTime + getIntRandomMT(($MeteorTimeVariance / -2),($MeteorTimeVariance/2));
     }
-    
+
     for(%i = 0; %i < $MeteorCrystalCount; %i++)
     {
         %crystal = $MeteorCrystal[%i,Object];
@@ -108,21 +128,93 @@ function WorldEventsCheck()
     }
 }
 
+$MeteorStorm::MinTicks = 36;
+$MeteorStorm::MaxTicks = 60;
+$MeteorStorm::Ticks = 0;
+$MeteorStormEvent = false;
+
+function MeteorStormEvent()
+{
+    if(!$MeteorStormEvent)
+    {
+        $MeteorStorm::Ticks = getIntRandomMT($MeteorStorm::MinTicks,$MeteorStorm::MaxTicks);
+        $MeteorStormEvent = true;
+        
+        messageAll($MsgRed,"Take cover!  A meteor storm is coming!~wmale5.wdsgst4.wav");
+    }
+}
+
+function MeteorStormUpdate()
+{
+    if($MeteorStorm::Ticks == 0)
+    {
+        messageAll($MsgWhite,"The meteor storm has ended.~wCapturedTower.wav");
+        $MeteorStormEvent = false;
+        return;
+    }
+    $MeteorStorm::Ticks--;
+    %amt = getIntRandomMT(10,28);
+    for(%i = 0; %i < %amt; %i++)
+    {
+        schedule("MeteorWorldEvent();",%i*0.3);
+    }
+}
+
 function MeteorWorldEvent()
 {
     //-5120 -3072 0 <- Terrain Offset
     //6000 x 6000 <- Terrain Dims
     
     //Pick a position in XY plain
-    %xpos = getWord($TerrainOffset,0)+(getRandom()*$MapExtent[0]);
-    %ypos = getWord($TerrainOffset,1)+(getRandom()*$MapExtent[1]);
-    %zpos = getWord($TerrainOffset,2);
+    //%xpos = getWord($TerrainOffset,0)+(getRandom()*$MapExtent[0]);
+    //%ypos = getWord($TerrainOffset,1)+(getRandom()*$MapExtent[1]);
+    //%zpos = getWord($TerrainOffset,2);
     
-    %xposOrigin = getWord($TerrainOffset,0)+(getRandom()*$MapExtent[0]);
-    %yposOrigin = getWord($TerrainOffset,1)+(getRandom()*$MapExtent[1]);
-    %zposOrigin = getWord($TerrainOffset,2)+1500;
+    %terrOffX = getWord($TerrainOffset,0);
+    %terrOffY = getWord($TerrainOffset,1);
+    %terrOffZ = getWord($TerrainOffset,2);
+    
+    %xposOrigin = %terrOffX+(getRandomMT()*$MapExtent[0]);
+    %yposOrigin = %terrOffY+(getRandomMT()*$MapExtent[1]);
+    %zposOrigin = %terrOffZ+1500;
+    
+    //This will provide a steeper meteor fall
+    %xpos = %xposOrigin - ($MeteorStrikeRadius) + (2*getRandomMT()*$MeteorStrikeRadius);
+    %ypos = %yposOrigin - ($MeteorStrikeRadius) + (2*getRandomMT()*$MeteorStrikeRadius);
+    %zpos = %terrOffZ;
+    
+    %xextent = %terrOffX + $MapExtent[0];
+    %yextent = %terrOffY + $MapExtent[1];
+    
+    if(%xpos > %xextent)
+    {
+        %xpos -= 2*(%xpos-%xextent);
+    }
+    
+    if(%xpos < %terrOffX)
+    {
+        %xpos += 2*(%terrOffX - %xpos);
+    }
+    
+    if(%ypos > %yextent)
+    {
+        %ypos -= 2*(%ypos-%yextent);
+    }
+    
+    if(%ypos < %terrOffY)
+    {
+        %ypos += 2*(%terrOffY - %ypos);
+    }
+    
     
     %targetPos = %xpos @" "@ %ypos @" "@ %zpos;
+    
+    if((%xpos > %xextent) || (%xpos < %terrOffX) || (%ypos > %yextent) || (%ypos < %terrOffY))
+    {
+        echo("Logic error in meteor posistion.  Position off map: ",%targetPos);
+    }
+    
+    
     %originPos = %xposOrigin @" "@ %yposOrigin @" "@ %zposOrigin;
     
     CreateWorldMeteor(%originPos,%targetPos);
@@ -416,28 +508,30 @@ function Meteor::onRemove(%this)
     ClearMeteorData(%index);
     
     BombSpread(%pos);
-    
-    %set = nameToId("MissionCleanup\\MeteorCrystals");
-    if(%set == -1)
+    if($MeteorCrystalCount < $MeteorCrystalCount)
     {
-        %set = newObject("MeteorCrystals",SimGroup);
-        addToSet(nameToId("MissionCleanup"),%set);
+        %set = nameToId("MissionCleanup\\MeteorCrystals");
+        if(%set == -1)
+        {
+            %set = newObject("MeteorCrystals",SimGroup);
+            addToSet(nameToId("MissionCleanup"),%set);
+        }
+        
+        %crystal = newObject("Meteorite",StaticShape,"MeteorCrystal",true);
+        
+        Gamebase::setPosition(%crystal,%pos);
+        $los::position = "";
+        %los = Gamebase::getLOSInfo(%crystal,50,"-1.57 0 0");
+        if(%los)
+        {
+            //echo($los::position);
+            Gamebase::setPosition(%crystal,$los::position);
+            Gamebase::setRotation(%crystal,Vector::getRotation($los::normal));
+            RegisterMeteorCrystal(%crystal,$los::position,$MeteorCrystalData::MaxTicks);
+        }
+    
+        addToSet(%set,%crystal);
     }
-    
-    %crystal = newObject("Meteorite",StaticShape,"MeteorCrystal",true);
-    
-    Gamebase::setPosition(%crystal,%pos);
-    $los::position = "";
-    %los = Gamebase::getLOSInfo(%crystal,50,"-1.57 0 0");
-    if(%los)
-    {
-        //echo($los::position);
-        Gamebase::setPosition(%crystal,$los::position);
-        Gamebase::setRotation(%crystal,Vector::getRotation($los::normal));
-        RegisterMeteorCrystal(%crystal,$los::position,$MeteorCrystalData::MaxTicks);
-    }
-    
-    addToSet(%set,%crystal);
 }
 
 function SpawnManaWell()

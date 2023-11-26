@@ -99,7 +99,7 @@ $AccessoryVar[MeteorAxe, $AccessoryType] = $AxeAccessoryType;
 $AccessoryVar[NoviceStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[MagesStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[FireStaff, $AccessoryType] = $MageStaffAccessoryType;
-$AccessoryVar[DruidStaff, $AccessoryType] = $MageStaffAccessoryType;
+$AccessoryVar[ThornStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[HealerStaff, $AccessoryType] = $MageStaffAccessoryType;
 
 $AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";	
@@ -164,7 +164,7 @@ $AccessoryVar[CeraphumsFeather, $SpecialVar] = "6 105";
 $AccessoryVar[NoviceStaff, $SpecialVar] = "6 15";
 $AccessoryVar[MagesStaff, $SpecialVar] = "6 30";
 $AccessoryVar[FireStaff, $SpecialVar] = "6 45";
-$AccessoryVar[DruidStaff, $SpecialVar] = "6 20";
+$AccessoryVar[ThornStaff, $SpecialVar] = "6 20";
 $AccessoryVar[HealerStaff, $SpecialVar] = "6 10";
 //.................................................................................
 $AccessoryVar[CrudeAxe, $Weight] = 1;
@@ -287,7 +287,7 @@ $AccessoryVar[MeteorAxe, $MiscInfo] = "An axe enhanced with meteorite. Restores 
 $AccessoryVar[NoviceStaff, $MiscInfo] = "An entry level mage's staff. Use #attune to recharge.";
 $AccessoryVar[MagesStaff, $MiscInfo] = "A stronger staff with higher mana capacity";
 $AccessoryVar[FireStaff, $MiscInfo] = "A staff that shoots fireballs";
-$AccessoryVar[DruidStaff, $MiscInfo] = "A staff attuned with nature";
+$AccessoryVar[ThornStaff, $MiscInfo] = "A staff attuned with nature";
 $AccessoryVar[HealerStaff, $MiscInfo] = "A staff that heals";
 //NOTE: See shopping.cs for the shopIndexes
 $SkillType[CrudeAxe] = $SkillSlashing;
@@ -333,7 +333,7 @@ $SkillType[MeteorAxe] = $SkillSlashing;
 $SkillType[NoviceStaff] = $SkillOffensiveCasting;
 $SkillType[MagesStaff] = $SkillOffensiveCasting;
 $SkillType[FireStaff] = $SkillOffensiveCasting;
-$SkillType[DruidStaff] = $SkillNeutralCasting;
+$SkillType[ThornStaff] = $SkillNatureCasting;
 $SkillType[HealerStaff] = $SkillDefensiveCasting;
 
 $WeaponRange[Sling] = 35;
@@ -423,7 +423,7 @@ function GenerateAllWeaponCosts()
     $ItemCost[NoviceStaff] = GenerateItemCost(NoviceStaff);
     $ItemCost[MagesStaff] = GenerateItemCost(MagesStaff);
     $ItemCost[FireStaff] = GenerateItemCost(FireStaff);
-    $ItemCost[DruidStaff] = GenerateItemCost(DruidStaff);
+    $ItemCost[ThornStaff] = GenerateItemCost(ThornStaff);
     $ItemCost[HealerStaff] = GenerateItemCost(HealerStaff) + 1500;
     
 	$ItemCost[RHatchet] = round($ItemCost[Hatchet] * $RustyCostAmp);
@@ -457,6 +457,9 @@ function MeleeAttack(%player, %length, %weapon)
 	%clientId.lastFireTime = %time;
 	//=======================================================
 	%mult = 1;
+    %stamMult = 1;
+    %dmgMult = 1;
+    %mom = "0 0 0";
     //I don't want to iterate over all bonuses every weapon swing. Making it a fetchData flag is less costly
     if(fetchData(%clientId,"DoubleStrikeFlag") != "")
     {
@@ -466,7 +469,21 @@ function MeleeAttack(%player, %length, %weapon)
         else
             storeData(%clientId,"DoubleStrikeFlag",false);
     }
-    WeaponStamina(%clientId,%weapon,%mult);
+    else if(fetchData(%clientId,"HeavyStrikeFlag"))
+    {
+        %stamMult += 0.75;
+        %dmgMult += 0.33;
+        
+        %etrans = Gamebase::getEyeTransform(%clientId);
+        %dir = Word::getSubWord(%etrans,3,3);
+        %mom = ScaleVector(%dir,$Ability::heavyStrikeForce);
+        //%mom = Vector::getFromRot(%clientId,$Ability::heavyStrikeForce,15);
+        playSound(SoundSwing7,Gamebase::getPosition(%clientId));
+    }
+    
+    %stamMult *= %mult;
+    
+    WeaponStamina(%clientId,%weapon,%stamMult);
 	
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
@@ -474,17 +491,18 @@ function MeleeAttack(%player, %length, %weapon)
 		%obj = getObjectType($los::object);
 		if(%obj == "Player")
 		{
-			GameBase::virtual($los::object, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+			GameBase::virtual($los::object, "onDamage", "", 1.0, "0 0 0", "0 0 0", %mom, "torso", "", %clientId, %weapon,"",%dmgMult);
             if(%mult > 1)
             {
                 for(%i = 1; %i < %mult; %i++)
                 {
-                    schedule("GameBase::virtual("@$los::object@", \"onDamage\", \"\", 1.0, \"0 0 0\", \"0 0 0\", \"0 0 0\", \"torso\", \"\", "@%clientId@", "@%weapon@");",0.2*%i,%player);
+                    schedule("GameBase::virtual("@$los::object@", \"onDamage\", \"\", 1.0, \"0 0 0\", \"0 0 0\", \""@ %mom @"\", \"torso\", \"\", "@%clientId@", "@%weapon@",\"\","@%dmgMult@");",0.2*%i,%player);
                 }
             }
 		}
 	}
-
+    if(fetchData(%clientId,"HeavyStrikeFlag"))
+        storeData(%clientId,"HeavyStrikeFlag","");
 	PostAttack(%clientId, %weapon);
 }
 
@@ -581,7 +599,7 @@ function Weapon::FireTrueShot(%clientId,%weapon,%vel,%loadedProjectile)
     RPGItem::decItemCount(%clientId,%loadedProjectile,1);
 }
 
-function DoMiningSwing(%clientId,%target,%weapon)
+function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
 {
     %obj = getObjectType(%target);
     %type = GameBase::getDataName(%target);
@@ -638,7 +656,7 @@ function DoMiningSwing(%clientId,%target,%weapon)
     }
 
     if(%obj == "Player")
-        GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+        GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", %mom, "torso", "", %clientId, %weapon,%dmgMult);
 }
 
 function PickAxeSwing(%player, %length, %weapon)
@@ -656,6 +674,9 @@ function PickAxeSwing(%player, %length, %weapon)
 	%clientId.lastFireTime = %time;
 	//=======================================================
     %mult = 1;
+    %stamMult = 1;
+    %dmgMult = 1;
+    %mom = "0 0 0";
     if(fetchData(%clientId,"DoubleStrikeFlag"))
     {
         %to = fetchData(%clientId,"DoubleStrikeTimeout");
@@ -664,18 +685,37 @@ function PickAxeSwing(%player, %length, %weapon)
         else
             storeData(%clientId,"DoubleStrikeFlag",false);
     }
-    WeaponStamina(%clientId,%weapon,%mult);
+    else if(fetchData(%clientId,"HeavyStrikeFlag"))
+    {
+        %stamMult += 0.75;
+        %dmgMult += 0.33;
+        
+        %etrans = Gamebase::getEyeTransform(%clientId);
+        %dir = Word::getSubWord(%etrans,3,3);
+        %mom = ScaleVector(%dir,$Ability::heavyStrikeForce);
+        //%mom = Vector::getFromRot(%clientId,$Ability::heavyStrikeForce,15);
+        playSound(SoundSwing7,Gamebase::getPosition(%clientId));
+    }
+    
+    %stamMult *= %mult;
+    WeaponStamina(%clientId,%weapon,%stamMult);
 
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{
 		%target = $los::object;
-        DoMiningSwing(%clientId,%target,%weapon);
-		for(%i = 1; %i < %mult; %i++)
+        DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult);
+        if(%mult > 1)
         {
-            schedule("DoMiningSwing("@%clientId@","@%target@","@%weapon@");",0.2*%i,%player);
+            for(%i = 1; %i < %mult; %i++)
+            {
+                schedule("DoMiningSwing("@%clientId@","@%target@","@%weapon@",\""@%mom@"\","@%dmgMult@");",0.2*%i,%player);
+            }
         }
 	}
+    
+    if(fetchData(%clientId,"HeavyStrikeFlag"))
+        storeData(%clientId,"HeavyStrikeFlag","");
 
 	PostAttack(%clientId, %weapon);
 }

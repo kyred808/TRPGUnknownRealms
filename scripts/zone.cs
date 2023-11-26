@@ -486,9 +486,12 @@ function UpdateZone(%object)
         //        Client::sendMessage(%clientId,0,"~wCapturedTower.wav");
         //    }
         //}
-    
+        %currentRealm = fetchData(%clientId,"Realm");
+        %rid = $RealmData[%currentRealm, ID];
+        %pos = Gamebase::getPosition(%clientId);
+        %zpos = getWord(%pos,2);
         //start playing the ambient sound for the unknown zone
-		if($Zone::AmbientSound[0] != "")
+		if($Zone::AmbientSound[0] != "" && (%zpos - $RealmHeight[%rid]) >= $UnknownZoneAmbientSoundMinHeight)
 		{
 			%m = $Zone::AmbientSoundPerc[0];
 			if(%m == "") %m = 100;
@@ -513,9 +516,6 @@ function UpdateZone(%object)
 	
 		if(!Player::isAIControlled(%clientId))
         {
-            %pos = Gamebase::getPosition(%clientId);
-            %zpos = getWord(%pos,2);
-            %currentRealm = fetchData(%clientId,"Realm");
             if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
             {
                 Realm::KickPlayerBackInRealm(%clientId,%currentRealm);
@@ -561,7 +561,8 @@ function UpdateZone(%object)
 	//-----------------------------------------------------------
 	// Check if the player has moved since last ZoneCheck
 	//-----------------------------------------------------------
-	%pos = GameBase::getPosition(%clientId);
+    if(%pos == "")
+        %pos = GameBase::getPosition(%clientId);
 	if(%pos != %clientId.zoneLastPos && !IsDead(%clientId))
 	{
         if(%clientId.isMoving == 0)

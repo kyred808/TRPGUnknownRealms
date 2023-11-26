@@ -143,6 +143,27 @@ BulletData FusionBolt
 //	rotationPeriod = 0.1;
 //};
 
+BulletData ManaBoltProj
+{
+   bulletShapeName    = "enbolt.dts";
+   explosionTag       = energyExp;
+
+   damageClass        = 0;
+   damageValue        = 26;
+   damageType         = $SpellDamageType;
+
+   muzzleVelocity     = 80.0;
+   totalTime          = 2.0;
+   liveTime           = 2.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 0.5;
+};
+
 BulletData Thorn
 {
    bulletShapeName    = "bullet.dts";
@@ -569,8 +590,8 @@ RocketData Meteor
 	damageClass = 1;
 	damageValue = 1.8; 
 	damageType = $MeteorDamageType;
-	explosionRadius = 120.0;
-	kickBackStrength = 200.0;
+	explosionRadius = 250.0;
+	kickBackStrength = 500.0;
 	muzzleVelocity   = 175.0;
 	terminalVelocity = 7000.0;
 	acceleration = 200.0;
@@ -684,8 +705,8 @@ RocketData Meteor2
 	damageClass = 1;
 	damageValue = 2.2; 
 	damageType = $MeteorDamageType;
-	explosionRadius = 50.0;
-	kickBackStrength = 80.0;
+	explosionRadius = 100.0;
+	kickBackStrength = 200.0;
 	muzzleVelocity   = 175.0;
 	terminalVelocity = 7000.0;
 	acceleration = 200.0;

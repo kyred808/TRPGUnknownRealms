@@ -21,7 +21,9 @@ $RealmBounds[0,Xmax] = -5120 + $MapExtent[0] + 1000; //2x
 $RealmBounds[0,Ymin] = -3072;
 $RealmBounds[0,Ymax] = -3072 + $MapExtent[1];
 
-
+$RealmHeight[0] = 0;
+$RealmHeight[1] = -4000;
+$RealmHeight[2] = 4000;
 function Realms::getRealmGroupName(%realmId)
 {
     return "MissionGroup\\Realm"@%i;

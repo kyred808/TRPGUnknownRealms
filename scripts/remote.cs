@@ -419,7 +419,10 @@ function remoteConsider(%clientId)
 
 		if(%obj == "Player")
 		{
-			DisplayGetInfo(%clientId, %cl, %object);
+            if(!Player::isAIControlled(%cl))
+                DisplayGetInfo(%clientId, %cl, %object);
+            else
+                DisplayTargetStats(%clientId,%cl,%object);
 			%sawsomething = True;
 		}
 		else if(%obj == "InteriorShape" && %object.tag != "" && %clientId.adminLevel >= 1)

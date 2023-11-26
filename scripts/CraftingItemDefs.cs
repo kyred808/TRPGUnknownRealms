@@ -32,6 +32,8 @@ Crafting::Addrecipe("craft","EnergyVial","","GoblinEar 2 GobbieBerry 3",1,1,true
 Crafting::Addrecipe("craft","CrystalEnergyVial","","turquoise 2 redberry 3",1,1,true);
 Crafting::Addrecipe("craft","EnergizedPotion","","sapphire 3 skeletonbone 2 yuccavera 5",1,1,true);
 
+Crafting::Addrecipe("craft","RedPotion","","BoneDust 4 Redberry 5",2,1,true);
+
 //Crafting::Addrecipe("alchemy","EnergyShot",$SkillAlchemy @" 5","GobbieBerry 3 quartz 1",1);
 //Crafting::Addrecipe("alchemy","EnergyVial",$SkillAlchemy @" 60","GoblinEar 2 GobbieBerry 3",1);
 //Crafting::Addrecipe("alchemy","CrystalEnergyVial",$SkillAlchemy @" 250","turquoise 2 redberry 3",1);

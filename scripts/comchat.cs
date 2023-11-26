@@ -1002,8 +1002,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					Client::sendMessage(%TrueClientId, 0, "Specify a spell.");
 		            else
 		            {
-                        //Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
-					BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
+					//BeginCastSpell(%TrueClientId, escapestring(%cropped));
 					if(String::findSubStr(%cropped, "\"") != -1){
 						%ip = Client::getTransportAddress(%ClientId);
 						echo("Exploit attempt detected and blocked: " @ %trueClientId @ ", aka " @ %nameomg @ ", at " @ %ip @ ".");

@@ -68,6 +68,9 @@ $SkillBoostNumPrimary = 3; //Rest are secondary
 $SkillPrimaryBonus = 40;
 $SkillSecondaryBonus = 20;
 
+//Hear air in mountains
+$UnknownZoneAmbientSoundMinHeight = 300;
+
 //Toggle if you can craft anywhere or need to look at or have certain objects.
 $ExtraCraftingRequirements = true;
 $BaseCraftingDifficulty = 10;

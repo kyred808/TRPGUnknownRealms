@@ -1504,6 +1504,18 @@ SoundData ActivateAS
    profile     = Profile3dNear;
 };
 
+SoundData SpellCastSnd
+{
+   wavFileName = "spellcast.wav";
+   profile     = Profile3dNear;
+};
+
+SoundData HolySmite
+{
+   wavFileName = "holysmite.wav";
+   profile     = Profile3dMedium;
+};
+
 //crossbow firing sound
 SoundData CrossbowShoot1
 {

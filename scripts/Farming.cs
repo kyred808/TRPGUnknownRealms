@@ -20,7 +20,7 @@ $SkillRestriction["#plant nixphyllum"] =  $SkillFarming @" 700";
 $SkillRestriction["#plant deeznuts"] = $SkillFarming @" 950 R 1";
 $SkillRestriction["#plant lunabrosia"] = $SkillFarming @" 1200 R 2";
 
-$FarmingItems = "grain,treefruit,gobbieberry,yuccavera,strawberry,nixphyllum,deeznuts,lunabrosia";
+$FarmingItems = "grain,treefruit,gobbieberry,yuccavera,redberry,strawberry,nixphyllum,deeznuts,lunabrosia";
 
 $Farming::PlantShape[Grain] = PlantedPlantTwo;
 $Farming::PlantShape[GobbieBerry] = PlantedPlantTwo;
@@ -35,12 +35,12 @@ $Farming::PlantShape[Lunabrosia] = PlantedPlantOne;
 $Farming::MaxHarvestAmnt = 5;
 
 $Farming::PlantBaseHarvestAmnt[Grain] = 3;
-$Farming::PlantBaseHarvestAmnt[GobbieBerry] = 2;
-$Farming::PlantBaseHarvestAmnt[RedBerry] = 2;
-$Farming::PlantBaseHarvestAmnt[Yuccavera] = 2;
-$Farming::PlantBaseHarvestAmnt[Treefruit] = 2;
-$Farming::PlantBaseHarvestAmnt[Strawberry] = 2;
-$Farming::PlantBaseHarvestAmnt[Nixphyllum] = 2;
+$Farming::PlantBaseHarvestAmnt[GobbieBerry] = 4;
+$Farming::PlantBaseHarvestAmnt[RedBerry] = 3;
+$Farming::PlantBaseHarvestAmnt[Yuccavera] = 4;
+$Farming::PlantBaseHarvestAmnt[Treefruit] = 3;
+$Farming::PlantBaseHarvestAmnt[Strawberry] = 3;
+$Farming::PlantBaseHarvestAmnt[Nixphyllum] = 3;
 $Farming::PlantBaseHarvestAmnt[DeezNuts] = 2;
 $Farming::PlantBaseHarvestAmnt[Lunabrosia] = 2;
 

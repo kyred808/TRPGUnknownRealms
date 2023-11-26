@@ -57,7 +57,7 @@ $Spell::groupListCheck[2] = False;
 $Spell::refVal[2] = 0;
 $Spell::graceDistance[2] = 2;
 $Spell::effectType[2] = $SpellTypeCustom;
-$SkillType[teleport] = $SkillNeutralCasting;
+$SkillType[teleport] = $SkillNatureCasting;
 
 $Spell::keyword[3] = "transport";
 $Spell::index[transport] = 3;
@@ -72,7 +72,7 @@ $Spell::groupListCheck[3] = False;
 $Spell::refVal[3] = 0;
 $Spell::graceDistance[3] = 2;
 $Spell::effectType[3] = $SpellTypeCustom;
-$SkillType[transport] = $SkillNeutralCasting;
+$SkillType[transport] = $SkillNatureCasting;
 
 $Spell::keyword[4] = "advtransport";
 $Spell::index[advtransport] = 4;
@@ -88,7 +88,7 @@ $Spell::groupListCheck[4] = True;
 $Spell::refVal[4] = 0;
 $Spell::graceDistance[4] = 2;
 $Spell::effectType[4] = $SpellTypeCustom;
-$SkillType[advtransport] = $SkillNeutralCasting;
+$SkillType[advtransport] = $SkillNatureCasting;
 
 $Spell::keyword[5] = "cloud";
 $Spell::index[cloud] = 5;
@@ -400,7 +400,7 @@ $Spell::groupListCheck[21] = False;
 $Spell::refVal[21] = 0;
 $Spell::graceDistance[21] = 2;
 $Spell::effectType[21] = $SpellTypeCustom;
-$SkillType[remort] = $SkillNeutralCasting;
+$SkillType[remort] = $SkillNatureCasting;
 
 $Spell::keyword[22] = "fullheal";
 $Spell::index[fullheal] = 22;
@@ -592,7 +592,7 @@ $Spell::groupListCheck[32] = False;
 $Spell::refVal[32] = 1;
 $Spell::graceDistance[32] = 2;
 $Spell::effectType[32] = $SpellTypeCustom;
-$SkillType[mimic] = $SkillNeutralCasting;
+$SkillType[mimic] = $SkillNatureCasting;
 
 $Spell::keyword[33] = "masstransport";
 $Spell::index[masstransport] = 33;
@@ -608,7 +608,7 @@ $Spell::groupListCheck[33] = False;
 $Spell::refVal[33] = 0;
 $Spell::graceDistance[33] = 2;
 $Spell::effectType[33] = $SpellTypeCustom;
-$SkillType[masstransport] = $SkillNeutralCasting;
+$SkillType[masstransport] = $SkillNatureCasting;
 
 $Spell::keyword[34] = "advheal4";
 $Spell::index[advheal4] = 34;
@@ -675,7 +675,7 @@ $Spell::groupListCheck[37] = False;
 $Spell::refVal[37] = 0;
 $Spell::graceDistance[37] = 2;
 $Spell::effectType[37] = $SpellTypeCustom;
-$SkillType[explodesun] = $SkillNeutralCasting;
+$SkillType[explodesun] = $SkillNatureCasting;
 $SkillRestriction[explodesun] = $SkillOffensiveCasting @ " 1500";
 
 $Spell::keyword[38] = "batman";
@@ -692,8 +692,8 @@ $Spell::groupListCheck[38] = False;
 $Spell::refVal[38] = 35;
 $Spell::graceDistance[38] = 2;
 $Spell::effectType[38] = $SpellTypeCustom;
-$SkillType[batman] = $SkillNeutralCasting;
-$SkillRestriction[batman] = $SkillNeutralCasting @ " 0";
+$SkillType[batman] = $SkillNatureCasting;
+$SkillRestriction[batman] = $SkillNatureCasting @ " 0";
 
 $Spell::keyword[39] = "flare";
 $Spell::index[flare] = 39;
@@ -711,8 +711,8 @@ $Spell::refVal[39] = 0;
 $Spell::graceDistance[39] = 2;
 $Spell::effectType[39] = $SpellTypeProjectile;
 $Spell::projectileData[39] = Flare;
-$SkillType[flare] = $SkillNeutralCasting;
-$SkillRestriction[flare] = $SkillNeutralCasting @ " 0";
+$SkillType[flare] = $SkillNatureCasting;
+$SkillRestriction[flare] = $SkillNatureCasting @ " 0";
 
 $Spell::keyword[40] = "sunflare";
 $Spell::index[sunflare] = 40;
@@ -751,8 +751,8 @@ $Spell::groupListCheck[41] = False;
 $Spell::refVal[41] = -13;
 $Spell::graceDistance[41] = 2;
 $Spell::effectType[41] = $SpellTypeCustom;
-$SkillType[piercing] = $SkillNeutralCasting;
-$SkillRestriction[piercing] = $SkillNeutralCasting @ " 250";
+$SkillType[piercing] = $SkillNatureCasting;
+$SkillRestriction[piercing] = $SkillNatureCasting @ " 250";
 
 $Spell::keyword[42] = "haste";
 $Spell::index[haste] = 42;
@@ -771,8 +771,8 @@ $Spell::groupListCheck[42] = False;
 $Spell::refVal[42] = -13;
 $Spell::graceDistance[42] = 2;
 $Spell::effectType[42] = $SpellTypeCustom;
-$SkillType[haste] = $SkillNeutralCasting;
-$SkillRestriction[haste] = $SkillNeutralCasting @ " 15";
+$SkillType[haste] = $SkillNatureCasting;
+$SkillRestriction[haste] = $SkillNatureCasting @ " 15";
 
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1561,7 +1561,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 	{
 		storeData(%clientId, "SpellCastStep", 2);
 
-		if(%skilltype == $SkillNeutralCasting || %skilltype == $SkillDefensiveCasting)
+		if(%skilltype == $SkillNatureCasting || %skilltype == $SkillDefensiveCasting)
 			UseSkill(%clientId, %skilltype, True, True);
 		UseSkill(%clientId, $SkillEnergy, True, True);
 
@@ -2229,7 +2229,7 @@ function DoBotCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 	{
 		storeData(%clientId, "SpellCastStep", 2);
 
-		if(%skilltype == $SkillNeutralCasting || %skilltype == $SkillDefensiveCasting)
+		if(%skilltype == $SkillNatureCasting || %skilltype == $SkillDefensiveCasting)
 			UseSkill(%clientId, %skilltype, True, True);
 		UseSkill(%clientId, $SkillEnergy, True, True);
 

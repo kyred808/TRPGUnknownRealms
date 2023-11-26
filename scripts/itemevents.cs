@@ -253,23 +253,27 @@ function Item::onCollision(%this,%object)
 
             deleteObject(%this);
 		}
-        else if(%item == "BeltLoot" && !Player::isAIControlled(%clientId)) //Needs to come before the item.className == accessory check
+        else if(%item == "BeltLoot") //Needs to come before the item.className == accessory check
         {
-            %itemType = %this.itemType;
-            echo(%item @" "@ %itemType);
-            if(%itemType != "")
+            if(!Player::isAIControlled(%clientId))
             {
-                %amnt = %this.delta;
-                if(%amnt == "")
-                    %amnt = 1;
-                if(%amnt < 0)
-                    %amnt = 0;
-                    
-                if(%amnt > 0)
+                %itemType = %this.itemType;
+                echo(%item @" "@ %itemType);
+                if(%itemType != "")
                 {
-                    RPGItem::incItemCount(%clientId,%itemType,%amnt,true);
-                    Item::playPickupSound(%this);
-                    RefreshAll(%clientId,false);
+                    %amnt = %this.delta;
+                    if(%amnt == "")
+                        %amnt = 1;
+                    if(%amnt < 0)
+                        %amnt = 0;
+                        
+                    if(%amnt > 0)
+                    {
+                        RPGItem::incItemCount(%clientId,%itemType,%amnt,true);
+                        Item::playPickupSound(%this);
+                        RefreshAll(%clientId,false);
+                    }
+                    
                 }
                 deleteObject(%this);
             }

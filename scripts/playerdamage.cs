@@ -488,6 +488,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		%Bash = False;
 		%arenaNull = False;
 		%sameTeamNull = False;
+        %heavyStrike = false;
+        if(fetchData(%shooterClient,"HeavyStrikeFlag") && %weapon != "")
+            %heavyStrike = true;
 
         if(fetchData(%shooterClient,"NextHitFlurry"))
         {
@@ -516,7 +519,14 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 %value = getWord($AccessoryVar[%staffWeap, $SpecialVar],%atkIdx) * %value; //Projectile damage should always be 1 for staff proj
             }
             else
-                %skilltype = $skilloffensivecasting;
+            {
+                if($Spell::index[%weapon] != "")
+                {
+                    %skilltype = $SkillType[%weapon];
+                }
+                else
+                    %skilltype = $skilloffensivecasting;
+            }
                 
 			%sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
 			%dmg = %value + %sdm;
@@ -566,7 +576,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					%multi += CalculatePlayerSkill(%shooterClient, $SkillBashing) / 470;
 					%b = GameBase::getRotation(%shooterClient);
-					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing)/2;
+					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing)/15;
                     if(fetchData(%shooterClient,"isUberBoss"))
                         %c = %c * 1.4;
 
@@ -592,7 +602,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 %skilltype = $SkillType[Player::getMountedItem(%shooterClient,$WeaponSlot)];
                 %weapondamage = %weapondamage*0.75;
             }
-                
+            
 			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
             %a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
@@ -601,11 +611,15 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             //Value before any armor reduction.
             %trueDmg = %value;
             
-            %dmgRedPct = CalculateDamageReduction(%damagedClient);
-
+            
+            
 			%amr = fetchData(%damagedClient,"AMR");
+            if(%heavyStrike)
+                %amr = Cap(%amr - 5,"0","inf");
 			%value = Cap(%value - (%amr * %amrAdj), 1, "inf");
-
+            
+            %dmgRedPct = CalculateDamageReduction(%damagedClient);
+        
             %reductionValue = %value * (%dmgRedPct);
             //echo("AMRP: "@ %amrp);
             echo("DR: "@ %reductionValue);
@@ -618,7 +632,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			{
 				%c1 = ( %c / 15 * %value );
 				%c2 = %c2 / 10;
-				%mom = Vector::getFromRot( %b, %c1, %c2 );
+				%mom = Vector::Add(%mom,Vector::getFromRot( %b, %c1, %c2 ));
 			}
             
             //Maybe a little too harsh.  Will handle with ATK and DEF/MDEF stats instead.
@@ -785,6 +799,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		{
 			if(%type == $SpellDamageType)
 				%value = %value / 3;
+            if(%type == $BladeBoltDamageType)
+                %value = 0;
 		}
 
 		//-------------------------------------------------
@@ -904,6 +920,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                     ForceWakeUp(%damagedClient);
                 }
                 
+                if(!%sameTeamNull && %heavyStrike)
+                {
+                    UpdateBonusState(%damagedClient,"AMR -5",$Ability::ticks[$Ability::index[heavystrike]]);
+                }
+                
 				%rhp = refreshHP(%damagedClient, %value);
                 if(%shooterClient != %damagedClient && %type != $SpellDamageType)
                 {
@@ -996,6 +1017,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 						%daction = "bashed";
 						%saction = "bashed";
 					}
+                    else if(%heavyStrike)
+                    {
+                        %daction = "heavily struck";
+                        %saction = "heavily struck";
+                    }
 					else
 					{
 						%daction = "damaged";

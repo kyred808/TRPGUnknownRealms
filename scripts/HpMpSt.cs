@@ -225,13 +225,17 @@ function WeaponStamina(%clientId,%weapon,%mult)
         
     //%stamCost = Cap(GetAccessoryVar(%weapon, $Weight) + (%minSkill-%skill)/(1.5*%minSkill),$WeaponStamina::MinStamUsage,"inf");
     
+    %minStam = $WeaponStamina::MinStamUsage;
+    if(fetchData(%clientId,"HeavyStrikeFlag"))
+        %minStam += 5;
+    
     %w = GetAccessoryVar(%weapon, $Weight);
     %weightFactor = $WeaponStamina::MinStamUsage-%w;
     %growthFactor = $WeaponStamina::ScaleFactor-1;
     
     %m = %weightFactor/(%minSkill*%growthFactor);
     %b = %w-%weightFactor/%growthFactor;
-    %stamCost = Cap(%m*%skill+%b,$WeaponStamina::MinStamUsage,"inf");
+    %stamCost = Cap(%m*%skill+%b,%minStam,"inf");
     //%m = ($WeaponStamina::MinStamUsage-%w)/(%minSkill*($WeaponStamina::ScaleFactor-1));
     //%b = %w-($WeaponStamina::MinStamUsage-%w)/($WeaponStamina::ScaleFactor-1);
     //%y = %m*%skill+%b;
