@@ -15,9 +15,9 @@ function Item::giveItem(%player, %item, %delta, %showmsg)
 	if(%showmsg)
 		Client::sendMessage(%clientId, 0, "You received " @ %delta @ " " @ %item.description @ ".");
 
-	Player::incItemCount(%clientId, %item, %delta);
+	%amt = Player::incItemCount(%clientId, %item, %delta);
 
-	return %delta;
+	return %amt;
 }
 
 function Item::takeItem(%player, %item, %delta, %showmsg)
@@ -37,9 +37,9 @@ function Item::takeItem(%player, %item, %delta, %showmsg)
 	if(%showmsg)
 		Client::sendMessage(%clientId, 0, "You lost " @ %delta @ " " @ %item.description @ ".");
 
-	Player::decItemCount(%clientId, %item, %delta);
+	%amt = Player::decItemCount(%clientId, %item, %delta);
 
-	return %delta;
+	return %amt;
 }
 
 function Item::onCollision(%this,%object)
@@ -332,7 +332,7 @@ function Item::onUse(%player,%item)
 	dbecho($dbechoMode, "Item::onUse(" @ %player @ ", " @ %item @ ")");
 
 	%clientId = Player::getClient(%player);
-    echo("Item::onUse(" @ %player @ ", " @ %item @ ")");
+    //echo("Item::onUse(" @ %player @ ", " @ %item @ ")");
 	if(!IsDead(%clientId))
 	{
 		//this is how you toggle back and forth from equipped to carrying.
@@ -399,7 +399,6 @@ function Item::onUse(%player,%item)
 function Item::onDrop(%player,%item)
 {
 	dbecho($dbechoMode, "Item::onDrop(" @ %player @ ", " @ %item @ ")");
-
 	if($matchStarted)
 	{
 		if(%item.className != Armor)
@@ -414,6 +413,12 @@ function Item::onDrop(%player,%item)
 
 			if(%delta > 0)
 			{
+                %client = Player::getClient(%player);
+                if(%client.bulkDrop != "")
+                {
+                    %delta = %client.bulkDrop;
+                    %client.bulkDrop = "";
+                }
 				%obj = newObject("","Item",%item,1,false);
 				%obj.delta = %delta;
 	 	 	  	schedule("Item::Pop(" @ %obj @ ");", $ItemPopTime, %obj);
@@ -425,9 +430,8 @@ function Item::onDrop(%player,%item)
 					GameBase::throw(%obj, %player, 15, false);
 					Item::playPickupSound(%obj);
 				}
-
-				RPGItem::decItemCount(Player::getClient(%player),%item,%delta);
-				RefreshAll(Player::getClient(%player),false);
+				RPGItem::decItemCount(%client,%item,%delta);
+				RefreshAll(%client,false);
 
 				return %obj;
 			}

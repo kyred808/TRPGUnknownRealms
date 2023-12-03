@@ -557,7 +557,7 @@ function RecordingsGui::playRandom()
 function BuyList::onSelect(%sel)
 {
    ShapeView::setItem(ItemView, %sel);
-   //echo(%sel);
+   echo(%sel);
 }
 
 function BuyList::onDoubleClick(%sel)

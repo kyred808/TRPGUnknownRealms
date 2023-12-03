@@ -4002,7 +4002,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131 134";
+                instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131 134 135 136 137";
                 instant SimGroup "BELTSHOP 17 27 29 800";
             };
             //New Player Guide

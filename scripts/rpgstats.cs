@@ -132,8 +132,10 @@ function fetchData(%clientId, %type)
         %rl = fetchData(%clientId,"RemortStep");
         %eng = floor( CalculatePlayerSkill(%clientId, $SkillEnergy) * $ManaEnergyFactor );
         %eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
-        
-        return 5*%lvl + 3*%rl + %eng + %eqp;
+        %extra = 0;
+        if(fetchData(%clientId,"Class") == "Mage")
+            %extra = 15;
+        return 5*%lvl + 3*%rl + %eng + %eqp + %extra;
         
 		//%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
 		//%b = AddPoints(%clientId, 5);

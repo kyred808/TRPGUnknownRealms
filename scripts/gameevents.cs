@@ -76,8 +76,6 @@ function Player::leaveMissionArea(%player)
 {
 }
 
-
-
 function WorldEventsCheck()
 {
     if($MeteorNextTime == "")
@@ -508,7 +506,7 @@ function Meteor::onRemove(%this)
     ClearMeteorData(%index);
     
     BombSpread(%pos);
-    if($MeteorCrystalCount < $MeteorCrystalCount)
+    if($MeteorCrystalCount < $MaxMeteorCrystals)
     {
         %set = nameToId("MissionCleanup\\MeteorCrystals");
         if(%set == -1)

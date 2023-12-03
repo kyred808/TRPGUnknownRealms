@@ -223,6 +223,8 @@ function Server::onClientConnect(%clientId)
 	//for the other half of this check.
 	remoteeval(%clientid, RepackIdent, true);
 
+    remoteeval(%clientId, RPGMenuInfo);
+    
 //-------------------------------------------------------------
 
 	ClearVariables(%clientId);			//this needs to be done so the profile is as clean as possible...

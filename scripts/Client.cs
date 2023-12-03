@@ -272,7 +272,21 @@ function setTeam(%team)
 
 function say(%channel, %message)
 {
-   remoteEval(2048, say, %channel, %message);
+    %bSend = true;
+    if(($RPGMenu::itemList[Inv,showing] && $RPGMenu::itemList[Inv,isSelected]) || ($RPGMenu::itemList[Buy,showing] && $RPGMenu::itemList[Buy,isSelected]))
+    {
+        %w1 = getWord(%message,0);
+        if(Math::isInteger(%message))
+        {
+            $RPGMenu::bulkCount = %w1;
+            %bSend = false;
+        }
+        else
+            $RPGMenu::bulkCount = 1;
+    }
+    
+    if(%bSend)
+        remoteEval(2048, say, %channel, %message);
 }
 
 function mute(%playerName)

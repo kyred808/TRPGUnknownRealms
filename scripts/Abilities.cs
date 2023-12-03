@@ -61,7 +61,7 @@ $Ability::cost[3,Item] = "";
 $Ability::keyword[4] = "manaflare";
 $Ability::index[manaflare] = 4;
 $Ability::name[4] = "Mana Flare";
-$Ability::description[4] = "Burst forth with arcane energy, knocking your enemies back.  Raises all your spell damage by 20 ATK and lowers teh MDEF of enemies hit by 150.";
+$Ability::description[4] = "Burst forth with arcane energy, knocking your enemies back.  Raises all your spell damage by 20 ATK and lowers teh MDEF of enemies hit by 150.  Restores 20 Mana.";
 $Ability::cooldownTicks[4] = 300;
 $Ability::ticks[4] = 60;
 $Ability::SoundId[4] = ActivateTD;
@@ -151,7 +151,7 @@ $Ability::RageRange = 15;
 $Ability::RageBurstForce = 300;
 
 $Ability::MFRange = 15;
-$Ability::MFForce = 450;
+$Ability::MFForce = 220;
 
 //Slam disabled for now
 $SlamSpeedFactor = 200;

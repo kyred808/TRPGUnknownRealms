@@ -958,7 +958,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
                     {
                         if(fetchData(%TrueClientId,"MANA") >= %mana)
                         {
-                            Client::sendMessage(%TrueClientId, $MsgWhite, "Recharging attuned weapon with "@%mana@" mana.");
+                            Client::sendMessage(%TrueClientId, $MsgWhite, "Recharging attuned weapon with "@%mana@" mana. ("@%mana+%currentMana@"/"@$MageStaff[%item,MaxMana]@")");
                             playSound(ActivateAR,Gamebase::getPosition(%TrueClientId));
                             storeData(%TrueClientId,"attunedWeaponMana",%mana,"inc");
                             refreshMANA(%TrueClientId,%mana);
@@ -985,7 +985,21 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
             return;
         }
-        
+        if(%w1 == "#togglecastequip")
+        {
+            %state = fetchData(%TrueClientId,"KeepWeaponOnCastFlag");
+            if(%state)
+            {
+                storeData(%TrueClientId,"KeepWeaponOnCastFlag",false);
+                Client::sendMessage(%TrueClientId, 0, "Weapon will be unequipped when casting.");
+            }
+            else
+            {
+                storeData(%TrueClientId,"KeepWeaponOnCastFlag",true);
+                Client::sendMessage(%TrueClientId, 0, "Weapon will stay equipped on cast.");
+            }
+            return;
+        }
 	      if(%w1 == "#spell" || %w1 == "#cast")
 		{
 			if(fetchData(%TrueClientId, "SpellCastStep") == 1)

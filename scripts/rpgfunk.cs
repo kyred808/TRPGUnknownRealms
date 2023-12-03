@@ -564,8 +564,13 @@ function LoadCharacter(%clientId)
         for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
         {
             storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 9, %i]);
+            //echo(getWordCount($funk::var[%name, 9, %i]));
+            if(getWordCount($funk::var[%name, 9, %i]) > 0)
+                RPGItem::forceUpdateBeltItems(%clientId,$Belt::ItemGroup[%i]);
             storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 10, %i]);
         }
+        
+        
 
         if($funk::var[%name, 30, 0] != "")
             storeData(%clientId,"Realm",$funk::var[%name, 30, 0]);
@@ -2238,10 +2243,10 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 			storeData(%clientId, "RankPoints", %w2, "inc");
 			if(%echo) Client::sendMessage(%clientId, 0, "You received " @ %w2 @ " Rank Points.");
 		}
-        else if(isBeltItem(%w))
-		{
-			Belt::GiveThisStuff(%clientId, %w, %w2, %echo);
-		}
+        //else if(isBeltItem(%w))
+		//{
+		//	Belt::GiveThisStuff(%clientId, %w, %w2, %echo);
+		//}
 		else if(%w == "CNT")
 		{
 			%cntindex++;

@@ -90,12 +90,13 @@ $SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
 $Spell::keyword[2] = "firebolt";
 $Spell::index[firebolt] = 2;
 $Spell::name[2] = "Firebolt";
-$Spell::damageValue[2] = 30; //Means nothing, except for info for projectile spells
+$Spell::damageValue[2] = 40; //Means nothing, except for info for projectile spells
 $Spell::description[2] = "Shoot a mote of fire.";
 $Spell::type[2] = $SpellTypeCantrip;
 $Spell::baseStamina[2] = 25;
-$Spell::minStamina[2] = 1;
-$Spell::staminaFalloffFactor[2] = 1.5;
+$Spell::minStamina[2] = 5;
+$Spell::manaCost[2] = 2;
+$Spell::staminaFalloffFactor[2] = 4;
 $Spell::delay[2] = 1;
 $Spell::recoveryTime[2] = 2.625;
 $Spell::canMove[2] = true;
@@ -632,30 +633,31 @@ $Spell::useSkillOnCast[24] = true;
 $SkillType[advtranslocate] = $SkillNatureCasting;
 $SkillRestriction[advtranslocate] = $SkillNatureCasting @ " 750";
 
-$Spell::keyword[25] = "manashot";
-$Spell::index[manashot] = 25;
-$Spell::name[25] = "Mana Shot";
+$Spell::keyword[25] = "arcshot";
+$Spell::index[arcshot] = 25;
+$Spell::name[25] = "Arc Shot";
 $Spell::damageValue[25] = 20;
-$Spell::description[25] = "Shoots a small bolt of mana.";
-$Spell::type[25] = $SpellTypeMagic;
-$Spell::baseStamina[25] = 5;
-$Spell::manaCost[25] = 2;
+$Spell::description[25] = "Shoots a small electric bolt.";
+$Spell::type[25] = $SpellTypeCantrip;
+$Spell::baseStamina[25] = 10;
+$Spell::minStamina[25] = 2;
+$Spell::staminaFalloffFactor[25] = 3;
 $Spell::delay[25] = 0.1;
-$Spell::recoveryTime[25] = 2.625;
+$Spell::recoveryTime[25] = 1.625;
 $Spell::canMove[25] = true;
 $Spell::castType[25] = $SpellCastTypeProjectile;
-$Spell::projectileData[25] = Thorn;
+$Spell::projectileData[25] = ManaBoltProj;
 $Spell::startSound[25] = ActivateFK;
 $Spell::overrideEndSound[25] = true; //Optional if false
 $Spell::aiRefVal[25] = 15;
 $Spell::useSkillOnCast[25] = false;
-$SkillType[manashot] = $SkillOffensiveCasting;
-$SkillRestriction[manashot] = $SkillOffensiveCasting @ " 15";
+$SkillType[arcshot] = $SkillOffensiveCasting;
+$SkillRestriction[arcshot] = $SkillOffensiveCasting @ " 15";
 
 $Spell::keyword[26] = "soften";
-$Spell::index[soft] = 26;
+$Spell::index[soften] = 26;
 $Spell::name[26] = "Soften";
-$Spell::description[26] = "Softens the target's armor, lowering their DEF by 150 and AMR by 3 for 1 minute.";
+$Spell::description[26] = "Softens the target's armor, lowering their DEF by 80 and AMR by 2 for 90s.";
 $Spell::message[26] = "Softening %s";
 $Spell::type[26] = $SpellTypeCantrip;
 $Spell::baseStamina[26] = 35;
@@ -665,7 +667,7 @@ $Spell::delay[26] = 2.0;
 $Spell::recoveryTime[26] = 3;
 $Spell::castType[26] = $SpellCastTypeTarget;
 $Spell::LOSrange[26] = 80;
-$Spell::effectVars[26] = "BONUS DEF -150 30,BONUS ARM -3 30";
+$Spell::effectVars[26] = "BONUS DEF -80 45,BONUS ARM -2 45";
 $Spell::startSound[26] = ActivateTR;
 $Spell::endSound[26] = ActivateTD;
 $Spell::groupListCheck[26] = false;
@@ -792,6 +794,114 @@ $Spell::canMove[31] = false;
 $Spell::graceDistance[31] = 2;
 $SkillType[breeze] = $SkillNatureCasting;
 $SkillRestriction[breeze] = $SkillNatureCasting @ " 120";
+
+$Spell::keyword[32] = "ironfist";
+$Spell::index[ironfist] = 32;
+$Spell::name[32] = "Ironfist";
+$Spell::description[32] = "Casts ironfist. Lowers opponent DEF by 80 and ATK by 10 for 60 seconds";
+$Spell::damageValue[32] = 128;
+$Spell::type[32] = $SpellTypeMagic;
+$Spell::baseStamina[32] = 5;
+$Spell::manaCost[32] = 5;
+$Spell::castType[32] = $SpellCastTypeScripted;
+$Spell::forceLOSCheck[32] = true;
+$Spell::LOSrange[32] = 80;
+$Spell::delay[32] = 0.1;
+$Spell::recoveryTime[32] = 13.5;
+$Spell::radius[32] = 7;
+$Spell::effectVars[32] = "BONUS DEF -80 30,BONUS ATK -10 30";
+$Spell::startSound[32] = UnravelAM;
+$Spell::endSound[32] = NoSound;
+$Spell::groupListCheck[32] = False;
+$Spell::aiRefVal[32] = 128;
+$Spell::canMove[32] = true;
+$SkillType[ironfist] = $SkillOffensiveCasting;
+$SkillRestriction[ironfist] = $SkillOffensiveCasting @ " 110";
+
+$Spell::keyword[33] = "icestorm";
+$Spell::index[icestorm] = 33;
+$Spell::name[33] = "Icestorm";
+$Spell::description[33] = "Fire a volley of ice blasts.";
+$Spell::damageValue[33] = 45;
+$Spell::type[33] = $SpellTypeMagic;
+$Spell::baseStamina[33] = 15;
+$Spell::manaCost[33] = 6;
+$Spell::castType[33] = $SpellCastTypeScripted;
+$Spell::delay[33] = 1;
+$Spell::recoveryTime[33] = 2.25;
+$Spell::startSound[33] = ImpactTR;
+$Spell::endSound[33] = Reflected;
+$Spell::groupListCheck[33] = False;
+$Spell::aiRefVal[33] = 45;
+$Spell::canMove[33] = false;
+$Spell::graceDistance[33] = 2;
+$SkillType[icestorm] = $SkillNatureCasting;
+$SkillRestriction[icestorm] = $SkillNatureCasting @ " 85";
+
+$Spell::keyword[34] = "soften2";
+$Spell::index[soften2] = 34;
+$Spell::name[34] = "Soften 2";
+$Spell::description[34] = "Softens the target's armor, lowering their DEF by 150 and AMR by 3 for 130s.";
+$Spell::message[34] = "Softening %s";
+$Spell::type[34] = $SpellTypeMagic;
+$Spell::baseStamina[34] = 15;
+$Spell::manaCost[34] = 10;
+$Spell::delay[34] = 2.0;
+$Spell::recoveryTime[34] = 4.25;
+$Spell::castType[34] = $SpellCastTypeTarget;
+$Spell::LOSrange[34] = 80;
+$Spell::effectVars[34] = "BONUS DEF -150 65,BONUS ARM -3 65";
+$Spell::startSound[34] = ActivateTR;
+$Spell::endSound[34] = ActivateTD;
+$Spell::groupListCheck[34] = false;
+$Spell::refVal[34] = -12;
+$Spell::canMove[34] = false;
+$Spell::graceDistance[34] = 2;
+$Spell::useSkillOnCast[34] = true;
+$SkillType[soften2] = $SkillNatureCasting;
+$SkillRestriction[soften2] = $SkillNatureCasting @ " 170";
+
+$Spell::keyword[35] = "dimensionrift";
+$Spell::index[dimensionrift] = 35;
+$Spell::name[35] = "Dimension Rift";
+$Spell::description[35] = "Casts Dimension Rift.";
+$Spell::delay[35] = 9.5;
+$Spell::recoveryTime[35] = 11.25;
+$Spell::damageValue[35] = 320;
+$Spell::type[35] = $SpellTypeMagic;
+$Spell::baseStamina[35] = 20;
+$Spell::manaCost[35] = 40;
+$Spell::castType[35] = $SpellCastTypeScripted;
+$Spell::auraEffect[35] = SpellEffectAura1;
+$Spell::startSound[35] = LaunchLS;
+$Spell::endSound[35] = Explode3FW;
+$Spell::groupListCheck[35] = False;
+$Spell::aiRefVal[35] = 320;
+$Spell::canMove[35] = false;
+$Spell::graceDistance[35] = 2;
+$SkillType[dimensionrift] = $SkillOffensiveCasting;
+$SkillRestriction[dimensionrift] = $SkillOffensiveCasting @ " 750";
+
+$Spell::keyword[36] = "beam";
+$Spell::index[beam] = 36;
+$Spell::name[36] = "Beam";
+$Spell::description[36] = "Light gathers into a concentrated beam and causes intense damage to the target.";
+$Spell::delay[36] = 0.0;
+$Spell::recoveryTime[36] = 15.0;
+$Spell::damageValue[36] = 180;
+$Spell::type[36] = $SpellTypeMagic;
+$Spell::baseStamina[36] = 2;
+$Spell::manaCost[36] = 30;
+$Spell::castType[36] = $SpellCastTypeScripted;
+$Spell::forceLOSCheck[36] = true;
+$Spell::LOSrange[36] = 1000;
+$Spell::startSound[36] = HitLevelDT;
+$Spell::endSound[36] = HitBF;
+$Spell::groupListCheck[36] = False;
+$Spell::aiRefVal[36] = 180;
+$Spell::canMove[36] = true;
+$SkillType[beam] = $SkillOffensiveCasting;
+$SkillRestriction[beam] = $SkillOffensiveCasting @ " 520";
 
 //$Spell::keyword[1] = "firebomb";
 //$Spell::index[firebomb] = 1;
@@ -1056,6 +1166,12 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
             return false;
         }
     }
+    
+    if(!fetchData(%clientId,"KeepWeaponOnCastFlag"))
+    {
+        Player::unmountItem(%player,$WeaponSlot);
+    }
+    
     %overrideEndSound = false;
     %castType = $Spell::castType[%index];
     if(%castType == "")
@@ -1161,7 +1277,7 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
         if(%index == $Spell::index[fireblast])
         {
             %trans = GameBase::getEyeTransform(%clientId);
-            %vel = Item::getVelocity(%clientId);
+            %vel = Item::getVelocity(%player);
             %eyePos = Word::getSubWord(%trans,9,3);
             %dir = Word::getSubWord(%trans,3,3);
             
@@ -1427,6 +1543,83 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
 
             %returnFlag = True;
         }
+        else if(%index == $Spell::index[ironfist])
+        {
+            if(%castPos != "")
+            {
+                %minrad = 0;
+                %maxrad = $Spell::radius[%index];
+                for(%i = 0; %i <= 8; %i++)
+                {
+                    %tempPos = RandomPositionXY(%minrad, %maxrad);
+
+                    %xPos = GetWord(%tempPos, 0) + GetWord(%castPos, 0);
+                    %yPos = GetWord(%tempPos, 1) + GetWord(%castPos, 1);
+                    %zPos = GetWord(%castPos, 2) + (%i / 3);
+            
+                    %newPos = %xPos @ " " @ %yPos @ " " @ %zPos;
+
+                    schedule("CreateAndDetBomb(" @ %clientId @ ", \"Bomb12\", \"" @ %newPos @ "\", False, " @ %index @ ");", %i / 24, %player);
+                }
+                CreateAndDetBomb(%clientId, "Bomb12", %castPos, True, %index);
+
+                %overrideEndSound = True;
+                %returnFlag = True;
+            }
+            else
+            {
+                Client::sendMessage(%clientId, $MsgBeige, "Could not find a target.");
+                %returnFlag = False;
+            }
+        }
+        else if(%index == $Spell::index[icestorm])
+        {
+            %vel = Item::getVelocity(%player);
+            for(%i = 0; %i <= 6; %i++)
+            {
+                schedule("%trans = GameBase::getEyeTransform(" @ %clientId @ "); Projectile::spawnProjectile(\"IceStorm\", %trans, \"" @ %player @ "\", \"" @ %vel @ "\");", %i / 7, %player);
+            }
+
+            %overrideEndSound = True;
+            %returnFlag = True;
+        }
+        else if(%index == $Spell::index[beam])
+        {
+            if(getObjectType(%castObj) == "Player")
+                %id = Player::getClient(%castObj);
+
+            %trans = GameBase::getEyeTransform(%clientId);
+            %p = Projectile::spawnProjectile("sniperLaser", %trans, %player, "0 0 0", 1.0);
+
+            %mom1 = Vector::getFromRot( GameBase::getRotation(%clientId), -60, 1 );
+            Player::applyImpulse(%clientId, %mom1);
+
+            %r = $Spell::damageValue[%index];
+        
+            if(%id != "")
+            {
+                //%miss = CalcSpellMiss(%clientId, %id, %index);
+
+                SpellDamage(%clientId, %id, %r, %index);
+                %mom2 = Vector::getFromRot( GameBase::getRotation(%clientId), 50, 1 );
+                Player::applyImpulse(%id, %mom2);
+            }
+
+            %castPos = GameBase::getPosition(%clientId);
+
+            %returnFlag = True;
+        }
+        else if(%index == $Spell::index[dimensionrift])
+        {
+            %trans = GameBase::getEyeTransform(%clientId);
+            %vel = Item::getVelocity(%player);
+            Projectile::spawnProjectile("DimensionRift",%trans,%player,%vel);
+            Projectile::spawnProjectile("DimensionRift2",%trans,%player,%vel);
+            schedule("Projectile::spawnProjectile(\"DimensionRift3\",\""@%trans@"\",\""@%player@"\",\""@%vel@"\");",0.6,%player);
+            schedule("Projectile::spawnProjectile(\"DimensionRift4\",\""@%trans@"\",\""@%player@"\",\""@%vel@"\");",1.2,%player);
+            %overrideEndSound = True;
+            %returnFlag = True;
+        }
     }
     
     Player::setAnimation(%clientId, 39);
@@ -1556,7 +1749,11 @@ function Spell::WhatIsSpell(%clientId,%keyword)
 		%sr = $Spell::recoveryTime[%si];
         
         if(%type == $SpellTypeCantrip)
+        {
             %stam = Cap(Spell::CalculateCantripStamina(%clientId,%si),0,$Spell::baseStamina[%si]);
+            %minStam = $Spell::minStamina[%si];
+            %sm = $Spell::manaCost[%si];
+        }
         else
         {
             %stam = $Spell::baseStamina[%si];
@@ -1579,7 +1776,9 @@ function Spell::WhatIsSpell(%clientId,%keyword)
         %msg = %msg @ "\nBonuses: "@ %effects;
     %msg = %msg @ "\nDelay: " @ %sd @ " sec";
     %msg = %msg @ "\nRecovery: " @ %sr @ " sec";
-    %msg = %msg @ "\nStamina: "@ %stam; 
+    %msg = %msg @ "\nStamina: "@ %stam;
+    if(%minStam && (%stam > %minStam))
+        %msg = %msg @ "\nMinStam: "@ %minStam;
     if(%sm)
         %msg = %msg @ "\nMana: " @ %sm;
 	%msg = %msg @ "\n\n<f0>" @ %nfo;
@@ -1602,7 +1801,7 @@ function CreateAndDetBomb(%clientId, %b, %castPos, %doDamage, %index)
 
 	GameBase::Throw(%bomb, %player, 0, false);
 	GameBase::setPosition(%bomb, %castPos);
-	
+    
 	if(%doDamage)
 		SpellRadiusDamage(%clientId, %castPos, %index);
 
@@ -1614,6 +1813,10 @@ function SpellDamage(%clientId, %targetId, %damageValue, %index)
 {
 	dbecho($dbechoMode, "SpellDamage(" @ %clientId @ ", " @ %targetId @ ", " @ %damageValue @ ", " @ %index @ ")");
 
+    if(%index == $Spell::index[ironfist])
+    {
+        Spell::ApplyEffectVars(%clientId,%targetId,%index);
+    }
 	GameBase::virtual(%targetId, "onDamage", $SpellDamageType, %damageValue, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, $Spell::keyword[%index]);
 }
 

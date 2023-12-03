@@ -352,9 +352,9 @@ $AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
 // Rare and Quest Items
 
 BeltItem::Add("Black Statue","BlackStatue","RareItems",3,1);
-BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,12000);
+BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,6200);
 BeltItem::Add("Dark Tome","DarkTome","RareItems",3,250000);
-BeltItem::Add("Bone Dust","BoneDust","RareItems","",16000);
+BeltItem::Add("Bone Dust","BoneDust","RareItems","",9000);
 BeltItem::Add("Skeleton Bone","SkeletonBone","RareItems",1,1);
 BeltItem::Add("Enchanted Stone","EnchantedStone","RareItems",2,1);
 BeltItem::Add("Dragon Scale","DragonScale","RareItems",8,245310);
@@ -408,21 +408,24 @@ function Belt::UseItem(%clientId,%item)
         if(%useTag == "DrinkHealingPotion")
         {
             DrinkHealingPotion(%clientId,%item,getWord($beltitem[%item, "UseTag"],1));
-            Belt::TakeThisStuff(%clientId,%item,1);
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
             RefreshAll(%clientId,false);
             return true;
         }
         else if(%useTag == "DrinkStaminaPotion")
         {
             DrinkStaminaPotion(%clientId,%item,getWord($beltitem[%item, "UseTag"],1));
-            Belt::TakeThisStuff(%clientId,%item,1);
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
             RefreshAll(%clientId,false);
             return true;
         }
         else if(%useTag == "DrinkRedPotion")
         {
             DrinkRedPotion(%clientId,%item,getWord($beltitem[%item, "UseTag"],1));
-            Belt::TakeThisStuff(%clientId,%item,1);
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
             RefreshAll(%clientId,false);
             return true;
         }
@@ -447,7 +450,8 @@ function Belt::UseItem(%clientId,%item)
         else if(%useTag == "RestoreMana")
         {
             RestoreMana(%clientId,%item,getWord($beltitem[%item, "UseTag"],1),"crushed a "@ $beltitem[%item, "Name"]);
-            Belt::TakeThisStuff(%clientId,%item,1);
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
             return true;
         }
         else if(%useTag == "Blink")

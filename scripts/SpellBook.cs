@@ -22,8 +22,11 @@ SpellBook::AddSpellType("neucast","Nature Casting",$SkillNatureCasting,2);
 SpellBook::AddSpellToType("offcast",$Spell::index[manashot]);
 SpellBook::AddSpellToType("offcast",$Spell::index[firebolt]);
 SpellBook::AddSpellToType("offcast",$Spell::index[icespike]);
+SpellBook::AddSpellToType("offcast",$Spell::index[ironfist]);
 SpellBook::AddSpellToType("offcast",$Spell::index[cloud]);
 SpellBook::AddSpellToType("offcast",$Spell::index[melt]);
+SpellBook::AddSpellToType("offcast",$Spell::index[beam]);
+SpellBook::AddSpellToType("offcast",$Spell::index[dimensionrift]);
 
 SpellBook::AddSpellToType("defcast",$Spell::index[repent]);
 SpellBook::AddSpellToType("defcast",$Spell::index[heal]);
@@ -42,9 +45,11 @@ SpellBook::AddSpellToType("defcast",$Spell::index[shell]);
 SpellBook::AddSpellToType("defcast",$Spell::index[shell2]);
 
 SpellBook::AddSpellToType("neucast",$Spell::index[thorn]);
-SpellBook::AddSpellToType("neucast",$Spell::index[soft]);
+SpellBook::AddSpellToType("neucast",$Spell::index[soften]);
 SpellBook::AddSpellToType("neucast",$Spell::index[teleport]);
+SpellBook::AddSpellToType("neucast",$Spell::index[icestorm]);
 SpellBook::AddSpellToType("neucast",$Spell::index[breeze]);
+SpellBook::AddSpellToType("neucast",$Spell::index[soften2]);
 SpellBook::AddSpellToType("neucast",$Spell::index[transport]);
 SpellBook::AddSpellToType("neucast",$Spell::index[advtransport]);
 SpellBook::AddSpellToType("neucast",$Spell::index[translocate]);

@@ -164,21 +164,20 @@ $AccessoryVar["#shove",$MiscInfo] = "Pushes the target back slightly. Far weaker
 SkillBook::AddSkillToList("castspell","Cast Spell","#cast","#cast <SpellName>");
 SkillBook::AddSkillToList("attune","Attune to Item","#attune","#attune");
 SkillBook::AddSkillToList("recharge","Recharge Item","#recharge","#recharge <mana>");
+SkillBook::AddSkillToList("togglecastequip","Toggle keep weapon on cast","#togglecastequip","#togglecastequip");
+
 
 $AccessoryVar["#cast", $MiscInfo] = "Used to cast spells.  See the spell book in your TAB menu to see what spells you have available to cast currently.";
 $AccessoryVar["#spell",$MiscInfo] = $AccessoryVar["#cast", $MiscInfo];
 $AccessoryVar["#attune",$MiscInfo] = "If it can be attuned, attune to your currently equipped item (or weapon), unlocking bonuses or abilities. You can only attune to one item at a time. Any mana on the previous item will be lost.";
 $AccessoryVar["#recharge",$MiscInfo] = "Recharge an equipped attuned weapon with mana.";
+$AccessoryVar["#togglecastequip",$MiscInfo] = "Toggle whether or not you unequip your weapon when casting spells. Weapon is unequipped by default, because the projectile can visually be off.";
 
 SkillBook::AddSkillToList("smithitem","Smith","#smith","#smith <ItemNameNoSpaces>");
-SkillBook::AddSkillToList("mixitem","Mix","#mix","#mix <ItemNameNoSpaces>");
-SkillBook::AddSkillToList("smeltitem","Smelt","#smelt","#smelt <ItemNameNoSpaces>");
-SkillBook::AddSkillToList("cookitem","Cook","#cook","#cook <ItemNameNoSpaces>");
+SkillBook::AddSkillToList("craftitem","Craft","#craft","#craft <ItemNameNoSpaces>");
 
 $AccessoryVar["#smith", $MiscInfo] = "Use to craft smithable item. Requires being by an anvil.";
-$AccessoryVar["#mix", $MiscInfo] = "Use alchemy to craft an item.";
-$AccessoryVar["#smelt", $MiscInfo] = "Smelt ore into an item. Requires being by an anvil.";
-$AccessoryVar["#cook", $MiscInfo] = "Cook a food item. Food items give small bonuses.";
+$AccessoryVar["#craft", $MiscInfo] = "Use to craft an item.";
 
 SkillBook::AddSkillToList("useitem","Use","#use","#use <ItemNameNoSpaces>");
 SkillBook::AddSkillToList("dropcoins","Drop Coins","#dropcoins","#dropcoins <amount>");
@@ -287,9 +286,7 @@ SkillBook::AddSkillToGroup("whatis","info");
 SkillBook::AddSkillToGroup("craftinfo","info");
 
 SkillBook::AddSkillToGroup("smithitem","crafting");
-SkillBook::AddSkillToGroup("mixitem","crafting");
-SkillBook::AddSkillToGroup("smeltitem","crafting");
-SkillBook::AddSkillToGroup("cookitem","crafting");
+SkillBook::AddSkillToGroup("craftitem","crafting");
 
 SkillBook::AddSkillToGroup("useitem","inventory");
 SkillBook::AddSkillToGroup("dropcoins","inventory");
@@ -300,6 +297,7 @@ SkillBook::AddSkillToGroup("unsharepack","inventory");
 SkillBook::AddSkillToGroup("castspell","Magic");
 SkillBook::AddSkillToGroup("attune","Magic");
 SkillBook::AddSkillToGroup("recharge","Magic");
+SkillBook::AddSkillToGroup("togglecastequip","Magic");
 
 SkillBook::AddSkillToGroup("setcamp","Camping");
 SkillBook::AddSkillToGroup("uncamp","Camping");

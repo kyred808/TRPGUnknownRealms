@@ -245,7 +245,9 @@ function createServer(%mission, %dedicated)
 	GenerateAllShieldCosts();
 	GenerateAllArmorCosts();
 
+    RPGItem::ClearVariables();
     RPGItem::BuildInventoryItemList();
+    RPGItem::BuildBeltItemList();
     
 	InitObjectives();
 

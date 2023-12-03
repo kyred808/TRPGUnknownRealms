@@ -510,6 +510,9 @@ $SkillRestriction[RShortBow] = $SkillRestriction[ShortBow];
 $SkillRestriction[RLightCrossbow] = $SkillRestriction[LightCrossbow];
 
 $SkillRestriction[NoviceStaff] = $SkillOffensiveCasting @ " 5 "@ $SkillEnergy @" 0";
+$SkillRestriction[MagesStaff] = $SkillOffensiveCasting @ " 50 "@ $SkillEnergy @" 15";
+$SkillRestriction[FireStaff] = $SkillOffensiveCasting @ " 80 "@ $SkillEnergy @" 5";
+$SkillRestriction[ThornStaff] = $SkillNatureCasting @ " 26 "@ $MinClass @" Druid";
 
 // Chat functions
 $SkillRestriction["#steal"] = $SkillStealing @ " 15";

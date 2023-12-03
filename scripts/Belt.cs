@@ -285,7 +285,7 @@ function processMenuBeltDrop(%clientId, %opt)
 	}
 	else if(%option == "drop")
 	{
-		Belt::DropItem(%clientid,%item,%amnt,%type);
+		Belt::DropItem(%clientid,%item,%amnt);
         Client::SendMessage(%clientId, $MsgWhite, "You dropped "@ %amnt @" "@%item@".~wPku_weap.wav");
         if(Belt::HasThisStuff(%clientid,%item) > 0)
         {
@@ -1510,7 +1510,7 @@ function Belt::Store(%clientid,%npc)
 	MenuStoreBelt(%clientid,"store",1);
 }
 
-// Faster version in weight.cs -Kyred
+// Faster version in weight.cs -Kyred  Also does not work anymore
 function Belt::GetWeight(%clientid)
 {
 	%list[1] = "RareItems";
@@ -1570,12 +1570,13 @@ function Belt::getDeathItems(%clientId)
     return %temploot;
 }
 
-function Belt::DropItem(%clientid,%item,%amnt,%type)
+function Belt::DropItem(%clientid,%item,%amnt)
 {
 	%chk = Belt::HasThisStuff(%clientid,%item);
 	if(%chk >= %amnt)
 	{
-		Belt::TakeThisStuff(%clientid,%item,%amnt);
+		//Belt::TakeThisStuff(%clientid,%item,%amnt);
+        RPGItem::decItemCount(%clientId,%item,%amnt);
 		TossLootbag(%clientId, %item@" "@%amnt, 8, "*", 0, 1);
         RefreshAll(%clientId,false);
 	}
@@ -1753,6 +1754,11 @@ function isBeltItem(%item)
 	if((String::ICompare($beltitem[%item, "Item"], %item) == 0))
 		%flag = true;
 	return %flag;
+}
+
+function Belt::getItemType(%item)
+{
+    return $beltitem[%item, "Type"];
 }
 
 function Belt::ItemCount(%item,%list)

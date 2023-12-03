@@ -115,6 +115,24 @@ BulletData FusionBolt
    rotationPeriod = 1.5;
 };
 
+LightningData ThornStaffBolt
+{	bitmapName = "plasmabolt.bmp";
+	damageType = $NullDamageType;
+	boltLength = 40.0;
+	coneAngle = 45.0;
+	damagePerSec = 0.0;
+	energyDrainPerSec = 0.0;
+	segmentDivisions = 4;
+	numSegments = 5;
+	beamWidth = 0.3;  //10
+	updateTime = 120;
+	skipPercent = 0.5;
+	displaceBias = 0.15;
+	lightRange = 3.0;
+	lightColor = { 0.25, 0.25, 0.85 };
+	soundId = SoundElfFire;
+};
+
 //Thorn
 //RocketData Thorn
 //{ 
@@ -192,7 +210,7 @@ BulletData Firebolt
    explosionTag       = blasterExpBoom;
 
    damageClass        = 1;
-   damageValue        = 32;
+   damageValue        = 45;
    damageType         = $SpellDamageType;
    explosionRadius = 6.0;
    kickBackStrength = 0.0;
@@ -1188,7 +1206,7 @@ RocketData FireBallBolt
 	damageClass = 1;
 	damageValue = 1; 
 	damageType = $StaffDamageType;
-	explosionRadius = 8.0;
+	explosionRadius = 7.0;
 	kickBackStrength = 0.1;
 	muzzleVelocity   = 80.0;
 	terminalVelocity = 80.0;

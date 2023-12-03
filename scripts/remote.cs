@@ -179,11 +179,14 @@ function remoteUseItem(%clientId, %type)
 		{
 			if (%item == Weapon) 
 	      	      %item = Player::getMountedItem(%clientId,$WeaponSlot);
-	
-			if(%item != -1)
-			{
-				Player::useItem(%clientId, %item);
-			}
+
+            %label = RPGItem::ItemIDToLabel(%type);
+            RPGItem::useItem(%clientId,%label);
+            
+			//if(%item != -1)
+			//{
+			//	Player::useItem(%clientId, %item);
+			//}
 		}
 		//else if(%item == Blaster)
 		//{
@@ -312,10 +315,11 @@ function remoteThrowItem(%clientId,%type,%strength)
 	//}
 }
 
-function remoteDropItem(%clientId,%type)
+function remoteDropItem(%clientId,%type,%amnt)
 {
 	dbecho($dbechoMode, "remoteDropItem(" @ %clientId @ ", " @ %item @ ")");
-
+    if(%amnt == "")
+        %amnt = 1;
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
 	{
@@ -326,32 +330,34 @@ function remoteDropItem(%clientId,%type)
 			if((Client::getOwnedObject(%clientId)).driver != 1) {
 				//echo("Drop item: ",%type);
 				%clientId.throwStrength = 1;
-	
-				%item = getItemData(%type);
-				if(%item == Weapon)
-				{
-					%item = Player::getMountedItem(%clientId,$WeaponSlot);
-					Player::dropItem(%clientId,%item);
-				}
-				else if(%item == Ammo)
-				{
-					%item = Player::getMountedItem(%clientId,$WeaponSlot);
-					if(%item.className == Weapon)
-					{
-						%item = %item.imageType.ammoType;
-						Player::dropItem(%clientId,%item);
-					}
-				}
-				else if (%item.className == Equipped)
-				{
-					Client::sendMessage(%clientId, $MsgRed, "You can't drop an equipped item!~wC_BuySell.wav");
-				}
-				else if ($LoreItem[%item])
-				{
-					Client::sendMessage(%clientId, $MsgRed, "You can't drop a lore item!~wC_BuySell.wav");
-				}
-				else 
-					Player::dropItem(%clientId,%item);
+                
+                %label = RPGItem::ItemIDToLabel(%type);
+                RPGItem::dropItem(%clientId,%label,%amnt);
+				//%item = getItemData(%type);
+				//if(%item == Weapon)
+				//{
+				//	%item = Player::getMountedItem(%clientId,$WeaponSlot);
+				//	Player::dropItem(%clientId,%item);
+				//}
+				//else if(%item == Ammo)
+				//{
+				//	%item = Player::getMountedItem(%clientId,$WeaponSlot);
+				//	if(%item.className == Weapon)
+				//	{
+				//		%item = %item.imageType.ammoType;
+				//		Player::dropItem(%clientId,%item);
+				//	}
+				//}
+				//else if (%item.className == Equipped)
+				//{
+				//	Client::sendMessage(%clientId, $MsgRed, "You can't drop an equipped item!~wC_BuySell.wav");
+				//}
+				//else if ($LoreItem[%item])
+				//{
+				//	Client::sendMessage(%clientId, $MsgRed, "You can't drop a lore item!~wC_BuySell.wav");
+				//}
+				//else 
+				//	Player::dropItem(%clientId,%item);
 			}
 		}
 	}

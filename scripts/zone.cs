@@ -555,7 +555,7 @@ function UpdateZone(%object)
     
     if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
     {
-        UseSkill(%clientId, $SkillEnergy, True, True,12);
+        UseSkill(%clientId, $SkillEnergy, True, True);
     }
     
 	//-----------------------------------------------------------

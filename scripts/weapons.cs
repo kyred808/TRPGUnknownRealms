@@ -161,9 +161,9 @@ $AccessoryVar[MetalFeather, $SpecialVar] = "6 60";
 $AccessoryVar[Talon, $SpecialVar] = "6 80";
 $AccessoryVar[CeraphumsFeather, $SpecialVar] = "6 105";
 
-$AccessoryVar[NoviceStaff, $SpecialVar] = "6 15";
-$AccessoryVar[MagesStaff, $SpecialVar] = "6 30";
-$AccessoryVar[FireStaff, $SpecialVar] = "6 45";
+$AccessoryVar[NoviceStaff, $SpecialVar] = "6 25";
+$AccessoryVar[MagesStaff, $SpecialVar] = "6 50";
+$AccessoryVar[FireStaff, $SpecialVar] = "6 75";
 $AccessoryVar[ThornStaff, $SpecialVar] = "6 20";
 $AccessoryVar[HealerStaff, $SpecialVar] = "6 10";
 //.................................................................................
@@ -1437,6 +1437,255 @@ function FireStaffImage::onFire(%player,%slot)
     MagesStaffAttack(%player,FireStaff,$MageStaff[FireStaff,ManaCost],LaunchFB,FireBallBolt,80*2);
 }
 
+$MageStaff[ThornStaff,MaxMana] = 100;
+$MageStaff[ThornStaff,ManaCost] = 5;
+$MageStaff[ThornStaff,AttunementCost] = 10;
+$MageStaff[ThornStaff,AttunementTime] = 2;
+$MageStaff[ThornStaff,Rate] = 1;
+
+ItemImageData ThornStaffImage
+{
+	shapeFile = "mrtwig";
+	mountPoint = 0;
+    mountOffset = { 0, -0.6, 0 };
+	mountRotation = { -1.57 ,0 ,0 };
+	weaponType = 2;
+	projectileType = ThornStaffBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
+	lightType = 3;
+    lightRadius = 2;
+	lightTime = 1;
+	lightColor = { 0.25, 0.25, 0.85 };
+    
+	sfxFire = SoundELFIdle;//SoundRepairItem;
+	sfxActivate = AxeSlash2;
+};
+
+ItemData ThornStaff
+{
+    heading = "bWeapons";
+	description = "Staff of Thorns";
+	className = "Weapon";
+	shapeFile  = "mrtwig";
+	hudIcon = "mrtwig";
+	shadowDetailMask = 4;
+	imageType = ThornStaffImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+function ThornStaff::onMount(%player,%item)
+{
+    %clientId = Player::getClient(%player);
+    if(fetchData(%clientId,"attunedWeapon") == %item)
+    {
+        %weapMana = fetchData(%clientId,"attunedWeaponMana");
+        %maxMana = $MageStaff[%item,MaxMana];
+        bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%item) @" Mana: <f0>"@ %weapMana @"<f1>/<f0>"@%maxMana,2);
+        
+    }
+    //Player::mountItem(%player,StaffPole,$ExtraImageSlot1);
+}
+
+function ThornStaff::onUnmount(%player,%item)
+{
+    //Player::unmountItem(%player,$ExtraImageSlot1);
+}
+
+function ThornStaffImage::onActivate(%player,%slot)
+{
+    echo("ThornStaffImage::onActivate("@%player@","@%slot@")");
+}
+//function ThornStaffImage::onFire(%player,%slot)
+//{
+//    echo("ThornStaffImage::onFire("@%player@","@%slot@")");
+//    %clientId = Player::getClient(%player);
+//    if(%clientId == "")
+//		%clientId = 0;
+//
+//	//==== ANTI-SPAM CHECK, CAUSE FOR SPAM UNKNOWN ==========
+//	%time = getIntegerTime(true) >> 5;
+//	if(%time - %clientId.lastFireTime <= $fireTimeDelay)
+//		return;
+//	%clientId.lastFireTime = %time;
+//	//=======================================================
+//    
+//    if(fetchData(%clientId,"attuningToWeapon"))
+//    {
+//        CancelAttunement(%clientId);
+//        Player::trigger(%player,%slot,false);
+//        return;
+//    }
+//    
+//    if(fetchData(%clientId,"attunedWeapon") != %item)
+//    {
+//        Client::sendMessage(%clientId,$MsgRed,"You are not attuned to this staff!");
+//        Player::trigger(%player,%slot,false);
+//        return;
+//    }
+//    
+//    %weapMana = fetchData(%clientId,"attunedWeaponMana");
+//    
+//    if(%weapMana < %manacost)
+//    {
+//        Player::trigger(%player,%slot,false);
+//        Client::sendMessage(%clientId,$MsgRed,"Your staff is too low on mana. Use #recharge");
+//    }
+//    
+//    if(%weapMana != "")
+//    {
+//        %item = Player::getMountedItem(%player,%slot);
+//        %newMana = fetchData(%clientId,"attunedWeaponMana");
+//        %maxMana = $MageStaff[%item,MaxMana];
+//        bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%item) @" Mana: <F0>"@ %newMana @"<F1>/<F0>"@%maxMana,1);
+//    }
+//}
+
+//function ThornStaffBolt::onAcquire(%this, %player, %target)
+//{
+//    echo("ThornStaffBolt::onAcquire("@%this@","@%player@","@%target@")");
+//	%client = Player::getClient(%player);
+//	
+//    %player.atkDisabled = false;
+//    %weap = Player::getMountedItem(%player,$WeaponSlot);
+//    %player.staffThing = %weap;
+//    %player.staffTime = getSimTime() + $MageStaff[%weap,Rate];
+//    %mana = fetchData(%client,"attunedWeaponMana");
+//    %cost = $MageStaff[%weap,ManaCost];
+//    
+//    if(%mana < %cost)
+//    {
+//        Client::sendMessage(%client, $MsgRed, "Your staff is too low on mana. Use #recharge");
+//        Player::trigger(%player, $WeaponSlot, false);
+//        return;
+//    }
+//    
+//	if(%target == %player) 
+//	{
+//		return;
+//	}
+//	else 
+//	{
+//		%player.staffTarget = %target;
+//		if(getObjectType(%player.staffTarget) == "Player") 
+//		{
+//			%rclient = Player::getClient(%player.staffTarget);
+//			%name = Client::getName(%rclient);
+//		}
+//		else 
+//        {
+//            %player.atkDisabled = true;
+//            Player::trigger(%player,$WeaponSlot,false);
+//            return;
+//        }
+//	}
+//    
+//	//HealCheckLoop(%client,%player,%weap,1);
+//}
+
+//function ThornStaffBolt::onRelease(%this, %player)
+//{
+//    echo("ThornStaffBolt::onRelease("@%this@","@%player@")");
+//    %player.staffTime = "";
+//    %player.staffThing = "";
+//}
+
+function ThornStaffBolt::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
+{
+    echo(%shooterId.stopDmgTgt);
+    if(%shooterId.stopDmgTgt)
+        return;
+    
+    %player = Client::getOwnedObject(%shooterId);
+    
+    if(fetchData(%shooterId,"attuningToWeapon"))
+    {
+        CancelAttunement(%shooterId);
+        Player::trigger(%player,$WeaponSlot,false);
+        %shooterId.stopDmgTgt = true;
+        schedule(%shooterId@".stopDmgTgt = false;",0.5);
+        return;
+    }
+    
+    %weap = Player::getMountedItem(%player,$WeaponSlot);
+    if(fetchData(%shooterId,"attunedWeapon") != %weap)
+    {
+        Client::sendMessage(%shooterId,$MsgRed,"You are not attuned to this staff!");
+        Player::trigger(%player,$WeaponSlot,false);
+        %shooterId.stopDmgTgt = true;
+        schedule(%shooterId@".stopDmgTgt = false;",0.5);
+        return;
+    }
+    
+    %mana = fetchData(%shooterId,"attunedWeaponMana");
+    if(%mana < $MageStaff[%weap,ManaCost])
+    {
+        Client::sendMessage(%shooterId,$MsgRed,"Your staff is too low on mana. Use #recharge");
+        Player::trigger(%player,$WeaponSlot,false);
+        return;
+    }
+    
+    %player.staffTimeAccum += %timeSlice;
+    if(%player.staffTimeAccum >= $MageStaff[%weap,Rate])
+    {
+        %player.staffTimeAccum = 0;
+        storeData(%shooterId,"attunedWeaponMana",$MageStaff[%weap,ManaCost],"dec");
+        Gamebase::virtual(%target,"onDamage",$StaffDamageType,1.0,"0 0 0","0 0 0","0 0 0","torso","",%shooterId,%weap);
+        
+        if(%mana != "")
+        {
+            %newMana = fetchData(%shooterId,"attunedWeaponMana");
+            %maxMana = $MageStaff[%weap,MaxMana];
+            bottomprint(%shooterId,"<jc><f1>"@RPGItem::getDesc(%weap) @" Mana: <F0>"@ %newMana @"<F1>/<F0>"@%maxMana,1);
+        }
+    }
+}
+
+//function ThornStaffBolt::checkDone(%this, %player)
+//{
+//    echo("ThornStaffBolt::checkDone("@%this@","@%player@")");
+//	if(Player::isTriggered(%player,$WeaponSlot) && Player::getMountedItem(%player,$WeaponSlot) == %player.staffThing && %player.staffTarget != -1) 
+//	{
+//        %weap = %player.staffThing;
+//        %client = Player::getClient(%player);
+//        
+//        %cost = $MageStaff[%weap,ManaCost];
+//        
+//        %object = %player.staffTarget;
+//        
+//        if(getSimTime() >= %player.staffTime)
+//        {
+//            %natCast = CalculatePlayerSkill(%client,$SkillNatureCasting);
+//            %atkIdx = Word::FindWord($AccessoryVar[%weap, $SpecialVar],$SpecialVarATK)+1;
+//            %value = getWord($AccessoryVar[%weap, $SpecialVar],%atkIdx);
+//            //%amnt = %value + floor(%natCast/20);
+//            //%rclient = Player::getClient(%object);
+//            
+//            //refreshHP(%rclient,%amnt/$TribesDamageToNumericDamage);
+//            storeData(%client,"attunedWeaponMana",%cost,"dec");
+//            
+//            //Gamebase::virtual(%object,"onDamage",$StaffDamageType,%value,"0 0 0","0 0 0","0 0 0","torso","",%client,%weap);
+//        }
+//        
+//        %mana = fetchData(%client,"attunedWeaponMana");
+//        if(%mana < %cost)
+//        {
+//            Client::sendMessage(%client, $MsgRed, "Your staff is too low on mana. Use #recharge");
+//            Player::trigger(%player, $WeaponSlot, false);
+//            return;
+//        }
+//        
+//        if(%mana != "")
+//        {
+//            %newMana = fetchData(%clientId,"attunedWeaponMana");
+//            %maxMana = $MageStaff[%weap,MaxMana];
+//            bottomprint(%clientId,"<jc><f1>"@RPGItem::getDesc(%weap) @" Mana: <F0>"@ %newMana @"<F1>/<F0>"@%maxMana,1);
+//        }
+//	}
+//}
+
+
 $MageStaff[HealerStaff,MaxMana] = 600;
 $MageStaff[HealerStaff,ManaCost] = 15;
 $MageStaff[HealerStaff,AttunementCost] = 45;
@@ -1702,29 +1951,33 @@ function MagesStaffAttack(%player,%item,%manacost,%sound,%projectile,%tgtRange)
     if(%weapMana >= %manacost)
     {
         storeData(%clientId,"attunedWeaponMana",%manacost,"dec");
-        %tgt = "";
-        %tgtPos = "";
-        if(%tgtRange != "")
+        if(%projectile != "")
         {
-            $los::object = "";
-            $los::position = "";
-            if(Gamebase::getLOSInfo(%player,%tgtRange))
+            %tgt = "";
+            %tgtPos = "";
+            if(%tgtRange != "")
             {
-                %tgt = $los::object;
-                %tgtPos = $los::position;
+                $los::object = "";
+                $los::position = "";
+                if(Gamebase::getLOSInfo(%player,%tgtRange))
+                {
+                    %tgt = $los::object;
+                    %tgtPos = $los::position;
+                }
             }
+            if(%sound != "")
+                playSound(%sound,Gamebase::getPosition(%clientId));
+            if(%tgtPos != "")
+            {
+                %pos = Word::getSubWord(Gamebase::getMuzzleTransform(%player),9,3);
+                %dir = Vector::Normalize(Vector::sub(%tgtPos,%pos));
+                %trans = "0 0 0 "@ %dir @" 0 0 0 "@ %pos;
+            }
+            else
+                %trans = Gamebase::getMuzzleTransform(%player);
+                
+            Projectile::spawnProjectile(%projectile,%trans,%player,Item::getVelocity(%player),%tgt);
         }
-        playSound(%sound,Gamebase::getPosition(%clientId));
-        if(%tgtPos != "")
-        {
-            %pos = Word::getSubWord(Gamebase::getMuzzleTransform(%player),9,3);
-            %dir = Vector::Normalize(Vector::sub(%tgtPos,%pos));
-            %trans = "0 0 0 "@ %dir @" 0 0 0 "@ %pos;
-        }
-        else
-            %trans = Gamebase::getMuzzleTransform(%player);
-            
-        Projectile::spawnProjectile(%projectile,%trans,%player,Item::getVelocity(%player),%tgt);
     }
     else
         Client::sendMessage(%clientId,$MsgRed,"Your staff is too low on mana. Use #recharge");
@@ -1777,6 +2030,226 @@ function FinishWeaponAttunement(%clientId,%item)
         storeData(%clientId,"attuningToWeapon","");
         refreshMANA(%clientId,$MageStaff[%item,AttunementCost]);
     }
+}
+
+
+ItemImageData FireChage1Image
+{
+	shapeFile = "shotgunbolt";
+	mountPoint = 0;
+    mountOffset = { 0, 0, 0 };
+	mountRotation = { 0 ,0 ,0 };
+	weaponType = 2;
+	//projectileType = ThornStaffBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
+	lightType = 3;
+    lightRadius = 2;
+	lightTime = 1;
+	lightColor = { 0.25, 0.25, 0.85 };
+    
+	sfxFire = SoundELFIdle;//SoundRepairItem;
+	sfxActivate = ActivateBF;
+};
+
+ItemData FireChage1Item
+{
+    heading = "bWeapons";
+	description = "Staff of Thorns";
+	className = "Weapon";
+	shapeFile  = "bullet";
+	hudIcon = "mrtwig";
+	shadowDetailMask = 4;
+	imageType = FireChage1Image;
+	price = 0;
+	showWeaponBar = false;
+};
+
+ItemImageData FireChage2Image
+{
+	shapeFile = "fire_small";
+	mountPoint = 0;
+    mountOffset = { 0, 0, 0 };
+	mountRotation = { 0,0 ,0 };
+	weaponType = 2;
+	//projectileType = ThornStaffBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
+	lightType = 3;
+    lightRadius = 2;
+	lightTime = 1;
+	lightColor = { 0.25, 0.25, 0.85 };
+    
+	sfxFire = SoundELFIdle;//SoundRepairItem;
+	sfxActivate = ActivateAB;
+};
+
+ItemData FireChage2Item
+{
+    heading = "bWeapons";
+	description = "Staff of Thorns";
+	className = "Weapon";
+	shapeFile  = "bullet";
+	hudIcon = "mrtwig";
+	shadowDetailMask = 4;
+	imageType = FireChage2Image;
+	price = 0;
+	showWeaponBar = false;
+};
+
+
+ItemImageData FireChage3Image
+{
+	shapeFile = "fire_medium";
+	mountPoint = 0;
+    mountOffset = { 0, 0, 0 };
+	mountRotation = { 0 ,0 ,0 };
+	weaponType = 2;
+	//projectileType = ThornStaffBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
+	lightType = 3;
+    lightRadius = 2;
+	lightTime = 1;
+	lightColor = { 0.25, 0.25, 0.85 };
+    
+	sfxFire = SoundELFIdle;//SoundRepairItem;
+	sfxActivate = rocketExplosion;
+};
+
+ItemData FireChage3Item
+{
+    heading = "bWeapons";
+	description = "Staff of Thorns";
+	className = "Weapon";
+	shapeFile  = "bullet";
+	hudIcon = "mrtwig";
+	shadowDetailMask = 4;
+	imageType = FireChage3Image;
+	price = 0;
+	showWeaponBar = false;
+};
+
+ItemImageData ChargeMagicImage
+{
+	shapeFile = "bullet";
+	mountPoint = 0;
+    mountOffset = { 0, -0.6, 0 };
+	mountRotation = { -1.57 ,0 ,0 };
+	weaponType = 2;
+	//projectileType = ThornStaffBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
+	lightType = 3;
+    lightRadius = 2;
+	lightTime = 1;
+	lightColor = { 0.25, 0.25, 0.85 };
+    
+	sfxFire = SoundELFIdle;//SoundRepairItem;
+	sfxActivate = SoundRepairItem;
+};
+
+ItemData ChargeMagicItem
+{
+    heading = "bWeapons";
+	description = "Staff of Thorns";
+	className = "Weapon";
+	shapeFile  = "bullet";
+	hudIcon = "mrtwig";
+	shadowDetailMask = 4;
+	imageType = ChargeMagicImage;
+	price = 0;
+	showWeaponBar = false;
+};
+
+function ChargeMagicImage::onActivate(%player,%slot)
+{
+    echo("ChargeMagicImage::onActivate("@%player@","@%slot@")");
+    %player.chargeStartTime = getSimTime();
+    %player.chargeStage = -1;
+}
+
+function ChargeMagicImage::onDeactivate(%player,%slot)
+{
+    echo("ChargeMagicImage::onDeactivate("@%player@","@%slot@")");
+    %trans = Gamebase::getEyeTransform(%player);
+    %vel = Item::getVelocity(%player);
+    echo(%player.chargeStage);
+    if(%player.chargeStage == 0)
+    {
+        Projectile::spawnProjectile(Firebolt,%trans,%player,%vel);
+        playSound(HitPawnDT,Gamebase::getPosition(%player));
+    }
+    else if(%player.chargeStage == 1)
+    {
+        Projectile::spawnProjectile(Fireball,%trans,%player,%vel);
+        playSound(ActivateAB,Gamebase::getPosition(%player));
+    }
+    else if(%player.chargeStage == 2)
+    {
+        Projectile::spawnProjectile(Melt,%trans,%player,%vel);
+        playSound(LaunchFB,Gamebase::getPosition(%player));
+    }
+    
+    Player::unmountItem(%player,7);
+    %player.chargeStartTime = "";
+    %player.chargeStage = "";
+}
+
+$Charge::spacerLen = 20;
+$ChargeTime = 4;
+
+function ChargeMagicImage::onUpdateFire(%player,%slot)
+{
+    echo("ChargeMagicImage::onUpdateFire("@%player@","@%slot@")");
+    
+    %clientId = Player::getClient(%player);
+    %timeDiff = getSimTime() - %player.chargeStartTime;
+    
+    if(%timeDiff <= $ChargeTime)
+    {
+        echo(%timeDiff);
+        %stage = floor(%timeDiff/2);
+        if(%player.chargeStage != %stage)
+        {
+            %player.chargeStage = %stage;
+            if(%stage == 0)
+                Player::mountItem(%player,FireChage1Item,7);
+            else if(%stage == 1)
+            {
+                Player::unmountItem(%player,7);
+                Player::mountItem(%player,FireChage2Item,7);
+            }
+            
+        }
+        %msg = ChargeMagic::CreateBottomPrintMsg(%clientId,%timeDiff);
+    }
+    else
+    {
+        if(%player.chargeStage < 2)
+        {
+            %player.chargeStage = 2;
+            Player::unmountItem(%player,7);
+            Player::mountItem(%player,FireChage3Item,7);
+        }
+        %msg = "<jc>Charge:\n<f1>[====================]\n<f0>You are ready to cast!";
+    }
+    
+    bottomprint(%clientId,%msg,1);
+    
+    //%player.chargeLastUpdate = getSimTime();
+}
+
+function ChargeMagic::CreateBottomPrintMsg(%clientId,%timeDiff)
+{
+    %mm = floor(%timeDiff* $Charge::spacerLen/$ChargeTime);
+    %bmsg = "<jc>Charge: "@ floor(100*(%timeDiff/$ChargeTime)) @"%\n[<f1>";
+    %msg = String::rpad(%bmsg,String::len(%bmsg) +%mm,"=");
+    %bb = ceil($Charge::spacerLen - %mm);
+    %msg = String::rpad(%msg,String::len(%msg)+%bb," ");
+   // echo(%mm @" "@ %bb);
+    %msg = %msg @ "<f0>]";
+    return %msg;
 }
 
 //****************************************************************************************************
