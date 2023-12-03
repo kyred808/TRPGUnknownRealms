@@ -10,16 +10,106 @@ function CmdInventoryGui::onOpen()
 	}
 }
 
+//And now this one too -Kyred
+function CmdInventoryGui::onClose()
+{
+    closeInventory();
+}
+
 $RPGMenu::rebuild = false;
 $RPGMenu::expandItemOptions = false;
+
+$RPGMenu::buyListTempBuffer = "";
+$RPGMenu::playerInvListTempBuffer = "";
 
 //================================
 // Remote Functions
 //================================
 
+function remoteBufferedBuyList(%mgr,%shopList,%finish)
+{
+    if(%mgr != 2048)
+	{
+		return;
+	}
+    if(%amt == "")
+	{
+		%amt = " ";
+	}
+    
+    echo("Length: "@ String::len(%shopList));
+    $RPGMenu::buyListActive = true;
+    $RPGMenu::buyListTempBuffer = $RPGMenu::buyListTempBuffer @","@ %shopList;
+    
+    if(%finish)
+    {
+        %temp = $RPGMenu::itemList[Buy,Showing];
+        $RPGMenu::itemList[Buy,Showing] = false;
+        echo($RPGMenu::buyListTempBuffer @" "@ String::len($RPGMenu::buyListTempBuffer));
+        
+        
+        for(%i = 0; (%elem = String::getWord($RPGMenu::buyListTempBuffer,",",%i)) != ","; %i++)
+        {
+            //String::getWord(%elem,"|",0); //ID
+            //String::getWord(%elem,"|",1); //Name
+            //String::getWord(%elem,"|",2); //Cost
+            //String::getWord(%elem,"|",3); //Type
+            remoteSetBuyList(2048, String::getWord(%elem,"|",0) , String::getWord(%elem,"|",1), String::getWord(%elem,"|",2), String::getWord(%elem,"|",3));
+        }
+        $RPGMenu::buyListTempBuffer = "";
+        
+        if(%temp)
+        {
+            $RPGMenu::itemList[Buy,Showing] = true;
+            RPGMenu::ReloadInventoryBuyList();
+        }
+    }
+}
+
+function remoteBufferedPlayerInvList(%mgr,%shopList,%finish)
+{
+    if(%mgr != 2048)
+	{
+		return;
+	}
+    if(%amt == "")
+	{
+		%amt = 0;
+	}
+    
+    echo("Length: "@ String::len(%shopList));
+    
+    $RPGMenu::playerInvListTempBuffer = $RPGMenu::playerInvListTempBuffer @","@ %shopList;
+    
+    if(%finish)
+    {
+        %temp = $RPGMenu::itemList[Inv,Showing];
+        $RPGMenu::itemList[Inv,Showing] = false;
+        echo($RPGMenu::playerInvListTempBuffer @" "@ String::len($RPGMenu::playerInvListTempBuffer));
+        
+        for(%i = 0; (%elem = String::getWord($RPGMenu::playerInvListTempBuffer,",",%i)) != ","; %i++)
+        {
+            //String::getWord(%elem,"|",0); //ID
+            //String::getWord(%elem,"|",1); //Name
+            //String::getWord(%elem,"|",2); //Cost
+            //String::getWord(%elem,"|",3); //Type
+            remoteSetItemCount(2048, String::getWord(%elem,"|",0) , String::getWord(%elem,"|",1), String::getWord(%elem,"|",2), String::getWord(%elem,"|",3));
+        }
+        $RPGMenu::playerInvListTempBuffer = "";
+        
+        if(%temp)
+        {
+            $RPGMenu::itemList[Inv,Showing] = true;
+            RPGMenu::ReloadPlayerInventory();
+        }
+    }
+    
+}
+
 // Add an item to the buy list
 function remoteSetBuyList(%mgr, %num, %name, %amt, %type)
 {
+    echo("remoteSetBuyList("@%mgr@","@%num@","@%name@","@%amt@","@%type@")");
     if(%mgr != 2048)
 	{
 		return;
@@ -41,6 +131,7 @@ function remoteSetBuyList(%mgr, %num, %name, %amt, %type)
 //Add an item to the inventory list (aka Sell list)
 function remoteSetItemCount(%mgr, %num, %name, %amt, %type)
 {
+    echo("remoteSetItemCount("@%mgr@","@%num@","@%name@","@%amt@","@%type@")");
     if(%mgr != 2048)
 	{
 		return;
@@ -81,12 +172,42 @@ function remoteClearBuyList(%mgr)
 	{
 		return;
 	}
+    echo("CLEAR");
     %temp = $RPGMenu::itemList[Buy,Showing];
 	//TextList::clear(RPGBuy);
 	//TextList::clear(RPGBuyCnt);
-	deletevariables("RPGMenu::itemsList_Buy*");
-	$RPGTypes[Buy] = 0;
+	deletevariables("RPGMenu::itemListbuy*");
+	$RPGTypeCount[Buy] = 0;
 	$RPGMenu::itemList[Buy,Showing] = %temp;
+}
+
+function remoteClearPlayerInv(%mgr)
+{
+    if(%mgr != 2048)
+	{
+		return;
+	}
+    %temp = $RPGMenu::itemList[Inv,Showing];
+    deletevariables("RPGMenu::itemListinv*");
+    $RPGTypeCount[Inv] = 0;
+    $RPGMenu::itemList[Inv,Showing] = %temp;
+    $RPGMenu::playerInvListTempBuffer = "";
+    $RPGMenu::rebuild = false;
+    $RPGMenu::expandItemOptions = false;
+}
+
+function remoteClearInv(%mgr)
+{
+    if(%mgr != 2048)
+	{
+		return;
+	}
+    clearAllInv();
+    $RPGMenu::rebuild = false;
+    $RPGMenu::expandItemOptions = false;
+
+    $RPGMenu::buyListTempBuffer = "";
+    $RPGMenu::playerInvListTempBuffer = "";
 }
 
 //================================
@@ -127,9 +248,26 @@ function SelectBuyItem()
                 }
                 else
                 {
-                    %type = String::getSubStr(%val,1,9999);
-                    $RPGMenu::TypeGroupIsVisible[Buy,%type] = !$RPGMenu::TypeGroupIsVisible[Buy,%type];
-                    RPGMenu::ReloadPlayerInventory();
+                    if(isItemOptionElem(%val))
+                    {
+                        %w1 = getWord(%val,0);
+                        %w2 = getWord(%val,1);
+                        if(%w1 == "Buy:")
+                        {
+                            if(Math::isInteger(%w2))
+                            {
+                                %itemNum = determineItemNum($RPGMenu::itemList[Buy,Select]);
+                                //Buy Command
+                            }
+                        }
+                    }
+                    else
+                    {
+                        %type = String::getSubStr(%val,1,9999);
+                        $RPGMenu::TypeGroupIsVisible[Buy,%type] = !$RPGMenu::TypeGroupIsVisible[Buy,%type];
+                    }
+                    
+                    RPGMenu::ReloadInventoryBuyList();
                 }
                 $RPGMenu::itemList[Buy,isSelected] = false;
             }
@@ -137,9 +275,15 @@ function SelectBuyItem()
         else
         {
             $RPGMenu::itemList[Buy,LastClick] = %val;
-            if(determineItemNum(%val) != "")
+            %itemID = determineItemNum(%val);
+            if(%itemID != "")
                 $RPGMenu::itemList[Buy,Select] = %val;
-            $RPGMenu::expandItemOptions = false;
+            if($RPGMenu::expandItemOptions && %itemID != "")
+            {
+                $RPGMenu::expandItemOptions = false;
+                RPGMenu::ReloadInventoryBuyList();
+            }
+            
         }
     }
 }
@@ -329,9 +473,10 @@ function clearAllInv()
 	TextList::clear(RPGSellCnt);
 
     
+    
     deletevariables("RPGMenu::itemList*");
-    $RPGTypes[Buy] = 0;
-	$RPGTypes[Inv] = 0;
+    $RPGTypeCount[Buy] = 0;
+	$RPGTypeCount[Inv] = 0;
 }
 
 
@@ -343,6 +488,12 @@ function closeInventory()
     $RPGMenu::itemList[Buy,isSelected] = false;
     $RPGMenu::expandItemOptions = false;
     $RPGMenu::bulkCount = 1;
+    
+    if($RPGMenu::buyListActive)
+    {
+        remoteClearBuyList(2048);
+        $RPGMenu::buyListActive = false;
+    }
 }
 
 function RPGMenu::ReloadPlayerInventory()
@@ -355,7 +506,7 @@ function RPGMenu::ReloadPlayerInventory()
     TextList::clear(RPGSell);
     TextList::clear(RPGSellCnt);
     
-    for(%z=0; %z<=$RPGTypes[Inv]; %z++)
+    for(%z=0; %z<2+$RPGTypeCount[Inv]; %z++)
     {
         %type = $RPGMenu::itemList[Inv,Types,%z];
         %total = $RPGMenu::itemList[Inv,TypeItemList,%type,ListCount];
@@ -412,7 +563,7 @@ function RPGMenu::ReloadInventoryBuyList()
     TextList::clear(RPGBuy);
     TextList::clear(RPGBuyCnt);
     
-    for(%z=0; %z<=$RPGTypes[Buy]; %z++)
+    for(%z=0; %z<2+$RPGTypeCount[Buy]; %z++)
     {
         %type = $RPGMenu::itemList[Buy,Types,%z];
         %total = $RPGMenu::itemList[Buy,TypeItemList,%type,ListCount];
@@ -454,32 +605,30 @@ function RPGMenu::ReloadInventoryBuyList()
     //Control::setValue(RPGBuy, $RPGMenu::itemList[Buy,LastClick]);
 }
 
+
+
 function RPGMenu::UpdateInventoryList(%uid,%amt,%type,%listTag)
 {
-    //echo("RPGMenu::UpdateInventoryList("@%uid@","@%amt@","@%type@","@%listTag@")");
+    echo("RPGMenu::UpdateInventoryList("@%uid@","@%amt@","@%type@","@%listTag@")");
     if($RPGMenu::itemList[%listTag,TypeItemList,%type,ListCount] == "")
     {
-        // I want to put the armors at the top I don't care about the positioning of the rest
 		if(String::iCompare(%type, "Armor") == 0 || String::iCompare(%type, "Equipped") == 0)
         {
-            if($RPGTypes[%listTag] == "")
-			{
-                $RPGTypes[%listTag] = 0;
-			}
+            //if($RPGTypes[%listTag] == "")
+			//{
+            //    $RPGTypes[%listTag] = 0;
+			//}
             $RPGMenu::itemList[%listTag,Types,0] = %type;
         }
         else if(String::iCompare(%type, "Weapon") == 0)
         {
-            if($RPGTypes[%listTag] == "")
-			{
-                $RPGTypes[%listTag] = 1;
-			}
+
             $RPGMenu::itemList[%listTag,Types,1] = %type;
         }
         else
         {
-            $RPGTypes[%listTag]++;
-			$RPGMenu::itemList[%listTag,Types,$RPGTypes[%listTag]] = %type;
+			$RPGMenu::itemList[%listTag,Types,2+$RPGTypeCount[%listTag]] = %type;
+            $RPGTypeCount[%listTag]++;
         }
         $RPGMenu::TypeGroupIsVisible[%listTag,%type] = true;
     }
@@ -509,6 +658,11 @@ function addAmt(%amt, %type)
 //================================
 // Utility Functions
 //================================
+
+function requestInvRefresh()
+{
+    remoteEval(2048,"RequestPlayerInventoryRefresh");
+}
 
 function isItemOptionElem(%val)
 {

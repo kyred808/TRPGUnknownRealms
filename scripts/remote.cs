@@ -80,6 +80,17 @@ function remoteInventoryMode(%clientId)
 	}
 }
 
+function remoteRequestPlayerInventoryRefresh(%clientId)
+{
+    if(%clientId.blockInvRefresh == "")
+    {
+        %clientId.blockInvRefresh = true;
+        remoteEval(%clientId,"ClearPlayerInv");
+        RPGItem::refreshPlayerInv(%clientId);
+        schedule(%clientId@".blockInvRefresh = \"\";",5);
+    }
+}
+
 function remoteObjectivesMode(%clientId)
 {
 	Client::clearItemShopping(%clientId);

@@ -128,6 +128,49 @@ function RPGItem::forceUpdateBeltItems(%clientId,%type)
     }
 }
 
+function RPGItem::refreshPlayerInv(%clientId)
+{
+    %invList = RPGItem::getFullItemList(%clientId);
+    
+    %sendBuffer = "";
+    for(%i = 0; (%item = String::getWord(%invList," ",%i)) != " "; %i++)
+    {
+        %id = RPGItem::getItemID(%item);
+        %desc = RPGItem::getDesc(%item);
+        %amt = RPGItem::getItemCount(%clientId,%item);
+        %type = RPGItem::getItemGroup(%item);
+        
+        %len = String::len(%sendBuffer);
+        %itemStr = %id @"|"@ %desc @"|"@%amt@"|"@%type @",";
+        %strLen = String::len(%itemStr);
+        if(%len + %strLen > 200)
+        {
+            %ll = String::getSubStr(%sendBuffer,0,%len-1); //Drop the last comma
+            remoteEval(%clientId,"BufferedPlayerInvList",%ll,false);
+            %sendBuffer = "";
+        }
+        %sendBuffer = %sendBuffer @ %itemStr = %id @"|"@ %desc @"|"@%amt@"|"@%type @",";
+    }
+    
+    %ll = String::getSubStr(%sendBuffer,0,%len-1); //Drop the last comma
+    remoteEval(%clientId,"BufferedPlayerInvList",%sendBuffer,true);
+}
+
+function RPGItem::getFullItemList(%clientId)
+{
+    %invList = fetchData(%clientId,"InvItemList");
+    %invList = String::replaceAll(%invList,","," ");
+    %beltList = "";
+    for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+    {
+        %grp = $Belt::ItemGroup[%i];
+        %ns = Belt::GetNS(%clientId,%grp);
+        %itemList = Word::getSubWord(%ns,1,9999);
+        %invList = %invList @" "@ %itemList;
+    }
+    return String::replaceAll(%invList,"  "," ");
+}
+
 function RPGItem::updateItemList(%clientId,%item)
 {
     %invList = fetchData(%clientId,"InvItemList");
@@ -269,6 +312,7 @@ function RPGItem::dropItem(%clientId,%item,%amnt)
         {
             %clientId.bulkDrop = %amnt;
             Player::dropItem(%clientId,%item);
+            //dropItem eventually leads to decItemCount, where setitemcount will be handled.
             //remoteEval(%clientId,"SetItemCount",$RPGItem::ItemDef[%item,LabelToID],RPGItem::getDesc(%item),%curAmnt - %amnt,RPGItem::getItemGroup(%item));
         }
     }

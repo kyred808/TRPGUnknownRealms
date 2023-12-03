@@ -7,16 +7,16 @@ function SetupShop(%clientId, %id)
 
 	%clientId.bulkNum = "";
 
-	Client::clearItemShopping(%clientId);
-	Client::clearItemBuying(%clientId);
-
+	//Client::clearItemShopping(%clientId);
+	//Client::clearItemBuying(%clientId);
+    remoteEval(%clientId,"ClearBuyList");
 	Client::setGuiMode(%clientId, 4);
 
 	%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
 	Client::setInventoryText(%clientId, %txt);
 
 	%info = $BotInfo[%id.name, SHOP];	
-
+    %buyList = "";
     // Speed improved over 100x
 	for(%i = 0; GetWord(%info, %i) != -1; %i++)
 	{
@@ -25,8 +25,26 @@ function SetupShop(%clientId, %id)
         %item = $Shop::IndexItem[%a];
         if(%item != "")
         {
-            Client::setItemShopping(%clientId, %item);
-            Client::setItemBuying(%clientId, %item);
+            %id = RPGItem::getItemID(%item);
+            %desc = RPGItem::getDesc(%item);
+            %cost = 111;
+            %type = RPGItem::getItemGroup(%item);
+            
+            %len = String::len(%buyList);
+            
+            %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+            %strLen = String::len(%itemStr);
+            
+            if(%len + %strLen > 200)
+            {
+                %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+                remoteEval(%clientId,"BufferedBuyList",%ll,false);
+                %buyList = "";
+            }
+            
+            %buyList = %buyList @ %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+            //Client::setItemShopping(%clientId, %item);
+            //Client::setItemBuying(%clientId, %item);
         }
         
         // Very wasteful code
@@ -42,6 +60,8 @@ function SetupShop(%clientId, %id)
 		//	}
 		//}
 	}
+    %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+    remoteEval(%clientId,"BufferedBuyList",%buyList,true);
 }
 
 function SetupBank(%clientId, %id)
