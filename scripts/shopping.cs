@@ -27,7 +27,7 @@ function SetupShop(%clientId, %id)
         {
             %id = RPGItem::getItemID(%item);
             %desc = RPGItem::getDesc(%item);
-            %cost = 111;
+            %cost = getBuyCost(%clientId, %item);
             %type = RPGItem::getItemGroup(%item);
             
             %len = String::len(%buyList);
@@ -38,7 +38,7 @@ function SetupShop(%clientId, %id)
             if(%len + %strLen > 200)
             {
                 %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
-                remoteEval(%clientId,"BufferedBuyList",%ll,false);
+                remoteEval(%clientId,"BufferedBuyList",%ll,true,false);
                 %buyList = "";
             }
             
@@ -61,7 +61,7 @@ function SetupShop(%clientId, %id)
 		//}
 	}
     %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
-    remoteEval(%clientId,"BufferedBuyList",%buyList,true);
+    remoteEval(%clientId,"BufferedBuyList",%buyList,true,true);
 }
 
 function SetupBank(%clientId, %id)
@@ -73,8 +73,9 @@ function SetupBank(%clientId, %id)
 
 	%clientId.bulkNum = "";
 
-	Client::clearItemShopping(%clientId);
-	Client::clearItemBuying(%clientId);
+	//Client::clearItemShopping(%clientId);
+	//Client::clearItemBuying(%clientId);
+    remoteEval(%clientId,"ClearBuyList");
 
 	if(Client::getGuiMode(%clientId) != 4)
 		Client::setGuiMode(%clientId, 4);
@@ -83,14 +84,39 @@ function SetupBank(%clientId, %id)
 	Client::setInventoryText(%clientId, %txt);
 
 	%info = fetchData(%clientId, "BankStorage");
-
+    echo(%info);
 	for(%i = 0; GetWord(%info, %i) != -1; %i+=2)
 	{
 		%item = GetWord(%info, %i);
-
-		Client::setItemShopping(%clientId, %item);
-		Client::setItemBuying(%clientId, %item);
+        %amnt = GetWord(%info, %i+1);
+        if(%item != "")
+        {
+            %id = RPGItem::getItemID(%item);
+            %desc = RPGItem::getDesc(%item);
+            %cost = %amnt;//getBuyCost(%clientId, %item);
+            %type = RPGItem::getItemGroup(%item);
+            
+            %len = String::len(%buyList);
+            
+            %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+            %strLen = String::len(%itemStr);
+            
+            if(%len + %strLen > 200)
+            {
+                %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+                remoteEval(%clientId,"BufferedBuyList",%ll,false,false);
+                %buyList = "";
+            }
+            
+            %buyList = %buyList @ %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+            //Client::setItemShopping(%clientId, %item);
+            //Client::setItemBuying(%clientId, %item);
+        }
+		//Client::setItemShopping(%clientId, %item);
+		//Client::setItemBuying(%clientId, %item);
 	}
+    %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+    remoteEval(%clientId,"BufferedBuyList",%buyList,false,true);
 }
 
 function SetupBlacksmith(%clientId, %id)
