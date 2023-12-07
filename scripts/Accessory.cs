@@ -163,7 +163,7 @@ function getCroppedItem(%item)
 	return %nitem;
 }
 
-function OldGetAccessoryList(%clientId, %type, %filter)
+function OldOldGetAccessoryList(%clientId, %type, %filter)
 {
 	dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
 
@@ -305,17 +305,17 @@ function OldGetAccessoryList(%clientId, %type, %filter)
 	return %list;
 }
 
-function UnitTest_NewGetAccessoryList(%clientId)
+function UnitTest_GetAccessoryList(%clientId)
 {
     RPGItem::incItemCount(%clientId,"id"@RPGItem::LabelToItemID("hidearmor0"),1,true);
     RPGItem::incItemCount(%clientId,"id"@RPGItem::LabelToItemID("hidearmor"),1,true);
     
-    echo(NewGetAccessoryList(%clientId, 2, -1));
-    echo(NewGetAccessoryList(%clientId, 13, -1));
-    echo(NewGetAccessoryList(%clientId, 3, -1));
+    echo(GetAccessoryList(%clientId, 2, -1));
+    echo(GetAccessoryList(%clientId, 13, -1));
+    echo(GetAccessoryList(%clientId, 3, -1));
 }
 
-function NewGetAccessoryList(%clientId, %type, %filter)
+function GetAccessoryList(%clientId, %type, %filter)
 {
     dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
 
@@ -378,7 +378,8 @@ function NewGetAccessoryList(%clientId, %type, %filter)
                 %typeCheck = true;
             else if(%type == 4)
             {
-                if(RPGItem::getItemGroupFromTag(%item) == $RPGItem::WeaponClass && Player::getMountedItem(%clientId, $WeaponSlot) == %item)
+                %weap = fetchData(%clientId,"EquippedWeapon");
+                if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::WeaponClass && %weap == %itemTag)
                     %typeCheck = true;
                 else
                     %typeCheck = true;
@@ -417,7 +418,7 @@ function NewGetAccessoryList(%clientId, %type, %filter)
     
     return %invList;
 }
-function GetAccessoryList(%clientId, %type, %filter)
+function OldGetAccessoryList(%clientId, %type, %filter)
 {
 	dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
 
@@ -493,11 +494,6 @@ function GetAccessoryList(%clientId, %type, %filter)
 						if(Player::getMountedItem(%clientId, $WeaponSlot) == %item)
 							%flag = True;
 					}
-					else if(%bpCk)
-					{
-						if(Player::getMountedItem(%clientId, $BackpackSlot) == %item)
-							%flag = True;
-					}
 					else
 						%flag = True;
 				}
@@ -571,12 +567,12 @@ function GetAccessoryList(%clientId, %type, %filter)
 	return %list;
 }
 
-function NewAddPoints(%clientId, %char)
+function AddPoints(%clientId, %char)
 {
     dbecho($dbechoMode, "AddPoints(" @ %clientId @ ", " @ %char @ ")");
     
     %add = 0;
-	%list = NewGetAccessoryList(%clientId, 4, %char);
+	%list = GetAccessoryList(%clientId, 4, %char);
     
     for(%i = 0; (%w = GetWord(%list, %i)) != -1; %i++)
 	{
@@ -584,11 +580,9 @@ function NewAddPoints(%clientId, %char)
         %item = RPGItem::ItemTagToLabel(%w);
         
         if(RPGItem::getItemGroupFromTag(%w) == $RPGItem::WeaponClass)
-            %slot = $WeaponSlot;
-        
-        if(%slot != "")
         {
-            if(Player::getMountedItem(%clientId, %slot) == RPGItem::getDatablockFromTag(%w))
+            %weap = fetchData(%clientId,"EquippedWeapon");
+            if(%weap == %w)
 				%count = 1;
             else
                 %count = 0;
@@ -610,7 +604,7 @@ function NewAddPoints(%clientId, %char)
     return %add;
 }
 
-function AddPoints(%clientId, %char)
+function OldAddPoints(%clientId, %char)
 {
 	dbecho($dbechoMode, "AddPoints(" @ %clientId @ ", " @ %char @ ")");
 
@@ -652,6 +646,7 @@ function AddPoints(%clientId, %char)
 	return %add;
 }
 
+//%item is a label
 function AddItemSpecificPoints(%item, %char)
 {
 	dbecho($dbechoMode, "AddItemSpecificPoints(" @ %item @ ", " @ %char @ ")");
@@ -710,29 +705,12 @@ function NullItemList(%clientId, %type, %msgcolor, %msg)
 	}
 }
 
-function NullBeltList(%clientId, %msgcolor, %msg)
-{
-	dbecho($dbechoMode, "NullItemList(" @ %clientId @ ", " @ %type @ ", " @ %msgcolor @ ", " @ %msg @ ")");
-
-	for(%i = 0; (%item=getword(fetchData(%clientId, "LoreItems"), %i)) != ""; %i+=2)
-	{
-		if(Player::getItemCount(%clientId, %item))
-		{
-		%amnt = getword(fetchData(%clientId, "LoreItems"), %i+1);
-			Belt::TakeThisStuff(%clientid,%item,%amnt);
-
-			%newmsg = nsprintf(%msg, %item.description);
-			Client::sendMessage(%clientId, %msgcolor, %newmsg);
-		}
-	}
-}
-
-function NewGetCurrentlyWearingArmor(%clientId)
+function GetCurrentlyWearingArmor(%clientId)
 {
 	dbecho($dbechoMode, "GetCurrentlyWearingArmor(" @ %clientId @ ")");
     
     //This should do it too, but to reduce testing, i'll match the other way.
-    //return NewGetAccessoryList(%clientId, 13, -1);
+    //return GetAccessoryList(%clientId, 13, -1);
     
 	for(%i = 1; $ArmorList[%i] != ""; %i++)
 	{
@@ -743,7 +721,7 @@ function NewGetCurrentlyWearingArmor(%clientId)
 	return "";
 }
 
-function GetCurrentlyWearingArmor(%clientId)
+function OldGetCurrentlyWearingArmor(%clientId)
 {
 	dbecho($dbechoMode, "GetCurrentlyWearingArmor(" @ %clientId @ ")");
 

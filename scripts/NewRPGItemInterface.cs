@@ -129,7 +129,8 @@ function RPGItem::isValidItem(%itemId)
 
 function RPGItem::SendItemDataToClient(%clientId,%itemId,%amt)
 {
-    remoteEval(%clientId,"SetItemCount",%itemId,RPGItem::getItemName(%itemId),%amt,RPGItem::getItemGroup(%itemId));
+    if(!Player::isAIControlled(%clientId))
+        remoteEval(%clientId,"SetItemCount",%itemId,RPGItem::getItemName(%itemId),%amt,RPGItem::getItemGroup(%itemId));
 }
 
 function RPGItem::isItemTag(%input)
@@ -208,6 +209,7 @@ function RPGItem::decItemCount(%clientId,%itemTag,%amt,%showmsg)
         %amt = 1;
     if(%amt < 0)
         return RPGItem::incItemCount(%clientId,%itemTag,%amt,%showmsg);
+        
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     %classInvTag = RPGItem::getInvStrGroup(%itemId);
     %invStr = fetchData(%clientId,%classInvTag);

@@ -5,12 +5,15 @@ ItemImageData DaggerShapeImage
 	shapeFile  = "dagger";
 	mountPoint = 0;
 
-	weaponType = 0;
+	weaponType = 1;
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Knife);
+	fireTime = 0.01; //GetDelay(Knife);
+	
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
-
+    
 	accuFire = true;
 
 	sfxFire = SoundSwing1;
@@ -35,9 +38,12 @@ ItemImageData SwordShapeImage
 	shapeFile  = "sword";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Gladius);
+	fireTime = 0.01; //GetDelay(Gladius);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -65,9 +71,12 @@ ItemImageData ShortswordShapeImage
 	shapeFile  = "short_sword";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Shortsword);
+	fireTime = 0.01; //GetDelay(Shortsword);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -95,9 +104,12 @@ ItemImageData LongswordShapeImage
 	shapeFile  = "long_sword";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Longsword);
+	fireTime = 0.01; //GetDelay(Longsword);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -125,9 +137,12 @@ ItemImageData KeldriniteLSShapeImage
 	shapeFile  = "elfinblade";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(KeldriniteLS);
+	fireTime = 0.01; //GetDelay(KeldriniteLS);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -155,9 +170,12 @@ ItemImageData KatanaShapeImage
 	shapeFile  = "katana";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
 	fireTime = 0; //GetDelay(Rapier);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -185,9 +203,12 @@ ItemImageData HatchetShapeImage
 	shapeFile  = "hatchet";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Hatchet);
+	fireTime = 0.01; //GetDelay(Hatchet);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -215,9 +236,12 @@ ItemImageData WarAxeShapeImage
 	shapeFile  = "axe";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(WarAxe);
+	fireTime = 0.01; //GetDelay(WarAxe);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -245,9 +269,12 @@ ItemImageData PickAxeShapeImage
 	shapeFile = "Pick";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(PickAxe);
+	fireTime = 0.01; //GetDelay(PickAxe);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -275,9 +302,12 @@ ItemImageData BattleAxeShapeImage
 	shapeFile  = "BattleAxe";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(BattleAxe);
+	fireTime = 0.01; //GetDelay(BattleAxe);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -305,9 +335,12 @@ ItemImageData SpearShapeImage
 	shapeFile  = "spear";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Spear);
+	fireTime = 0.01; //GetDelay(Spear);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -335,9 +368,12 @@ ItemImageData TridentShapeImage
 	shapeFile  = "trident";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Trident);
+	fireTime = 0.01; //GetDelay(Trident);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -365,9 +401,12 @@ ItemImageData MaceShapeImage
 	shapeFile  = "mace";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Club);
+	fireTime = 0.01; //GetDelay(Club);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -395,9 +434,12 @@ ItemImageData HammerShapeImage
 	shapeFile  = "hammer";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(WarHammer);
+	fireTime = 0.01; //GetDelay(WarHammer);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -425,9 +467,12 @@ ItemImageData QuarterStaffShapeImage
 	shapeFile  = "quarterstaff";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(QuarterStaff);
+	fireTime = 0.01; //GetDelay(QuarterStaff);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -455,9 +500,12 @@ ItemImageData LongStaffShapeImage
 	shapeFile  = "longstaff";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(LongStaff);
+	fireTime = 0.01; //GetDelay(LongStaff);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
 	minEnergy = 0;
 	maxEnergy = 0;
 
@@ -485,12 +533,12 @@ ItemImageData CrossbowShapeImage
 	shapeFile = "crossbow";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	ammoType = "";
 	projectileType = NoProjectile;
 	accuFire = false;
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(Sling);
+	fireTime = 0.01; //GetDelay(Sling);
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
@@ -520,12 +568,12 @@ ItemImageData LongBowShapeImage
 	shapeFile = "longbow";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	ammoType = "";
 	projectileType = NoProjectile;
 	accuFire = false;
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(ShortBow);
+	fireTime = 0.01; //GetDelay(ShortBow);
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
@@ -555,12 +603,12 @@ ItemImageData CompositeBowShapeImage
 	shapeFile = "comp_bow";
 	mountPoint = 0;
 
-	weaponType = 0; // Single Shot
+	weaponType = 1; // Single Shot
 	ammoType = "";
 	projectileType = NoProjectile;
 	accuFire = false;
 	reloadTime = 0;
-	fireTime = 1.0; //GetDelay(CompositeBow);
+	fireTime = 0.01; //GetDelay(CompositeBow);
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;

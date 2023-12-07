@@ -83,6 +83,44 @@ function GetWeight(%clientId)
 
 	$GetWeight::ArmorMod = "";
 	%total = 0;
+    %itemList = RPGItem::getFullItemList(%clientId,false);
+    
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+    {
+        %checkItem = RPGItem::ItemTagToLabel(%itemTag);
+        %cnt = getWord(%itemList,%i+1);
+        %weight = GetAccessoryVar(%checkItem, $Weight);
+        if(%weight != "")
+            %total += %weight * %cnt;
+        %specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
+
+        if(GetWord(%specialvar, 0) == 8 && RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquipppedClass)
+			$GetWeight::ArmorMod = GetWord(%specialvar, 1);
+    }
+    
+    //add up coins
+	%total += fetchData(%clientId, "COINS") * $coinweight;
+
+	storeData(%clientId, "tmpWeight", %total);
+	return %total;
+}
+
+function OldGetWeight(%clientId)
+{
+    dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
+
+	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
+		return 0;
+
+	//== HELPS REDUCE LAG WHEN THERE ARE SIMULTANEOUS CALLS ======
+	%time = getIntegerTime(true);
+	if(%time - %clientId.lastGetWeight <= 1 && fetchData(%clientId, "tmpWeight") != "")
+		return fetchData(%clientId, "tmpWeight");
+	%clientId.lastGetWeight = %time;
+	//============================================================
+
+	$GetWeight::ArmorMod = "";
+	%total = 0;
     %itemList = fetchData(%clientId,"InvItemList");
     
     for(%i = 0; String::getWord(%itemList,",",%i) != ","; %i++)

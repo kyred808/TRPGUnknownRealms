@@ -111,102 +111,156 @@ function Player::onKilled(%this)
 		if(fetchData(%clientId, "COINS") > 0)
 			%tmploot = %tmploot @ "COINS " @ floor(fetchData(%clientId, "COINS")) @ " ";
 		storeData(%clientId, "COINS", 0);
-
-        //Needs optimization, but not critical yet
-		%max = getNumItems();
-		for (%i = 0; %i < %max; %i++)
-		{
-			%a = getItemData(%i);
-			%itemcount = Player::getItemCount(%clientId, %a);
-
-			if(%itemcount)
-			{
-				%flag = False;
-
-				if(fetchData(%clientId, "LCK") >= 0)
-				{
-					//currently mounted weapon and all equipped stuff + lore items are thrown into lootbag.
-					if(Player::getMountedItem(%clientId, $WeaponSlot) == %a || %a.className == "Equipped" || $LoreItem[%a] == True)
-						%flag = True;
-				}
-				else
-					%flag = True;
-
-				if(fetchData(%clientId, "LCK") < 0 && Player::isAiControlled(%clientId))
-					%flag = True;
-
-				if(%a == CastingBlade)
-					%flag = False;		//HARDCODED because we DONT want any players to have this item.
-				
-                if(%a == Treeatk)
-                    %flag = False;
-                
-				if($StealProtectedItem[%a])
-					%flag = False;
-                
-                if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
+        
+        %itemList = RPGItem::getFullItemList(%clientId,false);
+        
+        for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+        {
+            %bInclude = false;
+            %a = RPGItem::ItemTagToLabel(%itemTag);
+            
+            if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
+            {
+                %bInclude = false;
+            }
+            else
+            {
+                if(fetchData(%clientId,"LCK") >= 0)
                 {
+                    %eq = fetchData(%clientId,"EquippedWeapon");
+                    %class = RPGItem::getItemGroupFromTag(%itemTag);
                     
-                    //echo(%a," "@fetchData(%clientId,"NoDropLootList"));
-                    %flag = False;
+                    if(%eq == %itemTag || %class == $RPGItem::EquipppedClass || $LoreItem[%label] == true)
+                    {
+                        %bInclude = true;
+                    }
                 }
+                else
+                    %bInclude = true;
                 
-				if(%flag)
-				{
-					%b = %a;
-					if(%b.className == "Equipped")
-						%b = String::getSubStr(%b, 0, String::len(%b)-1);
+                if(%a == CastingBlade)
+					%bInclude = false;
+                else if(%a == Treeatk)
+                    %bInclude = false;
+                
+                if($StealProtectedItem[%a])
+					%bInclude = false;
+            }
+            
+            if(%bInclude)
+            {
+                %b = %a;
+                %class = RPGItem::getItemGroupFromTag(%itemTag);
+                %eq = fetchData(%clientId,"EquippedWeapon");
+                if(%class == $RPGItem::EquipppedClass)
+                    %b = String::getSubStr(%b, 0, String::len(%b)-1);
 
-					if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
-					{
-						//special handling for currently held weapon
-						%tmploot = %tmploot @ %b @ " 1 ";
-						Player::decItemCount(%clientId, %a);
-					}
-					else
-					{
-						%tmploot = %tmploot @ %b @ " " @ Player::getItemCount(%clientId, %a) @ " ";
-						RPGItem::setItemCount(%clientId, %a, 0);
-					}
-					if(String::len(%tmploot) > 200)
-					{
-						if(Player::isAiControlled(%clientId))
-							TossLootbag(%clientId, %tmploot, 1, "*", 300);
-						else
-						{
-							%namelist = Client::getName(%clientId) @ ",";
-							if(fetchData(%clientId, "LCK") >= 0)
-								%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
-							else
-								%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
-						}
-						%tmploot = "";
-					}
-				}
-			}
-		}
+                if(%eq == %itemTag)
+                {
+                    //special handling for currently held weapon
+                    %tmploot = %tmploot @ %itemTag @ " 1 ";
+                    Player::decItemCount(%clientId, %itemTag);
+                }
+                else
+                {
+                    %tmploot = %tmploot @ %itemTag @ " " @ getWord(%itemList,%i+1) @ " ";
+                    RPGItem::setItemCount(%clientId, %itemTag, 0);
+                }
+                if(String::len(%tmploot) > 200)
+                {
+                    if(Player::isAiControlled(%clientId))
+                        TossLootbag(%clientId, %tmploot, 1, "*", 300);
+                    else
+                    {
+                        %namelist = Client::getName(%clientId) @ ",";
+                        if(fetchData(%clientId, "LCK") >= 0)
+                            %tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
+                        else
+                            %tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
+                    }
+                    %tmploot = "";
+                }
+            }
+        }
         
-        %beltItems = Belt::getDeathItems(%clientid);
+        //Rework needed for virtual items
+        //Needs optimization, but not critical yet
+		//%max = getNumItems();
+		//for (%i = 0; %i < %max; %i++)
+		//{
+		//	%a = getItemData(%i);
+		//	%itemcount = Player::getItemCount(%clientId, %a);
+        //
+		//	if(%itemcount)
+		//	{
+		//		%flag = False;
+        //
+		//		if(fetchData(%clientId, "LCK") >= 0)
+		//		{
+		//			//currently mounted weapon and all equipped stuff + lore items are thrown into lootbag.
+		//			if(Player::getMountedItem(%clientId, $WeaponSlot) == %a || %a.className == "Equipped" || $LoreItem[%a] == True)
+		//				%flag = True;
+		//		}
+		//		else
+		//			%flag = True;
+        //
+		//		if(fetchData(%clientId, "LCK") < 0 && Player::isAiControlled(%clientId))
+		//			%flag = True;
+        //
+		//		if(%a == CastingBlade)
+		//			%flag = False;		//HARDCODED because we DONT want any players to have this item.
+		//		
+        //        if(%a == Treeatk)
+        //            %flag = False;
+        //        
+		//		if($StealProtectedItem[%a])
+		//			%flag = False;
+        //        
+        //        if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
+        //        {
+        //            
+        //            //echo(%a," "@fetchData(%clientId,"NoDropLootList"));
+        //            %flag = False;
+        //        }
+        //        
+		//		if(%flag)
+		//		{
+		//			%b = %a;
+		//			if(%b.className == "Equipped")
+		//				%b = String::getSubStr(%b, 0, String::len(%b)-1);
+        //
+		//			if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
+		//			{
+		//				//special handling for currently held weapon
+		//				%tmploot = %tmploot @ %b @ " 1 ";
+		//				Player::decItemCount(%clientId, %a);
+		//			}
+		//			else
+		//			{
+		//				%tmploot = %tmploot @ %b @ " " @ Player::getItemCount(%clientId, %a) @ " ";
+		//				RPGItem::setItemCount(%clientId, %a, 0);
+		//			}
+		//			if(String::len(%tmploot) > 200)
+		//			{
+		//				if(Player::isAiControlled(%clientId))
+		//					TossLootbag(%clientId, %tmploot, 1, "*", 300);
+		//				else
+		//				{
+		//					%namelist = Client::getName(%clientId) @ ",";
+		//					if(fetchData(%clientId, "LCK") >= 0)
+		//						%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
+		//					else
+		//						%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
+		//				}
+		//				%tmploot = "";
+		//			}
+		//		}
+		//	}
+		//}
         
-        %tmploot = %tmploot @ %beltItems; 
-        //echo("Death Loot: "@ %tmploot);
-        //if(fetchdata(%clientId, "AllBelt") != "")
-        //{
-        //    %a[1] = "RareItems";
-        //    %a[1] = "KeyItems";
-        //    %a[1] = "GemItems";
-        //    %a[1] = "LoreItems";
-        //    %b = 1;
-        //    Belt::TossBelt(%clientId, 0, "*", 300);
-        //    for(%i=0; (%item=getword(fetchdata(%clientId, %a[%b]), %i)) != -1; %i+=2)
-        //    {
-        //        %amnt = getword(fetchdata(%clientId, "AllBelt"), %i+1);
-        //        Belt::TakeThisStuff(%clientId, %item, %amnt);
-        //        if(getword(fetchdata(%clientId, %a[%b]), %i+2) == -1)
-        //            %b++;
-        //    }
-        //}
-        
+        //%beltItems = Belt::getDeathItems(%clientid);
+        //
+        //%tmploot = %tmploot @ %beltItems; 
 		if(%tmploot != "")
 		{
 			if(Player::isAiControlled(%clientId))

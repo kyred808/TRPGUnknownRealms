@@ -217,8 +217,9 @@ function AI::setupAI(%key, %team)
 function AI::setWeapons(%aiName, %loadout, %callback)
 {
 	dbecho($dbechoMode, "AI::setWeapons(" @ %aiName @ ")");
-
+    
 	%aiId = AI::getId(%aiName);
+    Player::mountItem(%aiId,BaseWeapon,$BaseWeaponSlot);
     //echo("Loadout: "@ %loadout);
 	if(%loadout == -1 || %loadout == "" || String::ICompare(%loadout, "default") == 0)
 	{
@@ -547,34 +548,36 @@ function AI::Periodic(%aiName)
 function AI::NextWeapon(%aiId)
 {
 	dbecho($dbechoMode, "AI::NextWeapon(" @ %aiId @ ")");
-
-	%item = Player::getMountedItem(%aiId, $WeaponSlot);
-
-	if(%item == -1 || $NextWeapon[%item] == "")
-		selectValidWeapon(%aiId);
-	else
-	{
-		for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
-		{
-			if(isSelectableWeapon(%clientId, %weapon))
-			{
-				%x = "";
-				if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
-				{
-					%x = GetBestRangedProj(%aiId, %weapon);
-					if(%x != -1)
-						storeData(%aiId, "LoadedProjectile " @ %weapon, %x);
-				}
-
-				if(%x != -1)
-				{
-					Player::useItem(%aiId, %weapon);
-					if(Player::getMountedItem(%clientId, $WeaponSlot) == %weapon || Player::getNextMountedItem(%aiId, $WeaponSlot) == %weapon)
-						break;
-				}
-			}
-		}
-	}
+    remoteNextWeapon(%aiId);
+    
+	//%item = fetchData(%aiId,"EquippedWeapon"); //Player::getMountedItem(%aiId, $WeaponSlot);
+    //
+	//if(%item == "" || $NextWeapon[%item] == "")
+	//	selectValidWeapon(%aiId);
+	//else
+	//{
+	//	for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
+	//	{
+	//		if(isSelectableWeapon(%clientId, %weapon))
+	//		{
+	//			%x = "";
+	//			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
+	//			{
+	//				%x = GetBestRangedProj(%aiId, %weapon);
+	//				if(%x != -1)
+	//					storeData(%aiId, "LoadedProjectile " @ %weapon, %x);
+	//			}
+    //
+	//			if(%x != -1)
+	//			{
+    //                Player::equipWeapon(%aiId,%weapon);
+	//				//Player::useItem(%aiId, %weapon);
+	//				if(fetchData(%aiId,"EquippedWeapon") == %weapon) //|| Player::getNextMountedItem(%aiId, $WeaponSlot) == %weapon)
+	//					break;
+	//			}
+	//		}
+	//	}
+	//}
 
 	AI::SetSpotDist(%aiId);
 }
@@ -584,11 +587,11 @@ function AI::SelectBestWeapon(%aiId)
 	dbecho($dbechoMode, "AI::SelectBestWeapon(" @ %aiId @ ")");
 
 	%weapon = GetBestWeapon(%aiId);
-    //echo(%weapon);
 	if(%weapon != -1)
 	{
 		%x = "";
-		if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
+        %label = RPGItem::ItemTagToLabel(%weapon);
+		if(GetAccessoryVar(%label, $AccessoryType) == $RangedAccessoryType)
 		{
 			%x = GetBestRangedProj(%aiId, %weapon);
 			if(%x != -1)
@@ -598,7 +601,8 @@ function AI::SelectBestWeapon(%aiId)
 		if(%x != -1)
 		{
             //echo(%weapon);
-			Player::useItem(%aiId, %weapon);
+            Player::equipWeapon(%aiId,%weapon);
+			//Player::useItem(%aiId, %weapon);
 			AI::SetSpotDist(%aiId);
 		}
 	}
@@ -613,8 +617,9 @@ function AI::SetSpotDist(%aiId)
 	if(fetchData(%aiId, "frozen") || fetchData(%aiId, "dumbAIflag"))
 		return;
 
-	%item = Player::getMountedItem(%aiId, $WeaponSlot);
-
+	%item = fetchData(%aiId,"EquippedWeapon");//Player::getMountedItem(%aiId, $WeaponSlot);
+    %item = RPGItem::ItemTagToLabel(%item);
+    
 	AI::setVar(fetchData(%aiId, "BotInfoAiName"), SpotDist, GetRange(%item));
 	AI::setVar(fetchData(%aiId, "BotInfoAiName"), triggerPct, 1.0);
 }

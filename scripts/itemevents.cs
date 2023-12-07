@@ -331,7 +331,7 @@ function Item::onUnmount(%player,%item)
 function Item::onUse(%player,%item)
 {
 	dbecho($dbechoMode, "Item::onUse(" @ %player @ ", " @ %item @ ")");
-
+    echo("Item::onUse(" @ %player @ ", " @ %item @ ")");
 	%clientId = Player::getClient(%player);
     //echo("Item::onUse(" @ %player @ ", " @ %item @ ")");
 	if(!IsDead(%clientId))

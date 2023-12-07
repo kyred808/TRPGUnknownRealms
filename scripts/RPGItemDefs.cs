@@ -23,6 +23,8 @@ RPGItem::AddItemDefinition("hidearmor","Hide Armor",$RPGItem::AccessoryClass,4,M
 RPGItem::AddWeapon("club","Club",5,$RPGItem::WeaponTypeMelee,MaceShape);
 RPGItem::AddWeapon("spear","Spear",6,$RPGItem::WeaponTypeMelee,SpearShape);
 RPGItem::AddWeapon("dagger","Dagger",7,$RPGItem::WeaponTypeMelee,DaggerShape);
+RPGItem::AddItemDefinition("smallrock","Small Rock","Ammo",8,SmallRock);
+RPGItem::AddWeapon("rknife","Rusty Knife",9,$RPGItem::WeaponTypeMelee,DaggerShape);
 //Roadmap
 //Weapons
 //Armor
@@ -63,6 +65,7 @@ RPGItem::AddWeapon("dagger","Dagger",7,$RPGItem::WeaponTypeMelee,DaggerShape);
 
 //Remove all belt references
 
+//UpdateSpawnStuff
 
 //Player::onKilled //Needs rework for item dropping
 

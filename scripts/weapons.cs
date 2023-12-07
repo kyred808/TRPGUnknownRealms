@@ -992,10 +992,12 @@ ItemImageData BaseWeaponImage
 	shapeFile  = "bullet"; //"invisable";
 	mountPoint = 0;
 
-	weaponType = 2;
-	reloadTime = 0;
-	fireTime = 0.01;
-	minEnergy = 0;
+	weaponType = 1;
+    fireTime = 0.01;
+    reloadTime = 0;
+    spinUpTime = 0;
+    spinDownTime = 0;
+    minEnergy = 0;
 	maxEnergy = 0;
 
 	accuFire = true;

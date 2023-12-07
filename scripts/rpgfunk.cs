@@ -80,7 +80,15 @@ function viewGroupList(%clientId)
 
 	bottomprint(%clientId, fetchData(%clientId, "grouplist"), 8);
 }
+
 function updateSpawnStuff(%clientId)
+{
+    dbecho($dbechoMode2, "updateSpawnStuff(" @ %clientId @ ")");
+    
+    storeData(%clientId, "spawnStuff", RPGItem::getFullItemList(%clientId,false));
+}
+
+function OldupdateSpawnStuff(%clientId)
 {
 	dbecho($dbechoMode2, "updateSpawnStuff(" @ %clientId @ ")");
 
@@ -1092,11 +1100,11 @@ function UpdateAppearance(%clientId)
 		if(Player::getMountedItem(%clientId, 2) != -1)
 			Player::unmountItem(%clientId, 2);
 
-		for(%i = 1; $ItemList[Orb, %i] != ""; %i++)
-		{
-			if(Player::getItemCount(%clientId, $ItemList[Orb, %i] @ "0"))
-				Player::mountItem(%clientId, $ItemList[Orb, %i] @ "0", 2);
-		}
+		//for(%i = 1; $ItemList[Orb, %i] != ""; %i++)
+		//{
+		//	if(Player::getItemCount(%clientId, $ItemList[Orb, %i] @ "0"))
+		//		Player::mountItem(%clientId, $ItemList[Orb, %i] @ "0", 2);
+		//}
 	}
 }
 
@@ -1174,6 +1182,7 @@ function ClearVariables(%clientId)
 	%clientId.zoneLastPos = "";
 	%clientId.roll = "";
 	%clientId.lbnum = "";
+    $lastAttackTime[%clientId] = -1;
 	$numMessage[%clientId, 1] = "";
 	$numMessage[%clientId, 2] = "";
 	$numMessage[%clientId, 3] = "";
@@ -1845,8 +1854,8 @@ function RefreshEquipment(%clientId)
                 %sound = false;
             }
 			Client::sendMessage(%clientId, $MsgRed,%msg);
-			RPGItem::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-			RPGItem::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
+			RPGItem::setItemCount(%player, %item, RPGItem::getItemCount(%player, %item)-1);
+			RPGItem::setItemCount(%player, %o, RPGItem::getItemCount(%player, %o)+1);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);
@@ -1854,24 +1863,24 @@ function RefreshEquipment(%clientId)
     }
 
     //Belt Items
-    for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
-    {
-        %item = BeltEquip::GetEquippedItem(%clientId,%slotId);
-        if(%item != "")
-        {
-            if(!BeltEquip::CanUseItem(%clientId,%item))
-            {
-                %msg = "You lack the skills to use " @ %item @ ".";
-                if(%sound)
-                {
-                    %msg = %msg @ "~wPku_weap.wav"; 
-                    %sound = false;
-                }
-                BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%id,Name],false);
-                Client::sendMessage(%clientId,$MsgRed,%msg);
-            }
-        }
-    }
+    //for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+    //{
+    //    %item = BeltEquip::GetEquippedItem(%clientId,%slotId);
+    //    if(%item != "")
+    //    {
+    //        if(!BeltEquip::CanUseItem(%clientId,%item))
+    //        {
+    //            %msg = "You lack the skills to use " @ %item @ ".";
+    //            if(%sound)
+    //            {
+    //                %msg = %msg @ "~wPku_weap.wav"; 
+    //                %sound = false;
+    //            }
+    //            BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%id,Name],false);
+    //            Client::sendMessage(%clientId,$MsgRed,%msg);
+    //        }
+    //    }
+    //}
 }
 
 function HasThisStuff(%clientId, %list, %multiplier)
@@ -2273,6 +2282,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
                 %itemTag = %w;
             else
                 %itemTag = RPGItem::LabelToItemTag(%w);
+            echo(%itemTag);
             //Currently only works for unmodified items
             RPGItem::incItemCount(%clientId,%itemTag,%w2,%echo);
             //RPGItem::incItemCount(%clientId,%w,%w2,%echo);
