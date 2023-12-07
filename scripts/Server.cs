@@ -84,6 +84,7 @@ function createServer(%mission, %dedicated)
     deleteVariables("BeltEquip::*");
     deleteVariables("Crafting::*");
     deleteVariables("Farming::*");
+    RPGItem::ClearVariables();
 	$PetList = "";
 	$DISlist = "";
 	$SpawnPackList = "";
@@ -142,6 +143,7 @@ function createServer(%mission, %dedicated)
 	exec(Item);
 	exec(Accessory);
 	exec(weapons);
+    exec(ItemShapeDatablocks);
 	exec(armors);
 	exec(Crystal);
 	exec(Spawn);
@@ -182,7 +184,9 @@ function createServer(%mission, %dedicated)
     exec(BeltItemDefs);
     exec(crafting);
     exec(CraftingItemDefs);
-    exec(RPGItemInterface);
+    //exec(RPGItemInterface);
+    exec(NewRPGItemInterface);
+    exec(RPGItemDefs);
     exec(Farming);
     exec(Abilities);
     exec(SkillBook);
@@ -245,9 +249,9 @@ function createServer(%mission, %dedicated)
 	GenerateAllShieldCosts();
 	GenerateAllArmorCosts();
 
-    RPGItem::ClearVariables();
-    RPGItem::BuildInventoryItemList();
-    RPGItem::BuildBeltItemList();
+    
+    //RPGItem::BuildInventoryItemList();
+    //RPGItem::BuildBeltItemList();
     
 	InitObjectives();
 

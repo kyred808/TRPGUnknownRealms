@@ -463,6 +463,7 @@ $SkillRestriction[JusticeStaff] = $SkillBludgeoning @ " 834";
 $SkillRestriction[WarMaul] = $SkillBludgeoning @ " 900";
 //.................................................................................
 $SkillRestriction[PickAxe] = $SkillPiercing @ " 0";
+$SkillRestriction[Shiv] = $SkillPiercing @ " 0";
 $SkillRestriction[Knife] = $SkillPiercing @ " 0";
 $SkillRestriction[Dagger] = $SkillPiercing @ " 60";
 $SkillRestriction[MeteorDagger] = $SkillPiercing @ " 75";

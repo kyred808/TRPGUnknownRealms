@@ -2034,20 +2034,25 @@ function HasThisStuff(%clientId, %list, %multiplier)
 			else
 				return False;
 		}
-        else if(isBeltItem(%w))
-		{
-			%amnt = Belt::HasThisStuff(%clientid,%w);
-            
-			if(%amnt >= %w2)
-				%flag = True;
-			else
-				return False;
-		}
+        //else if(isBeltItem(%w))
+		//{
+		//	%amnt = Belt::HasThisStuff(%clientid,%w);
+        //    
+		//	if(%amnt >= %w2)
+		//		%flag = True;
+		//	else
+		//		return False;
+		//}
 		else if(%w != "COINS" && %w != "REMORT" && %w != "LVLG" && %w != "LVLS" && %w != "LVLE" && %w != "CNT" && %w != "CNTAFFECTS" && %w != "RankPoints" && %w != "AI" && %w != "EXP")
 		{
-			if(Player::getItemCount(%clientId, %w) >= %w2)
-				%flag = True;
-			else
+            if(RPGItem::isItemTag(%w))
+                %itemTag = %w;
+            else
+                %itemTag = RPGItem::LabelToItemTag(%w);
+            //Curretnly only works with unmodified items (ie. has just the base tag).
+            if(RPGItem::getItemCount(%clientId, %itemTag) >= %w2)
+                %flag = True;
+            else
 				return False;
 		}
 	}
@@ -2098,9 +2103,14 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 		}
 		else
 		{
-			%amount = Player::getItemCount(%clientId, %w);
+            if(RPGItem::isItemTag(%w))
+                %tag = %w;
+            else
+                %tag = RPGItem::LabelToItemTag(%w);
+			//%amount = Player::getItemCount(%clientId, %w);
+            %amount = RPGItem::getItemCount(%clientId,%tag);
 			if(%amount >= %w2)
-				RPGItem::setItemCount(%clientId, %w, %amount-%w2);
+				RPGItem::setItemCount(%clientId, %tag, %amount-%w2);
 			else
 				return False;
 		}
@@ -2259,8 +2269,14 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		else
 		{
             //echo("Inc Item Count: "@ %w @" "@%w2);
-            RPGItem::incItemCount(%clientId,%w,%w2,%echo);
-			//Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
+            if(RPGItem::isItemTag(%w))
+                %itemTag = %w;
+            else
+                %itemTag = RPGItem::LabelToItemTag(%w);
+            //Currently only works for unmodified items
+            RPGItem::incItemCount(%clientId,%itemTag,%w2,%echo);
+            //RPGItem::incItemCount(%clientId,%w,%w2,%echo);
+
 		}
 	}
 
@@ -2326,8 +2342,11 @@ function FellOffMap(%id)
 }
 
 
-function SetStuffString(%stuff,%item,%amount)
+function SetStuffString(%stuff,%item,%amount,%mod)
 {
+    if(%mod == "")
+        %mod = "inc";
+    $RPGStuffStr::amount = "";
     %stuff = FixStuffString(%stuff);
     //echo(%stuff);
     %w = Word::FindWord(%stuff,%item);
@@ -2337,19 +2356,36 @@ function SetStuffString(%stuff,%item,%amount)
         %ret = %stuff;
         if(%amount > 0)
             %ret = %ret @ %item @ " " @ %amount @ " ";
+        
+        $RPGStuffStr::amount = %amount;
         return %ret;
     }
     else
     {
         %entry = Word::getSubWord(%stuff,%w,2);
-        %newAmount = getWord(%entry,1) + %amount;
-        
+        if(%mod == "inc")
+            %newAmount = getWord(%entry,1) + %amount;
+        else if(%mod == "dec")
+            %newAmount = getWord(%entry,1) - %amount;
+        else if(%mod == "set")
+            %newAmount = %amount;
+            
         if(%newAmount > 0)
+        {
             %new = %item @" "@ %newAmount @ " ";
+            $RPGStuffStr::amount = %newAmount;
+        }
         else
+        {
             %new = "";
+            $RPGStuffStr::amount = 0;
+        }
         
-        %ret = String::Replace(%stuff,%entry,%new);
+        %begin = Word::getSubWord(%stuff,0,%w);
+        %end = Word::getSubWord(%stuff,%w+2,9999);
+        %ret = %begin @ %new @ %end;
+        
+        //%ret = String::Replace(%stuff,%entry,%new);
         //echo("Ret: "@%ret);
         if(String::left(%ret,1) != " ")
             %ret = " " @ %ret;
@@ -2796,11 +2832,12 @@ function WhatIs(%item)
 {
 	dbecho($dbechoMode, "WhatIs(" @ %item @ ")");
 
-	//--------- GATHER INFO ------------------    
-	if(%item.description == False)	
-		%desc = %item;
-	else
-		%desc = %item.description;
+	//--------- GATHER INFO ------------------
+    %desc = RPGItem::LabelToItemName(%item);
+	//if(%item.description == False)	
+	//	%desc = %item;
+	//else
+	//	%desc = %item.description;
 
 	%t = GetAccessoryVar(%item, $AccessoryType);
 	%w = GetAccessoryVar(%item, $Weight);
@@ -2852,12 +2889,12 @@ function WhatIs(%item)
     }
 
     %specialVars = "";
-    if(BeltEquip::IsBeltEquipItem(%item))
-    {
-        %specialVars = BeltEquip::TranslateSpecialVars(BeltEquip::GetSpecialVars(%item));
-    }
-    else
-        %specialVars = WhatSpecialVars(%item);
+    //if(BeltEquip::IsBeltEquipItem(%item))
+    //{
+    //    %specialVars = BeltEquip::TranslateSpecialVars(BeltEquip::GetSpecialVars(%item));
+    //}
+    //else
+    %specialVars = WhatSpecialVars(%item);
     
     %restrict = WhatSkills(%item);
 	//--------- BUILD MSG --------------------
@@ -3153,26 +3190,34 @@ function UnequipMountedStuff(%clientId)
 {
 	dbecho($dbechoMode, "UnequipMountedStuff(" @ %clientId @ ")");
     // Rarely gets called.  Only when a player remorts or gets booted from a house
-	%max = getNumItems();
-	for(%i = 0; %i < %max; %i++)
-	{
-		%a = getItemData(%i);
-		%itemcount = Player::getItemCount(%clientId, %a);
-
-		if(%itemcount)
-		{
-			if(%a.className == "Equipped")
-			{
-				%b = String::getSubStr(%a, 0, String::len(%a)-1);
-				Player::decItemCount(%clientId, %a, 1);
-				Player::incItemCount(%clientId, %b, 1);
-			}
-			else if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
-			{
-				Player::unMountItem(%clientId, $WeaponSlot);
-			}
-		}
-	}
+    
+    %itemList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+= 2)
+    {
+        //Do unequip
+    }
+    
+	//%max = getNumItems();
+	//for(%i = 0; %i < %max; %i++)
+	//{
+	//	%a = getItemData(%i);
+	//	%itemcount = Player::getItemCount(%clientId, %a);
+    //
+	//	if(%itemcount)
+	//	{
+	//		if(%a.className == "Equipped")
+	//		{
+	//			%b = String::getSubStr(%a, 0, String::len(%a)-1);
+	//			Player::decItemCount(%clientId, %a, 1);
+	//			Player::incItemCount(%clientId, %b, 1);
+	//		}
+	//		else if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
+	//		{
+	//			Player::unMountItem(%clientId, $WeaponSlot);
+	//		}
+	//	}
+	//}
 }
 
 function LTrim(%s)

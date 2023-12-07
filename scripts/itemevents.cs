@@ -327,6 +327,7 @@ function Item::onUnmount(%player,%item)
 {
 }
 
+// No longer used, or used rarely
 function Item::onUse(%player,%item)
 {
 	dbecho($dbechoMode, "Item::onUse(" @ %player @ ", " @ %item @ ")");
@@ -396,6 +397,7 @@ function Item::onUse(%player,%item)
 	}
 }
 
+// No longer used (or used rarely)
 function Item::onDrop(%player,%item)
 {
 	dbecho($dbechoMode, "Item::onDrop(" @ %player @ ", " @ %item @ ")");

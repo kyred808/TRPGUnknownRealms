@@ -54,7 +54,8 @@ function fetchData(%clientId, %type)
 	else if(%type == "ATK")
 	{
         
-		%weapon = Player::getMountedItem(%clientId, $WeaponSlot);
+		%weapon = RPGItem::ItemTagToLabel(fetchData(%clientId,"EquippedWeapon"));
+        echo(%weapon);
 		if(%weapon != -1)
 		{
 			%a = AddBonusStatePoints(%clientId, "ATK");

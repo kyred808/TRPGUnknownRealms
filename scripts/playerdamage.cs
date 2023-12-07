@@ -322,6 +322,7 @@ function Player::onKilled(%this)
 	storeData(%clientId, "noDropLootbagFlag", "");
 
 	storeData(%clientId, "SpellCastStep", "");
+    storeData(%clientId, "EquippedWeapon", "");
 	%clientId.sleepMode = "";
 	refreshHPREGEN(%clientId);
 	refreshStaminaREGEN(%clientId);
@@ -446,7 +447,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
         
         if(%type == $MissileDamageType)
         {
-            %weapon = Player::getMountedItem(%shooterClient,$WeaponSlot);
+            %weapon = RPGItem::ItemTagToLabel(fetchData(%shooterClient,"EquippedWeapon"));
             %skilltype = $SkillType[%weapon];  
         }
         
@@ -513,7 +514,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             
             if(%type == $StaffDamageType)
             {
-                %staffWeap = Player::getMountedItem(%shooterClient,$WeaponSlot);
+                //%staffWeap = Player::getMountedItem(%shooterClient,$WeaponSlot);
+                %staffWeap = RPGItem::ItemTagToLabel(fetchData(%shooterClient,"EquippedWeapon"));
                 %skilltype = $SkillType[%staffWeap];
                 %atkIdx = Word::FindWord($AccessoryVar[%staffWeap, $SpecialVar],$SpecialVarATK)+1;
                 %value = getWord($AccessoryVar[%staffWeap, $SpecialVar],%atkIdx) * %value; //Projectile damage should always be 1 for staff proj
@@ -599,7 +601,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 
             if(%type == $BladeBoltDamageType)
             {
-                %skilltype = $SkillType[Player::getMountedItem(%shooterClient,$WeaponSlot)];
+                %skilltype = $SkillType[RPGItem::ItemTagToLabel(fetchData(%shooterClient,"EquippedWeapon"))];
                 %weapondamage = %weapondamage*0.75;
             }
             

@@ -187,7 +187,9 @@ function Game::playerSpawned(%pl, %clientId, %armor)
         //echo(fetchData(%clientId, "spawnStuff"));
 		GiveThisStuff(%clientId, fetchData(%clientId, "spawnStuff"), False);
 	}
-
+    
+    Player::mountItem(%pl,BaseWeapon,$BaseWeaponSlot);
+    
 	if(fetchData(%clientId, "LCK") < 0)
 		storeData(%clientId, "LCK", 0);
 

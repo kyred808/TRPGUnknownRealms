@@ -9,13 +9,22 @@ $ItemFavoritesKey = "RPG";  // Change this if you add new items
 
 $ItemPopTime = 30;
 
-$ToolSlot=0;
-$WeaponSlot=0;
-$BackpackSlot=1;
-$FlagSlot=2;
-$DefaultSlot=3;
-$SpellAuraSlot=4;
-$ExtraImageSlot1=5;
+$BaseWeaponSlot=0;
+$WeaponSlot=1;
+$OffhandSlot=2;
+$BackpackSlot=3; //Unused
+$FlagSlot=4; //Unused
+$DefaultSlot=5;
+$SpellAuraSlot=6;
+$ExtraImageSlot1=7;
+
+//$ToolSlot=0;
+//$WeaponSlot=0;
+//$BackpackSlot=1;
+//$FlagSlot=2;
+//$DefaultSlot=3;
+//$SpellAuraSlot=4;
+//$ExtraImageSlot1=5;
 
 // Limit on number of special Items you can buy
 $TeamItemMax[DepBasePack] = 128;
@@ -220,6 +229,14 @@ function Item::deployShape(%player,%name,%shape,%item)
 }
 
 //----------------------------------------------------------------------------
+
+ItemData MiscLootShape
+{
+    description = "Misc Loot";
+    className = "Accessory";
+    shapeFile = "discammo";
+	showInventory = false;
+};
 
 ItemData BeltLoot
 {

@@ -1,3 +1,25 @@
+function NewCreateWeaponCyclingTables()
+{
+    %first = true;
+    for(%i = 0; %i < $RPGItem::ItemCount; %i++)
+    {
+        %itemId = $RPGItem::ItemDefList[%i];
+        if(RPGItem::getItemGroup(%itemId) == $RPGItem::WeaponClass)
+        {
+            if(%first)
+                %firstitem = %itemId;
+            else
+            {
+                $NextWeapon[%lastitem] = %itemId;
+                $PrevWeapon[%itemId] = %lastitem;
+            }
+                
+            %lastitem = %itemId;
+        }
+    }
+    $NextWeapon[%lastitem] = %firstitem;
+    $PrevWeapon[%firstitem] = %lastitem;
+}
 function CreateWeaponCyclingTables()
 {
 	dbecho($dbechoMode, "CreateWeaponCyclingTables()");
@@ -25,7 +47,51 @@ function CreateWeaponCyclingTables()
 	$PrevWeapon[$NextWeapon[%i]] = %i;
 }
 
-function RPGmountItem(%player, %item, %slot)
+function RPGmountItem(%player, %itemTag, %slot)
+{
+	dbecho($dbechoMode, "RPGmountItem(" @ %player @ ", " @ %itemTag @ ", " @ %slot @ ")");
+    %clientId = Player::getClient(%player);
+    if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
+		return 0;
+    
+	
+    %label = RPGItem::ItemTagToLabel(%itemTag);
+	if(SkillCanUse(%clientId, %label))
+	{
+        if(fetchData(%clientId,"attuningToWeapon"))
+        {
+            CancelAttunement(%clientId);
+        }
+        
+        if(%slot == $WeaponSlot)
+        {
+            %bottomText = "<jc><f1>Weapon: <f0>" @RPGItem::getItemNameFromTag(%itemTag);
+            %ammo = fetchData(%clientId, "LoadedProjectile " @ %itemTag);
+            if(%ammo != "")
+                %bottomText = %bottomText @"\n<f1>Ammo: <f0>"@RPGItem::getItemNameFromTag(%ammo);
+            if(fetchData(%clientId,"attunedWeapon") == %itemTag)
+            {
+                %weapMana = fetchData(%clientId,"attunedWeaponMana");
+                %maxMana = $MageStaff[%itemTag,MaxMana];
+                %bottomText = %bottomText @"\n<f1>Mana: <f0>"@%weapMana @"<f1>/<f0>"@%maxMana;
+            }
+            bottomprint(%clientId,%bottomText,String::len(%bottomText)/20);
+            storeData(%clientId,"EquippedWeapon",%itemTag);
+        }
+        
+        %itemShape = RPGItem::getDatablockFromTag(%itemTag);
+        echo(%itemShape);
+		Player::mountItem(%player, %itemShape, %slot);
+		return True;
+	}
+	else
+	{
+		Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you lack the necessary skills.~wC_BuySell.wav");
+		return False;
+	}
+}
+
+function OldRPGmountItem(%player, %item, %slot)
 {
 	dbecho($dbechoMode, "RPGmountItem(" @ %player @ ", " @ %item @ ", " @ %slot @ ")");
 
@@ -62,93 +128,201 @@ function RPGmountItem(%player, %item, %slot)
 	}
 }
 
+function SelectNextWeapon(%clientId,%idx,%len,%dir)
+{
+    if(%dir == "")
+        %dir = "inc";
+        
+    if(%dir == "inc")
+    {
+        %next = %idx + 2;
+        if(%next >= %len)
+            %next = 0;
+    }
+    else if(%dir == "dec")
+    {
+        %next = %idx - 2;
+        if(%next < 0)
+            %next = %len-2;
+    }
+    return %next;
+}
+
 function remoteNextWeapon(%clientId)
 {
 	dbecho($dbechoMode, "remoteNextWeapon(" @ %clientId @ ")");
 
-	%item = Player::getMountedItem(%clientId,$WeaponSlot);
-
-	if(%item == -1 || $NextWeapon[%item] == "")
-		selectValidWeapon(%clientId);
-	else
-	{
-		for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
-		{
-			if(isSelectableWeapon(%clientId, %weapon))
-			{
-				Player::useItem(%clientId,%weapon);
-				// Make sure it mounted (laser may not), or at least
-				// next in line to be mounted.
-				if (Player::getMountedItem(%clientId,$WeaponSlot) == %weapon || Player::getNextMountedItem(%clientId,$WeaponSlot) == %weapon)
-					break;
-			}
-		}
-	}
+    %itemList = RPGItem::getItemList(%clientId,$RPGItem::PlayerWeaponList);
+    %itemTag = fetchData(%clientId,"EquippedWeapon");
+    
+    if(%itemTag == "" || !RPGItem::isItemTag(%itemTag))
+        %startIdx = 0;
+    else
+        %startIdx = Word::FindWord(%itemList,%itemTag);
+    %current = %startIdx;
+    %len = GetWordCount(%itemList);
+    
+    if(%len % 2 != 0)
+    {
+        echo("ERROR: Weapon List for "@ %clientId @" is uneven!");
+        return;
+    }
+    
+    %next = SelectNextWeapon(%clientId,%current,%len,"inc");
+    echo(%itemList);
+    echo(%next);
+    while( %next != %startIdx)
+    {
+        %nextWeap = getWord(%itemList,%next);
+        if(isSelectableWeapon(%clientId, %nextWeap))
+        {
+            RPGMountItem(%clientId,%nextWeap,$WeaponSlot);
+            refreshHP(%clientId, 0);
+            refreshMANA(%clientId, 0);
+            refreshStamina(%clientId, 0);
+            RefreshAll(%clientId,false);
+            break;
+        }
+        %next = SelectNextWeapon(%clientId,%next,%len,"inc");
+    }
+    
+    //%item = Player::getMountedItem(%clientId,$WeaponSlot);
+    
+	//if(%item == -1 || $NextWeapon[%item] == "")
+	//	selectValidWeapon(%clientId);
+	//else
+	//{
+	//	for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
+	//	{
+	//		if(isSelectableWeapon(%clientId, %weapon))
+	//		{
+	//			Player::useItem(%clientId,%weapon);
+	//			// Make sure it mounted (laser may not), or at least
+	//			// next in line to be mounted.
+	//			if (Player::getMountedItem(%clientId,$WeaponSlot) == %weapon || Player::getNextMountedItem(%clientId,$WeaponSlot) == %weapon)
+	//				break;
+	//		}
+	//	}
+	//}
 }
 
 function remotePrevWeapon(%clientId)
 {
 	dbecho($dbechoMode, "remotePrevWeapon(" @ %clientId @ ")");
 
-	%item = Player::getMountedItem(%clientId,$WeaponSlot);
-	if (%item == -1 || $PrevWeapon[%item] == "")
-		selectValidWeapon(%clientId);
-	else {
-		for (%weapon = $PrevWeapon[%item]; %weapon != %item;
-				%weapon = $PrevWeapon[%weapon]) {
-			if (isSelectableWeapon(%clientId,%weapon)) {
-				Player::useItem(%clientId,%weapon);
-				// Make sure it mounted (laser may not), or at least
-				// next in line to be mounted.
-				if (Player::getMountedItem(%clientId,$WeaponSlot) == %weapon || Player::getNextMountedItem(%clientId,$WeaponSlot) == %weapon)
-					break;
-			}
-		}
-	}
+    %itemList = RPGItem::getItemList(%clientId,$RPGItem::PlayerWeaponList);
+    %itemTag = fetchData(%clientId,"EquippedWeapon");
+    
+    if(%itemTag == "" || !RPGItem::isItemTag(%itemTag))
+        %startIdx = 0;
+    else
+        %startIdx = Word::FindWord(%itemList,%itemTag);
+    %current = %startIdx;
+    %len = GetWordCount(%itemList);
+    
+    if(%len % 2 != 0)
+    {
+        echo("ERROR: Weapon List for "@ %clientId @" is uneven!");
+        return;
+    }
+    
+    %next = SelectNextWeapon(%clientId,%current,%len,"dec");
+    
+    while( %next != %startIdx)
+    {
+        %nextWeap = getWord(%itemList,%next);
+        if(isSelectableWeapon(%clientId, %nextWeap))
+        {
+            RPGMountItem(%clientId,%nextWeap,$WeaponSlot);
+            refreshHP(%clientId, 0);
+            refreshMANA(%clientId, 0);
+            refreshStamina(%clientId, 0);
+            RefreshAll(%clientId,false);
+            break;
+        }
+        %next = SelectNextWeapon(%clientId,%next,%len,"dec");
+    }
+    
+	//%item = Player::getMountedItem(%clientId,$WeaponSlot);
+	//if (%item == -1 || $PrevWeapon[%item] == "")
+	//	selectValidWeapon(%clientId);
+	//else {
+	//	for (%weapon = $PrevWeapon[%item]; %weapon != %item;
+	//			%weapon = $PrevWeapon[%weapon]) {
+	//		if (isSelectableWeapon(%clientId,%weapon)) {
+	//			Player::useItem(%clientId,%weapon);
+	//			// Make sure it mounted (laser may not), or at least
+	//			// next in line to be mounted.
+	//			if (Player::getMountedItem(%clientId,$WeaponSlot) == %weapon || Player::getNextMountedItem(%clientId,$WeaponSlot) == %weapon)
+	//				break;
+	//		}
+	//	}
+	//}
 }
 
 function selectValidWeapon(%clientId)
 {
 	dbecho($dbechoMode, "selectValidWeapon(" @ %clientId @ ")");
 
-	%item = Dagger;	//any weapon, it doesn't matter
-
-	if($NextWeapon[%item] == "")	//the $NextWeapon table has NOT yet been created.
-		return;
-
-	%weapon = %item;
-	while(%item == Dagger)
-	{
-		if(isSelectableWeapon(%clientId, %weapon))
-		{
-			Player::useItem(%clientId, %weapon);
-			break;
-		}
-
-		%weapon = $NextWeapon[%weapon];
-
-		if(%weapon == %item)
-			break;
-	}
+    %itemList = RPGItem::getItemList(%clientId,$RPGItem::PlayerWeaponList);
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+    {
+        if(isSelectableWeapon(%clientId, %itemTag))
+        {
+            RPGMountItem(%clientId,%itemTag,$WeaponSlot);
+            refreshHP(%clientId, 0);
+            refreshMANA(%clientId, 0);
+            refreshStamina(%clientId, 0);
+            RefreshAll(%clientId,false);
+            break;
+        }
+    }
+    
+    
+	//%item = Dagger;	//any weapon, it doesn't matter
+    //
+	//if($NextWeapon[%item] == "")	//the $NextWeapon table has NOT yet been created.
+	//	return;
+    //
+	//%weapon = %item;
+	//while(%item == Dagger)
+	//{
+	//	if(isSelectableWeapon(%clientId, %weapon))
+	//	{
+	//		RPGMountItem(%clientId,%nextWeap,$WeaponSlot);
+    //        refreshHP(%clientId, 0);
+    //        refreshMANA(%clientId, 0);
+    //        refreshStamina(%clientId, 0);
+    //        RefreshAll(%clientId,false);
+	//		break;
+	//	}
+    //
+	//	%weapon = $NextWeapon[%weapon];
+    //
+	//	if(%weapon == %item)
+	//		break;
+	//}
 }
 
+//Now assumes you have the weapon in inv already
 function isSelectableWeapon(%clientId,%weapon)
 {
 	dbecho($dbechoMode, "isSelectableWeapon(" @ %clientId @ ", " @ %weapon @ ")");
 
 	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
 		return 0;
-
-	if(!SkillCanUse(%clientId, %weapon))
+    
+    
+	if(!SkillCanUse(%clientId, RPGItem::ItemTagToLabel(%weapon)))
 		return false;
 
-	if(Player::getItemCount(%clientId, %weapon))
-	{
+	//if(RPGItem::getItemCount(%clientId, %weapon))
+	//{
 		//%ammo = $WeaponAmmo[%weapon];
 		//if (%ammo == "" || Player::getItemCount(%clientId,%ammo) > 0)
-			return true;
-	}
-	return false;
+	return true;
+	//}
+	//return false;
 }
 
 ItemData Weapon
@@ -185,6 +359,7 @@ function Weapon::onFire(%player, %slot)
 {
 }
 
+//Needs rework
 function GetBestRangedProj(%clientId, %item)
 {
 	dbecho($dbechoMode, "GetBestRangedProj(" @ %clientId @ ", " @ %item @ ")");
@@ -215,6 +390,7 @@ function GetBestRangedProj(%clientId, %item)
 	return %bestProj;
 }
 
+//Likely needs rework
 function GetBestWeapon(%clientId)
 {
 	dbecho($dbechoMode, "GetBestWeapon(" @ %clientId @ ")");
@@ -262,4 +438,75 @@ function GetBestWeapon(%clientId)
 	}
 
 	return %bestWeapon;
+}
+
+function BaseWeaponImage::onActivate(%player,%slot)
+{
+    echo("BaseWeaponImage::onActivate("@%player@","@%slot@")");
+    %clientId = Player::getClient(%player);
+    %mm = Player::getMountedItem(%player,$WeaponSlot);
+    echo(%mm);
+    if(%mm == -1)
+    {
+        storeData(%clientId,"EquippedWeapon","");
+        return;
+    }
+    
+    %weapon = fetchData(%clientId,"EquippedWeapon");
+    %id = RPGItem::getItemIDFromTag(%weapon);
+    %wtype = $RPGItem::ItemDef[%id,WeaponType];
+    %label = $RPGItem::ItemDef[%id,Label];
+    echo(%id);
+    if(%wtype != "")
+    {
+        %clientId.lastAttackTime = getSimTime();
+        if(%wtype == $RPGItem::WeaponTypeMelee)
+        {
+            MeleeAttack(%player, GetRange(%label), %label);
+        }
+        else if(%wtype == $RPGItem::WeaponTypeRange)
+        {
+            //Need to fix for other weapons
+            %vel = 100;
+            ProjectileAttack(%clientId, %label, %vel);
+        }
+        else if(%wtype == $RPGItem::WeaponTypePick)
+        {
+            PickAxeSwing(%player, GetRange(%label), %label);
+        }
+        
+        Player::trigger(%player,$WeaponSlot,true);
+    }
+    
+}
+
+function BaseWeaponImage::onUpdateFire(%player,%slot)
+{
+    %clientId = Player::getClient(%player);
+    %id = RPGItem::getItemIDFromTag(fetchData(%clientId,"EquippedWeapon"));
+    %label = $RPGItem::ItemDef[%id,Label];
+    if(getSimTime() >= %clientId.lastAttackTime + GetDelay(%label))
+    {
+        %wtype = $RPGItem::ItemDef[%id,WeaponType];
+        if(%wtype == $RPGItem::WeaponTypeMelee)
+        {
+            MeleeAttack(%player, GetRange(%label), %label);
+        }
+        else if(%wtype == $RPGItem::WeaponTypeRange)
+        {
+            //Need to fix for other weapons
+            %vel = 100;
+            ProjectileAttack(%clientId, %label, %vel);
+        }
+        else if(%wtype == $RPGItem::WeaponTypePick)
+        {
+            PickAxeSwing(%player, GetRange(%label), %label);
+        }
+        %clientId.lastAttackTime = getSimTime();
+    }
+}
+
+function BaseWeaponImage::onDeactivate(%player,%slot)
+{
+    Player::trigger(%player,$WeaponSlot,false);
 }

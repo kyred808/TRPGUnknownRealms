@@ -102,7 +102,9 @@ $AccessoryVar[FireStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[ThornStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[HealerStaff, $AccessoryType] = $MageStaffAccessoryType;
 
-$AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";	
+$AccessoryVar[Shiv, $SpecialVar] = "6 8";
+
+$AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";
 $AccessoryVar[Hatchet, $SpecialVar] = "6 20";			//12 (5)
 $AccessoryVar[BroadSword, $SpecialVar] = "6 35";		//21 (5)
 $AccessoryVar[WarAxe, $SpecialVar] = "6 70";			//30 (7)
@@ -167,6 +169,7 @@ $AccessoryVar[FireStaff, $SpecialVar] = "6 75";
 $AccessoryVar[ThornStaff, $SpecialVar] = "6 20";
 $AccessoryVar[HealerStaff, $SpecialVar] = "6 10";
 //.................................................................................
+$AccessoryVar[Shiv, $Weight] = 1;
 $AccessoryVar[CrudeAxe, $Weight] = 1;
 $AccessoryVar[Hatchet, $Weight] = 5;
 $AccessoryVar[BroadSword, $Weight] = 5;
@@ -231,6 +234,7 @@ $AccessoryVar[MetalFeather, $Weight] = "0.1";
 $AccessoryVar[Talon, $Weight] = "0.2";
 $AccessoryVar[CeraphumsFeather, $Weight] = "0.08";
 
+$AccessoryVar[Shiv, $MiscInfo] = "A crude sharp stick";
 $AccessoryVar[CrudeAxe, $MiscInfo] = "A crude axe built out of twigs and rocks";
 $AccessoryVar[Hatchet, $MiscInfo] = "A hatchet";
 $AccessoryVar[BroadSword, $MiscInfo] = "A broad sword";
@@ -308,6 +312,7 @@ $SkillType[WarMaul] = $SkillBludgeoning;
 $SkillType[QuarterStaff] = $SkillBludgeoning;
 $SkillType[LongStaff] = $SkillBludgeoning;
 $SkillType[JusticeStaff] = $SkillBludgeoning;
+$SkillType[Shiv] = $SkillPiercing;
 $SkillType[Knife] = $SkillPiercing;
 $SkillType[Dagger] = $SkillPiercing;
 $SkillType[ShortSword] = $SkillPiercing;
@@ -982,6 +987,34 @@ function GenerateItemCost(%item)
 	return %f;
 }
 
+ItemImageData BaseWeaponImage
+{
+	shapeFile  = "bullet"; //"invisable";
+	mountPoint = 0;
+
+	weaponType = 2;
+	reloadTime = 0;
+	fireTime = 0.01;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	//sfxFire = SoundSwing1;
+	//sfxActivate = AxeSlash2;
+};
+ItemData BaseWeapon
+{
+	heading = "bWeapons";
+	description = "";
+	className = "Weapon";
+	shapeFile  = "invisable";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = BaseWeaponImage;
+	price = 0;
+	showWeaponBar = false;
+};
 
 
 //WIP Entry items
