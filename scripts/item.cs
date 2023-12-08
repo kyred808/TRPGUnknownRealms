@@ -131,6 +131,13 @@ ItemData Ammo
 	showInventory = false;
 };
 
+ItemData InvsiAmmo
+{
+    className = Ammo;
+	description = "AmmoYouCantSee";
+	showInventory = false;
+};
+
 //----------------------------------------------------------------------------
 // Backpacks
 //----------------------------------------------------------------------------

@@ -521,7 +521,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 		return;
 	%clientId.lastFireTime = %time;
 	
-    WeaponStamina(%clientId,%weapon,1);
+    WeaponStamina(%clientId,RPGItem::ItemTagToLabel(%weapon),1);
     %loadedProjectile = fetchData(%clientId, "LoadedProjectile " @ %weapon);
 	if(%loadedProjectile == "")
 		return;
@@ -564,7 +564,10 @@ function Weapon::FireItemProjectile(%clientId,%weapon,%vel,%loadedProjectile)
 //	{
 		%zoffset = 0.44;
 //	}
-    %arrow = newObject("", "Item", $ProjItemData[%loadedProjectile], 1, false);
+    %itemDat = RPGItem::getDatablockFromTag(%loadedProjectile);
+    %label = RPGItem::ItemTagToLabel(%loadedProjectile);
+    //%arrow = newObject("", "Item", $ProjItemData[%label], 1, false);
+    %arrow = newObject("", "Item", %itemDat, 1, false);
 	%arrow.owner = %clientId;
 	%arrow.delta = 1;
 	%arrow.weapon = %weapon;
@@ -619,7 +622,8 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
             %score = DoRandomMining(%clientId, %target);
             if(%score != "")
             {
-                belt::givethisstuff(%clientId, %score, 1, 1, 1);
+                //belt::givethisstuff(%clientId, %score, 1, 1, 1);
+                RPGItem::incItemCount(%clientId,RPGItem::LabelToItemTag(%score),1);
                 //Player::incItemCount(%clientId, %score, 1);
                 RefreshAll(%clientId,false);
                 //Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
@@ -640,11 +644,16 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
             playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
             %rewardIdx = MineMeteorCrystal();
             %item = $MeteorMiningList[%rewardIdx];
+            %tag = RPGItem::LabelToItemTag(%item);
+            echo("PTag: "@ %tag);
+            %ntag = GenerateGemAffix(%tag);
+            echo("TAG: "@%ntag);
             //Player::incItemCount(%clientId, %item, 1);
-            belt::givethisstuff(%clientId, %item, 1, 1, 1);
+            //belt::givethisstuff(%clientId, %item, 1, 1, 1);
+            RPGItem::incItemCount(%clientId,%ntag,1,true);
             if(OddsAre($MeteorMineChunkOdds))
             {
-                belt::givethisstuff(%clientId, "MeteorChunk", 1, 1, 1);
+                RPGItem::incItemCount(%clientId,RPGItem::LabelToItemTag("MeteorChunk"),1,true);
             }
             RefreshAll(%clientId,false);
             

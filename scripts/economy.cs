@@ -610,6 +610,10 @@ function sellItem(%clientId,%item, %amnt)
     }
     else
 	{
+        echo(%item);
+        %msg = WhatIs(getCroppedItem(RPGItem::ItemTagToLabel(%item)));
+        bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+        return 0;
 		if(RPGItem::getItemGroup(%item) != "Equipped" && !$LoreItem[%item])
 		{
 			storeData(%clientId, "TempPack", SetStuffString(fetchData(%clientId, "TempPack"), %item, 1));
@@ -742,10 +746,10 @@ function remoteSellItem(%clientId, %type, %amnt)
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
 	{
 		%clientId.lastWaitActionTime = %time;
-
-		%item = RPGItem::ItemIDToLabel(%type);//getItemData(%type);
-        echo("Selling Item: "@ %item @" "@ %amnt);
-		sellItem(%clientId, %item, %amnt);
+        //echo("Type: "@%type);
+		//%item = RPGItem::ItemIDToLabel(%type);//getItemData(%type);
+        //echo("Selling Item: "@ %item @" "@ %amnt);
+		sellItem(%clientId, %type, %amnt);
 	}
 }
 

@@ -318,7 +318,7 @@ function UnitTest_GetAccessoryList(%clientId)
 function GetAccessoryList(%clientId, %type, %filter)
 {
     dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
-
+    //echo("GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
 	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid || %clientId.choosingGroup || %clientId.choosingClass)
 		return "";
         
@@ -353,6 +353,10 @@ function GetAccessoryList(%clientId, %type, %filter)
     {
         %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::WeaponClass,InventoryTag]);
     }
+    else if(%type == 14)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    }
     else if(%type == -1)
     {
         %list = RPGItem::getFullItemList(%clientId,false);
@@ -379,9 +383,10 @@ function GetAccessoryList(%clientId, %type, %filter)
             else if(%type == 4)
             {
                 %weap = fetchData(%clientId,"EquippedWeapon");
-                if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::WeaponClass && %weap == %itemTag)
+                %itemCl = RPGItem::getItemGroupFromTag(%itemTag);
+                if(%itemCl == $RPGItem::WeaponClass && %weap == %itemTag)
                     %typeCheck = true;
-                else
+                else if(%itemCl == $RPGItem::EquipppedClass)
                     %typeCheck = true;
             }
             else if(%type == 13)
@@ -400,6 +405,7 @@ function GetAccessoryList(%clientId, %type, %filter)
                 {
                     %flag2 = "";
                     %av = GetAccessoryVar(%item, $SpecialVar);
+                    //echo("Spec Vars: "@ %item @" - "@ %av);
                     for(%j = 0; (%w = GetWord(%av, %j)) != -1; %j+=2)
                     {
                         if(String::findSubStr(%filter, %w) != -1)
@@ -591,11 +597,11 @@ function AddPoints(%clientId, %char)
             %count = RPGItem::getItemCount(%clientId, %w);
             
         %tmp = GetAccessoryVar(%item, $SpecialVar);
-        
         for(%j = 0; (%e = getWord(%tmp,%j)) != -1; %j+=2)
         {
             if(%char == %e)
             {
+                echo(%e);
                 %add += getWord(%tmp,%j+1) * %count;
             }
         }

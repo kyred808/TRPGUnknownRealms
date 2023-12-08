@@ -171,111 +171,116 @@ function remoteUseItem(%clientId, %type)
 	{
 		%trueClientId.lastWaitActionTime = %time;
 
-		%trueClientId.throwStrength = 1;
-
-		%item = getItemData(%type);
-		if(%item == Backpack) 
-		{
-			%item = -1;
-			remoteConsider(%trueClientId);
-		}
-        else if($SetKeyRemote[%item] != "")
+		//%trueClientId.throwStrength = 1;
+        if(RPGItem::isItemTag(%type))
         {
-            if($numMessage[%trueClientId, $SetKeyRemote[%item]] == "")
-                Client::sendmessage(%trueClientId, 0, "#set "@ $SetKeyRemote[%item] @" [message]");
-            else
-                ActivateSetKey(%trueClientId,$numMessage[%trueClientId, $SetKeyRemote[%item]]);
+            RPGItem::useItem(%trueClientId,%type);
         }
         else
-		{
-			if (%item == Weapon) 
-	      	      %item = Player::getMountedItem(%clientId,$WeaponSlot);
-
-            %label = RPGItem::ItemIDToLabel(%type);
-            RPGItem::useItem(%clientId,%label);
+        {
+            %item = getItemData(%type);
+            if(%item == Backpack) 
+            {
+                %item = -1;
+                remoteConsider(%trueClientId);
+            }
+            else if($SetKeyRemote[%item] != "")
+            {
+                if($numMessage[%trueClientId, $SetKeyRemote[%item]] == "")
+                    Client::sendmessage(%trueClientId, 0, "#set "@ $SetKeyRemote[%item] @" [message]");
+                else
+                    ActivateSetKey(%trueClientId,$numMessage[%trueClientId, $SetKeyRemote[%item]]);
+            }
+            //else
+            //{
+            //	if (%item == Weapon) 
+            //  	      %item = Player::getMountedItem(%clientId,$WeaponSlot);
+            //    
+            //    
+            //	//if(%item != -1)
+            //	//{
+            //	//	Player::useItem(%clientId, %item);
+            //	//}
+            //}
             
-			//if(%item != -1)
-			//{
-			//	Player::useItem(%clientId, %item);
-			//}
-		}
-		//else if(%item == Blaster)
-		//{
-		//	if($numMessage[%trueClientId, 1] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 1 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 1]);
-		//}
-		//else if(%item == PlasmaGun)
-		//{
-		//	if($numMessage[%trueClientId, 2] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 2 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 2]);
-		//}
-		//else if(%item == ChainGun)
-		//{
-		//	if($numMessage[%trueClientId, 3] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 3 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 3]);
-		//}
-		//else if(%item == DiscLauncher)
-		//{
-		//	if($numMessage[%trueClientId, 4] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 4 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 4]);
-		//}
-		//else if(%item == GrenadeLauncher)
-		//{
-		//	if($numMessage[%trueClientId, 5] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 5 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 5]);
-		//}
-		//else if(%item == LaserRifle)
-		//{
-		//	if($numMessage[%trueClientId, 6] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 6 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 6]);
-		//}
-		//else if(%item == ElfGun)
-		//{
-		//	if($numMessage[%trueClientId, 7] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 7 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 7]);
-		//}
-		//else if(%item == Mortar)
-		//{
-		//	if($numMessage[%trueClientId, 8] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 8 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 8]);
-		//}
-		//else if(%item == TargetingLaser)
-		//{
-		//	if($numMessage[%trueClientId, 9] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set 9 [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, 9]);
-		//}
-		//else if(%item == Beacon)
-		//{
-		//	if($numMessage[%trueClientId, b] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set b [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, b]);
-		//}
-		//else if(%item == RepairKit)
-		//{
-		//	if($numMessage[%trueClientId, h] == "")
-		//		client::sendmessage(%trueClientId, 0, "#set h [message]");
-		//	else
-		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, h]);
-		//}
+            //else if(%item == Blaster)
+            //{
+            //	if($numMessage[%trueClientId, 1] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 1 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 1]);
+            //}
+            //else if(%item == PlasmaGun)
+            //{
+            //	if($numMessage[%trueClientId, 2] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 2 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 2]);
+            //}
+            //else if(%item == ChainGun)
+            //{
+            //	if($numMessage[%trueClientId, 3] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 3 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 3]);
+            //}
+            //else if(%item == DiscLauncher)
+            //{
+            //	if($numMessage[%trueClientId, 4] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 4 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 4]);
+            //}
+            //else if(%item == GrenadeLauncher)
+            //{
+            //	if($numMessage[%trueClientId, 5] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 5 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 5]);
+            //}
+            //else if(%item == LaserRifle)
+            //{
+            //	if($numMessage[%trueClientId, 6] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 6 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 6]);
+            //}
+            //else if(%item == ElfGun)
+            //{
+            //	if($numMessage[%trueClientId, 7] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 7 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 7]);
+            //}
+            //else if(%item == Mortar)
+            //{
+            //	if($numMessage[%trueClientId, 8] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 8 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 8]);
+            //}
+            //else if(%item == TargetingLaser)
+            //{
+            //	if($numMessage[%trueClientId, 9] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 9 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 9]);
+            //}
+            //else if(%item == Beacon)
+            //{
+            //	if($numMessage[%trueClientId, b] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set b [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, b]);
+            //}
+            //else if(%item == RepairKit)
+            //{
+            //	if($numMessage[%trueClientId, h] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set h [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, h]);
+            //}
+        }
 	}
 }
 
@@ -339,11 +344,18 @@ function remoteDropItem(%clientId,%type,%amnt)
 		if($droppingAllowed == 1)
 		{
 			if((Client::getOwnedObject(%clientId)).driver != 1) {
-				//echo("Drop item: ",%type);
+				echo("Drop item: "@%type);
 				%clientId.throwStrength = 1;
-                
-                %label = RPGItem::ItemIDToLabel(%type);
-                RPGItem::dropItem(%clientId,%label,%amnt);
+                if(RPGItem::isItemTag(%type))
+                {
+                    RPGItem::dropItem(%clientId,%type,%amnt);
+                }
+                else
+                {
+                    //Assume it was a weapon drop
+                    %weap = fetchData(%clientId,"EquippedWeapon");
+                    RPGItem::dropItem(%clientId,%weap,1);
+                }
 				//%item = getItemData(%type);
 				//if(%item == Weapon)
 				//{

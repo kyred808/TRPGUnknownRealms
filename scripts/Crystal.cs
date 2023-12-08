@@ -53,7 +53,7 @@ $MeteorBitsSpeed = 10;
 $MeteorBitsZSpeed = 5;
 function MeteorCrystal::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss)
 {
-    if($AccessoryVar[%weapon, $AccessoryType] == $PickAxeAccessoryType)
+    if($AccessoryVar[RPGItem::ItemTagToLabel(%weapon), $AccessoryType] == $PickAxeAccessoryType)
     {
         //if( floor(getRandom() * 10) > 5)
         //{
@@ -75,12 +75,12 @@ function MeteorCrystal::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rwe
                 if(%odds)
                 {
                     %shape = "MeteorBitsRed";
-                    %loot = "MeteorCore";
+                    %loot = RPGItem::LabelToItemTag("MeteorCore");
                 }
                 else
                 {
                     %shape = "MeteorBits";
-                    %loot = "MeteorChunk";
+                    %loot = RPGItem::LabelToItemTag("MeteorChunk");
                 }
                    
                 %bits = newObject("", "Item", %shape, 1, false);

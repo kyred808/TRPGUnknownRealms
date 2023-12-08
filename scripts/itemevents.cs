@@ -225,6 +225,7 @@ function Item::onCollision(%this,%object)
             %damagedClient = %clientId;
             %shooterClient = %this.owner;
             %item = %this.itemProj;
+            %label = RPGItem::ItemTagToLabel(%item);
             
             if(%shooterClient != "")
             {
@@ -239,11 +240,12 @@ function Item::onCollision(%this,%object)
 
             if(%vec >= 2.5)
             {
-                GameBase::virtual(%object, "onDamage", $DamageType[%item], 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", %this.weapon, %shooterClient, %item);
+                GameBase::virtual(%object, "onDamage", $DamageType[%label], 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", %this.weapon, %shooterClient, %item);
             }
             else
             {
-                belt::givethisstuff(%clientId, %item, %this.delta,True);
+                RPGItem::incItemCount(%clientId,%item,%this.delta,true);
+                //belt::givethisstuff(%clientId, %item, %this.delta,True);
                 //if(Item::giveItem(%clientId, %item, %this.delta, True))
                 //{
                     Item::playPickupSound(%this);
@@ -258,7 +260,7 @@ function Item::onCollision(%this,%object)
             if(!Player::isAIControlled(%clientId))
             {
                 %itemType = %this.itemType;
-                echo(%item @" "@ %itemType);
+                //echo(%item @" "@ %itemType);
                 if(%itemType != "")
                 {
                     %amnt = %this.delta;
@@ -280,8 +282,12 @@ function Item::onCollision(%this,%object)
         }
         else if(%item.className == "Accessory" || $LoreItem[%item] == True)
         {
-            //if(Item::giveItem(%clientId, %item, 1, True))
-            if(RPGItem::incItemCount(%clientId, %item, 1, True))
+            if(RPGItem::isItemTag(%this.itemTag))
+                %item = %this.itemTag;
+            %amnt = %this.delta;
+            if(%amnt == "")
+                %amnt = 1;
+            if(RPGItem::incItemCount(%clientId, %item, %amnt, True))
             {
                 Item::playPickupSound(%this);
                 RefreshAll(%clientId,false);
@@ -309,6 +315,9 @@ function Item::onCollision(%this,%object)
             //%count = Player::getItemCount(%object,%item);
             //if(Item::giveItem(%object, %item, %this.delta, True))
             //Bots seem to not pickup the full item?
+            if(RPGItem::isItemTag(%this.itemTag))
+                %item = %this.itemTag;
+            
             if(RPGItem::incItemCount(%clientId, %item, %this.delta, True))
             {
                 Item::playPickupSound(%this);

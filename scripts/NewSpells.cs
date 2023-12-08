@@ -78,6 +78,7 @@ $Spell::staminaFalloffFactor[1] = 1.5; //How many times the minimum SkillRestric
 $Spell::delay[1] = 0.1;
 $Spell::recoveryTime[1] = 2.625;
 $Spell::canMove[1] = true;
+$Spell::LOSrange[1] = 80;
 $Spell::castType[1] = $SpellCastTypeProjectile;
 $Spell::projectileData[1] = Thorn;
 $Spell::startSound[1] = ActivateFK;
@@ -98,6 +99,7 @@ $Spell::minStamina[2] = 5;
 $Spell::manaCost[2] = 2;
 $Spell::staminaFalloffFactor[2] = 4;
 $Spell::delay[2] = 1;
+$Spell::LOSrange[2] = 80;
 $Spell::recoveryTime[2] = 2.625;
 $Spell::canMove[2] = true;
 $Spell::castType[2] = $SpellCastTypeProjectile;
@@ -641,6 +643,7 @@ $Spell::description[25] = "Shoots a small electric bolt.";
 $Spell::type[25] = $SpellTypeCantrip;
 $Spell::baseStamina[25] = 10;
 $Spell::minStamina[25] = 2;
+$Spell::LOSrange[25] = 80;
 $Spell::staminaFalloffFactor[25] = 3;
 $Spell::delay[25] = 0.1;
 $Spell::recoveryTime[25] = 1.625;
@@ -1165,11 +1168,6 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
             Client::sendMessage(%clientId, $MsgRed, "You lost too much mana before you could finish the spell.~wUnravelAM.wav");
             return false;
         }
-    }
-    
-    if(!fetchData(%clientId,"KeepWeaponOnCastFlag"))
-    {
-        Player::unmountItem(%player,$WeaponSlot);
     }
     
     %overrideEndSound = false;

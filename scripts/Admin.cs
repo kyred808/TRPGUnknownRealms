@@ -655,8 +655,9 @@ function processMenuOptions(%clientId, %option)
 		for(%i = 0; GetWord(%list, %i) != -1; %i++)
 		{
 			%item = GetWord(%list, %i);
-
-			Client::addMenuItem(%clientId, %curitem++ @ %item.description, %item);
+            %name = RPGItem::getItemNameFromTag(%item);
+            
+			Client::addMenuItem(%clientId, %curitem++ @ %name, %item);
 		}
 		return;
 	}
@@ -751,8 +752,10 @@ function processMenuselectrweapon(%clientId, %item)
 	{
 		%proj = GetWord(%list, %i);
         //echo(%proj);
-		if(String::findSubStr($ProjRestrictions[%proj], "," @ %item @ ",") != -1)
-			Client::addMenuItem(%clientId, %curitem++ @ $beltitem[%proj, "Name"], %item @ " " @ %proj);
+        %name = RPGItem::getItemNameFromTag(%proj);
+        %label = RPGItem::ItemTagToLabel(%proj);
+		if(String::findSubStr($ProjRestrictions[%label], "," @ RPGItem::ItemTagToLabel(%item) @ ",") != -1)
+			Client::addMenuItem(%clientId, %curitem++ @ %name, %item @ " " @ %proj);
 	}
 	return;
 }

@@ -2277,16 +2277,18 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 		else
 		{
-            //echo("Inc Item Count: "@ %w @" "@%w2);
-            if(RPGItem::isItemTag(%w))
-                %itemTag = %w;
-            else
-                %itemTag = RPGItem::LabelToItemTag(%w);
-            echo(%itemTag);
-            //Currently only works for unmodified items
-            RPGItem::incItemCount(%clientId,%itemTag,%w2,%echo);
-            //RPGItem::incItemCount(%clientId,%w,%w2,%echo);
-
+            if(%w2 > 0)
+            {
+                //echo("Inc Item Count: "@ %w @" "@%w2);
+                if(RPGItem::isItemTag(%w))
+                    %itemTag = %w;
+                else
+                    %itemTag = RPGItem::LabelToItemTag(%w);
+                //echo(%w @" vs "@%itemTag);
+                //Currently only works for unmodified items
+                RPGItem::incItemCount(%clientId,%itemTag,%w2,%echo);
+                //RPGItem::incItemCount(%clientId,%w,%w2,%echo);
+            }
 		}
 	}
 

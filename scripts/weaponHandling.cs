@@ -403,11 +403,11 @@ function GetBestRangedProj(%clientId, %item)
 	for(%i = 0; GetWord(%list, %i) != -1; %i++)
 	{
 		%proj = GetWord(%list, %i);
-        
-		if(String::findSubStr($ProjRestrictions[%proj], "," @ RPGItem::ItemTagToLabel(%item) @ ",") != -1) // && belt::hasthisstuff(%clientId, %proj) > 0)
+        %label = RPGItem::ItemTagToLabel(%proj);
+		if(String::findSubStr($ProjRestrictions[%label], "," @ RPGItem::ItemTagToLabel(%item) @ ",") != -1) // && belt::hasthisstuff(%clientId, %proj) > 0)
 		{
             
-			%v = AddItemSpecificPoints(RPGItem::ItemTagToLabel(%proj), 6);
+			%v = AddItemSpecificPoints(%label, 6);
 			if(%v > %highest)
 			{
 				%bestProj = %proj;
@@ -537,17 +537,48 @@ function BaseWeaponImage::onFire(%player,%slot)
             $lastAttackTime[%clientId] = getSimTime();
             if(%wtype == $RPGItem::WeaponTypeMelee)
             {
-                MeleeAttack(%player, GetRange(%label), %label);
+                MeleeAttack(%player, GetRange(%label), %weapon);
             }
             else if(%wtype == $RPGItem::WeaponTypeRange)
             {
+               
                 //Need to fix for other weapons
-                %vel = 100;
-                ProjectileAttack(%clientId, %label, %vel);
+                %vel = $RangeWeaponFireVel[%label];
+                ProjectileAttack(%clientId, %weapon, %vel);
             }
             else if(%wtype == $RPGItem::WeaponTypePick)
             {
-                PickAxeSwing(%player, GetRange(%label), %label);
+                PickAxeSwing(%player, GetRange(%label), %weapon);
+            }
+            else if(%wtype == $RPGItem::WeaponTypeBotSpell)
+            {
+                if(%clientId == "")
+                    %clientId = 0;
+                
+                %index = GetBestSpell(%clientId, 1, True);
+                %length = $Spell::LOSrange[%index]-1;
+                if(%length == "")
+                    %length = 80;
+                $los::object = "";
+                if(GameBase::getLOSinfo(%player, %length) && %index != -1)
+                {
+                    %obj = getObjectType($los::object);
+                    if(%obj == "Player")
+                    {
+                        if(Player::isAiControlled(%clientId))
+                        {
+                            AI::newDirectiveRemove(fetchData(%clientId, "BotInfoAiName"), 99);
+                        }
+                        remoteSay(%clientId, 0, "#cast " @ $Spell::keyword[%index]);
+                        %hasCast = True;
+                    }
+                }
+                if(!%hasCast)
+                {
+                    if(OddsAre(3))
+                        MeleeAttack(%player, GetRange(Hatchet), CastingBlade);	//mimic the hatchet range
+                }
+                %hasCast = "";
             }
             
             Player::trigger(%player,$WeaponSlot,true);

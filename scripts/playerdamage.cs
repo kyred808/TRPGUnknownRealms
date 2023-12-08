@@ -159,7 +159,7 @@ function Player::onKilled(%this)
                 {
                     //special handling for currently held weapon
                     %tmploot = %tmploot @ %itemTag @ " 1 ";
-                    Player::decItemCount(%clientId, %itemTag);
+                    RPGItem::decItemCount(%clientId, %itemTag);
                 }
                 else
                 {
@@ -491,7 +491,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-  
+    
+    %weapTag = %weapon;
+    %weapon = RPGItem::ItemTagToLabel(%weapon);
     %skilltype = $SkillType[%weapon];
     
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
