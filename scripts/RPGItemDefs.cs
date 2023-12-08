@@ -50,7 +50,8 @@ function GenerateGemAffix(%itemTag)
         if(%random == 2 && OddsAre(3))
             %random = 3;
         echo("Pass");
-        return %itemTag @"_g"@%random;
+        if(%random != 0)
+            return %itemTag @"_g"@%random;
     }
     return %itemTag;
 }
