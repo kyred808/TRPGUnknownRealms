@@ -11,8 +11,9 @@ function fetchData(%clientId, %type)
     {
         %a = AddPoints(%clientId, 1);
         %b = AddBonusStatePoints(%clientId, "AMR");
-        %belt = BeltEquip::AddBonusStats(%clientId,"AMR");
-        %v = Cap(%a + %b + %belt,0,"inf");
+        //%belt = BeltEquip::AddBonusStats(%clientId,"AMR");
+        //%v = Cap(%a + %b + %belt,0,"inf");
+        %v = Cap(%a + %b,0,"inf");
         
         return floor(%v);
     }
@@ -20,8 +21,8 @@ function fetchData(%clientId, %type)
 	{
 		%a = AddPoints(%clientId, 7);
 		%b = AddBonusStatePoints(%clientId, "DEF");
-        %belt = BeltEquip::AddBonusStats(%clientId,"DEF");
-		%c = (%a + %b + %belt);
+        //%belt = BeltEquip::AddBonusStats(%clientId,"DEF");
+		%c = (%a + %b); //+ %belt);
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
@@ -38,7 +39,7 @@ function fetchData(%clientId, %type)
 	{
 		%a = AddPoints(%clientId, 3);
 		%b = AddBonusStatePoints(%clientId, "MDEF");
-		%c = (%a + %b) + BeltEquip::AddBonusStats(%clientId,"MDEF");
+		%c = (%a + %b); //+ BeltEquip::AddBonusStats(%clientId,"MDEF");
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
@@ -53,7 +54,7 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "ATK")
 	{
-        
+        //Need a refactor for affixes later
 		%weapon = RPGItem::ItemTagToLabel(fetchData(%clientId,"EquippedWeapon"));
         echo(%weapon);
 		if(%weapon != -1)
@@ -63,14 +64,15 @@ function fetchData(%clientId, %type)
 			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
             {
 				%rweapon = fetchData(%clientId, "LoadedProjectile " @ %weapon);
+                %rweapon = RPGItem::ItemTagToLabel(%rweapon);
                 %extra = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
             }
-
+            //This may need a refactor, as ATK might not be the first item
 			%b = GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
             %b = %b + %extra;
-            %c = BeltEquip::AddBonusStats(%clientId,"ATK");
+            //%c = BeltEquip::AddBonusStats(%clientId,"ATK");
             
-            %val = %a + %b + %c;
+            %val = %a + %b; //+ %c;
             if(!Player::isAiControlled(%clientId))
             {
                 %stam = fetchData(%clientId,"Stamina");
@@ -90,8 +92,8 @@ function fetchData(%clientId, %type)
 		%c = floor(fetchData(%clientId, "RemortStep") * (CalculatePlayerSkill(%clientId, $SkillEndurance) / 8));
 		%d = fetchData(%clientId, "LVL");
 		%e = AddBonusStatePoints(%clientId, "MaxHP");
-        %f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
-		return floor(%a + %b + %c + %d + %e + %f);
+        //%f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
+		return floor(%a + %b + %c + %d + %e);// + %f);
 	}
 	else if(%type == "HP")
 	{
@@ -116,13 +118,13 @@ function fetchData(%clientId, %type)
         if(%temp != "")
             return %temp;
         %a = 100;
-        %c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
+        //%c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
         //echo("Check");
         //Lots of resource use for something that doesn't exist yet.
         //%b = AddBonusStatePoints(%clientId, "MaxStam");
         //%e = AddPoints(%clientId, $SpecialVarMaxStam);
         //return floor(%a + %b + %c + %e);
-        %result = floor(%a + %c);
+        %result = floor(%a); // + %c);
         storeData(%clientId,"tempMaxStam",%result);
         schedule("storeData("@%clientId@",\"tempMaxStam\",\"\");",1,%clientId);
         return %result;
@@ -132,11 +134,11 @@ function fetchData(%clientId, %type)
         %lvl = fetchData(%clientId,"LVL");
         %rl = fetchData(%clientId,"RemortStep");
         %eng = floor( CalculatePlayerSkill(%clientId, $SkillEnergy) * $ManaEnergyFactor );
-        %eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
+        //%eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
         %extra = 0;
         if(fetchData(%clientId,"Class") == "Mage")
             %extra = 15;
-        return 5*%lvl + 3*%rl + %eng + %eqp + %extra;
+        return 5*%lvl + 3*%rl + %eng + %extra; //%eqp + %extra;
         
 		//%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
 		//%b = AddPoints(%clientId, 5);
@@ -159,29 +161,25 @@ function fetchData(%clientId, %type)
 		%a = 50 + CalculatePlayerSkill(%clientId, $SkillWeightCapacity);
 		//%b = AddPoints(%clientId, 9);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");
-        %d = BeltEquip::AddBonusStats(%clientId,"MaxWeight");
 		return FixDecimals(%a + %c);
 	}
     else if(%type == "MANAThief")
     {
         %bonus = AddBonusStatePoints(%clientId, "MANAThief");
-        %belt = BeltEquip::AddBonusStats(%clientId,"MANAThief");
         %equip = AddPoints(%clientId, $SpecialVarManaThief);
-        return %bonus + %belt + %equip;
+        return %bonus + %equip;
     }
     else if(%type == "MANAHarvest")
     {
         %bonus = AddBonusStatePoints(%clientId, "MANAHarvest");
-        %belt = BeltEquip::AddBonusStats(%clientId,"MANAHarvest");
         %equip = AddPoints(%clientId, $SpecialVarManaHarvest);
-        return %bonus + %belt + %equip;
+        return %bonus + %equip;
     }
     else if(%type == "AMRP")
     {
         %equip = AddPoints(%clientId, $SpecialVarArmorPiercing);
         %bonus = AddBonusStatePoints(%clientId, "AMRP");
-        %belt = BeltEquip::AddBonusStats(%clientId,"AMRP");
-        return %bonus + %belt + %equip;
+        return %bonus + %equip;
     }
     else if(%type == "TrueShot")
     {
@@ -299,6 +297,42 @@ function storeData(%clientId, %type, %amt, %special)
             
         $ClientData[%clientId, %type] = Cap(%newVal,0,fetchData(%clientId,"MaxMANA"));
 	}
+    else if(%type == "COINS")
+    {
+        if(%special == "inc")
+        {
+			$ClientData[%clientId, "COINS"] += %amt;
+            $ClientData[%clientId, "totalWeight"] += %amt * $coinweight;
+            storeData(%clientId,"refreshWeight",1,"inc");
+        }
+		else if(%special == "dec")
+        {
+			$ClientData[%clientId, "COINS"] -= %amt;
+            $ClientData[%clientId, "totalWeight"] -= %amt * $coinweight;
+            storeData(%clientId,"refreshWeight",1,"inc");
+        }
+        else
+        {
+            %prev = $ClientData[%clientId, "COINS"];
+            %diff = %amt - %prev;
+			$ClientData[%clientId, "COINS"] = %amt;
+            $ClientData[%clientId, "totalWeight"] += %diff * $coinweight;
+            storeData(%clientId,"refreshWeight",1,"inc");
+        }
+    }
+    else if(%type == "refreshWeight") //Prevent weight from drifting due to floating point error
+    {
+        if(Player::isAIControlled(%clientId))
+            return; //Dont' are about weight drift on bots
+        if(%special == "inc")
+			$ClientData[%clientId, "refreshWeight"] += %amt;
+        
+        if($ClientData[%clientId, "refreshWeight"] > $RecalcuatePlayerWeightCounterMax)
+        {
+            $ClientData[%clientId, "totalWeight"] = WeightRecalculate(%clientId);
+            $ClientData[%clientId, "refreshWeight"] = 0;
+        }
+    }
 	else if(%type == "MaxHP" || %type == "MaxMANA" || %type == "MaxStam" ||%type == "MaxWeight" || %type == "Weight")
 	{
 		echo("Invalid call to storeData for " @ %type @ " : Can't manually set this variable.");

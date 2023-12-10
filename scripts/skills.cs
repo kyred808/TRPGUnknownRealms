@@ -635,7 +635,7 @@ function GetPlayerSkill(%clientId, %skill)
 }
 function CalculatePlayerSkill(%clientId, %skill)
 {
-    return $PlayerSkill[%clientId, %skill] + BeltEquip::AddBonusStats(%clientId,"SKILL"@%skill);
+    return $PlayerSkill[%clientId, %skill]; //+ BeltEquip::AddBonusStats(%clientId,"SKILL"@%skill);
 }
 function GetSkillMultiplier(%clientId, %skill)
 {

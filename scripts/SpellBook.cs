@@ -19,7 +19,7 @@ SpellBook::AddSpellType("offcast","Offensive Casting",$SkillOffensiveCasting,0);
 SpellBook::AddSpellType("defcast","Defensive Casting",$SkillDefensiveCasting,1);
 SpellBook::AddSpellType("neucast","Nature Casting",$SkillNatureCasting,2);
 
-SpellBook::AddSpellToType("offcast",$Spell::index[manashot]);
+SpellBook::AddSpellToType("offcast",$Spell::index[arcshot]);
 SpellBook::AddSpellToType("offcast",$Spell::index[firebolt]);
 SpellBook::AddSpellToType("offcast",$Spell::index[icespike]);
 SpellBook::AddSpellToType("offcast",$Spell::index[ironfist]);

@@ -185,7 +185,21 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	else
 	{
         //echo(fetchData(%clientId, "spawnStuff"));
-		GiveThisStuff(%clientId, fetchData(%clientId, "spawnStuff"), False);
+        %stuff = fetchData(%clientId, "spawnStuff");
+        if(%stuff != "")
+        {
+            GiveThisStuff(%clientId, fetchData(%clientId, "spawnStuff"), False);
+            
+            storeData(%clientId,"spawnStuff","");
+        }
+        storeData(%clientId,"totalWeight",WeightRecalculate(%clientId));
+        //if(%clientId.loadCharacterFlag)
+        //{
+        //    %clientId.loadCharacterFlag = false;
+        //    //Update inventory on client end.
+        //    schedule("RPGItem::refreshPlayerInv("@%clientId@");",3);
+        //    schedule("storeData("@%clientId@",\"totalWeight\",WeightRecalculate("@%clientId@"));",3.5);
+        //}
 	}
     
     Player::mountItem(%pl,BaseWeapon,$BaseWeaponSlot);

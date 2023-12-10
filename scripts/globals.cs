@@ -63,6 +63,8 @@ $PlayersFastHealInProtectedZones = true;
 $BotsCanPickupPlayerPacks = true;
 $MessagePlayerIfBotStolePack = true;
 
+$FallDamageScale = 0.5;
+
 $SkillBoostMax = 5;
 $SkillBoostNumPrimary = 3; //Rest are secondary
 $SkillPrimaryBonus = 40;
@@ -135,6 +137,7 @@ $droppingAllowed = 1;
 $sepchar = ",";
 $maxAIdistVec = 5;
 $coinweight = 0.001;
+$RecalcuatePlayerWeightCounterMax = 100;
 $maxEvents = 8;
 
 $WorldSaveList = "|DepPlatSmallHorz|DepPlatMediumHorz|DepPlatSmallVert|DepPlatMediumVert|Lootbag|";

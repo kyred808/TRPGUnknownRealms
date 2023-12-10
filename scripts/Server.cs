@@ -179,9 +179,9 @@ function createServer(%mission, %dedicated)
 	exec(comchat);
 	exec(plugs);
 	exec(version);
-    exec(belt);
-    exec(BeltEquipment);
-    exec(BeltItemDefs);
+    //exec(belt);
+    //exec(BeltEquipment);
+    //exec(BeltItemDefs);
     exec(crafting);
     exec(CraftingItemDefs);
     //exec(RPGItemInterface);

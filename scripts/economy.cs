@@ -3,10 +3,10 @@ function getBuyCost(%clientId, %item)
 	dbecho($dbechoMode, "getBuyCost(" @ %clientId @ ", " @ %item @ ")");
 
 	%aiName = fetchData(%clientId.currentShop, "BotInfoAiName");
-
-	%p = GetItemCost(%item);
-	if($NewItemBuyCost[%aiName, %item] != "")
-		%cost = $NewItemBuyCost[%aiName, %item];
+    %label = RPGItem::ItemTagToLabel(%item);
+	%p = GetItemCost(%label,%item);
+	if($NewItemBuyCost[%aiName, %label] != "")
+		%cost = $NewItemBuyCost[%aiName, %label];
 	else
 		%cost = %p;
 
@@ -21,10 +21,10 @@ function getSellCost(%clientId, %item)
 	dbecho($dbechoMode, "getSellCost(" @ %clientId @ ", " @ %item @ ")");
 
 	%aiName = fetchData(%clientId.currentShop, "BotInfoAiName");
-
-	%p = GetItemCost(%item);
-	if($NewItemSellCost[%aiName, %item] != "")
-		%cost = $NewItemSellCost[%aiName, %item];
+    %label = RPGItem::ItemTagToLabel(%item);
+	%p = GetItemCost(%label,%item);
+	if($NewItemSellCost[%aiName, %label] != "")
+		%cost = $NewItemSellCost[%aiName, %label];
 	else
 		%cost = round(%p * ($resalePercentage/100));
 
@@ -34,7 +34,7 @@ function getSellCost(%clientId, %item)
 
 	return %cost;
 }
-function GetItemCost(%item)
+function GetItemCost(%item,%itemTag)
 {
 	dbecho($dbechoMode, "GetItemCost(" @ %item @ ")");
 
@@ -88,9 +88,9 @@ function IsClientShopping(%clientId)
     
 }
 
-function buyItem(%clientId, %item, %amnt)
+function buyItem(%clientId, %itemTag, %amnt)
 {
-    dbecho($dbechoMode, "buyItem(" @ %clientId @ ", " @ %item @ ", "@ %amnt @")");
+    dbecho($dbechoMode, "buyItem(" @ %clientId @ ", " @ %itemTag @ ", "@ %amnt @")");
     
     if(IsDead(%clientId))
 		return 0;
@@ -110,51 +110,71 @@ function buyItem(%clientId, %item, %amnt)
 			//	%n = %clientId.bulkNum;
 			//else
 			//	%n = 1;
+            //%coinFlag = %itemTag == "COINS";
             %n = %amnt;
-			%cnt = GetStuffStringCount(fetchData(%clientId, "BankStorage"), %item);
+            //if(%coinFlag)
+            //    %cnt = fetchData(%clientId,"BANK");
+            //else
+                %cnt = GetStuffStringCount(RPGItem::getFullItemList(%clientId,true), %itemTag);
             if(%amnt == "ALL")
                 %n = %cnt;
 			if(%cnt >= %n)
 			{
-				RPGItem::incItemCount(%clientId, %item, %n);
-				storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, -%n));
-	
-				//SetupBank(%clientId, %clientId.currentBank);	//refresh
-                echo(%cnt @" "@ %n);
-                remoteEval(%clientId,"SetBuyList",RPGItem::getItemID(%item), RPGItem::getDesc(%item), %cnt-%n, RPGItem::getItemGroup(%item));
-				RefreshAll(%clientId,false);
+                //if(%coinFlag)
+                //{
+                //    storeData(%clientId, "BANK", %n, "dec");
+                //    storeData(%clientId, "COINS", %n, "inc");
+                //    RefreshAll(%clientId,false);
+                //    playSound(SoundMoney1, GameBase::getPosition(%clientId));
+                //    remoteEval(%clientId,"SetItemCount","COINS","COINS",fetchData(%clientId,"COINS"),"Money");
+                //    remoteEval(%clientId,"SetBuyList","COINS","COINS",fetchData(%clientId,"BANK"),"Money");
+                //}
+                //else
+                //{
+                    RPGItem::incItemCount(%clientId, %itemTag, %n);
+                    //storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, -%n));
+                    RPGItem::decStorageItemCount(%clientId,%itemTag,%n);
+                    //SetupBank(%clientId, %clientId.currentBank);	//refresh
+                    //echo(%cnt @" "@ %n);
+                    //remoteEval(%clientId,"SetBuyList",RPGItem::getItemID(%item), RPGItem::getDesc(%item), %cnt-%n, RPGItem::getItemGroup(%item));
+                    RefreshAll(%clientId,false);
+                //}
 			}
 			else
-				Client::sendMessage(%clientId, $MsgRed, "You only have " @ %cnt @ " of this item.~wC_BuySell.wav");
+            {
+                //if(%coinFlag)
+                //    Client::sendMessage(%clientId, $MsgRed, "You do not have that many coins in the bank.~wC_BuySell.wav");
+                //else
+                    Client::sendMessage(%clientId, $MsgRed, "You only have " @ %cnt @ " of this item.~wC_BuySell.wav");
+            }
             return 1;
         }
         else if(%clientId.currentShop != "")
 		{
-            %cost = getBuyCost(%clientId, %item);
+            %cost = getBuyCost(%clientId, %itemTag);
             echo(%clientId.bulkNum @" vs "@ %amnt); 
-            if($LastClickItemB[%clientId, %item] != %item || %clientId.bulkNum != %amnt)
+            if($LastClickItemB[%clientId, %itemTag] != %itemTag || %clientId.bulkNum != %amnt)
 			{
-                %desc = RPGItem::getDesc(%item);
                 if(%amnt > 1)
                 {
-                    Client::sendMessage(%clientId, $MsgWhite, "The "@ %desc @ " ("@ %amnt @") will cost you " @ %cost * %amnt @ " coins.");
+                    Client::sendMessage(%clientId, $MsgWhite, "The "@ RPGItem::getItemNameFromTag(%itemTag) @ " ("@ %amnt @") will cost you " @ %cost * %amnt @ " coins.");
                 }
                 else
                 {
-                    Client::sendMessage(%clientId, $MsgWhite, "The "@ %desc @ " will cost you " @ %cost @ " coins.");
+                    Client::sendMessage(%clientId, $MsgWhite, "The "@ RPGItem::getItemNameFromTag(%itemTag) @ " will cost you " @ %cost @ " coins.");
                 }
-				$LastClickItemB[%clientId, %item] = %item;
-				schedule("$LastClickItemB[" @ %clientId @ ", " @ %item @ "] = \"\";", 5);
+				$LastClickItemB[%clientId, %itemTag] = %itemTag;
+				schedule("$LastClickItemB[" @ %clientId @ ", " @ %itemTag @ "] = \"\";", 5);
 				%clientId.bulkNum = %amnt;
 				return 0;
 			}
             else
 			{
-				if(checkResources(%player,%item,%cost,%clientId.bulkNum) && !IsDead(%clientId))
+				if(checkResources(%player,%itemTag,%cost,%clientId.bulkNum) && !IsDead(%clientId))
 				{
-					RPGItem::incItemCount(%clientId, %item, %clientId.bulkNum);
-					BuySell(%player, %item, %clientId.bulkNum, BUY);
-		
+					RPGItem::incItemCount(%clientId, %itemTag, %clientId.bulkNum);
+					BuySell(%player, %itemTag, %clientId.bulkNum, BUY);
+                    Client::SendMessage(%clientId, $MsgWhite, "~wbuysellsound.wav");
 					RefreshAll(%clientId,false);
 					%clientId.bulkNum = 1;
 
@@ -168,8 +188,8 @@ function buyItem(%clientId, %item, %amnt)
 			//  Player is trying to pickpocket/mug
 			//=========================================
 			%cl = %clientId.currentInvSteal;
-
-			%itemweight = GetAccessoryVar(%item, $Weight);
+            %label = RPGItem::ItemTagToLabel(%itemTag);
+			%itemweight = GetAccessoryVar(%label, $Weight);
 
 			if(Vector::getDistance(GameBase::getPosition(%clientId), GameBase::getPosition(%cl)) > 2)
 			{
@@ -198,11 +218,11 @@ function buyItem(%clientId, %item, %amnt)
 				}
 
 				%eflag = "";
-				%fitem = %item;
-                %itemClass = RPGItem::getItemGroup(%item);
+				%fitem = %itemTag;
+                %itemClass = RPGItem::getItemGroupFromTag(%itemTag);
 				if(%itemClass == "Equipped")
 				{
-					%fitem = String::getSubStr(%item, 0, String::len(%item)-1);
+					%fitem = String::getSubStr(%itemTag, 0, String::len(%itemTag)-1);
 					if(%canStealEquipped)
 						%eflag = True;
 				}
@@ -213,9 +233,9 @@ function buyItem(%clientId, %item, %amnt)
 				{
 					if(%itemweight <= %max)
 					{
-						if(!$StealProtectedItem[%item])
+						if(!$StealProtectedItem[%label])
 						{
-							%icnt = RPGItem::getItemCount(%cl,%item); //Player::getItemCount(%cl, %item);
+							%icnt = RPGItem::getItemCount(%cl,%itemTag); //Player::getItemCount(%cl, %item);
 							if(%icnt)
 							{
 								Client::sendMessage(%clientId, $MsgBeige, "Attempting to " @ %w @ "...");
@@ -228,7 +248,7 @@ function buyItem(%clientId, %item, %amnt)
 								%time = %a + %d;
 	
 								%clientId.TryingToSteal = True;
-								schedule("DoSteal(" @ %clientId @ ", " @ %cl @ ", " @ %icnt @ ", " @ %item @ ", " @ %fitem @ ", \"" @ %w @ "\");", %time);
+								schedule("DoSteal(" @ %clientId @ ", " @ %cl @ ", " @ %icnt @ ", " @ %itemTag @ ", " @ %fitem @ ", \"" @ %w @ "\");", %time);
 							}
 						}
 						else
@@ -498,16 +518,16 @@ function remoteBuyItem(%clientId,%type,%amnt)
 	{
 		%clientId.lastWaitActionTime = %time;
 
-		%item = RPGItem::ItemIDToLabel(%type);//getItemData(%type);
+		//%item = RPGItem::ItemIDToLabel(%type);//getItemData(%type);
         
-        //echo("Buying Item: "@ %item @" "@ %amnt);
-		buyItem(%clientId, %item, %amnt);
+        echo("Buying Item: "@ %type @" "@ %amnt);
+		buyItem(%clientId, %type, %amnt);
 	}
 }
 
-function sellItem(%clientId,%item, %amnt)
+function sellItem(%clientId,%itemTag, %amnt)
 {
-    dbecho($dbechoMode, "buyItem(" @ %clientId @ ", " @ %item @ ", "@ %amnt @")");
+    dbecho($dbechoMode, "buyItem(" @ %clientId @ ", " @ %itemTag @ ", "@ %amnt @")");
     
     if(IsDead(%clientId))
 		return;
@@ -521,60 +541,81 @@ function sellItem(%clientId,%item, %amnt)
 			//============================================================
 			//  Player is at a bank, adding to his/her bank storage
 			//============================================================
-			if(CountObjInList(fetchData(%clientId, "BankStorage")) / 2 < 25)
-			{
-				//if(%clientId.bulkNum != "")
-				//	%n = %clientId.bulkNum;
-				//else
-				//	%n = 1;
-                %n = %amnt;
-				%cnt = Player::getItemCount(%clientId, %item);
-                if(%amnt == "ALL")
-                    %n = %cnt;
-				if(%cnt >= %n)
-				{
-					if(RPGItem::getItemGroup(%item) != "Equipped")
-					{
-						RPGItem::decItemCount(%clientId, %item, %n);
-						storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, %n));
-                        %newCnt = GetStuffStringCount(fetchData(%clientId, "BankStorage"), %item);
-						//SetupBank(%clientId, %clientId.currentBank);	//refresh
-                        remoteEval(%clientId,"SetBuyList",RPGItem::getItemID(%item), RPGItem::getDesc(%item), %newCnt, RPGItem::getItemGroup(%item));
-						RefreshAll(%clientId,false);
-					}
-					else
-						Client::sendMessage(%clientId, $MsgRed, "Unequip this item before storing it.~wC_BuySell.wav");
-				}
-				else
-					Client::sendMessage(%clientId, $MsgRed, "You only have " @ %cnt @ " of this item.~wC_BuySell.wav");
-	
-				return 1;
-			}
-			else
-				Client::sendMessage(%clientId, $MsgRed, "You can only store 25 different types of items.~wC_BuySell.wav");
+            //if(%clientId.bulkNum != "")
+            //	%n = %clientId.bulkNum;
+            //else
+            //	%n = 1;
+            //%coinFlag = %itemTag == "COINS";
+            %n = %amnt;
+            //if(%coinFlag)
+            //    %cnt = fetchData(%clientId,"COINS");
+            //else
+                %cnt = RPGItem::getItemCount(%clientId, %itemTag);
+            if(%amnt == "ALL")
+                %n = %cnt;
+            if(%cnt >= %n)
+            {
+                //if(%coinFlag)
+                //{
+                //    storeData(%clientId, "BANK", %n, "inc");
+                //    storeData(%clientId, "COINS", %n, "dec");
+                //    RefreshAll(%clientId,false);
+                //    playSound(SoundMoney1, GameBase::getPosition(%clientId));
+                //    remoteEval(%clientId,"SetItemCount","COINS","COINS",fetchData(%clientId,"COINS"),"Money");
+                //    remoteEval(%clientId,"SetBuyList","COINS","COINS",fetchData(%clientId,"BANK"),"Money");
+                //}
+                //else
+                //{
+                    if(RPGItem::getItemGroupFromTag(%itemTag) != "Equipped")
+                    {
+                        RPGItem::decItemCount(%clientId, %itemTag, %n);
+                        RPGItem::incStorageItemCount(%clientId,%itemTag,%n,true);
+                        //storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, %n));
+                        //%newCnt = GetStuffStringCount(fetchData(%clientId, "BankStorage"), %item);
+                        //SetupBank(%clientId, %clientId.currentBank);	//refresh
+                        //remoteEval(%clientId,"SetBuyList",RPGItem::getItemID(%item), RPGItem::getDesc(%item), %newCnt, RPGItem::getItemGroup(%item));
+                        RefreshAll(%clientId,false);
+                    }
+                    else
+                        Client::sendMessage(%clientId, $MsgRed, "Unequip this item before storing it.~wC_BuySell.wav");
+                //}                
+            }
+            else
+            {
+                //if(%coinFlag)
+                //    Client::sendMessage(%clientId, $MsgRed, "You do not have that many coins.~wC_BuySell.wav");
+                //else
+                    Client::sendMessage(%clientId, $MsgRed, "You only have " @ %cnt @ " of this item.~wC_BuySell.wav");
+            }
+
+            return 1;
 		}
         else if(%clientId.currentShop != "")
 		{
-			%nitem = getCroppedItem(%item);
-
+            %label = RPGItem::ItemTagToLabel(%itemTag);
+			%nitem = getCroppedItem(%label);
+            if(%amnt == "ALL")
+                %amnt = RPGItem::getItemCount(%clientId, %itemTag);
 			//=========================================
 			//  Player is at a regular shop
 			//=========================================
-			if($LastClickItemS[%clientId, %item] != %item || %clientId.bulkNum != %amnt)
+			if($LastClickItemS[%clientId, %itemTag] != %itemTag || %clientId.bulkNum != %amnt)
 			{
-				%cost = getSellCost(%clientId, %item);
-				Client::sendMessage(%clientId, $MsgWhite, "This merchant will give you " @ %cost @ " coins for the " @ RPGItem::getDesc(%nitem) @ ".");
-
-				$LastClickItemS[%clientId, %nitem] = %nitem;
-				schedule("$LastClickItemS[" @ %clientId @ ", " @ %nitem @ "] = \"\";", 5);
+				%cost = getSellCost(%clientId, %itemTag);
+                if(%amnt == 1)
+                    Client::sendMessage(%clientId, $MsgWhite, "This merchant will give you " @ %cost @ " coins for the " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
+                else
+                    Client::sendMessage(%clientId, $MsgWhite, "This merchant will give you " @ %cost * %amnt @ " coins for "@ %amnt @" " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
+				$LastClickItemS[%clientId, %itemTag] = %itemTag;
+				schedule("$LastClickItemS[" @ %clientId @ ", " @ %itemTag @ "] = \"\";", 5);
 				%clientId.bulkNum = %amnt;
 
 				return 0;
 			}
 			else
 			{
-				%itemCnt = RPGItem::getItemCount(%clientId, %item);
-				if(RPGItem::getItemGroup(%item) == "Equipped")
+				%itemCnt = RPGItem::getItemCount(%clientId, %itemTag,true);
+				if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquipppedClass)
 				{
 					Client::sendMessage(%clientId, $MsgRed, "You cannot sell an equipped item.~wC_BuySell.wav");
 				}
@@ -583,14 +624,14 @@ function sellItem(%clientId,%item, %amnt)
 					if(%clientId.bulkNum > %itemCnt)
 						%clientId.bulkNum = %itemCnt;
 
-					if($LoreItem[%item])
+					if($LoreItem[%label])
 						Client::sendMessage(%clientId, $MsgRed, "(You have sold a lore item)");
 	
 					//%count = RPGItem::getItemCount(%clientId, %item);
 					%numsell = %clientId.bulkNum;
 	
-					BuySell(%player, %item, %clientId.bulkNum, SELL);
-					RPGItem::decItemCount(%player,%item,%numsell); //setItemCount(%player, %item, (%count-%numsell));
+					BuySell(%player, %itemTag, %clientId.bulkNum, SELL);
+					RPGItem::decItemCount(%clientId,%itemTag,%numsell); //setItemCount(%player, %item, (%count-%numsell));
 					Client::SendMessage(%clientId, $MsgWhite, "~wbuysellsound.wav");
 	
 					RefreshAll(%clientId,false);
@@ -610,17 +651,27 @@ function sellItem(%clientId,%item, %amnt)
     }
     else
 	{
-        echo(%item);
-        %msg = WhatIs(getCroppedItem(RPGItem::ItemTagToLabel(%item)));
-        bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+        //echo(%item);
+        %msg = WhatIs(getCroppedItem(RPGItem::ItemTagToLabel(%itemTag)));
+        %len = String::len(%msg);
+        if(%len > 255)
+        {
+            %substr = String::getsubstr(%msg,0,255);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%msg) / 20), 1);
+            %substr = String::getSubstr(%msg,255,%len);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+        }
+        else 
+            bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+        
         return 0;
-		if(RPGItem::getItemGroup(%item) != "Equipped" && !$LoreItem[%item])
-		{
-			storeData(%clientId, "TempPack", SetStuffString(fetchData(%clientId, "TempPack"), %item, 1));
-			SetupCreatePack(%clientId);
-		}
-		else
-			Client::sendMessage(%clientId, $MsgRed, "You can't select this item.~wC_BuySell.wav");
+		//if(RPGItem::getItemGroup(%item) != "Equipped" && !$LoreItem[%item])
+		//{
+		//	storeData(%clientId, "TempPack", SetStuffString(fetchData(%clientId, "TempPack"), %item, 1));
+		//	SetupCreatePack(%clientId);
+		//}
+		//else
+		//	Client::sendMessage(%clientId, $MsgRed, "You can't select this item.~wC_BuySell.wav");
 	}
     return 0;
 }
@@ -754,7 +805,7 @@ function remoteSellItem(%clientId, %type, %amnt)
 }
 
 
-function checkResources(%player, %item, %cost, %delta, %noMessage)
+function checkResources(%player, %itemTag, %cost, %delta, %noMessage)
 {
 	dbecho($dbechoMode, "checkResources(" @ %player @ ", " @ %item @ ", " @ %cost @ ", " @ %delta @ ", " @ %noMessage @ ")");
 
@@ -763,7 +814,7 @@ function checkResources(%player, %item, %cost, %delta, %noMessage)
 	if(%cost * %delta > fetchData(%clientId, "COINS") && %clientId.adminLevel < 4)
 	{
 		if(%noMessage == "")
-			Client::sendMessage(%clientId, $MsgRed, "You cannot afford the " @ %item.description @ ".~wC_BuySell.wav");
+			Client::sendMessage(%clientId, $MsgRed, "You cannot afford the " @ RPGItem::getItemNameFromTag(%itemTag) @ ".~wC_BuySell.wav");
 		return 0;
 	}
 	return 1;

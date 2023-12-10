@@ -4002,8 +4002,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131 134 135 136 137";
-                instant SimGroup "BELTSHOP 17 27 29 800";
+                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id99"; //134 135 136 137";
             };
             //New Player Guide
             instant SimGroup "newquest55" {
@@ -4056,7 +4055,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 Thanks for making the right choice.  Make sure to stay away from that Apprentice!";
                 instant SimGroup "CSAY Get out of my sight, I've seen you with that Apprentice before.";
-                instant SimGroup "SHOP 63 64 65 66 67 68 69 70 71 99";
+                instant SimGroup "SHOP id27 id28 id29 id30 id31 id32 id33 id34 id35 id178";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4096,8 +4095,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP 24 25 26 27 28 38 43 44 59 60 69 70 131";
-                instant SimGroup "BELTSHOP 20 21 27";
+                instant SimGroup "SHOP id62 id64 id66 id176 id68 id6 id7 id23 id24 id33 id34 id16 id102 id103 id120";
             };
             instant SimGroup "porter1" {
                 instant Marker "Marker1" {
@@ -4153,8 +4151,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP 22 23 37 41 42 49 50 57 58 66 67 98";
-                instant SimGroup "BELTSHOP 17 18 19 27";
+                instant SimGroup "SHOP id58 id60 id4 id5 id12 id13 id21 id22 id30 id31 id165 id99 id100 id101 id120";
             };
             instant SimGroup "merchant4" {
                 instant Marker "ethren merchant expensive" {
@@ -4166,8 +4163,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP 29 30 31 32 35 45 46 53 54 61 62 68 71 132";
-                instant SimGroup "BELTSHOP 19 22 28";
+                instant SimGroup "SHOP id70 id72 id74 id76 id172 id8 id9 id14 id15 id25 id26 id32 id35 id17 id121 id101 id104";
             };
             instant SimGroup "quest2" {
                 instant SimGroup "NAME Miguel";
@@ -4182,7 +4178,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 Ah, you have returned.  Hand me the statues.  Now!";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 Excellent.  Here is your reward.";
-                instant SimGroup "SHOP 33";
+                instant SimGroup "SHOP id168";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4204,8 +4200,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 I see you have five Enchanted Stones, will you hand them to me?";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 You have my thanks.  Here is your reward.";
-                instant SimGroup "SHOP 34 79 80 81 82 134";
-                instant SimGroup "BELTSHOP 28 30";
+                instant SimGroup "SHOP id170 id78 id80 id82 id84 id121 id123";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4228,7 +4223,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY2 Thank you, here is your reward.";
                 instant SimGroup "CSAY I do not need your help. Or perhaps you are looking to BUY?";
                 instant SimGroup "LSAY I do not need your help. Or perhaps you are looking to BUY?";
-                instant SimGroup "SHOP 83 84 135 136";
+                instant SimGroup "SHOP id86 id88";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4357,8 +4352,7 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NAME Jeminia";
                 instant SimGroup "RACE FemaleHuman";
-                instant SimGroup "SHOP 34 40 48 57 58 66 98 99 96 103";
-                instant SimGroup "BELTSHOP 17 18 22 27 28 29 30";
+                instant SimGroup "SHOP id170 id3 id11 id21 id22 id30 id165 id178 id44 id180 id99 id100 id104 id120 id121 id122 id123";
             };
             instant SimGroup "quest10" {
                 instant Marker "Marker1" {

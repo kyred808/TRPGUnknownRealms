@@ -277,7 +277,7 @@ function Player::onKilled(%this)
 			}
 		}
 
-		updateSpawnStuff(%clientId);
+		//updateSpawnStuff(%clientId);
 
 		//house stuff
 		%victimH = fetchData(%clientId, "MyHouse");
@@ -769,6 +769,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                     storeData(%damagedClient,"CatsFeetFlag","");
                 }
             }
+            
+            %value *= $FallDamageScale;
 		}
 		//============================================================================================
 

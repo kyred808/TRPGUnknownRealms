@@ -102,9 +102,9 @@ function RPGItem::LabelToItemName(%itemLabel)
 //Careful when using this
 function RPGItem::LabelToItemTag(%itemLabel)
 {
-    echo("Label: "@ %itemLabel);
+    //echo("Label: "@ %itemLabel);
     %id = RPGItem::LabelToItemID(%itemLabel);
-    echo("Label To Id: "@ %id);
+    //echo("Label To Id: "@ %id);
     return "id"@%id;
 }
 
@@ -116,13 +116,13 @@ function RPGItem::ItemTagToLabel(%itemTag)
 function RPGItem::getItemNameFromTag(%itemTag)
 {
     %ret = RPGItem::getItemName(RPGItem::getItemIDFromTag(%itemTag));
-    echo(%ret);
+    //echo(%ret);
     if(RPGItem::getItemGroupFromTag(%itemTag) == "Gems")
     {
         %gidx = String::findSubStr(%itemTag,"_g");
         %str = String::getSubStr(%itemTag,%gidx+2,9999);
         %str = String::copyUntil(%str,"_");
-        echo(%str);
+        //echo(%str);
         %prefix = $GemAffix[%str];
         if(%prefix != "")
             return %prefix @" "@ %ret;
@@ -150,10 +150,17 @@ function RPGItem::isValidItem(%itemId)
     return $RPGItem::ItemDef[%itemId,BaseName] != "";
 }
 
-function RPGItem::SendItemDataToClient(%clientId,%itemTag,%amt)
+function RPGItem::SendItemDataToClient(%clientId,%itemTag,%amt,%storageFlag)
 {
+    if(%storageFlag == "")
+        %storageFlag = false;
     if(!Player::isAIControlled(%clientId))
-        remoteEval(%clientId,"SetItemCount",%itemTag,RPGItem::getItemNameFromTag(%itemTag),%amt,RPGItem::getItemGroupFromTag(%itemTag));
+    {
+        if(%storageFlag)
+            remoteEval(%clientId,"SetBuyList",%itemTag,RPGItem::getItemNameFromTag(%itemTag),%amt,RPGItem::getItemGroupFromTag(%itemTag));
+        else
+            remoteEval(%clientId,"SetItemCount",%itemTag,RPGItem::getItemNameFromTag(%itemTag),%amt,RPGItem::getItemGroupFromTag(%itemTag));
+    }
 }
 
 function RPGItem::isItemTag(%input)
@@ -196,6 +203,18 @@ function RPGItem::getItemCount(%clientId,%itemTag,%exact)
     return RPGItem::GetStuffStringCount(%invStr,%itemTag,%exact);
 }
 
+function RPGItem::getStorageItemCount(%clientId,%itemTag,%exact)
+{
+    if(%exact == "")
+        %exact = true;
+    //echo("RPGItem::getItemCount("@%clientId@","@%itemTag@","@%exact@")");
+    %itemId = RPGItem::getItemIDFromTag(%itemTag); 
+    %classInvTag = RPGItem::getStorageStrGroup(%itemId);
+    %invStr = fetchData(%clientId,%classInvTag);
+    //return GetStuffStringCount(%invStr,%itemTag); 
+    return RPGItem::GetStuffStringCount(%invStr,%itemTag,%exact);
+}
+
 function RPGItem::GetStuffStringCount(%string,%tag,%exactFlag)
 {
     if(%exactFlag)
@@ -220,7 +239,7 @@ function RPGItem::incItemCount(%clientId,%itemTag,%amt,%showmsg)
         %amt = 1;
     if(%amt < 0)
         return RPGItem::decItemCount(%clientId,%itemTag,%amt,%showmsg);
-        
+    %ret = "";
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     if(RPGItem::isValidItem(%itemId))
     {
@@ -229,14 +248,42 @@ function RPGItem::incItemCount(%clientId,%itemTag,%amt,%showmsg)
         %newStr = SetStuffString(%invStr,%itemTag,%amt);
         storeData(%clientId,%classInvTag,%newStr);
         %ret = $RPGStuffStr::amount;
-    
+        
+        RPGItem::updateWeight(%clientId,%itemTag,%amt,"inc");
+        
         RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret);
+        
+        if(%showmsg)
+            Client::sendMessage(%clientId, 0, "You received " @ %amt @ " " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
     }
     else
         echo(%itemTag @" - Invalid Item");
-    if(%showmsg)
-        Client::sendMessage(%clientId, 0, "You received " @ %amt @ " " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
-    
+    return %ret;
+}
+
+function RPGItem::incStorageItemCount(%clientId,%itemTag,%amt,%showmsg)
+{
+    if(%amt == "")
+        %amt = 1;
+    if(%amt < 0)
+        return RPGItem::decStorageItemCount(%clientId,%itemTag,%amt,%showmsg);
+    %ret = "";
+    %itemId = RPGItem::getItemIDFromTag(%itemTag);
+    if(RPGItem::isValidItem(%itemId))
+    {
+        %classInvTag = RPGItem::getStorageStrGroup(%itemId);
+        %invStr = fetchData(%clientId,%classInvTag);
+        %newStr = SetStuffString(%invStr,%itemTag,%amt);
+        storeData(%clientId,%classInvTag,%newStr);
+        %ret = $RPGStuffStr::amount;
+        
+        RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret,true);
+        
+        if(%showmsg)
+            Client::sendMessage(%clientId, 0, "You stored " @ %amt @ " " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
+    }
+    else
+        echo(%itemTag @" - Invalid Item");
     return %ret;
 }
 
@@ -246,53 +293,111 @@ function RPGItem::decItemCount(%clientId,%itemTag,%amt,%showmsg)
         %amt = 1;
     if(%amt < 0)
         return RPGItem::incItemCount(%clientId,%itemTag,%amt,%showmsg);
-        
+    %ret = "";
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
-    %classInvTag = RPGItem::getInvStrGroup(%itemId);
-    %invStr = fetchData(%clientId,%classInvTag);
-    %newStr = SetStuffString(%invStr,%itemTag,%amt,"dec");
-    storeData(%clientId,%classInvTag,%newStr);
-    %ret = $RPGStuffStr::amount;
-    
-    if(%ret == 0)
+    if(RPGItem::isValidItem(%itemId))
     {
-        if($RPGItem::ItemDef[%itemId,ClassName] == $RPGItem::WeaponClass && %itemTag == fetchData(%clientId,"EquippedWeapon"))
+        %classInvTag = RPGItem::getInvStrGroup(%itemId);
+        %invStr = fetchData(%clientId,%classInvTag);
+        %newStr = SetStuffString(%invStr,%itemTag,%amt,"dec");
+        storeData(%clientId,%classInvTag,%newStr);
+        %ret = $RPGStuffStr::amount;
+        
+        if(%ret == 0)
         {
-            Player::unmountItem(%clientId,$WeaponSlot);
-            storeData(%clientId,"EquippedWeapon","");
+            if($RPGItem::ItemDef[%itemId,ClassName] == $RPGItem::WeaponClass && %itemTag == fetchData(%clientId,"EquippedWeapon"))
+            {
+                Player::unmountItem(%clientId,$WeaponSlot);
+                storeData(%clientId,"EquippedWeapon","");
+            }
         }
+        
+        RPGItem::updateWeight(%clientId,%itemTag,%amt,"dec");
+        RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret);
+        if(%showmsg)
+            Client::sendMessage(%clientId, 0, "You lost " @ %amt @ " " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
     }
+    else
+        echo(%itemTag @" - Invalid Item");
+        
+    return %ret;
+}
+
+function RPGItem::decStorageItemCount(%clientId,%itemTag,%amt,%showmsg)
+{
+    if(%amt == "")
+        %amt = 1;
+    if(%amt < 0)
+        return RPGItem::incStorageItemCount(%clientId,%itemTag,%amt,%showmsg);
     
-    RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret);
-    
-    if(%showmsg)
-        Client::sendMessage(%clientId, 0, "You lost " @ %amt @ " " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
-    
+    %itemId = RPGItem::getItemIDFromTag(%itemTag);
+    if(RPGItem::isValidItem(%itemId))
+    {
+        %classInvTag = RPGItem::getStorageStrGroup(%itemId);
+        %invStr = fetchData(%clientId,%classInvTag);
+        %newStr = SetStuffString(%invStr,%itemTag,%amt,"dec");
+        storeData(%clientId,%classInvTag,%newStr);
+        %ret = $RPGStuffStr::amount;
+        
+        RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret,true);
+        
+        if(%showmsg)
+            Client::sendMessage(%clientId, 0, "You withdrew " @ %amt @ " " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
+    }
+    else
+        echo(%itemTag @" - Invalid Item");
+        
     return %ret;
 }
 
 function RPGItem::setItemCount(%clientId,%itemTag,%amt)
 {
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
-    echo(%itemTag);
-    %classInvTag = RPGItem::getInvStrGroup(%itemId);
-    %invStr = fetchData(%clientId,%classInvTag);
-    %newStr = SetStuffString(%invStr,%itemTag,%amt,"set");
-    echo(%newStr);
-    storeData(%clientId,%classInvTag,%newStr);
-    %ret = $RPGStuffStr::amount;
-    echo(%ret);
-    if(%ret == 0)
+    if(RPGItem::isValidItem(%itemId))
     {
-        if($RPGItem::ItemDef[%itemId,ClassName] == $RPGItem::WeaponClass && %itemTag == fetchData(%clientId,"EquippedWeapon"))
+        %classInvTag = RPGItem::getInvStrGroup(%itemId);
+        %invStr = fetchData(%clientId,%classInvTag);
+        %currentAmnt = RPGItem::getItemCount(%clientId,%itemTag,true);
+        %newStr = SetStuffString(%invStr,%itemTag,%amt,"set");
+        storeData(%clientId,%classInvTag,%newStr);
+        %ret = $RPGStuffStr::amount;
+        if(%ret == 0)
         {
-            Player::unmountItem(%clientId,$WeaponSlot);
-            storeData(%clientId,"EquippedWeapon","");
+            if($RPGItem::ItemDef[%itemId,ClassName] == $RPGItem::WeaponClass && %itemTag == fetchData(%clientId,"EquippedWeapon"))
+            {
+                Player::unmountItem(%clientId,$WeaponSlot);
+                storeData(%clientId,"EquippedWeapon","");
+            }
         }
+        
+        if(%ret > %currentAmnt)
+            RPGItem::updateWeight(%clientId,%itemTag,%ret - %currentAmnt,"inc");
+        else if(%ret < %currentAmnt)
+            RPGItem::updateWeight(%clientId,%itemTag,%currentAmnt - %ret,"dec");
+        
+        RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret);
     }
-    
-    RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret);
-    
+    else
+        echo(%itemTag @" - Invalid Item");
+    return %ret;
+}
+
+function RPGItem::setStorageItemCount(%clientId,%itemTag,%amt)
+{
+    %ret = "";
+    %itemId = RPGItem::getItemIDFromTag(%itemTag);
+    if(RPGItem::isValidItem(%itemId))
+    {
+        %classInvTag = RPGItem::getStorageStrGroup(%itemId);
+        %invStr = fetchData(%clientId,%classInvTag);
+        %newStr = SetStuffString(%invStr,%itemTag,%amt,"set");
+        storeData(%clientId,%classInvTag,%newStr);
+        %ret = $RPGStuffStr::amount;
+        
+        RPGItem::SendItemDataToClient(%clientId,%itemTag,%ret,true);
+    }
+    else
+        echo(%itemTag @" - Invalid Item");
     return %ret;
 }
 
@@ -316,8 +421,58 @@ function RPGItem::getFullItemList(%clientId,%storageFlag)
             %invStr = %invStr @ fetchData(%clientId,%inv);
         }
     }
-    return %invStr;
+    
+    return FixStuffString(%invStr);
 }
+//Enable the adding of weight modifiers
+function RPGItem::getWeight(%itemTag)
+{
+    %weight = $AccessoryVar[getCroppedItem(RPGItem::ItemTagToLabel(%itemTag)), $Weight];
+    if(%weight == "")
+        return 0;
+        
+    return %weight;
+}
+
+function RPGItem::updateWeight(%clientId,%itemTag,%amnt,%dir)
+{
+    %weight = RPGItem::getWeight(%itemTag) * %amnt;
+    if(%dir == "inc" || %dir == "dec")
+    {
+        storeData(%clientId,"totalWeight",%weight,%dir);
+        storeData(%clientId,"refreshWeight",1,"inc");
+    }
+}
+
+//Does not seem to work.  Do not use
+function RPGItem::refreshPlayerInv(%clientId)
+{
+    %invList = RPGItem::getFullItemList(%clientId,false);
+    echo("Full INV: "@%invList);
+    %sendBuffer = "";
+    for(%i = 0; (%itemTag = getWord(%invList,%i)) != -1; %i+=2)
+    {
+        %desc = RPGItem::getItemNameFromTag(%itemTag);
+        %amt = RPGItem::getItemCount(%clientId,%itemTag,true);
+        %type = RPGItem::getItemGroupFromTag(%itemTag);
+        
+        %len = String::len(%sendBuffer);
+        %itemStr = %itemTag @"|"@ %desc @"|"@%amt@"|"@%type @",";
+        %strLen = String::len(%itemStr);
+        if(%len + %strLen > 200)
+        {
+            %ll = String::getSubStr(%sendBuffer,0,%len-1); //Drop the last comma
+            remoteEval(%clientId,"BufferedPlayerInvList",%ll,false);
+            %sendBuffer = "";
+        }
+        %sendBuffer = %sendBuffer @ %itemStr; //= %itemTag @"|"@ %desc @"|"@%amt@"|"@%type @",";
+    }
+    
+    %ll = String::getSubStr(%sendBuffer,0,%len-1); //Drop the last comma
+    remoteEval(%clientId,"BufferedPlayerInvList",%sendBuffer,true);
+}
+
+//Bank stuff
 
 //=========================
 // END Inventory Functions

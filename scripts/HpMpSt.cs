@@ -141,12 +141,12 @@ function calcRechargeRate(%clientId)
 
     %a = %a + AddBonusStatePoints(%clientId, "StamRegen");
     
-    %a = %a + BeltEquip::AddBonusStats(%clientId,"StamRegen");
+    //%a = %a + BeltEquip::AddBonusStats(%clientId,"StamRegen");
     
     if(%clientId.isAtRest && %clientId.sleepMode == "")
     {
         %a = %a + 0.3 + %end/600;
-        %a = %a + BeltEquip::AddBonusStats(%clientId,"IdleStam");
+        //%a = %a + BeltEquip::AddBonusStats(%clientId,"IdleStam");
     }
     
 	if(%clientId.sleepMode == 1) //Sleep
@@ -154,7 +154,7 @@ function calcRechargeRate(%clientId)
 	else if(%clientId.sleepMode == 2) //Rest
     {
 		%b = 2.25 + %a;
-        %b = %b + BeltEquip::AddBonusStats(%clientId,"RestStam");
+        //%b = %b + BeltEquip::AddBonusStats(%clientId,"RestStam");
     }
     else if(%clientId.sleepMode == 3) //Heal
         %b = -2 + %a;
@@ -293,9 +293,9 @@ function ManaRegenTick(%clientId)
     if(%clientId.manaRegenTick >= 3)
     {
         %val = 1;
-        %b = BeltEquip::AddBonusStats(%clientId,"MANARegen");
+        //%b = BeltEquip::AddBonusStats(%clientId,"MANARegen");
         %c = AddBonusStatePoints(%clientId, "MANARegen");
-        %val = %val + %b + %c;
+        %val = %val + %c; //%b + %c;
         refreshMANA(%clientId, -1 * %val);
         %clientId.manaRegenTick = 0;
     }

@@ -31,33 +31,6 @@
 // Menu Functions      //
 // ------------------- //
 //%offset must be less than 6
-function BeltMenu::GetUpperLowerBounds(%numElements,%page,%offset)
-{
-    %numLines = 6;
-    %extra = 0;
-    if(%offset != "")
-        %extra = %offset;
-    
-    %numElements += %extra;
-    //echo(%numElements);
-    %numFullPages = floor((%numElements)/ %numLines);
-    
-    %lowerBound = (%page * %numLines) - (%numLines-1);
-    %upperBound = %lowerBound + (%numLines-1);
-    
-    
-    %lowerBound -= %extra;
-    if(%lowerBound < 1)
-        %lowerBound = 1;
-    
-
-    if(%upperBound > %numElements)
-        %upperBound = %numElements;
-
-    %upperBound -= %extra;
-    
-    return %numFullPages@" "@ %lowerBound @" "@ %upperBound;
-}
 
 
 function MenuViewBelt(%clientId, %page)

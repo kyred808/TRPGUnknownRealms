@@ -1,72 +1,3 @@
-function OldGetWeight(%clientId)
-{
-	dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
-
-	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
-		return 0;
-
-	//== HELPS REDUCE LAG WHEN THERE ARE SIMULTANEOUS CALLS ======
-	%time = getIntegerTime(true);
-	if(%time - %clientId.lastGetWeight <= 1 && fetchData(%clientId, "tmpWeight") != "")
-		return fetchData(%clientId, "tmpWeight");
-	%clientId.lastGetWeight = %time;
-	//============================================================
-
-	$GetWeight::ArmorMod = "";
-	%total = 0;
-
-	//add up items
-	%max = getNumItems();
-	for(%i = 0; %i < %max; %i++)
-	{
-		%checkItem = getItemData(%i);
-		%itemcount = Player::getItemCount(%clientId, %i);
-
-		if(%itemcount && %checkItem != "")
-		{
-			%weight = GetAccessoryVar(%checkItem, $Weight);
-			if(%weight != "" && %weight != False)
-				%total += %weight * %itemcount;
-
-			//Replaces the laggy AddPoints(%clientId, 8) in RefreshWeight (the real lag comes from GetAccessoryList however)
-			%specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
-			if(GetWord(%specialvar, 0) == 8 && %checkItem.className == Equipped)
-				$GetWeight::ArmorMod = GetWord(%specialvar, 1);
-		}
-	}
-    
-    %beltList = fetchData(%clientId,"AllBelt");
-    %i = 0;
-    %currentItem = getWord(%beltList,%i);
-    while(%currentItem != -1)
-    {
-        %count = getWord(%beltList,%i+1);
-        %weight = GetAccessoryVar(%currentItem, $Weight);
-        if(%weight != "" && %weight != False)
-            %total += %weight * %count;
-        
-        %i += 2;
-        %currentItem = getWord(%beltList,%i);
-    }
-    
-    for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
-    {
-        %slotName = $BeltEquip::Slot[%i,Name];
-        %item = Player::GetEquippedBeltItem(%clientId,%slotName);
-        if(%item != "")
-        {
-            %weight = GetAccessoryVar(%item, $Weight);
-            if(%weight != "" && %weight != False)
-                %total += %weight;
-        }
-    }
-	//add up coins
-	%total += fetchData(%clientId, "COINS") * $coinweight;
-
-	storeData(%clientId, "tmpWeight", %total);
-	return %total;
-}
-
 function GetWeight(%clientId)
 {
     dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
@@ -74,15 +5,34 @@ function GetWeight(%clientId)
 	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
 		return 0;
 
-	//== HELPS REDUCE LAG WHEN THERE ARE SIMULTANEOUS CALLS ======
-	%time = getIntegerTime(true);
-	if(%time - %clientId.lastGetWeight <= 1 && fetchData(%clientId, "tmpWeight") != "")
-		return fetchData(%clientId, "tmpWeight");
-	%clientId.lastGetWeight = %time;
-	//============================================================
-
+    %weight = fetchData(%clientId,"totalWeight");
+        
 	$GetWeight::ArmorMod = "";
-	%total = 0;
+    //%itemList = RPGItem::getFullItemList(%clientId,false);
+    
+    %itemList = GetAccessoryList(%clientId, 2, 8);
+    
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+    {
+        %checkItem = RPGItem::ItemTagToLabel(%itemTag);
+        %specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
+        for(%k = 0; (%sv = getWord(%specialvar,%k)) != -1; %k+=2)
+        {
+            if(%sv == 8)
+            {
+                $GetWeight::ArmorMod = GetWord(%specialvar, %k+1);
+                break;
+            }
+        }
+        if($GetWeight::ArmorMod != "")
+            break;
+    }
+	return %weight;
+}
+
+function WeightRecalculate(%clientId)
+{
+    %total = 0;
     %itemList = RPGItem::getFullItemList(%clientId,false);
     
     for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
@@ -92,16 +42,16 @@ function GetWeight(%clientId)
         %weight = GetAccessoryVar(%checkItem, $Weight);
         if(%weight != "")
             %total += %weight * %cnt;
-        %specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
-
-        if(GetWord(%specialvar, 0) == 8 && RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquipppedClass)
-			$GetWeight::ArmorMod = GetWord(%specialvar, 1);
     }
     
     //add up coins
 	%total += fetchData(%clientId, "COINS") * $coinweight;
 
-	storeData(%clientId, "tmpWeight", %total);
+	//storeData(%clientId, "tmpWeight", %total);
+    
+    %x = fetchData(%clientId,"totalWeight");
+    %error = (%x - %total)/%total;
+    echo("error: "@ 100*%error);
 	return %total;
 }
 

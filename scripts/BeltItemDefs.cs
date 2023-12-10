@@ -292,21 +292,6 @@ BeltItem::Add("Talon","Talon","AmmoItems",0.1,GenerateItemCost(Talon),25);
 BeltItem::Add("Ceraphum's Feather","CeraphumsFeather","AmmoItems",0.1,GenerateItemCost(CeraphumsFeather),26);
 //BeltItem::Add("Poison Arrow","PoisonArrow","AmmoItems",0.1,200,27);
 
-$SkillType[SmallRock] = $SkillArchery;
-$SkillType[BasicArrow] = $SkillArchery;
-$SkillType[SheafArrow] = $SkillArchery;
-$SkillType[BladedArrow] = $SkillArchery;
-$SkillType[LightQuarrel] = $SkillArchery;
-$SkillType[HeavyQuarrel] = $SkillArchery;
-$SkillType[ShortQuarrel] = $SkillArchery;
-$SkillType[CastingBlade] = $SkillPiercing;
-$SkillType[KeldriniteLS] = $SkillSlashing;
-$SkillType[AeolusWing] = $SkillArchery;
-$SkillType[StoneFeather] = $SkillArchery;
-$SkillType[MetalFeather] = $SkillArchery;
-$SkillType[Talon] = $SkillArchery;
-$SkillType[CeraphumsFeather] = $SkillArchery;
-
 $ProjRestrictions[SmallRock] = ",Sling,";
 $ProjRestrictions[BasicArrow] = ",ShortBow,LongBow,ElvenBow,CompositeBow,RShortBow,";
 $ProjRestrictions[SheafArrow] = ",ShortBow,LongBow,ElvenBow,CompositeBow,RShortBow,";

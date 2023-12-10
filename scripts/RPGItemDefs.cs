@@ -22,6 +22,16 @@ $RPGItem::StorageItemLists[1] = "AccessoryItemStorage";
 $RPGItem::StorageItemLists[2] = "PouchItemStorage";
 $RPGItem::StorageItemLists[3] = "AmmoItemStorage";
 
+$TestCnt = 0;
+$TestLimit = 50;
+function TestItemMax()
+{
+    $TestCnt++;
+    RPGItem::incItemCount(2049,"id6_"@$TestCnt,1,false);
+    if($TestCnt < $TestLimit)
+        schedule("TestItemMax();",0.2);
+}
+
 function RPGItem::AddAccessoryEquipment(%label,%name,%class,%id,%datablk)
 {
     RPGItem::AddItemDefinition(%label,%name,%class,%id,%datablk);
@@ -29,9 +39,9 @@ function RPGItem::AddAccessoryEquipment(%label,%name,%class,%id,%datablk)
     RPGItem::pairEquipWithItem(%id,%id+1);
 }
 
-function AddItemHelper(%label,%name,%class,%id,%weight,%value,%datablk)
+function AddItemHelper(%label,%name,%class,%id,%weight,%value,%datablk,%action)
 {
-    RPGItem::AddItemDefinition(%label,%name,%class,%id,%datablk);
+    RPGItem::AddItemDefinition(%label,%name,%class,%id,%datablk,%action);
     $AccessoryVar[%label, $Weight] = %weight;
     $HardcodedItemCost[%label] = %value;
 }
@@ -126,6 +136,7 @@ RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape
 RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxeShape);
 RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
 RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpell,DaggerShape);
+RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
 //RPGItem::AddWeapon("sling","Sling",39,$RPGItem::WeaponTypeMelee,DaggerShape);
 //RPGItem::AddWeapon("sling","Sling",40,$RPGItem::WeaponTypeMelee,DaggerShape);
 //RPGItem::AddWeapon("sling","Sling",41,$RPGItem::WeaponTypeMelee,DaggerShape);
@@ -160,22 +171,38 @@ RPGItem::AddAccessoryEquipment(DragonMail,"Dragon Mail",$RPGItem::AccessoryClass
 RPGItem::AddAccessoryEquipment(KeldrinArmor,"Keldrin Armor",$RPGItem::AccessoryClass,98,MiscLootShape);
 
 
-RPGItem::AddItemDefinition(BasicArrow,"Basic Arrow","Ammo",99,BowArrow);
-RPGItem::AddItemDefinition(SheafArrow,"Sheaf Arrow","Ammo",100,BowArrow);
-RPGItem::AddItemDefinition(BladedArrow,"Bladed Arrow","Ammo",101,BowArrow);
-RPGItem::AddItemDefinition(LightQuarrel,"Light Quarrel","Ammo",102,CrossbowBolt);
-RPGItem::AddItemDefinition(HeavyQuarrel,"Heavy Quarrel","Ammo",103,CrossbowBolt);
-RPGItem::AddItemDefinition(ShortQuarrel,"Short Quarrel","Ammo",104,CrossbowBolt);
-RPGItem::AddItemDefinition(StoneFeather,"Stone Feather","Ammo",105,BowArrow);
-RPGItem::AddItemDefinition(MetalFeather,"Metal Feather","Ammo",106,BowArrow);
-RPGItem::AddItemDefinition(Talon,"Talon","Ammo",107,BowArrow);
-RPGItem::AddItemDefinition(CeraphumsFeather,"Ceraphums Feather","Ammo",108,BowArrow);
-RPGItem::AddItemDefinition(SmallRock,"Small Rock","Ammo",109,SmallRock);
+AddItemHelper(BasicArrow,"Basic Arrow","Ammo",99,0.1,GenerateItemCost(BasicArrow),BowArrow);
+AddItemHelper(SheafArrow,"Sheaf Arrow","Ammo",100,0.1,GenerateItemCost(SheafArrow),BowArrow);
+AddItemHelper(BladedArrow,"Bladed Arrow","Ammo",101,0.1,GenerateItemCost(BladedArrow),BowArrow);
+AddItemHelper(LightQuarrel,"Light Quarrel","Ammo",102,0.1,GenerateItemCost(LightQuarrel),CrossbowBolt);
+AddItemHelper(HeavyQuarrel,"Heavy Quarrel","Ammo",103,0.1,GenerateItemCost(HeavyQuarrel),CrossbowBolt);
+AddItemHelper(ShortQuarrel,"Short Quarrel","Ammo",104,0.1,GenerateItemCost(ShortQuarrel),CrossbowBolt);
+AddItemHelper(StoneFeather,"Stone Feather","Ammo",105,0.1,GenerateItemCost(StoneFeather),BowArrow);
+AddItemHelper(MetalFeather,"Metal Feather","Ammo",106,0.1,GenerateItemCost(MetalFeather),BowArrow);
+AddItemHelper(Talon,"Talon","Ammo",107,0.1,GenerateItemCost(Talon),BowArrow);
+AddItemHelper(CeraphumsFeather,"Ceraphums Feather","Ammo",108,0.1,GenerateItemCost(CeraphumsFeather),BowArrow);
+AddItemHelper(SmallRock,"Small Rock","Ammo",109,0.1,GenerateItemCost(SmallRock),SmallRock);
 
-RPGItem::AddItemDefinition("bluepotion","Blue Potion","Potion",120,PotionShape,"DrinkHealingPotion 15");
-RPGItem::AddItemDefinition(CrystalBluePotion,"Crystal Blue Potion","Potion",PotionShape,121,"DrinkHealingPotion 60");
-RPGItem::AddItemDefinition(EnergyPotion,"Energy Potion","Potion",122,PotionShape,"DrinkStaminaPotion 25");
-RPGItem::AddItemDefinition(CrystalEnergyPotion,"Crystal Energy Potion","Potion",123,PotionShape,"DrinkStaminaPotion 50");
+$SkillType[SmallRock] = $SkillArchery;
+$SkillType[BasicArrow] = $SkillArchery;
+$SkillType[SheafArrow] = $SkillArchery;
+$SkillType[BladedArrow] = $SkillArchery;
+$SkillType[LightQuarrel] = $SkillArchery;
+$SkillType[HeavyQuarrel] = $SkillArchery;
+$SkillType[ShortQuarrel] = $SkillArchery;
+$SkillType[CastingBlade] = $SkillPiercing;
+$SkillType[KeldriniteLS] = $SkillSlashing;
+$SkillType[AeolusWing] = $SkillArchery;
+$SkillType[StoneFeather] = $SkillArchery;
+$SkillType[MetalFeather] = $SkillArchery;
+$SkillType[Talon] = $SkillArchery;
+$SkillType[CeraphumsFeather] = $SkillArchery;
+
+
+AddItemHelper("bluepotion","Blue Potion","Potion",120,4,15,PotionShape,"DrinkHealingPotion 15");
+AddItemHelper(CrystalBluePotion,"Crystal Blue Potion","Potion",121,10,100,PotionShape,"DrinkHealingPotion 60");
+AddItemHelper(EnergyPotion,"Energy Potion","Potion",122,4,15,PotionShape,"DrinkStaminaPotion 25");
+AddItemHelper(CrystalEnergyPotion,"Crystal Energy Potion","Potion",123,10,100,PotionShape,"DrinkStaminaPotion 50");
 
 $AccessoryVar[bluepotion, $Weight] = 4;
 $AccessoryVar[CrystalBluePotion, $Weight] = 10;
@@ -209,7 +236,7 @@ AddItemHelper("RedBerry","Red Berry","Plants",127,0.2,30,MiscLootShape);
 AddItemHelper("TreeFruit","Tree Fruit","Plants",128,0.5,1,MiscLootShape);
 AddItemHelper("Strawberry","Strawberry","Plants",129,0.3,250,MiscLootShape);
 AddItemHelper("Nixphyllum","Nixphyllum","Plants",130,0.3,300,MiscLootShape);
-AddItemHelper("Deez Nuts","DeezNuts","Plants",131,0.3,1500,MiscLootShape);
+AddItemHelper("DeezNuts","Deez Nuts","Plants",131,0.3,1500,MiscLootShape);
 AddItemHelper("Lunabrosia","Lunabrosia","Plants",132,0.3,3000,MiscLootShape);
 
 AddItemHelper("quartz","Quartz","Gems",133,0.2,250,MiscLootShape);
@@ -297,6 +324,12 @@ RPGItem::AddAccessoryEquipment(BootsOfGliding,"Boots of Gliding",$RPGItem::Acces
 RPGItem::AddAccessoryEquipment(WindWalkers,"Wind Walkers",$RPGItem::AccessoryClass,172,MiscLootShape);
 
 RPGItem::AddAccessoryEquipment(KnightShield,"Knight Shield",$RPGItem::AccessoryClass,174,KnightShield);
+
+RPGItem::AddAccessoryEquipment(BandedMail,"Banded Mail",$RPGItem::AccessoryClass,176,MiscLootShape);
+
+//WIP
+RPGItem::AddAccessoryEquipment(OrbOfLuminance,"Orb of Luminance",$RPGItem::AccessoryClass,178,MiscLootShape);
+RPGItem::AddAccessoryEquipment(OrbOfBreath,"Orb of Breath",$RPGItem::AccessoryClass,180,MiscLootShape);
 
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)

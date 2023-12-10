@@ -32,9 +32,6 @@ function remotePlayMode(%clientId)
 
 function remoteCommandMode(%clientId)
 {
-
-
-
 	if($numMessage[%clientId, c] != "")
 	{
 		remotesay(%clientId,0,$numMessage[%clientId, c]);

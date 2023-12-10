@@ -18,34 +18,27 @@ function SetupShop(%clientId, %id)
 	%info = $BotInfo[%id.name, SHOP];	
     %buyList = "";
     // Speed improved over 100x
-	for(%i = 0; GetWord(%info, %i) != -1; %i++)
+	for(%i = 0; (%item = GetWord(%info, %i)) != -1; %i++)
 	{
-		%a = GetWord(%info, %i);
+        %desc = RPGItem::getItemNameFromTag(%item);
+        %cost = getBuyCost(%clientId, %item);
+        %type = RPGItem::getItemGroupFromTag(%item);
+        if(%cost == "")
+            %cost = 0;
+        %len = String::len(%buyList);
         
-        %item = $Shop::IndexItem[%a];
-        if(%item != "")
+        %itemStr = %item @"|"@ %desc @"|"@%cost@"|"@%type @",";
+        %strLen = String::len(%itemStr);
+        
+        if(%len + %strLen > 200)
         {
-            %id = RPGItem::getItemID(%item);
-            %desc = RPGItem::getDesc(%item);
-            %cost = getBuyCost(%clientId, %item);
-            %type = RPGItem::getItemGroup(%item);
-            
-            %len = String::len(%buyList);
-            
-            %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
-            %strLen = String::len(%itemStr);
-            
-            if(%len + %strLen > 200)
-            {
-                %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
-                remoteEval(%clientId,"BufferedBuyList",%ll,true,false);
-                %buyList = "";
-            }
-            
-            %buyList = %buyList @ %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
-            //Client::setItemShopping(%clientId, %item);
-            //Client::setItemBuying(%clientId, %item);
+            %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+            remoteEval(%clientId,"BufferedBuyList",%ll,true,false);
+            %buyList = "";
         }
+        
+        %buyList = %buyList @ %itemStr;// = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+
         
         // Very wasteful code
 		//%max = getNumItems();		
@@ -79,26 +72,27 @@ function SetupBank(%clientId, %id)
 
 	if(Client::getGuiMode(%clientId) != 4)
 		Client::setGuiMode(%clientId, 4);
-
-	%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
+    %coins =  fetchData(%clientId, "COINS");
+	%txt = "<f1><jc>COINS: " @ %coins;
 	Client::setInventoryText(%clientId, %txt);
 
-	%info = fetchData(%clientId, "BankStorage");
+	%info = RPGItem::getFullItemList(%clientId,true);
     echo(%info);
+    %buyList = ""; //"COINS|COINS|"@fetchData(%clientId,"BANK")@"|Money,";
 	for(%i = 0; GetWord(%info, %i) != -1; %i+=2)
 	{
-		%item = GetWord(%info, %i);
+		%itemTag = GetWord(%info, %i);
         %amnt = GetWord(%info, %i+1);
-        if(%item != "")
+        if(%itemTag != "")
         {
-            %id = RPGItem::getItemID(%item);
-            %desc = RPGItem::getDesc(%item);
-            %cost = %amnt;//getBuyCost(%clientId, %item);
-            %type = RPGItem::getItemGroup(%item);
+            %desc = RPGItem::getItemNameFromTag(%itemTag);
+            %cost = %amnt;
+            %type = RPGItem::getItemGroupFromTag(%itemTag);
             
             %len = String::len(%buyList);
-            
-            %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+            if(%cost == "")
+                %cost = 0;
+            %itemStr = %itemTag @"|"@ %desc @"|"@%cost@"|"@%type @",";
             %strLen = String::len(%itemStr);
             
             if(%len + %strLen > 200)
@@ -108,15 +102,16 @@ function SetupBank(%clientId, %id)
                 %buyList = "";
             }
             
-            %buyList = %buyList @ %itemStr = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
-            //Client::setItemShopping(%clientId, %item);
-            //Client::setItemBuying(%clientId, %item);
+            %buyList = %buyList @ %itemStr;
         }
-		//Client::setItemShopping(%clientId, %item);
-		//Client::setItemBuying(%clientId, %item);
 	}
     %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
     remoteEval(%clientId,"BufferedBuyList",%buyList,false,true);
+    
+    //if(%coins > 0)
+    //{
+    //    remoteEval(%clientId,"SetItemCount","COINS","COINS",%coins,"Money");
+    //}
 }
 
 function SetupBlacksmith(%clientId, %id)
@@ -206,7 +201,7 @@ function ClearCurrentShopVars(%clientId)
       %clientId.currentBank = "";
       %clientId.currentSmith = "";
 	%clientId.currentInvSteal = "";
-
+    //remoteEval(%clientId,"SetItemCount","COINS","COINS",0,"Money");
 	storeData(%clientId, "TempPack", "");
 	storeData(%clientId, "TempSmith", "");
 }
@@ -319,7 +314,7 @@ $AccessoryVar[JusticeStaff, $ShopIndex] = 133;
 $AccessoryVar[NoviceStaff, $ShopIndex] = 134;
 $AccessoryVar[MagesStaff, $ShopIndex] = 135;
 $AccessoryVar[FireStaff, $ShopIndex] = 136;
-$AccessoryVar[ThornStaff, $ShopIndex] = 136;
+$AccessoryVar[ThornStaff, $ShopIndex] = 137;
 
 $Shop::IndexItem[1] = BluePotion;
 $Shop::IndexItem[2] = CrystalBluePotion;

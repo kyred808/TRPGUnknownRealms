@@ -524,7 +524,7 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "Coins: " @ fetchData(%clientId, "COINS") @ " - Bank: " @ fetchData(%clientId, "BANK") @ "\n";
 		%a[%tmp++] = "TOTAL $: " @ fetchData(%clientId, "COINS") + fetchData(%clientId, "BANK") @ "\n\n";
 		
-		%a[%tmp++] = "Weight: " @ fetchData(%clientId, "Weight") @ " / " @ fetchData(%clientId, "MaxWeight") @ "\n";
+		%a[%tmp++] = "Weight: " @ Number::Beautify(fetchData(%clientId, "Weight"),0,2) @ " / " @ Number::Beautify(fetchData(%clientId, "MaxWeight"),0,2) @ "\n";
 		%a[%tmp++] = "Mana: " @ fetchData(%clientId, "MANA") @ " / " @ fetchData(%clientId, "MaxMANA") @ "\n";
 
 		for(%i = 1; %a[%i] != ""; %i++)

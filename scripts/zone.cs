@@ -548,6 +548,26 @@ function UpdateZone(%object)
 	//-----------------------------------------------------------
 	DecreaseBonusStateTicks(%clientId);
 
+    if(%clientId.currentShop != "")
+    {
+        %pos = Gamebase::getPosition(%clientId);
+        if(Vector::getDistance(Gamebase::getPosition(%clientId.currentShop),%pos) > $maxSAYdistVec)
+        {
+            ClearCurrentShopVars(%clientId);
+            Client::setGuiMode(%clientId, $GuiModePlay);
+        }
+    }
+    
+    if(%clientId.currentBank != "")
+    {
+        %pos = Gamebase::getPosition(%clientId);
+        if(Vector::getDistance(Gamebase::getPosition(%clientId.currentBank),%pos) > $maxSAYdistVec)
+        {
+            ClearCurrentShopVars(%clientId);
+            Client::setGuiMode(%clientId, $GuiModePlay);
+        }
+    }
+    
     //-----------------------------------------------------------
 	// Do passive mana regen ticks
 	//-----------------------------------------------------------
