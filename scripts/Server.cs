@@ -186,6 +186,7 @@ function createServer(%mission, %dedicated)
     exec(CraftingItemDefs);
     //exec(RPGItemInterface);
     exec(NewRPGItemInterface);
+    exec(RPGItemAffix);
     exec(RPGItemDefs);
     exec(Farming);
     exec(Abilities);

@@ -1375,6 +1375,110 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "AMBIENTSOUND uwater.wav 40";
                 instant SimGroup "MUSIC uwater2.wav 1";
             };
+            instant SimGroup "FREEFORALL Strange Orchard" {
+                instant SimGroup "DropPoints" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2292.14 1610.61 98.5668";
+                        rotation = "0 -0 0.739996";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2258.64 1678.8 69.2598";
+                        rotation = "0 -0 0.959995";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2432.81 1552.95 139.683";
+                        rotation = "0 -0 -0.579996";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2576.95 1920.28 173.41";
+                        rotation = "0 -0 -2.19998";
+                    };
+                };
+                instant SimGroup "MUSIC travmusic2.wav 30";
+                instant Marker "280 280 80 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2422.31 1817.23 96.7158";
+                    rotation = "0 0 0";
+                };
+                //5 active Tree shapes that update every 3 ticks (6 seconds)
+                instant SimGroup "QuantumObjects TreeShape 5 3 0 55 10 10" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2397.03 1870.9 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2410.55 1838.98 65.0003";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2495.19 1821.84 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2420.39 1767.24 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2447.99 1863.57 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2470.43 1761.22 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2479.42 1797.02 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2388.24 1747.8 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2395.11 1794.84 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2441.98 1748.78 64.9999";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2364.32 1838.64 63.4723";
+                        rotation = "0 0 0";
+                    };
+                };
+            };
             instant SimGroup "DUNGEON Traveller's Den" {
                 instant SimGroup "DropPoints" {
                     instant Marker "Marker1" {
@@ -3045,6 +3149,51 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NEED AI false";
                 instant SimGroup "GSAY You have been teleported outside the Traveller's Den.~wPortal6.wav";
+            };
+        };
+        instant SimGroup "StrangeOrchard" {
+            instant InteriorShape "jrock1" {
+                fileName = "jrock.dis";
+                isContainer = "1";
+                position = "-2440.02 1812.95 61.0667";
+                rotation = "0 3.14158 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock41" {
+                fileName = "lrock4.dis";
+                isContainer = "1";
+                position = "-2440.64 1816.38 65";
+                rotation = "0.251364 1.10421 0.124629";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock31" {
+                fileName = "lrock3.dis";
+                isContainer = "1";
+                position = "-2443.01 1816.96 65";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock41" {
+                fileName = "lrock4.dis";
+                isContainer = "1";
+                position = "-2444.4 1808.6 60.4795";
+                rotation = "0 -0.103221 -0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock31" {
+                fileName = "lrock3.dis";
+                isContainer = "1";
+                position = "-2436.99 1809.92 65.0667";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant StaticShape "PhantomStrangerTree21" {
+                dataBlock = "PhantomStrangerTree2";
+                name = "";
+                position = "-2440.07 1812.76 58.2188";
+                rotation = "0 0 0";
+                destroyable = "false";
+                deleteOnDestroy = "False";
             };
         };
         instant SimGroup "HemacTower" {

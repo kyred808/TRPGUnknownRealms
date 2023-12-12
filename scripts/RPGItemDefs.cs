@@ -54,14 +54,13 @@ $GemAffix[2] = "Pure";
 $GemAffix[3] = "Pristine";
 function GenerateGemAffix(%itemTag)
 {
-    if(OddsAre(3)) //5
+    if(OddsAre(4)) //5
     {
         %random = getIntRandomMT(-2,2);
         if(%random == 2 && OddsAre(3))
             %random = 3;
-        echo("Pass");
         if(%random != 0)
-            return %itemTag @"_g"@%random;
+            return %itemTag @"_im"@%random;
     }
     return %itemTag;
 }
@@ -137,6 +136,8 @@ RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxe
 RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
 RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpell,DaggerShape);
 RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
+RPGItem::AddWeapon("TreeAtk","TreeAtk",45,$RPGItem::WeaponTypeMelee,TreeShapeItem);
+
 //RPGItem::AddWeapon("sling","Sling",39,$RPGItem::WeaponTypeMelee,DaggerShape);
 //RPGItem::AddWeapon("sling","Sling",40,$RPGItem::WeaponTypeMelee,DaggerShape);
 //RPGItem::AddWeapon("sling","Sling",41,$RPGItem::WeaponTypeMelee,DaggerShape);
@@ -341,7 +342,7 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
     if(%type == "DrinkHealingPotion")
     {
         %baseAmt = getWord(%action,1);
-        NewDrinkHealingPotion(%clientId,RPGItem::getItemGroupFromTag(%itemTag),%baseAmt);
+        NewDrinkHealingPotion(%clientId,RPGItem::getItemNameFromTag(%itemTag),%baseAmt);
         RPGItem::decItemCount(%clientId,%itemTag,1);
         RefreshAll(%clientId,false);
         return true;
@@ -349,7 +350,7 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
     else if(%type == "DrinkStaminaPotion")
     {
         %baseAmt = getWord(%action,1);
-        NewDrinkStaminaPotion(%clientId,RPGItem::getItemGroupFromTag(%itemTag),%baseAmt);
+        NewDrinkStaminaPotion(%clientId,RPGItem::getItemNameFromTag(%itemTag),%baseAmt);
         RPGItem::decItemCount(%clientId,%itemTag,1);
         RefreshAll(%clientId,false);
         return true;

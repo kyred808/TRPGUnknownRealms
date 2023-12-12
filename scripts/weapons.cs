@@ -622,9 +622,10 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
             %score = DoRandomMining(%clientId, %target);
             if(%score != "")
             {
-                //belt::givethisstuff(%clientId, %score, 1, 1, 1);
-                RPGItem::incItemCount(%clientId,RPGItem::LabelToItemTag(%score),1);
-                //Player::incItemCount(%clientId, %score, 1);
+                %itemTag = RPGItem::LabelToItemTag(%score);
+                
+                %ntag = GenerateGemAffix(%itemTag);
+                RPGItem::incItemCount(%clientId,%ntag,1,true);
                 RefreshAll(%clientId,false);
                 //Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
 

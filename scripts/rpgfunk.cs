@@ -2920,11 +2920,13 @@ function WhatIs(%item)
     if(RPGItem::isItemTag(%item))
     {
         %tag = %item;
-        %item = RPGItem::ItemTagToLabel(%item);
-        
+        %item = getCroppedItem(RPGItem::ItemTagToLabel(%item));
+        %desc = RPGItem::getItemNameFromTag(%tag);
     }
+    else
+        %desc = RPGItem::LabelToItemName(%item);
 	//--------- GATHER INFO ------------------
-    %desc = RPGItem::LabelToItemName(%item);
+    
 	//if(%item.description == False)	
 	//	%desc = %item;
 	//else
@@ -2932,7 +2934,7 @@ function WhatIs(%item)
 
 	%t = GetAccessoryVar(%item, $AccessoryType);
 	%w = GetAccessoryVar(%item, $Weight);
-	%c = GetItemCost(%item);
+	%c = GetItemCost(%item,%tag);
 	%s = $SkillDesc[$SkillType[%item]];
 
 	if(GetDelay(%item) != "" && GetDelay(%item) != 0)

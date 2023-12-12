@@ -647,6 +647,39 @@ ItemData CompositeBowShape
 	showWeaponBar = true;
 };
 
+ItemImageData TreeShapeItemImage
+{
+	shapeFile  = "tree1";
+	mountPoint = 0;
+
+	weaponType = 1; 
+	reloadTime = 0;
+	fireTime = 0.01; //GetDelay(QuarterStaff);
+    mountOffset = { -1, -1, -2 }; 
+	spinUpTime = 0;
+	spinDownTime = 0;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundHitLeather;
+	sfxActivate = SoundHitLeather;
+};
+ItemData TreeShapeItem
+{
+	heading = "bWeapons";
+	description = "Treeatk";
+	className = "Weapon";
+	shapeFile  = "tree1";
+	hudIcon = "trident";
+	shadowDetailMask = 4;
+	imageType = TreeShapeItemImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+
 ItemImageData KnightShieldImage
 {
 	shapeFile = "shield3";

@@ -118,11 +118,12 @@ function Zone::addZone(%group)
     %type = getWord(%system,0);
     %desc = Word::getSubWord(%system,1,999);
     echo("new zone: "@%zcnt);
+    $Zone::QuantumObjs[%zcnt,NumberGroups] = 0;
     for(%z = 0; %z <= %tmpcount-1; %z++)
     {
         %tmpobject = Group::getObject(%tmpgroup, %z);
         
-
+        
         if(getObjectType(%tmpobject) == "Marker")
         {
             if(%marker == "")
@@ -159,6 +160,14 @@ function Zone::addZone(%group)
             {
                 Zone::addSpawnPoints(%zcnt,%tmpobject);
             }
+            else if(%w0 == "QuantumObjects")
+            {
+                $Zone::QuantumObjs[%zcnt,NumberGroups]++;
+                %qId = $Zone::QuantumObjs[%zcnt,NumberGroups]-1;
+                $Zone::QuantumObjs[%zcnt,%qId,Points,Max] = 0;
+                Zone::addQuantumObjectGroup(%zcnt,%qId,%tmpobject);
+                
+            }
         }
     }
     
@@ -182,6 +191,54 @@ function Zone::addZone(%group)
         Zone::setupSpookyWell(%group);
     
     return %zcnt;
+}
+
+function Zone::addQuantumObjectGroup(%zcnt,%quantumGrpId,%pointGroupObj)
+{
+    %n = Object::getName(%pointGroupObj);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,Datablock] = getWord(%n,1);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,NumActive] = getWord(%n,2);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,UpdateTicks] = getWord(%n,3);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,Raycast] = getWord(%n,4);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,MobSpawnIndex] = getWord(%n,5);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,MobOdds] = getWord(%n,6);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,RestoreTime] = getWord(%n,7);
+    if($Zone::QuantumObjs[%zcnt,%quantumGrpId,MobOdds] < 1)
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,MobOdds] = 1;
+        
+    echo("NumActive: "@ $Zone::QuantumObjs[%zcnt,%quantumGrpId,NumActive]);
+    $Zone::QuantumObjs[%zcnt,%quantumGrpId,Tick] = 0;
+    for(%i = 0; %i < Group::objectCount(%pointGroupObj); %i++)
+    {
+        %point = Group::getObject(%pointGroupObj, %i);
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,%i] = %point;
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,Max]++;
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,%i,InUse] = false;
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,%i,Observers] = 0;
+    }
+    
+    for(%i = 0; %i < $Zone::QuantumObjs[%zcnt,%quantumGrpId,NumActive]; %i++)
+    {
+        %obj = newObject("QuantumObj"@%i,StaticShape,$Zone::QuantumObjs[%zcnt,%quantumGrpId,Datablock],false);
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Object,%i] = %obj;
+        %cnt = 0;
+        for(%k = 0; %k < $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,Max]; %k++)
+        {
+            %x[%cnt] = $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,%k];
+            %x[%cnt,pidx] = %k;
+            %cnt++;
+        }
+        %idx = getIntRandomMT(0,%cnt-1);
+        %pt = %x[%idx];
+        %pidx = %x[%idx,pidx];
+        Gamebase::setPosition(%obj,Gamebase::getPosition(%pt));
+        Gamebase::setRotation(%obj,Gamebase::getRotation(%pt));
+        addToSet("MissionCleanup",%obj);
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Points,%pidx,InUse] = true;
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Object,%i,Point] = %pidx;
+        $Zone::QuantumObjs[%zcnt,%quantumGrpId,Object,%i,Enabled] = true; 
+    }
+    
 }
 
 function Zone::addSpawnPoints(%zoneId,%spawnGroup)
@@ -285,7 +342,7 @@ function RecursiveZone(%delay)
 	{
 		DoZoneCheck(2, %delay);
 		$zoneTicker[1] = "";
-        
+
         //DoSpookyZoneUpdate();
 	}
 //	if($zoneTicker[2] >= 15)	//check zone every 30 seconds for bots
@@ -315,32 +372,104 @@ function DoZoneCheck(%w, %d)
 		deleteObject(%set);
         
         Zone::SpawnCheck(%z);
+        Zone::DoQuantumUpdate(%z);
 	}
 	
 	Group::iterateRecursive(%mset, UpdateZone);
 	deleteObject(%mset);
 }
 
-echo("Spooky Well Object: "@ $Zone::SpookyWell[0,Objects]);
-    echo("Spooky Well Object: "@ $Zone::SpookyWell[1,Objects]);
-    echo("Spooky Well Marker: "@ $Zone::SpookyWell["WellMarker"]);
-    echo("Spooky Well Marker: "@ $Zone::SpookyWell["RockMarker"]);
-
-function DoSpookyZoneUpdate()
+function Zone::DoQuantumUpdate(%zid)
 {
-    if(!$Zone::SomeoneIsLookingAtWell)
+    if($Zone::Active[%zid] && $Zone::QuantumObjs[%zid,NumberGroups] > 0)
     {
-        if(OddsAre(2))
+        for(%g = 0; (%ticks = $Zone::QuantumObjs[%zid,%g,UpdateTicks]) != ""; %g++)
         {
-            Gamebase::setPosition($Zone::SpookyWell[0,Objects],Gamebase::getPosition($Zone::SpookyWell["WellMarker"]));
-            Gamebase::setPosition($Zone::SpookyWell[1,Objects],Gamebase::getPosition($Zone::SpookyWell["RockMarker"]));
-        }
-        else
-        {
-            Gamebase::setPosition($Zone::SpookyWell[1,Objects],Gamebase::getPosition($Zone::SpookyWell["WellMarker"]));
-            Gamebase::setPosition($Zone::SpookyWell[0,Objects],Gamebase::getPosition($Zone::SpookyWell["RockMarker"]));
+            if($Zone::QuantumObjs[%zid,%g,Tick] >= %ticks)
+            {
+                %cnt = 0;
+                for(%k = 0; %k < $Zone::QuantumObjs[%zid,%g,Points,Max]; %k++)
+                {
+                    //No one is observing the point and the point is not in use.
+                    //echo("OBS "@ %k@": "@$Zone::QuantumObjs[%zid,%g,Points,%k,Observers]);
+                    if($Zone::QuantumObjs[%zid,%g,Points,%k,Observers] == 0 && !$Zone::QuantumObjs[%zid,%g,Points,%k,InUse])
+                    {
+                        %validPts[%cnt] = %k;
+                        %cnt++;
+                    }
+                    //Delegate cleanup to later.
+                    schedule("$Zone::QuantumObjs["@%zid@","@%g@",Points,"@%k@",Observers] = 0;",0.5);
+                }
+                if(%cnt > 0)
+                {
+                    for(%i = 0; %i < $Zone::QuantumObjs[%zid,%g,NumActive]; %i++)
+                    {
+                        if(!$Zone::QuantumObjs[%zid,%g,Object,%i,Enabled])
+                            continue;
+                        %ptIdx = $Zone::QuantumObjs[%zid,%g,Object,%i,Point];
+                        %obj = $Zone::QuantumObjs[%zid,%g,Object,%i];
+                        //If no one is observing this object.
+                        if($Zone::QuantumObjs[%zid,%g,Points,%ptIdx,Observers] == 0)
+                        {
+                            %mob = $Zone::QuantumObjs[%zid,%g,MobSpawnIndex];
+                            %noSpawnFlag = true;
+                            if(%mob != -1)
+                            {
+                                %odds = $Zone::QuantumObjs[%zid,%g,MobOdds];
+                                if(OddsAre(%odds))
+                                {
+                                    %spawnFlag = false;
+                                    $Zone::QuantumObjs[%zid,%g,Object,%i,Enabled] = false;
+                                    $Zone::QuantumObjs[%zid,%g,Points,%ptIdx,InUse] = false;
+                                    %pos = Gamebase::getPosition(%obj);
+                                    deleteObject(%obj);
+                                    %aiName = AI::helper($spawnIndex[%mob],$spawnIndex[%mob],"ZoneSpawn "@ %zid @" "@ %ptIdx);
+                                    %aiCl = AI::getId(%aiName);
+                                    Gamebase::setPosition(%aiCl);
+                                    storeData(%aiCl,"QTObjIndex",%zid@" "@%g@" "@%i);
+                                    AI::CallbackDied(%aiName,QTObjMob::onDeath);
+                                }
+                            }
+                            if(%noSpawnFlag)
+                            {
+                                %cc = getIntRandomMT(0,%cnt-1);
+                                %newIdx = %validPts[%cc];
+                                %ptObj = $Zone::QuantumObjs[%zid,%g,Points,%newIdx];
+                                Gamebase::setPosition(%obj,Gamebase::getPosition(%ptObj));
+                                Gamebase::setRotation(%obj,Gamebase::getRotation(%ptObj));
+                                $Zone::QuantumObjs[%zid,%g,Points,%ptIdx,InUse] = false;
+                                $Zone::QuantumObjs[%zid,%g,Points,%newIdx,InUse] = true;
+                                $Zone::QuantumObjs[%zid,%g,Object,%i,Point] = %newIdx;
+                                %validPts[%cc] = %ptIdx;
+                            }
+                        }
+                    }
+                }
+                $Zone::QuantumObjs[%zid,%g,Tick] = 0;
+            }
+            $Zone::QuantumObjs[%zid,%g,Tick]++;
         }
     }
+}
+
+function QTObjMob::onDeath(%aiName)
+{
+    %client = AI::getId(%aiName);
+    %dd = fetchData(%client,"QTObjIndex");
+    AI::onDroneKilled(%aiName);
+    %zid = getWord(%dd,0);
+    %gid = getWord(%dd,1);
+    %idx = getWord(%dd,2);
+    %tt = $Zone::QuantumObjs[%zid,%gid,RestoreTime];
+    schedule("restoreQuantumObject("@%zid@","@%gid@","@%idx@");",%tt);
+}
+
+function restoreQuantumObject(%zid,%groupId,%index)
+{
+    %obj = newObject("QuantumObj"@%index,StaticShape,$Zone::QuantumObjs[%zid,%groupId,Datablock],false);
+    $Zone::QuantumObjs[%zid,%groupId,Object,%index] = %obj;
+    $Zone::QuantumObjs[%zid,%groupId,Object,%index,Enabled] = true;
+    addToSet("MissionCleanup",%obj);
 }
 
 function setzoneflags(%object, %z)
@@ -350,9 +479,45 @@ function setzoneflags(%object, %z)
 	%clientId = Player::getClient(%object);
 	storeData(%clientId, "tmpzone", %z);
     
-    //if($Zone::SpookyWellZone[$Zone::FolderID[%z]])
-    //    DoSpookyZoneCalc(%object);
+    if($Zone::QuantumObjs[%z,NumberGroups] != "" && $Zone::QuantumObjs[%z,NumberGroups] > 0)
+        DoQuantumCheckCalc(%object,%z);
 
+}
+
+$QuantumFOV = cos(deg2rad(150)/2); //150 degree FOV cone
+$QuantumMinDist = 4;
+function WithInFOVOrDistCheck(%playerPos,%eyetrans,%otherPos)
+{
+    %dist = Vector::getDistance(%playerPos,%otherPos);
+    %dir = Vector::normalize(Vector::sub(%otherPos,%playerPos));
+    %eyeDir = Word::getSubWord(%eyetrans,3,3);
+    
+    //Dot = 1 if you are looing right at it
+    //0 if 90degs off (left or right)
+    //-1 if looking directly away
+    %dot = Vector::dot(%dir,%eyeDir);
+    return %dot >= $QuantumFOV || %dist <= $QuantumMinDist;
+}
+
+function DoQuantumCheckCalc(%player,%zid)
+{
+    %cPos = Gamebase::getPosition(%player);
+    %eyeTrans = Gamebase::getEyeTransform(%player);
+    for(%g = 0; %g < $Zone::QuantumObjs[%zid,NumberGroups]; %g++)
+    {
+        if($Zone::QuantumObjs[%zid,%g,Tick] >= $Zone::QuantumObjs[%zid,%g,UpdateTicks])
+        {
+            for(%k = 0; %k < $Zone::QuantumObjs[%zid,%g,Points,Max]; %k++)
+            {
+                %point = $Zone::QuantumObjs[%zid,%g,Points,%k];
+                %pointPos = Gamebase::getPosition(%point);
+                if(WithInFOVOrDistCheck(%cPos,%eyeTrans,%pointPos))
+                {
+                    $Zone::QuantumObjs[%zid,%g,Points,%k,Observers]++;
+                }
+            }
+        }
+    }
 }
 
 function UpdateZone(%object)

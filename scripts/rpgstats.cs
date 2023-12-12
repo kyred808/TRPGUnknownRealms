@@ -54,9 +54,9 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "ATK")
 	{
-        //Need a refactor for affixes later
-		%weapon = RPGItem::ItemTagToLabel(fetchData(%clientId,"EquippedWeapon"));
-        echo(%weapon);
+        %weapTag = fetchData(%clientId,"EquippedWeapon");
+		%weapon = RPGItem::ItemTagToLabel(%weapTag);
+        
 		if(%weapon != -1)
 		{
 			%a = AddBonusStatePoints(%clientId, "ATK");
@@ -64,13 +64,21 @@ function fetchData(%clientId, %type)
 			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
             {
 				%rweapon = fetchData(%clientId, "LoadedProjectile " @ %weapon);
-                %rweapon = RPGItem::ItemTagToLabel(%rweapon);
-                %extra = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
+                %rweaponLabel = RPGItem::ItemTagToLabel(%rweapon);
+                %bb = GetWord(GetAccessoryVar(%rweaponLabel, $SpecialVar), 1);
+                %im = RPGItem::getAffixValue(%weapTag,"im");
+                if(%im != 0)
+                    %bb += round(%bb * 0.1 * %im);
+                %extra = %bb;
             }
             //This may need a refactor, as ATK might not be the first item
-			%b = GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
-            %b = %b + %extra;
-            //%c = BeltEquip::AddBonusStats(%clientId,"ATK");
+            %baseAtk = GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1);
+            %im = RPGItem::getAffixValue(%weapTag,"im");
+            if(%im != 0)
+            {
+                %b = %baseAtk + round(%baseAtk * 0.1 * %im);
+            }
+            %b = %baseAtk + %extra;
             
             %val = %a + %b; //+ %c;
             if(!Player::isAiControlled(%clientId))
@@ -79,7 +87,7 @@ function fetchData(%clientId, %type)
                 if(%stam <= 25)
                     %val = %val * %stam/25;
             }
-            
+
 			return %val;
 		}
 		else
@@ -372,10 +380,10 @@ function MenuSP(%clientId, %page)
 
 	for(%i = %lb; %i <= %ub; %i++)
     {
-        %bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
-        if(%bonus > 0)
-            Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
-        else
+        //%bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
+        //if(%bonus > 0)
+        //    Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
+        //else
             Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ ") " @ $SkillDesc[%i], %i @ " " @ %page);
     }
 

@@ -37,11 +37,19 @@ function getSellCost(%clientId, %item)
 function GetItemCost(%item,%itemTag)
 {
 	dbecho($dbechoMode, "GetItemCost(" @ %item @ ")");
-
 	if($HardcodedItemCost[%item] != "")
-		return $HardcodedItemCost[%item];
-
-	return $ItemCost[%item];		
+    {
+        %cost = $HardcodedItemCost[%item];
+    }
+    else
+        %cost = $ItemCost[%item];
+    
+    %im = RPGItem::getAffixValue(%itemTag,"im");
+    if(%im != 0)
+    {
+        %cost += %cost*%im*0.3;
+    }
+	return round(%cost);		
 }
 
 function BuySell(%player, %item, %delta, %buyORsell)
@@ -70,7 +78,7 @@ function BuySell(%player, %item, %delta, %buyORsell)
 			%cost = getSellCost(%clientId, %item) * %delta;
 		}
 		UseSkill(%clientId, $SkillHaggling, True, True);
-
+        echo(%cost);
 		storeData(%clientId, "COINS", %cost, "inc");
 	}
 
@@ -652,7 +660,7 @@ function sellItem(%clientId,%itemTag, %amnt)
     else
 	{
         //echo(%item);
-        %msg = WhatIs(getCroppedItem(RPGItem::ItemTagToLabel(%itemTag)));
+        %msg = WhatIs(%itemTag);
         %len = String::len(%msg);
         if(%len > 255)
         {

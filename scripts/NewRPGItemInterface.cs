@@ -91,6 +91,7 @@ function RPGItem::getStorageStrGroup(%itemId)
 
 function RPGItem::LabelToItemID(%itemLabel)
 {
+    %itemLabel = String::copyUntil(%itemLabel,"_");
     return $RPGItem::ItemDef[%itemLabel,LabelToID];
 }
 
@@ -104,8 +105,7 @@ function RPGItem::LabelToItemTag(%itemLabel)
 {
     //echo("Label: "@ %itemLabel);
     %id = RPGItem::LabelToItemID(%itemLabel);
-    //echo("Label To Id: "@ %id);
-    return "id"@%id;
+    return RPGItem::transferAffixesToItem(%itemLabel,%id);
 }
 
 function RPGItem::ItemTagToLabel(%itemTag)
@@ -116,18 +116,32 @@ function RPGItem::ItemTagToLabel(%itemTag)
 function RPGItem::getItemNameFromTag(%itemTag)
 {
     %ret = RPGItem::getItemName(RPGItem::getItemIDFromTag(%itemTag));
-    //echo(%ret);
-    if(RPGItem::getItemGroupFromTag(%itemTag) == "Gems")
+    %im = RPGItem::getAffixValue(%itemTag,"im");
+    if(%im != 0)
     {
-        %gidx = String::findSubStr(%itemTag,"_g");
-        %str = String::getSubStr(%itemTag,%gidx+2,9999);
-        %str = String::copyUntil(%str,"_");
-        //echo(%str);
-        %prefix = $GemAffix[%str];
-        if(%prefix != "")
-            return %prefix @" "@ %ret;
+        if(RPGItem::getItemGroupFromTag(%itemTag) == "Gems")
+        {
+            %ret = $GemAffix[%im] @" "@ %ret;
+        }
+        else
+        {
+            if( %im > 0)
+                %ret = "+"@%im@" "@%ret;
+            else if(%im < 0)
+                %ret = "-"@%im@" "@%ret;
+        }
     }
-    return RPGItem::getItemName(RPGItem::getItemIDFromTag(%itemTag));
+    //if(RPGItem::getItemGroupFromTag(%itemTag) == "Gems")
+    //{
+    //    %gidx = String::findSubStr(%itemTag,"_gm");
+    //    %str = String::getSubStr(%itemTag,%gidx+2,9999);
+    //    %str = String::copyUntil(%str,"_");
+    //    //echo(%str);
+    //    %prefix = $GemAffix[%str];
+    //    if(%prefix != "")
+    //        %ret = %prefix @" "@ %ret;
+    //}
+    return %ret;
 }
 
 function RPGItem::getItemName(%itemId)
