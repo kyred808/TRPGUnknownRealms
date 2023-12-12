@@ -1,5 +1,60 @@
+$BeltEquip::BonusAccessoryTag[$SpecialVarAMR] = "AMR";
+$BeltEquip::BonusAccessoryTag[$SpecialVarMDEF] = "MDEF";
+$BeltEquip::BonusAccessoryTag[$SpecialVarHP] = "HP";
+$BeltEquip::BonusAccessoryTag[$SpecialVarMana] = "MANA";
+$BeltEquip::BonusAccessoryTag[$SpecialVarATK] = "ATK";
+$BeltEquip::BonusAccessoryTag[$SpecialVarDEF] = "DEF";
+$BeltEquip::BonusAccessoryTag[$SpecialVarSPEED] = "SPD";
+$BeltEquip::BonusAccessoryTag[$SpeicalVarHPRegen] = "HPRegen";
+$BeltEquip::BonusAccessoryTag[$SpecialVarManaRegen] = "MANARegen";
+$BeltEquip::BonusAccessoryTag[$SpecialVarManaThief] = "MANAThief";
+$BeltEquip::BonusAccessoryTag[$SpecialVarManaHarvest] = "MANAHarvest";
+$BeltEquip::BonusAccessoryTag[$SpecialVarMaxStam] = "MaxStam";
+$BeltEquip::BonusAccessoryTag[$SpecialVarArmorPiercing] = "AMRP";
 
+$BeltEquip::BonusAccessoryTag[$SpecialVarStamRegen] = "StamRegen";
+$BeltEquip::BonusAccessoryTag[$SpecialVarRestStamRegen] = "RestStam";
+$BeltEquip::BonusAccessoryTag[$SpecialVarIdleStamRegen] = "IdleStam";
 
+$BeltEquip::AccessoryTag["AMR"] = $SpecialVarAMR;
+$BeltEquip::AccessoryTag["MDEF"] = $SpecialVarMDEF;
+$BeltEquip::AccessoryTag["MaxHP"] = $SpecialVarHP;
+$BeltEquip::AccessoryTag["MaxMANA"] = $SpecialVarMana;
+$BeltEquip::AccessoryTag["ATK"] = $SpecialVarATK;
+$BeltEquip::AccessoryTag["DEF"] = $SpecialVarDEF;
+//$BeltEquip::AccessoryTag[$SpecialVarSPEED] = "SPD";
+$BeltEquip::AccessoryTag["HPRegen"] = $SpeicalVarHPRegen;
+$BeltEquip::AccessoryTag["MANARegen"] = $SpecialVarManaRegen;
+$BeltEquip::AccessoryTag["MANAThief"] = $SpecialVarManaThief;
+$BeltEquip::AccessoryTag["MANAHarvest"] = $SpecialVarManaHarvest;
+$BeltEquip::AccessoryTag["MaxStam"] = $SpecialVarMaxStam;
+$BeltEquip::AccessoryTag["AMRP"] = $SpecialVarArmorPiercing;
+$BeltEquip::AccessoryTag["StamRegen"] = $SpecialVarStamRegen;
+$BeltEquip::AccessoryTag["RestStam"] = $SpecialVarRestStamRegen;
+$BeltEquip::AccessoryTag["IdleStam"] = $SpecialVarIdleStamRegen;
+
+$BeltEquip::SpecVarDesc["AMR"] = "AMR";
+$BeltEquip::SpecVarDesc["MDEF"] = "MDEF";
+$BeltEquip::SpecVarDesc["MaxHP"] = "HP";
+$BeltEquip::SpecVarDesc["MaxMANA"] = "MaxMANA";
+$BeltEquip::SpecVarDesc["ATK"] = "ATK";
+$BeltEquip::SpecVarDesc["DEF"] = "DEF";
+//$BeltEquip::SpecVarDesc[$SpecialVarSPEED] = "SPD";
+$BeltEquip::SpecVarDesc["HPRegen"] = "HPRegen";
+$BeltEquip::SpecVarDesc["MANARegen"] = "MANARegen";
+$BeltEquip::SpecVarDesc["MANAThief"] = "MANA Thief";
+$BeltEquip::SpecVarDesc["MANAHarvest"] = "MANA Harvest";
+$BeltEquip::SpecVarDesc["MaxStam"] = "Max Stamina";
+$BeltEquip::SpecVarDesc["AMRP"] = "AMR Pierce";
+$BeltEquip::SpecVarDesc["StamRegen"] = "Stamina Regen";
+$BeltEquip::SpecVarDesc["RestStam"] = "Rest Stamina";
+$BeltEquip::SpecVarDesc["IdleStam"] = "Idle Stamina";
+
+for(%i = 1; %i < $NumberOfSkills; %i++)
+    $BeltEquip::SpecVarDesc["SKILL"@%i] = $SkillDesc[%i];
+
+$EquipItemsType = "EquipItems";
+    
 function MenuBeltEquip(%clientid,%type,%page)
 {
     Client::buildMenu(%clientId, "Belt Equipment:", "BeltEquip", true);
@@ -62,7 +117,7 @@ function processMenuBeltEquip(%clientid, %opt)
 // Need to test %indexOffset when more than 6 equip items for a type exist
 function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
 {
-    echo("MenuBeltEquipmentSlot("@%clientid@","@%slotId@","@%prevType@","@%page@")");
+    //echo("MenuBeltEquipmentSlot("@%clientid@","@%slotId@","@%prevType@","@%page@")");
     %slotDisp = $BeltEquip::Slot[%slotId,Disp];
     %curItem = Player::GetEquippedBeltItem(%clientId,$BeltEquip::Slot[%slotId,Name]);
     
@@ -79,8 +134,8 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
     %slotType = $BeltEquip::Slot[%slotId,Type];
     %nf = BeltEquip::GetList(%clientId,%slotType);
     %numItems = GetWord(%nf,0);
-    echo("Num Items: "@ %numItems);
-    echo("Item NS: "@ %nf);
+    //echo("Num Items: "@ %numItems);
+    //echo("Item NS: "@ %nf);
     
     if(%curItem != "")
         Client::addMenuItem(%clientId, "eUnequip "@ $beltitem[%curItem, "Name"],"unequip " @ %curItem @" "@ %slotId @" "@%prevType);
@@ -90,8 +145,6 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
     %numFullPages = getWord(%menuULB,0);
     %lb = getWord(%menuULB,1);
     %ub = getWord(%menuULB,2);
-    //echo(%lb);
-    //echo(%ub);
 	%x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
     {
@@ -123,7 +176,7 @@ function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
 
 function processMenuBeltEquipSlot(%clientid, %opt)
 {
-    echo("processMenuBeltEquipSlot("@%clientid@","@ %opt@")");
+    //echo("processMenuBeltEquipSlot("@%clientid@","@ %opt@")");
 	%o = GetWord(%opt, 0);
 	%pageOrItem = GetWord(%opt, 1);
 	%slotId = GetWord(%opt, 2);
@@ -164,7 +217,7 @@ function processMenuBeltEquipSlot(%clientid, %opt)
 
 function MenuBeltEquipmentDropOrSlot(%clientid,%slotId,%prevType,%item)
 {
-    echo("MenuBeltEquipmentDropOrSlot("@%clientid@","@%slotId@","@%prevType@","@%item@")");
+    //echo("MenuBeltEquipmentDropOrSlot("@%clientid@","@%slotId@","@%prevType@","@%item@")");
     %slotDisp = "Slot - "@ $BeltEquip::Slot[%slotId,Name];
     Client::buildMenu(%clientId, %slotDisp@":", "BeltEquipmentDropOrSlot", true);
     %cmnt = Belt::HasThisStuff(%clientid,%item);
@@ -285,14 +338,42 @@ function BeltEquip::AddEquipmentItem(%name,%item,%type,%weight,%cost,%shopIndex,
     %id = BeltItem::Add(%name,%item,%type,%weight,%cost,%shopIndex);
     $BeltEquip::Item[%id,SlotType] = %slotType;
     $BeltEquip::Item[%num,SlotTypeNum,%slotType] = %item;
-    echo($BeltEquip::Item[%num,SlotTypeNum,%slotType]);
+    //echo($BeltEquip::Item[%num,SlotTypeNum,%slotType]);
     $BeltEquip::Item[%id,Special] = %special;
     $BeltEquip::SlotTypeItemCount[%slotType]++;
 }
 
+function BeltEquip::GetSpecialVars(%item)
+{
+    return $BeltEquip::Item[$beltitem[%item, "ItemID",$EquipItemsType],Special];
+}
+
+function BeltEquip::IsBeltEquipItem(%item)
+{
+    return $BeltEquip::Item[$beltitem[%item, "ItemID",$EquipItemsType],SlotType] != "";
+}
+
+function BeltEquip::TranslateSpecialVars(%specVars)
+{
+    %txt = "";
+    for(%i = 0; GetWord(%specVars, %i) != -1; %i+=2)
+    {
+        %stat = GetWord(%specVars, %i);
+        %num = GetWord(%specVars,%i+1);
+        
+        
+        %txt = %txt @ $BeltEquip::SpecVarDesc[%stat] @ ": " @ %num @ ", ";
+    }
+    if(%txt == "")
+		%txt = "None";
+	else
+		%txt = String::getSubStr(%txt, 0, String::len(%txt)-2);
+    return %txt;
+}
+
 function BeltEquip::GetList(%clientId,%slotType)
 {
-    echo("BeltEquip::GetList("@%clientId@","@%slotType@")");
+    //echo("BeltEquip::GetList("@%clientId@","@%slotType@")");
     //"EquipItems"
     %bn = 0;
     for(%i = 0; %i < $BeltEquip::SlotTypeItemCount[%slotType]; %i++)
@@ -309,6 +390,11 @@ function BeltEquip::GetList(%clientId,%slotType)
     return %bn@%list;
 }
 
+function BeltEquip::AddUseAbility(%item,%info)
+{
+    $beltitem[%item, "UseTag"] = %info;
+}
+
 // WIP
 function BeltEquip::CanUseItem(%clientId,%itemName)
 {
@@ -322,11 +408,11 @@ function BeltEquip::AddBonusStats(%clientId,%statType)
     {
         %slotName = $BeltEquip::Slot[%i,Name];
         %item = $ClientData::BeltEquip[%clientId,%slotName];
-        %w = Word::FindWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%statType);
+        %w = Word::FindWord($BeltEquip::Item[$beltitem[%item, "ItemID",$EquipItemsType],Special],%statType);
         //echo($BeltEquip::Item[$beltitem[%item, "ItemID"],Special] @ " "@ %w);
         //echo("BB: "@%item@" "@ getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w) @" "@%val);
         if(%w != -1)
-            %val += getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w+1);
+            %val += getWord($BeltEquip::Item[$beltitem[%item, "ItemID", $EquipItemsType],Special],%w+1);
     }
     return %val;
 }
@@ -344,6 +430,24 @@ function BeltEquip::UnequipAll(%clientId)
     }
     RefreshAll(%clientId,true);
 }
+
+function BeltEquip::IsItemEquipped(%clientId,%item)
+{
+    %ret = false;
+    if(BeltEquip::IsBeltEquipItem(%item))
+    {
+    
+        for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+        {
+            %equipped = BeltEquip::GetEquippedItem(%clientId,%i);
+            %ret = %equipped == %item;
+            if(%ret)
+                break;
+        }
+    }
+    return %ret;
+}
+
 
 //%location is slot name
 function BeltEquip::EquipItem(%clientId,%item,%location,%echo)
@@ -368,7 +472,7 @@ function BeltEquip::EquipItem(%clientId,%item,%location,%echo)
 
 function BeltEquip::UnequipItem(%clientId,%location,%echo)
 {
-    echo("BeltEquip::UnequipItem("@%clientId@","@%location@","@%echo@")");
+    //echo("BeltEquip::UnequipItem("@%clientId@","@%location@","@%echo@")");
     %curItem = $ClientData::BeltEquip[%clientId,%location];
     if(%curItem != "")
     {

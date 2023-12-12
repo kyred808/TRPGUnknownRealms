@@ -55,11 +55,23 @@ $dayCycleHaze[5] = -900;
 if($fullCycleTime == "") $fullCycleTime = 60 * 60;
 if($nightDayCycle == "") $nightDayCycle = False;
 //--------------------------------------
+$SlowDownHitEnabled = false;
+$PlayerLevelLimitForExp = 300;
 
 $CleanUpBotsOnZoneEmpty = true;
 $PlayersFastHealInProtectedZones = true;
 $BotsCanPickupPlayerPacks = true;
 $MessagePlayerIfBotStolePack = true;
+
+$FallDamageScale = 0.5;
+
+$SkillBoostMax = 5;
+$SkillBoostNumPrimary = 3; //Rest are secondary
+$SkillPrimaryBonus = 40;
+$SkillSecondaryBonus = 20;
+
+//Hear air in mountains
+$UnknownZoneAmbientSoundMinHeight = 300;
 
 //Toggle if you can craft anywhere or need to look at or have certain objects.
 $ExtraCraftingRequirements = true;
@@ -125,6 +137,7 @@ $droppingAllowed = 1;
 $sepchar = ",";
 $maxAIdistVec = 5;
 $coinweight = 0.001;
+$RecalcuatePlayerWeightCounterMax = 100;
 $maxEvents = 8;
 
 $WorldSaveList = "|DepPlatSmallHorz|DepPlatMediumHorz|DepPlatSmallVert|DepPlatMediumVert|Lootbag|";

@@ -901,6 +901,53 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
             };
+            
+            instant SimGroup "FREEFORALL Top of Well" {
+                instant SimGroup "MUSIC minemusic.wav 24";
+                instant SimGroup "MUSIC minemusic2.wav 24";
+                instant Marker "200 200 75 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-369.036 -235.377 75";
+                    rotation = "0 0 0";
+                    locked = "0";
+                };
+                instant SimGroup "Markers" {
+                    instant Marker "WellMarker" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-389.268 -235.532 63.7988";
+                        rotation = "0 0 0";
+                        locked = "1";
+                    };
+                    instant Marker "RockMarker" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-359.268 -235.532 0";
+                        rotation = "0 0 0";
+                        locked = "1";
+                    };
+                };
+                instant SimGroup "Objs" {
+                    instant InteriorShape "well1" {
+                        fileName = "WELL.0.dis";
+                        isContainer = "1";
+                        position = "-389.268 -235.532 63.7988";
+                        rotation = "0 0 0";
+                        lightParams = "0 ";
+                        locked = "0";
+                    };
+                    
+                    instant InteriorShape "jrock1" {
+                        fileName = "jrock.dis";
+                        isContainer = "1";
+                        position = "-359.268 -235.532 0";
+                        rotation = "0 0 0";
+                        lightParams = "0 ";
+                    };
+                };
+                    
+            };
             instant SimGroup "DUNGEON Keldrin Mine" {
                 instant SimGroup "MUSIC minemusic.wav 24";
                 instant SimGroup "MUSIC minemusic2.wav 24";
@@ -938,13 +985,13 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
                 instant SimGroup "SpawnPoints" {
-                    instant Marker ".4 1 2 20 50 16" {
+                    instant Marker ".5 1 2 20 50 15" {
                         dataBlock = "PathMarker";
-                        name = "mine thief";
+                        name = "mine runt";
                         position = "-1765 -1137 277.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker "1.5 1 2 10 30 54 54 15 16" {
+                    instant Marker "2 1 2 10 30 54 54 15 16" {
                         dataBlock = "PathMarker";
                         name = "mine more runt and less thief";
                         position = "-1755.75 -1085.5 277.125";
@@ -956,13 +1003,13 @@ instant SimGroup "MissionGroup" {
                         position = "-1743.5 -1160.5 278.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".2 1 2 20 50 15 16 17 18" {
+                    instant Marker "1 1 2 20 50 15 16 17 18" {
                         dataBlock = "PathMarker";
                         name = "mine all goblins 2";
                         position = "-1764.25 -1161.25 277.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 1 2 20 50 15 16 17 18" {
+                    instant Marker "1 1 2 20 50 15 16 17 18" {
                         dataBlock = "PathMarker";
                         name = "mine all goblins";
                         position = "-1739.25 -1241.25 283.125";
@@ -980,25 +1027,31 @@ instant SimGroup "MissionGroup" {
                         position = "-1707 -1145 243.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".4 1 2 20 50 22" {
+                    instant Marker ".5 1 2 20 50 22" {
                         dataBlock = "PathMarker";
                         name = "gnoll hunter 2";
                         position = "-1627 -1186 252.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 1 2 20 50 19" {
+                    instant Marker ".5 1 2 20 50 19 20" {
                         dataBlock = "PathMarker";
                         name = "gnoll pup";
                         position = "-1715.5 -1172.25 255.125";
                         rotation = "0 0 0";
                     };
+                    instant Marker "1 1 2 20 50 20" {
+                        dataBlock = "PathMarker";
+                        name = "gnoll shawman";
+                        position = "-1709.24 -1181.11 255.125";
+                        rotation = "0 0 0";
+                    }; //
                     instant Marker ".5 1 2 20 50 27 27 28 28 29 29 30 30 52" {
                         dataBlock = "PathMarker";
                         name = "ogre all less magi";
                         position = "-1631.25 -1061 221.125";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".4 1 2 20 50 27 28 29 30" {
+                    instant Marker ".5 1 2 20 50 27 28 29 30" {
                         dataBlock = "PathMarker";
                         name = "ogre all but magi";
                         position = "-1631.75 -1172.75 221.125";
@@ -1157,7 +1210,7 @@ instant SimGroup "MissionGroup" {
                         position = "-1546.01 -279.973 352.109";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".4 1 2 30 50 23" {
+                    instant Marker ".5 1 2 30 50 23" {
                         dataBlock = "PathMarker";
                         name = "Yolanda Orc Wizard spawn";
                         position = "-1565.75 -300.341 352.109";
@@ -1249,6 +1302,41 @@ instant SimGroup "MissionGroup" {
                     };
                 };
             };
+            instant SimGroup "PROTECTED Feltz" {
+                instant SimGroup "DropPoints" {
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4436.14 1755.75 65.9999";
+                        rotation = "0 -0 0.719996";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4491.75 1802.57 74.1016";
+                        rotation = "0 -0 -2.27997";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4394.59 1766.44 65.7999";
+                        rotation = "0 -0 1.29999";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-4457.38 1860.78 65.9999";
+                        rotation = "0 -0 3.09998";
+                    };
+                };
+                instant SimGroup "MUSIC rmr3.wav 63";
+                instant Marker "110 110 90 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-4460.7 1785.6 69.8515";
+                    rotation = "0 -0 0.699994";
+                };
+            };
             instant SimGroup "WATER water" {
                 instant Marker "6200 6200 79 0" {
                     dataBlock = "PathMarker";
@@ -1286,6 +1374,110 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "ENTERSOUND water3.wav";
                 instant SimGroup "AMBIENTSOUND uwater.wav 40";
                 instant SimGroup "MUSIC uwater2.wav 1";
+            };
+            instant SimGroup "FREEFORALL Strange Orchard" {
+                instant SimGroup "DropPoints" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2292.14 1610.61 98.5668";
+                        rotation = "0 -0 0.739996";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2258.64 1678.8 69.2598";
+                        rotation = "0 -0 0.959995";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2432.81 1552.95 139.683";
+                        rotation = "0 -0 -0.579996";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2576.95 1920.28 173.41";
+                        rotation = "0 -0 -2.19998";
+                    };
+                };
+                instant SimGroup "MUSIC travmusic2.wav 30";
+                instant Marker "280 280 80 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2422.31 1817.23 96.7158";
+                    rotation = "0 0 0";
+                };
+                //5 active Tree shapes that update every 3 ticks (6 seconds)
+                instant SimGroup "QuantumObjects TreeShape 5 3 0 55 10 10" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2397.03 1870.9 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2410.55 1838.98 65.0003";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2495.19 1821.84 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2420.39 1767.24 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2447.99 1863.57 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2470.43 1761.22 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2479.42 1797.02 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2388.24 1747.8 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2395.11 1794.84 65";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2441.98 1748.78 64.9999";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2364.32 1838.64 63.4723";
+                        rotation = "0 0 0";
+                    };
+                };
             };
             instant SimGroup "DUNGEON Traveller's Den" {
                 instant SimGroup "DropPoints" {
@@ -1373,13 +1565,13 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
                 instant SimGroup "SpawnPoints" {
-                    instant Marker ".5 0.5 1 40 60 47" {
+                    instant Marker "1 0.5 1 40 60 47" {
                         dataBlock = "PathMarker";
                         name = "minotaur goliath spawn";
                         position = "-1901.61 -2844.01 161.92";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 0.5 1 50 70 48" {
+                    instant Marker "1 0.5 1 50 70 48" {
                         dataBlock = "PathMarker";
                         name = "minotaur reaper spawn";
                         position = "-1904.27 -2843.9 161.898";
@@ -1491,6 +1683,41 @@ instant SimGroup "MissionGroup" {
                     };
                 };
             };
+            instant SimGroup "DUNGEON Earth's Shackle" {
+                instant SimGroup "DropPoints" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1872.65 -2455.62 61.3646";
+                        rotation = "0 -0 0.899995";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1912.49 -2416.06 52.6795";
+                        rotation = "0 -0 1.99998";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1982.08 -2583.78 129.392";
+                        rotation = "0 -0 0.759986";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "1864.73 -2479.83 64.3314";
+                        rotation = "0 -0 0.359987";
+                    };
+                };
+                instant Marker "480 480 200 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "1708.88 -2331.05 65.5998";
+                    rotation = "0 0 0";
+                };
+                //instant SimGroup "MUSIC";
+            };
             instant SimGroup "PROTECTED Delkin Port" {
                 instant SimGroup "DropPoints" {
                     instant Marker "Marker1" {
@@ -1526,7 +1753,8 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
             };
-            instant SimGroup "MUSIC unknownmusic2.wav 6";
+            instant SimGroup "MUSIC area_plains.wav 45";
+            instant SimGroup "AMBIENTSOUND unknownmusic2.wav 5";
         };
         instant SimGroup "Keldrin" {
             locked = "0";
@@ -1614,6 +1842,13 @@ instant SimGroup "MissionGroup" {
                 destroyable = "True";
                 deleteOnDestroy = "False";
                 locked = "0";
+            };
+            instant InteriorShape "table1" {
+                fileName = "table.dis";
+                isContainer = "0";
+                position = "-2399.83 -256.244 65";
+                rotation = "0 -0 -0.879993";
+                lightParams = "0 ";
             };
             instant StaticShape "TreeTwo1" {
                 dataBlock = "TreeShapeTwo";
@@ -1889,10 +2124,17 @@ instant SimGroup "MissionGroup" {
             };
             instant Marker "SpawnMarker" {
                 dataBlock = "PathMarker";
-                name = "";
+                name = "Earth's Shackle";
                 position = "1674.06 -2288.29 65";
                 rotation = "0 0 0";
             };
+            instant Marker "TowerMarker" {
+                dataBlock = "PathMarker";
+                name = "Earth's Shackle";
+                position = "1656.02 -2283.2 90.3544";
+                rotation = "0 0 0";
+            };
+            //instant SimGroup "ZoneLocation Earth's Shackle";
             instant InteriorShape "tank161" {
                 fileName = "tank16.dis";
                 isContainer = "1";
@@ -2909,6 +3151,51 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "GSAY You have been teleported outside the Traveller's Den.~wPortal6.wav";
             };
         };
+        instant SimGroup "StrangeOrchard" {
+            instant InteriorShape "jrock1" {
+                fileName = "jrock.dis";
+                isContainer = "1";
+                position = "-2440.02 1812.95 61.0667";
+                rotation = "0 3.14158 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock41" {
+                fileName = "lrock4.dis";
+                isContainer = "1";
+                position = "-2440.64 1816.38 65";
+                rotation = "0.251364 1.10421 0.124629";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock31" {
+                fileName = "lrock3.dis";
+                isContainer = "1";
+                position = "-2443.01 1816.96 65";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock41" {
+                fileName = "lrock4.dis";
+                isContainer = "1";
+                position = "-2444.4 1808.6 60.4795";
+                rotation = "0 -0.103221 -0";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "lrock31" {
+                fileName = "lrock3.dis";
+                isContainer = "1";
+                position = "-2436.99 1809.92 65.0667";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant StaticShape "PhantomStrangerTree21" {
+                dataBlock = "PhantomStrangerTree2";
+                name = "";
+                position = "-2440.07 1812.76 58.2188";
+                rotation = "0 0 0";
+                destroyable = "false";
+                deleteOnDestroy = "False";
+            };
+        };
         instant SimGroup "HemacTower" {
             instant InteriorShape "towerf1" {
                 fileName = "TOWERF.0.dis";
@@ -3490,6 +3777,75 @@ instant SimGroup "MissionGroup" {
                 locked = "0";
             };
         };
+        instant SimGroup "Feltz" {
+            instant InteriorShape "ctown1" {
+                fileName = "ctown.dis";
+                isContainer = "1";
+                position = "-4484.03 1767.54 72.6018";
+                rotation = "0 -0 2.2832";
+                lightParams = "2 2.000000 1 1.000000 1 ";
+                locked = "1";
+            };
+            instant InteriorShape "bed1" {
+                fileName = "bed.dis";
+                isContainer = "0";
+                position = "-4448.63 1817.14 65";
+                rotation = "0 -0 2.27996";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "bed1" {
+                fileName = "bed.dis";
+                isContainer = "0";
+                position = "-4473.54 1753.54 65.1018";
+                rotation = "0 -0 -0.880025";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "bed1" {
+                fileName = "bed.dis";
+                isContainer = "0";
+                position = "-4435.8 1801.8 65.1018";
+                rotation = "0 -0 2.27994";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "desk1" {
+                fileName = "desk.dis";
+                isContainer = "0";
+                position = "-4431.06 1796.94 65.1645";
+                rotation = "0 -0 0.699995";
+                lightParams = "0 ";
+            };
+            instant Marker "TownMayorMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4495.13 1810.92 66.1527";
+                rotation = "0 -0 -0.86323";
+            };
+            instant Marker "TownEccentricMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4489.18 1812.83 71.1779";
+                rotation = "0 -0 -0.863228";
+            };
+            instant InteriorShape "desk1" {
+                fileName = "desk.dis";
+                isContainer = "0";
+                position = "-4500.48 1808.68 65.6013";
+                rotation = "0 -0 2.27996";
+                lightParams = "0 ";
+            };
+            instant Marker "MayorShopNPCMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4501.91 1810.66 65.9618";
+                rotation = "0 -0 -2.40321";
+            };
+            instant Marker "TownJailNPCMarker" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-4493.35 1776.14 65.386";
+                rotation = "0 -0 -0.903216";
+            };
+        };
         instant SimGroup "ElfHideout" {
             instant InteriorShape "w64long1" {
                 fileName = "W64long.0.dis";
@@ -3795,8 +4151,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131";
-                instant SimGroup "BELTSHOP 17 27 29";
+                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id99"; //134 135 136 137";
             };
             //New Player Guide
             instant SimGroup "newquest55" {
@@ -3849,7 +4204,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 Thanks for making the right choice.  Make sure to stay away from that Apprentice!";
                 instant SimGroup "CSAY Get out of my sight, I've seen you with that Apprentice before.";
-                instant SimGroup "SHOP 63 64 65 66 67 68 69 70 71 99";
+                instant SimGroup "SHOP id27 id28 id29 id30 id31 id32 id33 id34 id35 id178";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -3889,8 +4244,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP 24 25 26 27 28 38 43 44 59 60 69 70 131";
-                instant SimGroup "BELTSHOP 20 21 27";
+                instant SimGroup "SHOP id62 id64 id66 id176 id68 id6 id7 id23 id24 id33 id34 id16 id102 id103 id120";
             };
             instant SimGroup "porter1" {
                 instant Marker "Marker1" {
@@ -3946,8 +4300,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP 22 23 37 41 42 49 50 57 58 66 67 98";
-                instant SimGroup "BELTSHOP 17 18 19 27";
+                instant SimGroup "SHOP id58 id60 id4 id5 id12 id13 id21 id22 id30 id31 id165 id99 id100 id101 id120";
             };
             instant SimGroup "merchant4" {
                 instant Marker "ethren merchant expensive" {
@@ -3959,8 +4312,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP 29 30 31 32 35 45 46 53 54 61 62 68 71 132";
-                instant SimGroup "BELTSHOP 19 22 28";
+                instant SimGroup "SHOP id70 id72 id74 id76 id172 id8 id9 id14 id15 id25 id26 id32 id35 id17 id121 id101 id104";
             };
             instant SimGroup "quest2" {
                 instant SimGroup "NAME Miguel";
@@ -3975,7 +4327,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 Ah, you have returned.  Hand me the statues.  Now!";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 Excellent.  Here is your reward.";
-                instant SimGroup "SHOP 33";
+                instant SimGroup "SHOP id168";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -3997,8 +4349,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 I see you have five Enchanted Stones, will you hand them to me?";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 You have my thanks.  Here is your reward.";
-                instant SimGroup "SHOP 34 79 80 81 82";
-                instant SimGroup "BELTSHOP 28 30";
+                instant SimGroup "SHOP id170 id78 id80 id82 id84 id121 id123";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4019,9 +4370,9 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY1 Incredible, you have three skeleton bones!  Do you still want to hand them to me?";
                 instant SimGroup "NCUE1 yes";
                 instant SimGroup "NSAY2 Thank you, here is your reward.";
-                instant SimGroup "CSAY I do not need your help.";
-                instant SimGroup "LSAY I do not need your help.";
-                instant SimGroup "SHOP 83 84";
+                instant SimGroup "CSAY I do not need your help. Or perhaps you are looking to BUY?";
+                instant SimGroup "LSAY I do not need your help. Or perhaps you are looking to BUY?";
+                instant SimGroup "SHOP id86 id88";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -4150,8 +4501,7 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NAME Jeminia";
                 instant SimGroup "RACE FemaleHuman";
-                instant SimGroup "SHOP 34 40 48 57 58 66 98 99 96 103";
-                instant SimGroup "BELTSHOP 17 18 22 27 28 29 30";
+                instant SimGroup "SHOP id170 id3 id11 id21 id22 id30 id165 id178 id44 id180 id99 id100 id104 id120 id121 id122 id123";
             };
             instant SimGroup "quest10" {
                 instant Marker "Marker1" {
@@ -4248,6 +4598,28 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NCUE1 indeed";
                 instant SimGroup "NSAY2 For being such a brave adventurer, here is a gift I'm sure you will appreciate.";
                 instant SimGroup "CSAY Good luck on your adventures!";
+            };
+            instant SimGroup "merchant6" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2401.68 -253.268 65";
+                    rotation = "0 0 0";
+                };
+                instant SimGroup "NAME Doric";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "BELTSHOP 900 901 902 916 914 915 903 904 905 906 907 908 909 910 911 912 800";
+            };
+            instant SimGroup "merchant7" { //Feltz merchant
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-4429.36 1798.22 65.3666";
+                    rotation = "0 -0 2.23997";
+                };
+                instant SimGroup "NAME Sarah";
+                instant SimGroup "RACE FemaleHuman";
+                instant SimGroup "BELTSHOP 900 901 902 916 914 915 903 904 905 906 907 908 909 910 911 912 800";
             };
         };
         instant InteriorShape "RemorterHall1" {
@@ -4702,14 +5074,14 @@ instant SimGroup "MissionGroup" {
             lightParams = "0 ";
             locked = "1";
         };
-        instant InteriorShape "well1" {
-            fileName = "WELL.0.dis";
-            isContainer = "1";
-            position = "-389.269 -235.533 63.7989";
-            rotation = "0 0 0";
-            lightParams = "0 ";
-            locked = "1";
-        };
+        //instant InteriorShape "well1" {
+        //    fileName = "WELL.0.dis";
+        //    isContainer = "1";
+        //    position = "-389.269 -235.533 63.7989";
+        //    rotation = "0 0 0";
+        //    lightParams = "0 ";
+        //    locked = "1";
+        //};//-389.268 -235.532 63.7988
         instant InteriorShape "lrock41" {
             fileName = "lrock4.14.dis";
             isContainer = "1";

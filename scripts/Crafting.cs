@@ -1,5 +1,5 @@
 
-$Crafting::MultiCraftDelay = 0.4;
+$CraftingVar::MultiCraftDelay = 0.4;
 
 function Crafting::AddCraftingType(%name,%desc,%command,%verb,%pastTenseVerb,%defaultSound,%skillId,%id)
 {
@@ -38,15 +38,18 @@ function Crafting::GetPastTenseVerb(%craftedItem)
     return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],PastTenseVerb];
 }
 
-function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty)
+function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty,%nofail)
 {
     if(%amnt < 1)
         %amnt = 1;
     
     // Cannot be 0
     if(%skillDifficulty < 1)
-        %skillDifficulty = $BaseCraftDifficulty;
+        %skillDifficulty = $BaseCraftingDifficulty;
         
+    if(%nofail == "")
+        %nofail = false;
+
     $Crafting::recipe[%craftedItem,Type] = %type;
     $Crafting::recipe[%craftedItem,Items] = %stuff;
     $Crafting::recipe[%craftedItem,SkillReqs] = %requirements;
@@ -54,7 +57,7 @@ function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skil
     $Crafting::recipe[%craftedItem,Amount] = %amnt;
     $Crafting::recipe[%craftedItem,Difficulty] = %skillDifficulty; //For skill levelling
     $Crafting::recipe[%craftedItem,Sound] = $Crafting::Type[%type,DefaultSound];
-    
+    $Crafting::recipe[%craftedItem,NoFailFlag] = %nofail;
     $SkillRestriction[Crafting::GetFullCraftCommand(%craftedItem)] = %requirements;
 }
 
@@ -90,13 +93,29 @@ function Crafting::ItemCheck(%clientId,%craftedItem,%amnt)
     return HasThisStuff(%clientId,$Crafting::recipe[%craftedItem,ItemReqs],%amnt);
 }
 
+function Crafting::WhatIs(%clientId,%item)
+{
+    %desc = RPGItem::getDesc(%item);
+    %craftSkillName = $Crafting::Type[$Crafting::recipe[%item,Type],Desc];
+    %skillReqs = WhatSkills(Crafting::GetFullCraftCommand(%item));
+    //--------- BUILD MSG --------------------
+    %msg = "";
+    %msg = %msg @ "<f1>" @ %desc @ " ("@ %item @")\n";
+    %msg = %msg @ "\nSkill Type: " @ %craftSkillName;
+    %msg = %msg @ "\n"@%skillReqs;
+    %msg = %msg @ "\nReagents: <f0>" @ $Crafting::recipe[%item,ItemReqs];
+    %msg = %msg @ "\n\n<f1>Current Success Chance: <f0>"@ Cap(Number::Beautify(Crafting::CalculateSuccessChance(%clientId,%item)*100,0,1),0,100) @"%<f1>";
+    %msg = %msg @ "\n\n<f0>" @ $AccessoryVar[%item, $MiscInfo];
+    return %msg;
+}
+
 function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
 {
     %craftType = $Crafting::CommandToType[%command];
     if($ExtraCraftingRequirements)
     {
-        //Temp until fire is a thing
-        if(%craftType == "alchemy" || %craftType == "cooking")
+        //Temp for now
+        if(%craftType == "craft")
             return true;
         $los::object = "";
         %los = Gamebase::getLOSInfo(Client::getControlObject(%clientId),5);
@@ -104,7 +123,7 @@ function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
         {
             %obj = $los::object;
             
-            if(%craftType == "smithing" || %craftType == "smelting")
+            if(%craftType == "smithing")
             {
                 return String::ICompare(clipTrailingNumbers(Object::getName(%obj)),"anvil") == 0;
                 //%anvilSet = nameToID("MissionCleanup\\Anvils");
@@ -113,7 +132,7 @@ function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
                 //
                 //return %objSet == %anvilSet;
             }
-            else if(%craftType == "alchemy" || %craftType == "cooking")
+            else if(%craftType == "craft")
             {
                 return true;
             }
@@ -150,18 +169,23 @@ function Crafting::RollCrafting(%clientId,%craftedItem)
 //  = 0.5+35[lvl/min - 1]/difficulty]  
 function Crafting::CalculateSuccessChance(%clientId,%craftedItem)
 {
+    echo(Crafting::GetSkill(%craftedItem));
+    if(!$Crafting::recipe[%craftedItem,NoFailFlag] && Crafting::GetSkill(%craftedItem) != "")
+    {
+        %skillId = Crafting::GetSkill(%craftedItem);
+        %skillLvl = CalculatePlayerSkill(%clientId, %skillId);
+        %minSkill = GetSkillAmount(Crafting::GetFullCraftCommand(%craftedItem), %skillId);
+        %difficulty = $Crafting::recipe[%craftedItem,Difficulty];
 
-    %skillId = Crafting::GetSkill(%craftedItem);
-    %skillLvl = CalculatePlayerSkill(%clientId, %skillId);
-    %minSkill = GetSkillAmount(Crafting::GetFullCraftCommand(%craftedItem), %skillId);
-    %difficulty = $Crafting::recipe[%craftedItem,Difficulty];
-
-    echo("SkillLvl: "@%skillLvl@" MinSkill: "@%minSkill@" Diffi: "@ %difficulty);
-    echo(" 0.5 + "@ (%difficulty/$BaseCraftingDifficulty) @" * "@ (%skillLvl/%minSkill) - 1);
-    %pSuccess = 0.5 + (%difficulty/$BaseCraftingDifficulty)*( (%skillLvl/%minSkill) - 1);
-    
-    echo("Percent Success: "@ %pSuccess * 100 @"%");
-    
+        //echo("SkillLvl: "@%skillLvl@" MinSkill: "@%minSkill@" Diffi: "@ %difficulty);
+        //echo(" 0.5 + "@ (%difficulty/$BaseCraftingDifficulty) @" * "@ (%skillLvl/%minSkill) - 1);
+        %pSuccess = 0.5 + (%difficulty/$BaseCraftingDifficulty)*( (%skillLvl/%minSkill) - 1);
+        
+        //echo("Percent Success: "@ %pSuccess * 100 @"%");
+    }
+    else
+        %pSuccess = 1;
+        
     return %pSuccess;
 }
 
@@ -173,7 +197,7 @@ function Crafting::RecursiveCraft(%clientId,%craftedItem,%lastPos,%cnt)
         Crafting::CraftItem(%clientId,%craftedItem);
         %newCnt = %cnt - 1;
         if(%newCnt > 0)
-            schedule("Crafting::RecursiveCraft("@%clientId@",\""@%craftedItem@"\",\""@%newPos@"\","@%newCnt@");",$Crafting::MultiCraftDelay,Client::getControlObject(%clientId));
+            schedule("Crafting::RecursiveCraft("@%clientId@",\""@%craftedItem@"\",\""@%newPos@"\","@%newCnt@");",$CraftingVar::MultiCraftDelay,Client::getControlObject(%clientId));
     }
     else
     {
@@ -186,12 +210,13 @@ function Crafting::CraftItem(%clientId,%craftedItem)
     %percentSuccess = Crafting::CalculateSuccessChance(%clientId,%craftedItem);
     TakeThisStuff(%clientId,$Crafting::recipe[%craftedItem,Items]);
     %rand = getRandom();
-    echo(%rand @" vs. "@ %percentSuccess);
+    //echo(%rand @" vs. "@ %percentSuccess);
 
     if(%rand <= %percentSuccess)
     {
         playSound($Crafting::recipe[%craftedItem,Sound], GameBase::getPosition(%clientId));
-        UseSkill(%clientId,Crafting::GetSkill(%craftedItem),true,true,$Crafting::recipe[%craftedItem,Difficulty],true);
+        if(Crafting::GetSkill(%craftedItem) != "")
+            UseSkill(%clientId,Crafting::GetSkill(%craftedItem),true,true,$Crafting::recipe[%craftedItem,Difficulty],true);
         GiveThisStuff(%clientId,%craftedItem @" 1",false,$Crafting::recipe[%craftedItem,Amount]);
         echo($Crafting::recipe[%craftedItem,Sound]);
         Client::sendMessage(%clientId, $MsgWhite, "You successfully "@ Crafting::GetPastTenseVerb(%craftedItem) @" "@ $Crafting::recipe[%craftedItem,Amount] @" "@ %craftedItem @".");
@@ -199,6 +224,7 @@ function Crafting::CraftItem(%clientId,%craftedItem)
     else
     {
         Client::sendMessage(%clientId, $MsgRed, "You failed to "@ Crafting::GetVerb(%craftedItem) @" "@ %craftedItem @".");
-        UseSkill(%clientId,Crafting::GetSkill(%craftedItem),false,true,$Crafting::recipe[%craftedItem,Difficulty],true);
+        if(Crafting::GetSkill(%craftedItem) != "")
+            UseSkill(%clientId,Crafting::GetSkill(%craftedItem),false,true,$Crafting::recipe[%craftedItem,Difficulty],true);
     }
 }

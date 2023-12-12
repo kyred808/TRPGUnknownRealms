@@ -16,42 +16,84 @@ $MineDamageType        = 13;
 $NullDamageType        = 14;
 $SpellDamageType        = 15;
 $DragonDamageType      = 16;
+$AIProjDamageType        = 17;
+$BladeBoltDamageType = 18;
+$SlamDamageType = 19;
+$StaffDamageType = 20;
+$MeteorDamageType = 21;
 
-function Projectile::TrackProjectile(%this,%rate,%owner)
+$ProjectileTrackerCounter = 0;
+
+function Projectile::startTracking(%ownerClient,%proj,%rate,%range)
 {
-    $Projectile::tracking[%this,PrevPos] = $Projectile::tracking[%this,Pos];
-    $Projectile::tracking[%this,PrevTime] = $Projectile::tracking[%this,Time];
+    if($ProjectileTrackerCounter > 5000)
+        $ProjectileTrackerCounter = 0;
+    
+    %trackId = $ProjectileTrackerCounter;
+    $ProjectileTrackerCounter++;
+    
+    $Projectile::trackIdList[%proj] = $Projectile::trackIdList[%proj] @ %trackId @" ";
+    
+    Projectile::TrackProjectile(%proj,%trackId,%rate,%range,%ownerClient);
+}
+
+function Projectile::getTrackId(%this)
+{
+    %trackId = getWord($Projectile::trackIdList[%this],0);
+    $Projectile::trackIdList[%this] = String::removeWords($Projectile::trackIdList[%this],%trackId);
+    return %trackid;
+}
+
+function Projectile::TrackProjectile(%this,%trackId,%rate,%range,%owner)
+{
+    $Projectile::tracking[%this,%trackId,PrevPos] = $Projectile::tracking[%this,%trackId,Pos];
+    $Projectile::tracking[%this,%trackId,PrevTime] = $Projectile::tracking[%this,%trackId,Time];
     if(%owner != "")
-        $Projectile::tracking[%this,Owner] = %owner;
-    $Projectile::tracking[%this,Pos] = Gamebase::getPosition(%this);
-    $Projectile::tracking[%this,Time] = getSimTime();
-    schedule("Projectile::TrackProjectile("@%this@","@%rate@");",%rate,%this);
+        $Projectile::tracking[%this,%trackId,Owner] = %owner;
+    if(%range != "")
+        $Projectile::tracking[%this,%trackid,Range] = %range;
+    $Projectile::tracking[%this,%trackId,Pos] = Gamebase::getPosition(%this);
+    $Projectile::tracking[%this,%trackId,Time] = getSimTime();
+    //echo("Track Pos: "@ $Projectile::tracking[%this,%trackId,Pos]);
+    schedule("Projectile::TrackProjectile("@%this@","@ %trackId @","@%rate@");",%rate,%this);
 }
 
-function Projectile::TrackCleanup(%this)
+//function Projectile::TrackProjectile(%this,%rate,%owner)
+//{
+//    $Projectile::tracking[%this,PrevPos] = $Projectile::tracking[%this,Pos];
+//    $Projectile::tracking[%this,PrevTime] = $Projectile::tracking[%this,Time];
+//    if(%owner != "")
+//        $Projectile::tracking[%this,Owner] = %owner;
+//    $Projectile::tracking[%this,Pos] = Gamebase::getPosition(%this);
+//    $Projectile::tracking[%this,Time] = getSimTime();
+//    schedule("Projectile::TrackProjectile("@%this@","@%rate@");",%rate,%this);
+//}
+
+function Projectile::TrackCleanup(%this,%trackId)
 {
-    $Projectile::tracking[%this,PrevPos] = "";
-    $Projectile::tracking[%this,PrevTime] = "";
-    $Projectile::tracking[%this,Pos] = "";
-    $Projectile::tracking[%this,Time] = "";
-    $Projectile::tracking[%this,Owner] = "";
+    $Projectile::tracking[%this,%trackId,PrevPos] = "";
+    $Projectile::tracking[%this,%trackId,PrevTime] = "";
+    $Projectile::tracking[%this,%trackId,Pos] = "";
+    $Projectile::tracking[%this,%trackId,Time] = "";
+    $Projectile::tracking[%this,%trackId,Owner] = "";
+    $Projectile::tracking[%this,%trackId,Range] = "";
 }
 
-function Projectile::PropagateTrack(%this,%timeLess)
+function Projectile::PropagateTrack(%this,%trackId,%timeLess)
 {
-    %dir = Vector::sub($Projectile::tracking[%this,Pos],$Projectile::tracking[%this,PrevPos]);
-    %dt = $Projectile::tracking[%this,Time] - $Projectile::tracking[%this,PrevTime];
+    %dir = Vector::sub($Projectile::tracking[%this,%trackId,Pos],$Projectile::tracking[%this,%trackId,PrevPos]);
+    %dt = $Projectile::tracking[%this,%trackId,Time] - $Projectile::tracking[%this,%trackId,PrevTime];
     //Divide directon vector by time, to get velocity
     %vel = ScaleVector(%dir,1/%dt);
     
     // Get time difference between last recorded time and now.
-    %newDt = getSimTime() - $Projectile::tracking[%this,Time]; 
+    %newDt = getSimTime() - $Projectile::tracking[%this,%trackId,Time]; 
     
     // Multiply that by the calculated velocity to estimate how far the projectile has travelled
     %propDelta = ScaleVector(%vel,%newDt- %timeLess); // Take off timeless incase we want to back the propagation up a little.
     
     // Add that to the last recorded position to propagate to our estimated position
-    return Vector::add($Projectile::tracking[%this,Pos],%propDelta);
+    return Vector::add($Projectile::tracking[%this,%trackId,Pos],%propDelta);
 }
 
 //--------------------------------------
@@ -73,32 +115,115 @@ BulletData FusionBolt
    rotationPeriod = 1.5;
 };
 
+LightningData ThornStaffBolt
+{	bitmapName = "plasmabolt.bmp";
+	damageType = $NullDamageType;
+	boltLength = 40.0;
+	coneAngle = 45.0;
+	damagePerSec = 0.0;
+	energyDrainPerSec = 0.0;
+	segmentDivisions = 4;
+	numSegments = 5;
+	beamWidth = 0.3;  //10
+	updateTime = 120;
+	skipPercent = 0.5;
+	displaceBias = 0.15;
+	lightRange = 3.0;
+	lightColor = { 0.25, 0.25, 0.85 };
+	soundId = SoundElfFire;
+};
+
 //Thorn
-RocketData Thorn
-{ 
-	bulletShapeName = "bullet.dts"; 
-	explosionTag = bulletExp0; 
-	collisionRadius = 0.0; 
-	mass = 2.0;
-	damageClass = 1;
-	damageValue = 20;
-	damageType = $SpellDamageType;
-	explosionRadius = 6.0;
-	kickBackStrength = 0.0;
-	muzzleVelocity   = 50.0;
-	terminalVelocity = 50.0;
-	acceleration = 2.0;
-	totalTime = 3.1;
-	liveTime = 3.0;
-	lightRange = 20.0;
-	colors[0] = { 10.0, 0.75, 0.75 };
-	colors[1] = { 1.0, 0.25, 10.25 };
-	inheritedVelocityScale = 0.5;
-	trailType = 0;
-	trailString = "MortarTrail.dts";
-	smokeDist = 0;
-	soundId = SoundJetHeavy;
-	rotationPeriod = 0.1;
+//RocketData Thorn
+//{ 
+//	bulletShapeName = "bullet.dts"; 
+//	explosionTag = bulletExp0; 
+//	collisionRadius = 0.0; 
+//	mass = 2.0;
+//	damageClass = 1;
+//	damageValue = 20;
+//	damageType = $SpellDamageType;
+//	explosionRadius = 6.0;
+//	kickBackStrength = 0.0;
+//	muzzleVelocity   = 50.0;
+//	terminalVelocity = 50.0;
+//	acceleration = 2.0;
+//	totalTime = 3.1;
+//	liveTime = 3.0;
+//	lightRange = 20.0;
+//	colors[0] = { 10.0, 0.75, 0.75 };
+//	colors[1] = { 1.0, 0.25, 10.25 };
+//	inheritedVelocityScale = 0.5;
+//	trailType = 0;
+//	trailString = "MortarTrail.dts";
+//	smokeDist = 0;
+//	soundId = SoundJetHeavy;
+//	rotationPeriod = 0.1;
+//};
+
+BulletData ManaBoltProj
+{
+   bulletShapeName    = "enbolt.dts";
+   explosionTag       = energyExp;
+
+   damageClass        = 0;
+   damageValue        = 26;
+   damageType         = $SpellDamageType;
+
+   muzzleVelocity     = 80.0;
+   totalTime          = 2.0;
+   liveTime           = 2.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 0.5;
+};
+
+BulletData Thorn
+{
+   bulletShapeName    = "bullet.dts";
+   explosionTag       = bulletExp0;
+
+   damageClass        = 1;
+   damageValue        = 26;
+   damageType         = $SpellDamageType;
+   explosionRadius = 3.0;
+   kickBackStrength = 0.0;
+   muzzleVelocity     = 90.0;
+   totalTime          = 3.1;
+   liveTime           = 3.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 10.0, 0.75, 0.75 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 0.1;
+};
+
+BulletData Firebolt
+{
+   bulletShapeName    = "shotgunbolt.dts";
+   explosionTag       = blasterExpBoom;
+
+   damageClass        = 1;
+   damageValue        = 45;
+   damageType         = $SpellDamageType;
+   explosionRadius = 6.0;
+   kickBackStrength = 0.0;
+   muzzleVelocity     = 50.0;
+   totalTime          = 3.1;
+   liveTime           = 3.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 10.0, 0.75, 0.75 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 0.1;
 };
 
 //FireBall
@@ -160,7 +285,7 @@ RocketData Fireball
 GrenadeData FireBomb
 {
    bulletShapeName    = "mortar.dts";
-   explosionTag       = mortarExp;
+   explosionTag       = FireBombExp;
    collideWithOwner   = True;
    ownerGraceMS       = 250;
    collisionRadius    = 0.1;
@@ -189,7 +314,7 @@ RocketData IceSpike
 	collisionRadius = 0.0; 
 	mass = 2.0;
 	damageClass = 1;
-	damageValue = 28; 
+	damageValue = 35; 
 	damageType = $SpellDamageType;
 	explosionRadius = 6.0;
 	kickBackStrength = 0.0;
@@ -420,6 +545,60 @@ RocketData DimensionRift4
 	trailWidth  = 0.8;
 };
 
+RocketData Fireblast
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = fireBlastExpBoom; 
+	collisionRadius = 0.0; //Having a collision radius on non-grenades make them not collide.  I don't know why, but okay.
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 240; 
+	damageType = $SpellDamageType;
+	explosionRadius = 85;
+	kickBackStrength = 500;
+	muzzleVelocity   = 60.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 8.1;
+	liveTime = 8.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.4;
+};
+
+RocketData FireblastInvis
+{ 
+	bulletShapeName = "invisable.dts"; 
+	explosionTag = LargeShockwaveBoom; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 0; 
+	damageType = $NullDamageType;
+	explosionRadius = 20.0;
+	kickBackStrength = 250;
+	muzzleVelocity   = 60.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 8.1;
+	liveTime = 8.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 8;
+	soundId = NoSound;
+	rotationPeriod = 0.1;
+};
+
 RocketData Meteor
 { 
 	bulletShapeName = ""; 
@@ -427,11 +606,11 @@ RocketData Meteor
 	collisionRadius = 0.0; 
 	mass = 0.5;
 	damageClass = 1;
-	damageValue = 0.0; 
-	damageType = $NullDamageType;
-	explosionRadius = 0.0;
-	kickBackStrength = 0.0;
-	muzzleVelocity   = 80.0;
+	damageValue = 1.8; 
+	damageType = $MeteorDamageType;
+	explosionRadius = 250.0;
+	kickBackStrength = 500.0;
+	muzzleVelocity   = 175.0;
 	terminalVelocity = 7000.0;
 	acceleration = 200.0;
 	totalTime = 80.0;
@@ -447,6 +626,30 @@ RocketData Meteor
 	rotationPeriod = 0.01;
 	trailLength = 30;
 	trailWidth  = 0.8;
+};
+
+GrenadeData MeteorChunkDebris
+{
+   bulletShapeName    = "ruby.dts";
+   explosionTag       = FireBombExp;
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 0.1;
+   mass               = 5.0;
+   elasticity         = 0.1;
+
+   damageClass        = 1;       // 0 impact, 1, radius
+   damageValue        = 1;
+   damageType         = $MeteorDamageType;
+   explosionRadius    = 80.0;
+   kickBackStrength   = 100.0;
+   maxLevelFlightDist = 175;
+   totalTime          = 30.0;
+   liveTime           = 1.0;
+   projSpecialTime    = 0.01;
+
+   inheritedVelocityScale = 0.5;
+   smokeName              = "fiery.dts";
 };
 
 function BombSpread(%objpos)
@@ -518,11 +721,11 @@ RocketData Meteor2
 	collisionRadius = 0.0; 
 	mass = 0.5;
 	damageClass = 1;
-	damageValue = 0.0; 
-	damageType = $NullDamageType;
-	explosionRadius = 0.0;
-	kickBackStrength = 0.0;
-	muzzleVelocity   = 80.0;
+	damageValue = 2.2; 
+	damageType = $MeteorDamageType;
+	explosionRadius = 100.0;
+	kickBackStrength = 200.0;
+	muzzleVelocity   = 175.0;
 	terminalVelocity = 7000.0;
 	acceleration = 200.0;
 	totalTime = 80.0;
@@ -690,6 +893,31 @@ function Bombf::onAdd(%this)
 	schedule("Mine::Detonate(" @ %this @ ");",0.375,%this);
 }
 
+
+MineData ShockBomb
+{
+	mass = 5.0;
+	drag = 1.0;
+	density = 2.0;
+	elasticity = 0.15;
+	friction = 1.0;
+	className = "Handgrenade";
+	description = "Bomblet";
+	shapeFile = "force";
+	shadowDetailMask = 4;
+	explosionId = LargeShockwaveBoom;
+	explosionRadius = 25.0;
+	damageValue = 0.5;
+	damageType = $NullDamageType;
+	kickBackStrength = 0; //200
+	triggerRadius = 0.5;
+	maxDamage = 1.5;
+};
+function ShockBomb::onAdd(%this)
+{
+	schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
+}
+
 RocketData MeteorCrystalBeaconEffect
 { 
 	bulletShapeName = "shockwave_large.dts"; 
@@ -804,6 +1032,210 @@ RocketData DragonBlast
 	trailWidth  = 5.8;
 };
 
+ExplosionData MageBoltExp
+{
+	shapeName = "bluex.dts";
+	soundId = rocketExplosion;
+	faceCamera = true;
+	randomSpin = true;
+	hasLight = true;
+	lightRange = 8.0;
+	timeScale = 1.5;
+	timeZero = 0.250;
+	timeOne = 0.850;
+	colors[0] = { 0.4, 0.4, 1.0 };
+	colors[1] = { 1.0, 1.0, 1.0 };
+	colors[2] = { 1.0, 0.95, 1.0 };
+	radFactors = { 0.5, 1.0, 1.0 };
+};
+
+RocketData MageBoltTail
+{
+	//bulletShapeName = "discb.dts";
+    bulletShapeName = "newproj.dts"; //"AUTO_MAGIC.dts";
+	explosionTag = MageBoltExp; //energyExp
+	collisionRadius = 0.0;
+	mass = 2.0;
+	damageClass = 1; // 0 impact, 1, radius
+	damageValue = 75;
+	damageType = $SpellDamageType;
+	explosionRadius = 7.5;
+	kickBackStrength = 150.0;
+	muzzleVelocity = 80.0;
+	terminalVelocity = 80.0;
+	acceleration = 0.0;
+	totalTime = 3.1;
+	liveTime = 3.0;
+	lightRange = 5.0;
+	lightColor = { 0.4, 0.4, 1.0 };
+	inheritedVelocityScale = 0.5;
+	// rocket specific
+	trailType = 1;
+	trailLength = 28;
+	trailWidth = 1.2;
+	soundId = SoundDiscSpin;
+};
+
+RocketData BladeBoltTail
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = MageBoltExp; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 75; 
+	damageType = $BladeBoltDamageType;
+	explosionRadius = 8.0;
+	kickBackStrength = 150.0;
+	muzzleVelocity   = 60.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 3.1;
+	liveTime = 3.0;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 1;
+	trailLength = 28;
+	trailWidth = 1.2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+};
+
+RocketData UberBossRainProj
+{
+    bulletShapeName = "redorb.dts"; 
+	explosionTag = BigRedExp; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 100; 
+	damageType = $AIProjDamageType;
+	explosionRadius = 13.0;
+	kickBackStrength = 2.0;
+	muzzleVelocity   = 80.0;
+	terminalVelocity = 120.0;
+	acceleration = 2.0;
+	totalTime = 10.0;
+	liveTime = 9.6;
+	lightRange = 20.0;
+	colors = { 10.0, 0.75, 0.75 };
+	inheritedVelocityScale = 0.5;
+	trailType = 2;
+	trailString = "plasmaex.dts";
+	smokeDist = 0.3;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+	trailLength = 70;
+	trailWidth  = 5.8;
+};
+
+BulletData TrueShotArrow
+{
+   bulletShapeName    = "tracer.dts";
+   explosionTag       = arrowExp0;
+
+   damageClass        = 0;
+   damageValue        = 1;
+   damageType         = $MissileDamageType;
+
+   muzzleVelocity     = 200.0;
+   totalTime          = 4.0;
+   liveTime           = 4.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   //inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 1;
+};
+
+
+BulletData BlueStaffBolt
+{
+   bulletShapeName    = "enbolt.dts";
+   explosionTag       = energyExp;
+
+   damageClass        = 0;
+   damageValue        = 1;
+   damageType         = $StaffDamageType;
+
+   muzzleVelocity     = 80.0;
+   totalTime          = 2.0;
+   liveTime           = 2.0;
+
+   lightRange         = 3.0;
+   lightColor         = { 0.25, 0.25, 1.0 };
+   inheritedVelocityScale = 0.5;
+   isVisible          = True;
+
+   rotationPeriod = 1;
+};
+
+//BulletData FireBallBolt
+//{
+//   bulletShapeName    = "PlasmaBolt.dts";
+//   explosionTag       = plasmaExpBoom;
+//
+//   damageClass        = 1;
+//   explosionRadius    = 8.0;
+//   kickBackStrength   = 0.1;
+//   damageValue        = 1;
+//   damageType         = $StaffDamageType;
+//
+//   muzzleVelocity     = 80.0;
+//   totalTime          = 2.0;
+//   liveTime           = 0.1;
+//
+//   lightRange         = 3.0;
+//   lightColor         = { 0.25, 0.25, 1.0 };
+//   inheritedVelocityScale = 0.5;
+//   isVisible          = True;
+//
+//   rotationPeriod = 1;
+//};
+
+RocketData FireBallBolt
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = PlasmaEXPBoom; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 1; 
+	damageType = $StaffDamageType;
+	explosionRadius = 7.0;
+	kickBackStrength = 0.1;
+	muzzleVelocity   = 80.0;
+	terminalVelocity = 80.0;
+	acceleration = 2.0;
+	totalTime = 2.0;
+	liveTime = 1.9;
+	lightRange = 20.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 0; // needs a trail =X
+	trailString = "plasmaex.dts";
+	smokeDist = 2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+};
+
+RepairEffectData HealBolt
+{
+	bitmapName = "lightningNew.bmp";//"repairadd.bmp";
+	boltLength = 7.5;
+	segmentDivisions = 4;
+	beamWidth = 0.125;
+	updateTime = 450;
+	skipPercent = 0.6;
+	displaceBias = 0.15;
+	lightRange = 3.0;
+	lightColor = { 0.85, 0.25, 0.25 };
+};
 
 
 //--------------------------------------
@@ -829,7 +1261,9 @@ BulletData MiniFusionBolt
 };
 function MiniFusionBolt::onAdd(%this)
 {
+
 }
+
 
 
 

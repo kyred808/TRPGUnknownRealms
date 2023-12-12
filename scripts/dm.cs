@@ -32,9 +32,9 @@ function Game::playerSpawned(%pl, %clientId, %armor)
    Client::setSkin(%clientId, $Client::info[%clientId, 0]);
 
    //spawn with only blaster and health kit
-   Player::setItemCount(%clientId,$ArmorName[%armor],1);
-   Player::setItemCount(%clientId,Blaster,1);
-   Player::setItemCount(%clientId,RepairKit,1);
+   RPGItem::setItemCount(%clientId,$ArmorName[%armor],1);
+   RPGItem::setItemCount(%clientId,Blaster,1);
+   RPGItem::setItemCount(%clientId,RepairKit,1);
 	Player::useItem(%pl,Blaster);
    
    if($teamplay)

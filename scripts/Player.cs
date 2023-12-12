@@ -43,8 +43,35 @@ function radnomItems(%num, %an0, %an1, %an2, %an3, %an4, %an5, %an6)
 function Player::onCollision(%this,%object)
 {
 	dbecho($dbechoMode, "Player::onCollision(" @ %this @ ", " @ %object @ ")");
-
-	%clientId = Player::getClient(%object);
+    
+    %clientId = Player::getClient(%this);
+    //echo(%clientId @" hit "@ %object);
+	if(fetchData(%clientId,"doingSlam"))
+    {
+        %vel = Item::getVelocity(%this);
+        %speed = sqrt(Vector::dot(%vel,%vel));
+        echo("Speed: "@ %speed);
+        if(getObjectType(%object) == "Player")
+        {
+            
+            %otherClientId = Player::getClient(%object);
+            echo("SLAM!");
+                
+            if(%speed > 5)
+            {
+                //Item::setVelocity(%object,%vel);
+                Gamebase::virtual(%object,"onDamage",$SlamDamageType,%speed*5,"0 0 0","0 0 0",%vel,"torso","",%clientId,Player::getMountedItem(%clientId,$WeaponSlot));
+            }
+        }
+        else
+        {
+            if(%speed < 4)
+            {
+                storeData(%clientId,"doingSlam","");
+                echo("Slam over");
+            }
+        }
+    }
 }
 
 function Player::getHeatFactor(%this)

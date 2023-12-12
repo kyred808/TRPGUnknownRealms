@@ -40,7 +40,7 @@ function DepBasePack::onDeploy(%player,%item,%pos)
 	if (DepBasePack::deployShape(%player,%item))
 	{
 		if(Player::getClient(%player).adminLevel < 4)
-			Player::decItemCount(%player,%item);
+			RPGItem::decItemCount(%player,%item);
 	}
 }
 function DepBasePack::deployShape(%player,%item)

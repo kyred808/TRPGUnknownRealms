@@ -16,6 +16,14 @@
 //$RealmData["oldworld", MaxHeight] = -2000;
 //$RealmData["oldworld", Name] = "Old World";
 
+$RealmBounds[0,Xmin] = -5120;
+$RealmBounds[0,Xmax] = -5120 + $MapExtent[0] + 1000; //2x
+$RealmBounds[0,Ymin] = -3072;
+$RealmBounds[0,Ymax] = -3072 + $MapExtent[1];
+
+$RealmHeight[0] = 0;
+$RealmHeight[1] = -4000;
+$RealmHeight[2] = 4000;
 function Realms::getRealmGroupName(%realmId)
 {
     return "MissionGroup\\Realm"@%i;
@@ -93,6 +101,7 @@ function InitRealms()
 
 function Realms::InitZones()
 {
+    deleteVariables("Zone::*");
     $ZoneData::NumberZones = 0;
     for(%i = 0; nameToID("MissionGroup\\Realm"@%i) != -1; %i++)
     {
@@ -114,7 +123,7 @@ function Realms::InitializeZone(%groupPath,%realm)
 			%system = Object::getName(%object);
 			%type = GetWord(%system, 0);
 			%desc = String::getSubStr(%system, String::len(%type)+1, 9999);
-            echo(%system);
+            //echo(%system);
 			//---------------------------------------------------------------
 			//THIS PART GATHERS SOUNDS FOR THE GENERIC UNKNOWN ZONE
 			// there is no EXIT sound for the unknown zone.
@@ -217,7 +226,7 @@ function Realms::InitializeTownBots(%groupPath,%realmLabel)
 			{
 				%marker = GatherBotInfo(%object);
 			}
-            echo(%name);
+            //echo(%name);
 			%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
 
 			addToSet("MissionCleanup\\"@%realmLabel, %townbot);
@@ -305,16 +314,16 @@ function PlayerRealmCheck()
 	{
         if(fetchData(%c,"HasLoadedAndSpawned") && fetchData(%c,"noRealmCheck") == "")
         {
-            %zpos = getWord(Gamebase::getPosition(%c),2);
+            //%pos = Gamebase::getPosition(%c);
+            //%zpos = getWord(%pos,2);
             %currentRealm = fetchData(%c,"Realm");
-            %realmList[$RealmData[%currentRealm, ID]] = true;
+            %rid = $RealmData[%currentRealm, ID];
+            %realmList[%rid] = true;
             // Find player's current Realm by Z position
-            //echo("MaxH: "@ $RealmData[%currentRealm,MaxHeight]@" MinH: "@ $RealmData[%currentRealm,MinHeight]);
-            //echo("ZPos: "@ %zpos);
-            if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
-            {
-                Realm::KickPlayerBackInRealm(%c,%currentRealm);
-            }
+            //if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
+            //{
+            //    Realm::KickPlayerBackInRealm(%c,%currentRealm);
+            //}
         }
 	}
     

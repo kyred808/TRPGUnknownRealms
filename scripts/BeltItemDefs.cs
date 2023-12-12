@@ -105,14 +105,16 @@ $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %
 
 // Ore Items
 
-BeltItem::Add("CopperOre","copperore","OreItems",1,250,200);
-BeltItem::Add("TinOre","tinore","OreItems",1,250,201);
+BeltItem::Add("Copper Ore","copperore","OreItems",1,250,200);
+BeltItem::Add("Tin Ore","tinore","OreItems",1,250,201);
 BeltItem::Add("Galena","galena","OreItems",1,250,202);
 BeltItem::Add("Coal","coal","OreItems",1,3000,203);
-BeltItem::Add("IronOre","ironore","OreItems",1,3000,204);
-BeltItem::Add("CobaltOre","cobaltore","OreItems",1,3000,205);
+BeltItem::Add("Iron Ore","ironore","OreItems",1,3000,204);
+BeltItem::Add("Cobalt Ore","cobaltore","OreItems",1,3000,205);
 BeltItem::Add("Mithrite","mithrite","OreItems",1,3000,206);
 BeltItem::Add("Adamantite","adamantite","OreItems",1,3000,207);
+BeltItem::Add("Meteor Chunk","meteorchunk","OreItems",1,5000,208,"RestoreMana 10");
+BeltItem::Add("Meteor Core","meteorcore","OreItems",1,25042,209);
 
 // Metal Items
 
@@ -173,14 +175,72 @@ $ItemList[WoodCutting, 9] = "BireWood " @ round(%woodCuttingMod[BireWood] / %f)+
 $ItemList[WoodCutting, 10] = "WormWood " @ round(%woodCuttingMod[WormWood] / %f)+2;
 
 // Equip Items
+
+//Unused
 BeltEquip::AddEquipmentItem("Ring of Minor Power","ringofminpower","EquipItems",0.2,5000,13,"ATK 5","finger");
 BeltEquip::AddEquipmentItem("Brawler's Ring","brawlring","EquipItems",0.2,5000,31,"ATK 10","finger");
 BeltEquip::AddEquipmentItem("Ring of Power","ringofpower","EquipItems",0.2,5000,32,"ATK 150","finger");
-BeltEquip::AddEquipmentItem("Mage's Ring","magesring","EquipItems",0.2,50000,33,"SKILL"@$SkillOffensiveCasting@" 25 SKILL"@$SkillDefensiveCasting@" 5 SKILL"@$SkillNeutralCasting@" 10 SKILL"@$SkillEnergy@" 25","finger");
-BeltEquip::AddEquipmentItem("Protection Amulet","protectamulet","EquipItems",0.2,5000,14,"DEF 25 MDEF 25","neck");
-BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,34,"DEF 150","neck");
+BeltEquip::AddEquipmentItem("Mage's Ring","magesring","EquipItems",0.2,50000,33,"SKILL"@$SkillOffensiveCasting@" 25 SKILL"@$SkillDefensiveCasting@" 5 SKILL"@$SkillNatureCasting@" 10 SKILL"@$SkillEnergy@" 25","finger");
 BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,35,"ATK 250","arm");
-BeltEquip::AddEquipmentItem("Swordsman Armbad","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
+BeltEquip::AddEquipmentItem("Swordsman Armband","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
+
+//Used
+BeltEquip::AddEquipmentItem("Ring of Harm","ringofharm","EquipItems",0.2,10000,900,"ATK 10","finger");
+BeltEquip::AddEquipmentItem("Ring of Defense","ringofdefense","EquipItems",0.2,8000,901,"DEF 50","finger");
+BeltEquip::AddEquipmentItem("Ring of Stamina","ringofstamina","EquipItems",0.2,12000,902,"MaxStam 10","finger");
+BeltEquip::AddEquipmentItem("Blade Ring","bladering","EquipItems",0.2,15000,903,"SKILL"@$SkillSlashing@" 20","finger");
+BeltEquip::AddEquipmentItem("Sharp Ring","sharpring","EquipItems",0.2,15000,904,"SKILL"@$SkillPiercing@" 20","finger");
+BeltEquip::AddEquipmentItem("Blunt Ring","bluntring","EquipItems",0.2,15000,905,"SKILL"@$SkillBludgeoning@" 20","finger");
+BeltEquip::AddEquipmentItem("Bash Ring","bashring","EquipItems",0.2,15000,906,"SKILL"@$SkillBashing@" 20","finger");
+BeltEquip::AddEquipmentItem("Backstab Ring","backstabring","EquipItems",0.2,15000,907,"SKILL"@$SkillBackstabbing@" 20","finger");
+BeltEquip::AddEquipmentItem("Hide Ring","hidering","EquipItems",0.2,15000,908,"SKILL"@$SkillHiding@" 20","finger");
+BeltEquip::AddEquipmentItem("Wizard Ring","wizardring","EquipItems",0.2,15000,909,"SKILL"@$SkillOffensiveCasting@" 25","finger");
+BeltEquip::AddEquipmentItem("Healer Ring","healerring","EquipItems",0.2,15000,910,"SKILL"@$SkillDefensiveCasting@" 25","finger");
+BeltEquip::AddEquipmentItem("Nature Ring","naturering","EquipItems",0.2,15000,911,"SKILL"@$SkillNatureCasting@" 25","finger");
+BeltEquip::AddEquipmentItem("Harvest Ring","harvestring","EquipItems",0.2,15000,912,"SKILL"@$SkillFarming@" 25","finger");
+//BeltEquip::AddEquipmentItem("Chef Ring","chefring","EquipItems",0.2,15000,913,"SKILL"@$SkillCooking@" 25","finger");
+BeltEquip::AddEquipmentItem("Ring of Rest","ringofrest","EquipItems",0.2,8000,914,"RestStam 0.8","finger");
+BeltEquip::AddEquipmentItem("Ring of Idle","ringofidle","EquipItems",0.2,8000,915,"IdleStam 0.2","finger");
+BeltEquip::AddEquipmentItem("Archery Ring","archeryring","EquipItems",0.2,15000,916,"SKILL"@$SkillArchery@" 20","finger");
+BeltEquip::AddEquipmentItem("Mana Ring","manaring","EquipItems",0.2,25000,917,"MaxMANA 25","finger");
+
+
+$AccessoryVar[ringofharm, $MiscInfo] = "Ring that gives <f0>+10 ATK";
+$AccessoryVar[ringofdefense, $MiscInfo] = "Ring that gives <f0>+50 DEF";
+$AccessoryVar[ringofstamina, $MiscInfo] = "Ring that gives <f0>+10 Max Stamina";
+$AccessoryVar[bladering, $MiscInfo] = "Ring that gives <f0>+20 Slashing";
+$AccessoryVar[sharpring, $MiscInfo] = "Ring that gives <f0>+20 Piercing";
+$AccessoryVar[bluntring, $MiscInfo] = "Ring that gives <f0>+20 Bludgeoning";
+$AccessoryVar[bashring, $MiscInfo] = "Ring that gives <f0>+20 Bashing";
+$AccessoryVar[backstabring, $MiscInfo] = "Ring that gives <f0>+20 Backstabbing";
+$AccessoryVar[hidering, $MiscInfo] = "Ring that gives <f0>+20 Hiding";
+$AccessoryVar[wizardring, $MiscInfo] = "Ring that gives <f0>+25 Offensive Casting";
+$AccessoryVar[healerring, $MiscInfo] = "Ring that gives <f0>+25 Defensive Casting";
+$AccessoryVar[naturering, $MiscInfo] = "Ring that gives <f0>+25 Neutral Casting";
+$AccessoryVar[harvestring, $MiscInfo] = "Ring that gives <f0>+25 Farming";
+$AccessoryVar[chefring, $MiscInfo] = "Ring that gives <f0>+25 Cooking";
+$AccessoryVar[ringofrest, $MiscInfo] = "Ring that gives <f0>+0.8 <f1>stamina regen when resting.";
+$AccessoryVar[ringofidle, $MiscInfo] = "Ring that gives <f0>+0.2 stamina regen idle (no moving or attacking).";
+$AccessoryVar[archeryring, $MiscInfo] = "Ring that gives <f0>+20 Archery";
+
+BeltEquip::AddEquipmentItem("Soldier Band","soldierband","EquipItems",0.2,150000,800,"SKILL"@$SkillSlashing@" 100 SKILL"@$SkillPiercing@" 100 SKILL"@ $SkillBludgeoning @" 100","arm");
+BeltEquip::AddEquipmentItem("Exile Band","exileband","EquipItems",0.2,150000,801,"SKILL"@$SkillNatureCasting@" 180","arm");
+BeltEquip::AddEquipmentItem("Energy Band","energyband","EquipItems",0.2,25000,802,"MaxStam 50","arm");
+BeltEquip::AddEquipmentItem("Basher's Bangle","bashersbangle","EquipItems",0.2,250000,803,"SKILL"@ $SkillBludgeoning @" 20 SKILL"@$SkillBashing@" 100","arm");
+
+$AccessoryVar[soldierband, $MiscInfo] = "A clasp that raises all your melee weapon skills by 100";
+$AccessoryVar[exileband, $MiscInfo] = "An armband that raises all your Neutral Casting 180";
+$AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina by 50";
+$AccessoryVar[bashersbangle, $MiscInfo] = "Bangle that increashing your Bludgeoning by 20 and Bashing by 100";
+
+BeltEquip::AddEquipmentItem("Protection Amulet","protectamulet","EquipItems",0.2,50000,850,"DEF 150 MDEF 150","neck");
+BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,750000,851,"ARM 3 DEF 50 MDEF 50","neck");
+BeltEquip::AddEquipmentItem("Blink Amulet","blinkamulet","EquipItems",0.2,750000,852,"","neck");
+BeltEquip::AddEquipmentItem("Traitor's Amulet","traitorsamulet","EquipItems",0.1,50000,853,"SKILL"@$SkillBackstabbing@" 80 SKILL"@$SkillHiding@" 80","neck");
+
+$AccessoryVar[traitorsamulet, $MiscInfo] = "Increases your hiding and backstabbing by 80.";
+
+BeltEquip::AddUseAbility(blinkamulet,"Blink 150 50");
 
 // Spell Scroll Items
 BeltItem::Add("Enhanced Offensive Casting","enhancedoffcastscroll","ScrollItems",0,5000,600);
@@ -192,13 +252,15 @@ $StealProtectedItem["enhanceddefcastscroll"] = true;
 $StealProtectedItem["enhancedneucastscroll"] = true;
 
 // Food Items
-BeltItem::Add("Bread","Bread","FoodItems",0.5,50,750,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.2/$TribesDamageToNumericDamage@" 60");
-BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,30,751);
-BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,200,752);
-BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,500,753);
-BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,1200,754);
+BeltItem::Add("Bread","Bread","FoodItems",0.5,1200,"","EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+BeltItem::Add("Ear Bread?","EarBread","FoodItems",0.5,25000,750,"EatFoodItem,cooldown 80,StamRegen 0.3 80,HPRegen "@0.45/$TribesDamageToNumericDamage@" 80,ATK 10 80");
+BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,1200,751,"EatFoodItem,cooldown 60,StamRegen 0.5 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,7500,752,"EatFoodItem,cooldown 100,StamRegen 0.4 100,HPRegen "@0.5/$TribesDamageToNumericDamage@" 100");
+BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,12500,753);
+BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,25000,754);
 
 $AccessoryVar[Bread, $MiscInfo] = "A loaf of bread.  Eating it will boost health and stamina regen slightly.";
+$AccessoryVar[EarBread, $MiscInfo] = "Is this edible? Boosts health and stam regen and raises ATK by 10";
 $AccessoryVar[GobCookie, $MiscInfo] = "A cookie made of Gobbie Berries.  Eating it will boost stamina regen";
 $AccessoryVar[YucJuice, $MiscInfo] = "A flask of healthy yuccavera juice.  Eating it will boost health and stamina regen."; 
 $AccessoryVar[RedBerryPie, $MiscInfo] = "Delicious red berry pie. Eating it will boost stamina regen.";
@@ -229,21 +291,6 @@ BeltItem::Add("Metal Feather","MetalFeather","AmmoItems",0.1,GenerateItemCost(Me
 BeltItem::Add("Talon","Talon","AmmoItems",0.1,GenerateItemCost(Talon),25);
 BeltItem::Add("Ceraphum's Feather","CeraphumsFeather","AmmoItems",0.1,GenerateItemCost(CeraphumsFeather),26);
 //BeltItem::Add("Poison Arrow","PoisonArrow","AmmoItems",0.1,200,27);
-
-$SkillType[SmallRock] = $SkillArchery;
-$SkillType[BasicArrow] = $SkillArchery;
-$SkillType[SheafArrow] = $SkillArchery;
-$SkillType[BladedArrow] = $SkillArchery;
-$SkillType[LightQuarrel] = $SkillArchery;
-$SkillType[HeavyQuarrel] = $SkillArchery;
-$SkillType[ShortQuarrel] = $SkillArchery;
-$SkillType[CastingBlade] = $SkillPiercing;
-$SkillType[KeldriniteLS] = $SkillSlashing;
-$SkillType[AeolusWing] = $SkillArchery;
-$SkillType[StoneFeather] = $SkillArchery;
-$SkillType[MetalFeather] = $SkillArchery;
-$SkillType[Talon] = $SkillArchery;
-$SkillType[CeraphumsFeather] = $SkillArchery;
 
 $ProjRestrictions[SmallRock] = ",Sling,";
 $ProjRestrictions[BasicArrow] = ",ShortBow,LongBow,ElvenBow,CompositeBow,RShortBow,";
@@ -290,10 +337,14 @@ $AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
 // Rare and Quest Items
 
 BeltItem::Add("Black Statue","BlackStatue","RareItems",3,1);
-BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,250);
+BeltItem::Add("Goblin Ear","GoblinEar","RareItems",0.2,6200);
+BeltItem::Add("Dark Tome","DarkTome","RareItems",3,250000);
+BeltItem::Add("Bone Dust","BoneDust","RareItems","",9000);
 BeltItem::Add("Skeleton Bone","SkeletonBone","RareItems",1,1);
 BeltItem::Add("Enchanted Stone","EnchantedStone","RareItems",2,1);
 BeltItem::Add("Dragon Scale","DragonScale","RareItems",8,245310);
+
+BeltItem::Add("Magicite","Magicite","RareItems",0.2,550000);
 //BeltItem::Add("Testing Anvil","Anvil","RareItems",20,5000);
 
 $AccessoryVar[blackstatue, $MiscInfo] = "A strange black statue.";
@@ -301,14 +352,17 @@ $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";
 $AccessoryVar[EnchantedStone, $MiscInfo] = "A weird glowing stone.";
 $AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale.";
 
-$AccessoryVar[blackstatue, $MiscInfo] = "Ear of a goblin.";
-
+$AccessoryVar[goblinear, $MiscInfo] = "Ear of a goblin.";
+$AccessoryVar[DarkTome, $MiscInfo] = "A very rare spell book. Used in the crafting of rare items.";
+$AccessoryVar[BoneDust, $MiscInfo] = "Rare dust of a reanimated skeleton.";
 
 BeltItem::Add("Blue Potion","BluePotion","PotionItems",4,80,27,"DrinkHealingPotion 15");
 BeltItem::Add("Crystal Blue Potion","CrystalBluePotion","PotionItems",10,200,28,"DrinkHealingPotion 60");
 
 BeltItem::Add("Energy Potion","EnergyPotion","PotionItems",4,80,29,"DrinkStaminaPotion 25");
 BeltItem::Add("Crystal Energy Potion","CrystalEnergyPotion","PotionItems",10,200,30,"DrinkStaminaPotion 50");
+
+BeltItem::Add("Red Potion","RedPotion","PotionItems",4,12000,50,"DrinkRedPotion 30");
 
 // Crafted and not sold in stores.
 BeltItem::Add("Energy Shot","EnergyShot","PotionItems",0.2,50,"","DrinkStaminaPotion 15");
@@ -328,29 +382,45 @@ $AccessoryVar[EnergyVial, $MiscInfo] = "A small energy vial restores 15 Stamina.
 $AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A small energy vial that restores 50 Stamina. Similar to a Crystal Energy Potion, but lighter.";
 $AccessoryVar[EnergizedPotion, $MiscInfo] = "An energy potion that restores 100 Stamina.";
 
+$AccessoryVar[RedPotion, $MiscInfo] = "A potion that recovers 30 HP and 30 Stamina.";
+
 function Belt::UseItem(%clientId,%item)
 {
-    if(Belt::HasThisStuff(%clientId,%item) > 0)
+    echo(%item);
+    if(Belt::HasThisStuff(%clientId,%item) > 0 || BeltEquip::IsItemEquipped(%clientId,%item))
     {
-        if(getWord($beltitem[%item, "Special"],0) == "DrinkHealingPotion")
+        %useTag = getWord($beltitem[%item, "UseTag"],0);
+        if(%useTag == "DrinkHealingPotion")
         {
-            DrinkHealingPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
-            Belt::TakeThisStuff(%clientId,%item,1);
+            DrinkHealingPotion(%clientId,%item,getWord($beltitem[%item, "UseTag"],1));
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
             RefreshAll(%clientId,false);
+            return true;
         }
-        else if(getWord($beltitem[%item, "Special"],0) == "DrinkStaminaPotion")
+        else if(%useTag == "DrinkStaminaPotion")
         {
-            DrinkStaminaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
-            Belt::TakeThisStuff(%clientId,%item,1);
+            DrinkStaminaPotion(%clientId,%item,getWord($beltitem[%item, "UseTag"],1));
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
             RefreshAll(%clientId,false);
+            return true;
         }
-        else if(String::getWord($beltitem[%item, "Special"],",",0) == "EatFoodItem")
+        else if(%useTag == "DrinkRedPotion")
         {
-            if(AddBonusStatePoints("FoodCooldown") == 0)
+            DrinkRedPotion(%clientId,%item,getWord($beltitem[%item, "UseTag"],1));
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
+            RefreshAll(%clientId,false);
+            return true;
+        }
+        else if(String::getWord($beltitem[%item, "UseTag"],",",0) == "EatFoodItem")
+        {
+            if(AddBonusStatePoints(%clientId,"FoodCooldown") == 0)
             {
                 if(%clientId.sleepMode == "")
                 {
-                    EatFoodItem(%clientId,%item,Word::getSubWord($beltitem[%item, "Special"],1,999,","));
+                    EatFoodItem(%clientId,%item,Word::getSubWord($beltitem[%item, "UseTag"],1,999,","));
                     Belt::TakeThisStuff(%clientId,%item,1);
                     RefreshAll(%clientId,false);
                 }
@@ -359,8 +429,72 @@ function Belt::UseItem(%clientId,%item)
             }
             else
                 Client::sendMessage(%clientId, $MsgWhite, "You aren't ready to eat again.");
+                
+            return true;
         }
+        else if(%useTag == "RestoreMana")
+        {
+            RestoreMana(%clientId,%item,getWord($beltitem[%item, "UseTag"],1),"crushed a "@ $beltitem[%item, "Name"]);
+            //Belt::TakeThisStuff(%clientId,%item,1);
+            RPGItem::decItemCount(%clientId,%item,1);
+            return true;
+        }
+        else if(%useTag == "Blink")
+        {
+            %mana = fetchData(%clientId,"MANA");
+            %cost = getWord($beltitem[%item, "UseTag"],2);
+            if(%mana >= %cost)
+            {
+                %los = Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),getWord($beltitem[%item, "UseTag"],1));
+                if(%los)
+                {
+                    %castPos = $los::position;
+                    %castPosNorm = $los::normal;
+                    //Plasmatic's code to prevent phasing through floors and walls
+                    %xpos = getWord(%castPos,0);
+                    %ypos = getWord(%castPos,1);
+                    %zpos = getWord(%castPos,2);
+                    
+                    if(Vector::dot(%castPosNorm,"0 0 1") > 0.6) 
+                    {
+                        %zpos += 0.5;//floor
+                    }
+                    else 
+                    {
+                        if(Vector::dot(%castPosNorm,"0 0 -1") > 0.6) 
+                        {
+                            %zpos -= 2;//ceiling
+                        }
+                        else if(Vector::dot(%castPosNorm,"0 0 -1") >= -0.1 || Vector::dot(%castPosNorm,"0 0 -1") <= 0.1 ) 
+                        {
+                            //wall
+                            %xopos = getWord(%castPosNorm,0);
+                            %yopos = getWord(%castPosNorm,1);
+                            //%xpos = %xpos + %xopos + %xopos;
+                            %xpos = %xpos + %xopos;
+                            //%ypos = %ypos + %yopos + %yopos;
+                            %ypos = %ypos + %yopos;
+                        }
+                    }
+                    %extraDelay = 0.22;
+                    %dest = %xpos@" "@%ypos@" "@%zpos;
+                    
+                    Gamebase::setPosition(%clientId,%dest);
+                    Client::sendMessage(%clientId,$MsgWhite,"You blink forward!");
+                    refreshMana(%clientId,%cost);
+                    return true;
+                }
+                else
+                    Client::sendMessage(%clientId,$MsgRed,"No point in sight to blink toward.");
+            }
+            else
+                Client::sendMessage(%clientId,$MsgRed,"Insufficient mana to use that amulet.");
+        }
+        else
+            return false;
     }
+    else
+        return false;
 }
 
 function DrinkHealingPotion(%clientId,%item,%amt)
@@ -374,8 +508,32 @@ function DrinkHealingPotion(%clientId,%item,%amt)
 
 function DrinkStaminaPotion(%clientId,%item,%amt)
 {
+    %stam = fetchData(%clientId,"Stamina");
     refreshStamina(%clientId,%amt*-1);
+    if(fetchData(%clientId,"Stamina") != %stam)
+        UseSkill(%clientId, $SkillEnergy, True, True);
     Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @" Stamina~wActivateAR.wav");
+
+}
+
+function DrinkRedPotion(%clientId,%item,%amt)
+{
+    %hp = fetchData(%clientId, "HP");
+    refreshHP(%clientId,%amt * -0.01);
+    if(fetchData(%clientId,"HP") != %hp)
+        UseSkill(%clientId, $SkillHealing, True, True);
+    
+    %stam = fetchData(%clientId,"Stamina");
+    refreshStamina(%clientId,%amt*-1);
+    if(fetchData(%clientId,"Stamina") != %stam)
+        UseSkill(%clientId, $SkillEnergy, True, True);
+    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @" HP and "@ %amt @" Stamina~wActivateAR.wav");
+}
+
+function RestoreMana(%clientId,%item,%amt,%desc)
+{
+    refreshMana(%clientId,%amt*-1);
+    Client::sendMessage(%clientId, $MsgWhite, "You "@%desc@" and recovered "@ %amt @" Mana~wActivateAR.wav");
 }
 
 function EatFoodItem(%clientId,%item,%special)
@@ -392,6 +550,7 @@ function EatFoodItem(%clientId,%item,%special)
         else
         {
             %bonusType = getWord(%data,0);
+            echo(%bonusType);
             %bonusAmnt = getWord(%data,1);
             %bonusTicks = getWord(%data,2);
             UpdateBonusState(%clientId, %bonusType @" "@%bonusAmnt, %bonusTicks);

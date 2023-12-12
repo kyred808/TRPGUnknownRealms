@@ -11,8 +11,9 @@ function fetchData(%clientId, %type)
     {
         %a = AddPoints(%clientId, 1);
         %b = AddBonusStatePoints(%clientId, "AMR");
-        %belt = BeltEquip::AddBonusStats(%clientId,"AMR");
-        %v = Cap(%a + %b + %belt,0,"inf");
+        //%belt = BeltEquip::AddBonusStats(%clientId,"AMR");
+        //%v = Cap(%a + %b + %belt,0,"inf");
+        %v = Cap(%a + %b,0,"inf");
         
         return floor(%v);
     }
@@ -20,8 +21,8 @@ function fetchData(%clientId, %type)
 	{
 		%a = AddPoints(%clientId, 7);
 		%b = AddBonusStatePoints(%clientId, "DEF");
-        %belt = BeltEquip::AddBonusStats(%clientId,"DEF");
-		%c = (%a + %b + %belt);
+        //%belt = BeltEquip::AddBonusStats(%clientId,"DEF");
+		%c = (%a + %b); //+ %belt);
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
@@ -38,7 +39,7 @@ function fetchData(%clientId, %type)
 	{
 		%a = AddPoints(%clientId, 3);
 		%b = AddBonusStatePoints(%clientId, "MDEF");
-		%c = (%a + %b) + BeltEquip::AddBonusStats(%clientId,"MDEF");
+		%c = (%a + %b); //+ BeltEquip::AddBonusStats(%clientId,"MDEF");
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
@@ -53,8 +54,9 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "ATK")
 	{
+        %weapTag = fetchData(%clientId,"EquippedWeapon");
+		%weapon = RPGItem::ItemTagToLabel(%weapTag);
         
-		%weapon = Player::getMountedItem(%clientId, $WeaponSlot);
 		if(%weapon != -1)
 		{
 			%a = AddBonusStatePoints(%clientId, "ATK");
@@ -62,21 +64,30 @@ function fetchData(%clientId, %type)
 			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
             {
 				%rweapon = fetchData(%clientId, "LoadedProjectile " @ %weapon);
-                %extra = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
+                %rweaponLabel = RPGItem::ItemTagToLabel(%rweapon);
+                %bb = GetWord(GetAccessoryVar(%rweaponLabel, $SpecialVar), 1);
+                %im = RPGItem::getAffixValue(%weapTag,"im");
+                if(%im != 0)
+                    %bb += round(%bb * 0.1 * %im);
+                %extra = %bb;
             }
-
-			%b = GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
-            %b = %b + %extra;
-            %c = BeltEquip::AddBonusStats(%clientId,"ATK");
+            //This may need a refactor, as ATK might not be the first item
+            %baseAtk = GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1);
+            %im = RPGItem::getAffixValue(%weapTag,"im");
+            if(%im != 0)
+            {
+                %b = %baseAtk + round(%baseAtk * 0.1 * %im);
+            }
+            %b = %baseAtk + %extra;
             
-            %val = %a + %b + %c;
+            %val = %a + %b; //+ %c;
             if(!Player::isAiControlled(%clientId))
             {
                 %stam = fetchData(%clientId,"Stamina");
                 if(%stam <= 25)
                     %val = %val * %stam/25;
             }
-            
+
 			return %val;
 		}
 		else
@@ -89,8 +100,8 @@ function fetchData(%clientId, %type)
 		%c = floor(fetchData(%clientId, "RemortStep") * (CalculatePlayerSkill(%clientId, $SkillEndurance) / 8));
 		%d = fetchData(%clientId, "LVL");
 		%e = AddBonusStatePoints(%clientId, "MaxHP");
-        %f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
-		return floor(%a + %b + %c + %d + %e + %f);
+        //%f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
+		return floor(%a + %b + %c + %d + %e);// + %f);
 	}
 	else if(%type == "HP")
 	{
@@ -111,19 +122,31 @@ function fetchData(%clientId, %type)
     }
     else if(%type == "MaxStam")
     {
+        %temp = fetchData(%clientId,"tempMaxStam");
+        if(%temp != "")
+            return %temp;
         %a = 100;
-        %b = AddBonusStatePoints(%clientId, "MaxStam");
-        %c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
-        return floor(%a + %b + %c);
+        //%c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
+        //echo("Check");
+        //Lots of resource use for something that doesn't exist yet.
+        //%b = AddBonusStatePoints(%clientId, "MaxStam");
+        //%e = AddPoints(%clientId, $SpecialVarMaxStam);
+        //return floor(%a + %b + %c + %e);
+        %result = floor(%a); // + %c);
+        storeData(%clientId,"tempMaxStam",%result);
+        schedule("storeData("@%clientId@",\"tempMaxStam\",\"\");",1,%clientId);
+        return %result;
     }
 	else if(%type == "MaxMANA")
 	{
         %lvl = fetchData(%clientId,"LVL");
         %rl = fetchData(%clientId,"RemortStep");
         %eng = floor( CalculatePlayerSkill(%clientId, $SkillEnergy) * $ManaEnergyFactor );
-        %eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
-        
-        return 5*%lvl + 3*%rl + %end + %eqp;
+        //%eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
+        %extra = 0;
+        if(fetchData(%clientId,"Class") == "Mage")
+            %extra = 15;
+        return 5*%lvl + 3*%rl + %eng + %extra; //%eqp + %extra;
         
 		//%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
 		//%b = AddPoints(%clientId, 5);
@@ -146,9 +169,39 @@ function fetchData(%clientId, %type)
 		%a = 50 + CalculatePlayerSkill(%clientId, $SkillWeightCapacity);
 		//%b = AddPoints(%clientId, 9);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");
-        %d = BeltEquip::AddBonusStats(%clientId,"MaxWeight");
 		return FixDecimals(%a + %c);
 	}
+    else if(%type == "MANAThief")
+    {
+        %bonus = AddBonusStatePoints(%clientId, "MANAThief");
+        %equip = AddPoints(%clientId, $SpecialVarManaThief);
+        return %bonus + %equip;
+    }
+    else if(%type == "MANAHarvest")
+    {
+        %bonus = AddBonusStatePoints(%clientId, "MANAHarvest");
+        %equip = AddPoints(%clientId, $SpecialVarManaHarvest);
+        return %bonus + %equip;
+    }
+    else if(%type == "AMRP")
+    {
+        %equip = AddPoints(%clientId, $SpecialVarArmorPiercing);
+        %bonus = AddBonusStatePoints(%clientId, "AMRP");
+        return %bonus + %equip;
+    }
+    else if(%type == "TrueShot")
+    {
+        //In case we want another method of giving trueshot
+        %a = AddBonusStatePoints(%clientId, "TrueShot") > 0;
+        return %a;
+    }
+    else if(%type == "Brace")
+    {
+        //In case we want another method of giving brace
+        %a = AddBonusStatePoints(%clientId, "Brace");
+        %ret = Cap(%a,0,100);
+        return %ret;
+    }
 	else if(%type == "Weight")
 	{
 		return GetWeight(%clientId);
@@ -252,6 +305,42 @@ function storeData(%clientId, %type, %amt, %special)
             
         $ClientData[%clientId, %type] = Cap(%newVal,0,fetchData(%clientId,"MaxMANA"));
 	}
+    else if(%type == "COINS")
+    {
+        if(%special == "inc")
+        {
+			$ClientData[%clientId, "COINS"] += %amt;
+            $ClientData[%clientId, "totalWeight"] += %amt * $coinweight;
+            storeData(%clientId,"refreshWeight",1,"inc");
+        }
+		else if(%special == "dec")
+        {
+			$ClientData[%clientId, "COINS"] -= %amt;
+            $ClientData[%clientId, "totalWeight"] -= %amt * $coinweight;
+            storeData(%clientId,"refreshWeight",1,"inc");
+        }
+        else
+        {
+            %prev = $ClientData[%clientId, "COINS"];
+            %diff = %amt - %prev;
+			$ClientData[%clientId, "COINS"] = %amt;
+            $ClientData[%clientId, "totalWeight"] += %diff * $coinweight;
+            storeData(%clientId,"refreshWeight",1,"inc");
+        }
+    }
+    else if(%type == "refreshWeight") //Prevent weight from drifting due to floating point error
+    {
+        if(Player::isAIControlled(%clientId))
+            return; //Dont' are about weight drift on bots
+        if(%special == "inc")
+			$ClientData[%clientId, "refreshWeight"] += %amt;
+        
+        if($ClientData[%clientId, "refreshWeight"] > $RecalcuatePlayerWeightCounterMax)
+        {
+            $ClientData[%clientId, "totalWeight"] = WeightRecalculate(%clientId);
+            $ClientData[%clientId, "refreshWeight"] = 0;
+        }
+    }
 	else if(%type == "MaxHP" || %type == "MaxMANA" || %type == "MaxStam" ||%type == "MaxWeight" || %type == "Weight")
 	{
 		echo("Invalid call to storeData for " @ %type @ " : Can't manually set this variable.");
@@ -291,11 +380,10 @@ function MenuSP(%clientId, %page)
 
 	for(%i = %lb; %i <= %ub; %i++)
     {
-        %bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
-        //echo(%bonus);
-        if(%bonus > 0)
-            Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
-        else
+        //%bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
+        //if(%bonus > 0)
+        //    Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
+        //else
             Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ ") " @ $SkillDesc[%i], %i @ " " @ %page);
     }
 
@@ -343,8 +431,8 @@ function processMenusp(%clientId, %opt)
             if(%clientId.bulkNum > %limit)
                 %clientId.bulkNum = %limit;
             
-            AddSkillPoint(%clientId, %o, %clientId.bulkNum);
-            storeData(%clientId, "SPcredits", %clientId.bulkNum, "dec");
+            if(AddSkillPoint(%clientId, %o, %clientId.bulkNum))
+                storeData(%clientId, "SPcredits", %clientId.bulkNum, "dec");
             
             if(%echo)
                 Client::SendMessage(%clientId,$MsgWhite,"You spent "@ %clientId.bulkNum @" SP on "@$SkillDesc[%o]);
@@ -454,24 +542,181 @@ function processMenupickclass(%clientId, %opt)
 				storeData(%clientId, "CLASS", $ClassName[%i, 0]);
 		}
 	}
+    
+    SetAllSkills(%clientId, 0);
+        //add $autoStartupSP for each skill
+	for(%i = 1; %i <= GetNumSkills(); %i++)
+		AddSkillPoint(%clientId, %i, $autoStartupSP);
+    
 
-	//let the player enter the world
+    storeData(%clientId,"tempPrimarySkills","");
+    storeData(%clientId,"tempSecondarySkills","");
+    MenuPickSkillBonus(%clientId,fetchData(%clientId,"CLASS"),0,1);
+}
+
+function MenuPickSkillBonus(%clientId,%class,%num,%page)
+{
+    %primary = false;
+    //echo(%num);
+    if(%num < $SkillBoostNumPrimary)
+    {
+        Client::buildMenu(%clientId, "Pick "@ $SkillBoostNumPrimary @" Primary Skills ("@ $SkillBoostNumPrimary - %num @")", "PickSkillBonus", true);
+        %primary = true;
+    }
+    else
+        Client::buildMenu(%clientId, "Pick "@ $SkillBoostMax - $SkillBoostNumPrimary @" Secondary Skills ("@ $SkillBoostMax - %num @")", "PickSkillBonus", true);
+        
+    %l = 6;
+	%ns = GetNumSkills();
+	%np = floor(%ns / %l);
+	
+	%lb = (%page * %l) - (%l-1);
+	%ub = %lb + (%l-1);
+	if(%ub > %ns)
+		%ub = %ns;
+    
+    %prim = fetchData(%clientId,"tempPrimarySkills");
+    %sec = fetchData(%clientId,"tempSecondarySkills");
+    
+    //echo("Primary: "@ %prim);
+    //echo("Secondary: "@ %sec);
+	for(%i = %lb; %i <= %ub; %i++)
+    {
+        if(Word::findWord(%prim,%i) != -1)
+        {
+            %c = GetPlayerSkill(%clientId, %i) + ($SkillMultiplier[%class,%i]*($SkillPrimaryBonus-1));
+            %d = round(%c * 10);
+            %e = (%d / 10) * 1.000001;
+            Client::addMenuItem(%clientId, %cnt++ @ "**(" @ %e @ ") " @ $SkillDesc[%i],"primary "@ %i @ " " @ %class @ " " @ %num @ " " @ %page);
+        }
+        else if(Word::findWord(%sec,%i) != -1)
+        {
+            %c = GetPlayerSkill(%clientId, %i) + ($SkillMultiplier[%class,%i]*($SkillSecondaryBonus-1));
+            %d = round(%c * 10);
+            %e = (%d / 10) * 1.000001;
+            Client::addMenuItem(%clientId, %cnt++ @ "*(" @ %e @ ") " @ $SkillDesc[%i],"secondary "@ %i @ " " @ %class @ " " @ %num @ " " @ %page);
+        }
+        else
+            Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ ") " @ $SkillDesc[%i],"select "@ %i @ " " @ %class @ " " @ %num @ " " @ %page);
+    }
+
+	if(%page == 1)
+	{
+		Client::addMenuItem(%clientId, "nNext >>", "page filler "@ %class @" "@ %num @" "@ %page+1);
+		Client::addMenuItem(%clientId, "b<--Back", "back");
+	}
+	else if(%page == %np+1)
+	{
+		Client::addMenuItem(%clientId, "p<< Prev", "page filler "@ %class @" "@ %num @" "@ %page-1);
+		Client::addMenuItem(%clientId, "b<--Back", "back");
+	}
+	else
+	{
+		Client::addMenuItem(%clientId, "nNext >>", "page filler "@ %class @" "@ %num @" "@ %page+1);
+		Client::addMenuItem(%clientId, "p<< Prev", "page filler "@ %class @" "@ %num @" "@ %page-1);
+	}
+}
+
+function processMenuPickSkillBonus(%clientId, %opt)
+{
+    %option = getWord(%opt,0);
+    %skill = getWord(%opt,1);
+    %class = getWord(%opt,2);
+    %num = getWord(%opt,3);
+    %page = getWord(%opt,4);
+    
+    %prim = fetchData(%clientId,"tempPrimarySkills");
+    %sec = fetchData(%clientId,"tempSecondarySkills");
+    
+    if(%option == "select")
+    {
+        if(%num < $SkillBoostNumPrimary)
+            storeData(%clientId,"tempPrimarySkills",%skill@" ","strinc");
+        else
+            storeData(%clientId,"tempSecondarySkills",%skill@" ","strinc");
+            
+        %num++;
+        if(%num < $SkillBoostMax)
+        {
+            MenuPickSkillBonus(%clientId,%class,%num,%page);
+        }
+        else
+            CreateNewPlayer(%clientId);
+    }
+    else if(%option == "primary") //Deselect primary skill
+    {
+        storeData(%clientId,"tempPrimarySkills",String::RemoveWords(%prim,%skill));
+        if(%sec != "")
+        {
+            storeData(%clientId,"tempSecondarySkills","");
+            %num = $SkillBoostNumPrimary - 1; //Can make this assumption, as primary had to be full to have any secondaries
+            Client::sendMessage(%clientId,$MsgRed,"Secondary Skills Cleared.~wError_Message.wav");
+        }
+        else
+            %num--;
+        MenuPickSkillBonus(%clientId,%class,%num,%page);
+    }
+    else if(%option == "secondary") //Deselect secondary skill
+    {
+        storeData(%clientId,"tempSecondarySkills",String::RemoveWords(%sec,%skill));
+        MenuPickSkillBonus(%clientId,%class,%num-1,%page);
+    }
+    else if(%option == "page")
+    {
+        MenuPickSkillBonus(%clientId,%class,%num,%page);
+    }
+    else if(%option == "back")
+    {
+        storeData(%clientId,"tempPrimarySkills","");
+        storeData(%clientId,"tempSecondarySkills","");
+        storeData(%clientId,"CLASS","");
+        SetAllSkills(%clientId, 0);
+        MenuClass(%clientId);
+    }
+}
+
+function CreateNewPlayer(%clientId)
+{
+    	//let the player enter the world
 	%clientId.choosingClass = "";
     %clientId.newPlayer = true;
     if($RealmData::RealmIdToLabel[0] != "")
-        storeData(%clientId,$RealmData::RealmIdToLabel[0]);
+        storeData(%clientId,"Realm",$RealmData::RealmIdToLabel[0]);
+        
+    echo("New Player Dropping in Realm: "@fetchData(%clientId,"Realm"));
+    %class = fetchData(%clientId,"CLASS");
+    storeData(%clientId, "spawnStuff", $ClassSpawnStuff[%class],"strinc");
 	Game::playerSpawn(%clientId, false);
 
 	//######### set a few start-up variables ########
 	storeData(%clientId, "COINS", GetRoll($initcoins[fetchData(%clientId, "GROUP")]));
 
-	//add $autoStartupSP for each skill
-	for(%i = 1; %i <= GetNumSkills(); %i++)
-		AddSkillPoint(%clientId, %i, $autoStartupSP);
+	
 	//###############################################
     
+    
+    %prim = fetchData(%clientId,"tempPrimarySkills");
+    %sec = fetchData(%clientId,"tempSecondarySkills");
+    for(%i = 0; %i < getWordCount(%prim); %i++)
+    {
+        %skill = getWord(%prim,%i);
+        %c = GetPlayerSkill(%clientId, %skill) + ($SkillMultiplier[%class,%skill]*($SkillPrimaryBonus-1));
+        %d = round(%c * 10);
+        %e = (%d / 10) * 1.000001;
+        echo("Primary: "@$SkillDesc[%skill]@ " "@ GetPlayerSkill(%clientId, %skill) @" -> "@ %e);
+        $PlayerSkill[%clientId, %skill] = %e;
+    }
+    
+    for(%i = 0; %i < getWordCount(%sec); %i++)
+    {
+        %skill = getWord(%sec,%i);
+        %c = GetPlayerSkill(%clientId, %skill) + ($SkillMultiplier[%class,%skill]*($SkillSecondaryBonus-1));
+        %d = round(%c * 10);
+        %e = (%d / 10) * 1.000001;
+        $PlayerSkill[%clientId, %skill] = %e;
+    }
+    
     %clientId.newPlayer = false;
-    %w = "hi";
     schedule("Client::sendMessage("@%clientId@",0,\"Talk to the man with HI\");",1);
 
 	centerprint(%clientId, "<f1>Server powered by the RPG MOD version " @ $rpgver @ "<f0>\n\n" @ $loginMsg, 15);
@@ -600,7 +845,7 @@ function DistributeExpForKilling(%damagedClient)
 
 			if(RPG::isAiControlled(%damagedClient))
 			{
-				if(%slvl > 100)
+				if(%slvl > $PlayerLevelLimitForExp)
 					%value = 0;
 				else
 				{
@@ -686,7 +931,7 @@ function Game::refreshClientScore(%clientId)
 		{
 			//client has leveled up
 			%lvls = (GetLevel(fetchData(%clientId, "EXP"), %clientId) - fetchData(%clientId, "templvl"));
-
+            
 			storeData(%clientId, "SPcredits", (%lvls * $SPgainedPerLevel), "inc");
 
 			if(%lvls > 0)
@@ -697,6 +942,11 @@ function Game::refreshClientScore(%clientId)
 					Client::sendMessage(%clientId,0,"You have gained " @ %lvls @ " levels!");
 				Client::sendMessage(%clientId,0,"Welcome to level " @ fetchData(%clientId, "LVL"));
 				PlaySound(SoundLevelUp, GameBase::getPosition(%clientId));
+                
+                //Refresh health and stamina!
+                setHP(%clientId);
+                setStamina(%clientId);
+                
 			}
 			else if(%lvls < 0)
 			{
@@ -706,6 +956,8 @@ function Game::refreshClientScore(%clientId)
 					Client::sendMessage(%clientId,0,"You have lost " @ -%lvls @ " levels...");
 				Client::sendMessage(%clientId,0,"You are now level " @ fetchData(%clientId, "LVL"));
 			}
+            
+            RefreshEquipment(%clientId);
 		}
 		storeData(%clientId, "templvl", GetLevel(fetchData(%clientId, "EXP"), %clientId));
 
@@ -727,8 +979,14 @@ function Game::refreshClientScore(%clientId)
 			schedule("DoRemort(" @ %clientId @ ");", 60, %clientId);
 		}
 	}
-
-	%z = Zone::getDesc(fetchData(%clientId, "zone"));
+    
+    %clZone = "";
+    if(fetchData(%clientId, "invisible"))
+        %clZone = fetchData(%clientId,"lastScentZone");
+    else
+        %clZone = fetchData(%clientId, "zone");
+	%z = Zone::getDesc(%clZone);
+    
 	if(%z == -1)
 		%z = "unknown";
 

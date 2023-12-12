@@ -27,7 +27,7 @@ function Game::pickPlayerSpawn(%clientId, %respawn)
 
     if(%clientId.newPlayer)
     {
-        %group = nameToID("MissionGroup/Zones/"@$NewPlayerSpawnZone@"/DropPoints");
+        %group = nameToID("MissionGroup/Realm0/Zones/"@$NewPlayerSpawnZone@"/DropPoints");
     }
     else
     {
@@ -127,12 +127,13 @@ function Game::playerSpawn(%clientId, %respawn)
 		}
 
 		%armor = $RaceToArmorType[fetchData(%clientId, "RACE")];
-
+        %spawnPos = Farming::PlayerSpawnProtection(%spawnPos);
+        
 		%pl = spawnPlayer(%armor, %spawnPos, %spawnRot);
 		PlaySound(SoundSpawn2, %spawnPos);
 		GameBase::startFadeIn(Client::getOwnedObject(%clientId));
 
-        Farming::PlayerSpawnProtection(%spawnPos);
+        
         
 		echo("SPAWN: cl:" @ %clientId @ " pl:" @ %pl @ " marker:" @ %spawnMarker @ " position: " @ %spawnPos @ " armor:" @ %armor);
 
@@ -183,9 +184,26 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	}
 	else
 	{
-		GiveThisStuff(%clientId, fetchData(%clientId, "spawnStuff"), False);
+        //echo(fetchData(%clientId, "spawnStuff"));
+        %stuff = fetchData(%clientId, "spawnStuff");
+        if(%stuff != "")
+        {
+            GiveThisStuff(%clientId, fetchData(%clientId, "spawnStuff"), False);
+            
+            storeData(%clientId,"spawnStuff","");
+        }
+        storeData(%clientId,"totalWeight",WeightRecalculate(%clientId));
+        //if(%clientId.loadCharacterFlag)
+        //{
+        //    %clientId.loadCharacterFlag = false;
+        //    //Update inventory on client end.
+        //    schedule("RPGItem::refreshPlayerInv("@%clientId@");",3);
+        //    schedule("storeData("@%clientId@",\"totalWeight\",WeightRecalculate("@%clientId@"));",3.5);
+        //}
 	}
-
+    
+    Player::mountItem(%pl,BaseWeapon,$BaseWeaponSlot);
+    
 	if(fetchData(%clientId, "LCK") < 0)
 		storeData(%clientId, "LCK", 0);
 

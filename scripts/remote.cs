@@ -32,9 +32,6 @@ function remotePlayMode(%clientId)
 
 function remoteCommandMode(%clientId)
 {
-
-
-
 	if($numMessage[%clientId, c] != "")
 	{
 		remotesay(%clientId,0,$numMessage[%clientId, c]);
@@ -78,6 +75,17 @@ function remoteInventoryMode(%clientId)
 		%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
 		Client::setInventoryText(%clientId, %txt);
 	}
+}
+
+function remoteRequestPlayerInventoryRefresh(%clientId)
+{
+    if(%clientId.blockInvRefresh == "")
+    {
+        %clientId.blockInvRefresh = true;
+        remoteEval(%clientId,"ClearPlayerInv");
+        RPGItem::refreshPlayerInv(%clientId);
+        schedule(%clientId@".blockInvRefresh = \"\";",5);
+    }
 }
 
 function remoteObjectivesMode(%clientId)
@@ -132,10 +140,25 @@ function remoteToggleObjectivesMode(%clientId)
 		remotePlayMode(%clientId);
 }
 
+//$SetKeyRemote[Backpack] = "onConsider";
+$SetKeyRemote[Blaster] = 1;
+$SetKeyRemote[PlasmaGun] = 2;
+$SetKeyRemote[ChainGun] = 3;
+$SetKeyRemote[DiscLauncher] = 4;
+$SetKeyRemote[GrenadeLauncher] = 5;
+$SetKeyRemote[LaserRifle] = 6;
+$SetKeyRemote[ElfGun] = 7;
+$SetKeyRemote[Mortar] = 8;
+$SetKeyRemote[TargetingLaser] = 9;
+$SetKeyRemote[Beacon] = b;
+$SetKeyRemote[RepairKit] = h;
+$SetKeyRemote[Grenade] = g;
+$SetKeyRemote[Mine] = m;
+
 function remoteUseItem(%clientId, %type)
 {
 	dbecho($dbechoMode, "remoteUseItem(" @ %clientId @ ", " @ %type @ ")");
-
+    
 	%trueClientId = player::getclient(%clientId);
 	if(%trueClientId == "" || %trueClientId == -1)
 		%trueClientId = %clientId;
@@ -145,103 +168,123 @@ function remoteUseItem(%clientId, %type)
 	{
 		%trueClientId.lastWaitActionTime = %time;
 
-		%trueClientId.throwStrength = 1;
-
-		%item = getItemData(%type);
-
-		if(%item == Backpack) 
-		{
-			%item = -1;
-			remoteConsider(Player::getClient(%clientId));
-		}
-		else if(%item == Blaster)
-		{
-			if($numMessage[%trueClientId, 1] == "")
-				client::sendmessage(%trueClientId, 0, "#set 1 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 1]);
-		}
-		else if(%item == PlasmaGun)
-		{
-			if($numMessage[%trueClientId, 2] == "")
-				client::sendmessage(%trueClientId, 0, "#set 2 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 2]);
-		}
-		else if(%item == ChainGun)
-		{
-			if($numMessage[%trueClientId, 3] == "")
-				client::sendmessage(%trueClientId, 0, "#set 3 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 3]);
-		}
-		else if(%item == DiscLauncher)
-		{
-			if($numMessage[%trueClientId, 4] == "")
-				client::sendmessage(%trueClientId, 0, "#set 4 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 4]);
-		}
-		else if(%item == GrenadeLauncher)
-		{
-			if($numMessage[%trueClientId, 5] == "")
-				client::sendmessage(%trueClientId, 0, "#set 5 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 5]);
-		}
-		else if(%item == LaserRifle)
-		{
-			if($numMessage[%trueClientId, 6] == "")
-				client::sendmessage(%trueClientId, 0, "#set 6 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 6]);
-		}
-		else if(%item == ElfGun)
-		{
-			if($numMessage[%trueClientId, 7] == "")
-				client::sendmessage(%trueClientId, 0, "#set 7 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 7]);
-		}
-		else if(%item == Mortar)
-		{
-			if($numMessage[%trueClientId, 8] == "")
-				client::sendmessage(%trueClientId, 0, "#set 8 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 8]);
-		}
-		else if(%item == TargetingLaser)
-		{
-			if($numMessage[%trueClientId, 9] == "")
-				client::sendmessage(%trueClientId, 0, "#set 9 [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, 9]);
-		}
-		else if(%item == Beacon)
-		{
-			if($numMessage[%trueClientId, b] == "")
-				client::sendmessage(%trueClientId, 0, "#set b [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, b]);
-		}
-		else if(%item == RepairKit)
-		{
-			if($numMessage[%trueClientId, h] == "")
-				client::sendmessage(%trueClientId, 0, "#set h [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, h]);
-		}
-		else
-		{
-			if (%item == Weapon) 
-	      	      %item = Player::getMountedItem(%clientId,$WeaponSlot);
-	
-			if(%item != -1)
-			{
-				Player::useItem(%clientId, %item);
-			}
-		}
+		//%trueClientId.throwStrength = 1;
+        if(RPGItem::isItemTag(%type))
+        {
+            RPGItem::useItem(%trueClientId,%type);
+        }
+        else
+        {
+            %item = getItemData(%type);
+            if(%item == Backpack) 
+            {
+                %item = -1;
+                remoteConsider(%trueClientId);
+            }
+            else if($SetKeyRemote[%item] != "")
+            {
+                if($numMessage[%trueClientId, $SetKeyRemote[%item]] == "")
+                    Client::sendmessage(%trueClientId, 0, "#set "@ $SetKeyRemote[%item] @" [message]");
+                else
+                    ActivateSetKey(%trueClientId,$numMessage[%trueClientId, $SetKeyRemote[%item]]);
+            }
+            //else
+            //{
+            //	if (%item == Weapon) 
+            //  	      %item = Player::getMountedItem(%clientId,$WeaponSlot);
+            //    
+            //    
+            //	//if(%item != -1)
+            //	//{
+            //	//	Player::useItem(%clientId, %item);
+            //	//}
+            //}
+            
+            //else if(%item == Blaster)
+            //{
+            //	if($numMessage[%trueClientId, 1] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 1 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 1]);
+            //}
+            //else if(%item == PlasmaGun)
+            //{
+            //	if($numMessage[%trueClientId, 2] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 2 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 2]);
+            //}
+            //else if(%item == ChainGun)
+            //{
+            //	if($numMessage[%trueClientId, 3] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 3 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 3]);
+            //}
+            //else if(%item == DiscLauncher)
+            //{
+            //	if($numMessage[%trueClientId, 4] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 4 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 4]);
+            //}
+            //else if(%item == GrenadeLauncher)
+            //{
+            //	if($numMessage[%trueClientId, 5] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 5 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 5]);
+            //}
+            //else if(%item == LaserRifle)
+            //{
+            //	if($numMessage[%trueClientId, 6] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 6 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 6]);
+            //}
+            //else if(%item == ElfGun)
+            //{
+            //	if($numMessage[%trueClientId, 7] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 7 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 7]);
+            //}
+            //else if(%item == Mortar)
+            //{
+            //	if($numMessage[%trueClientId, 8] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 8 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 8]);
+            //}
+            //else if(%item == TargetingLaser)
+            //{
+            //	if($numMessage[%trueClientId, 9] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set 9 [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 9]);
+            //}
+            //else if(%item == Beacon)
+            //{
+            //	if($numMessage[%trueClientId, b] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set b [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, b]);
+            //}
+            //else if(%item == RepairKit)
+            //{
+            //	if($numMessage[%trueClientId, h] == "")
+            //		client::sendmessage(%trueClientId, 0, "#set h [message]");
+            //	else
+            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, h]);
+            //}
+        }
 	}
+}
+
+function ActivateSetKey(%clientId,%msg)
+{
+    //Put additional checks in here later so we can shortcut to the skill
+    remotesay(%clientId,0,%msg);
 }
 
 function remoteThrowItem(%clientId,%type,%strength)
@@ -249,37 +292,47 @@ function remoteThrowItem(%clientId,%type,%strength)
 
 		%trueClientId = player::getclient(%clientId);
 		%item = getItemData(%type);
-		if (%item == Grenade) {
-			if($numMessage[%trueClientId, g] == "")
-				client::sendmessage(%trueClientId, 0, "#set g [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, g]);
-		}
-		else if (%item == MineAmmo) {
-			if($numMessage[%trueClientId, m] == "")
-				client::sendmessage(%trueClientId, 0, "#set m [message]");
-			else
-				remotesay(%trueClientId,0,$numMessage[%trueClientId, m]);
-		}
+        
+        if($SetKeyRemote[%item] != "")
+        {
+            if($numMessage[%trueClientId, $SetKeyRemote[%item]] == "")
+                Client::sendmessage(%trueClientId, 0, "#set "@ $SetKeyRemote[%item] @" [message]");
+            else
+                ActivateSetKey(%trueClientId,$numMessage[%trueClientId, $SetKeyRemote[%item]]);
+        }
+        
+		//if (%item == Grenade) {
+		//	if($numMessage[%trueClientId, g] == "")
+		//		client::sendmessage(%trueClientId, 0, "#set g [message]");
+		//	else
+		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, g]);
+		//}
+		//else if (%item == MineAmmo) {
+		//	if($numMessage[%trueClientId, m] == "")
+		//		client::sendmessage(%trueClientId, 0, "#set m [message]");
+		//	else
+		//		remotesay(%trueClientId,0,$numMessage[%trueClientId, m]);
+		//}
 		return;
 
-	//echo("Throw item: " @ %type @ " " @ %strength);
-	%item = getItemData(%type);
-	if (%item == Grenade || %item == MineAmmo) {
-		if (%strength < 0)
-			%strength = 0;
-		else
-			if (%strength > 100)
-				%strength = 100;
-		%clientId.throwStrength = 0.3 + 0.7 * (%strength / 100);
-		Player::useItem(%clientId,%item);
-	}
+	////echo("Throw item: " @ %type @ " " @ %strength);
+	//%item = getItemData(%type);
+	//if (%item == Grenade || %item == MineAmmo) {
+	//	if (%strength < 0)
+	//		%strength = 0;
+	//	else
+	//		if (%strength > 100)
+	//			%strength = 100;
+	//	%clientId.throwStrength = 0.3 + 0.7 * (%strength / 100);
+	//	Player::useItem(%clientId,%item);
+	//}
 }
 
-function remoteDropItem(%clientId,%type)
+function remoteDropItem(%clientId,%type,%amnt)
 {
 	dbecho($dbechoMode, "remoteDropItem(" @ %clientId @ ", " @ %item @ ")");
-
+    if(%amnt == "")
+        %amnt = 1;
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
 	{
@@ -288,34 +341,43 @@ function remoteDropItem(%clientId,%type)
 		if($droppingAllowed == 1)
 		{
 			if((Client::getOwnedObject(%clientId)).driver != 1) {
-				//echo("Drop item: ",%type);
+				echo("Drop item: "@%type);
 				%clientId.throwStrength = 1;
-	
-				%item = getItemData(%type);
-				if(%item == Weapon)
-				{
-					%item = Player::getMountedItem(%clientId,$WeaponSlot);
-					Player::dropItem(%clientId,%item);
-				}
-				else if(%item == Ammo)
-				{
-					%item = Player::getMountedItem(%clientId,$WeaponSlot);
-					if(%item.className == Weapon)
-					{
-						%item = %item.imageType.ammoType;
-						Player::dropItem(%clientId,%item);
-					}
-				}
-				else if (%item.className == Equipped)
-				{
-					Client::sendMessage(%clientId, $MsgRed, "You can't drop an equipped item!~wC_BuySell.wav");
-				}
-				else if ($LoreItem[%item])
-				{
-					Client::sendMessage(%clientId, $MsgRed, "You can't drop a lore item!~wC_BuySell.wav");
-				}
-				else 
-					Player::dropItem(%clientId,%item);
+                if(RPGItem::isItemTag(%type))
+                {
+                    RPGItem::dropItem(%clientId,%type,%amnt);
+                }
+                else
+                {
+                    //Assume it was a weapon drop
+                    %weap = fetchData(%clientId,"EquippedWeapon");
+                    RPGItem::dropItem(%clientId,%weap,1);
+                }
+				//%item = getItemData(%type);
+				//if(%item == Weapon)
+				//{
+				//	%item = Player::getMountedItem(%clientId,$WeaponSlot);
+				//	Player::dropItem(%clientId,%item);
+				//}
+				//else if(%item == Ammo)
+				//{
+				//	%item = Player::getMountedItem(%clientId,$WeaponSlot);
+				//	if(%item.className == Weapon)
+				//	{
+				//		%item = %item.imageType.ammoType;
+				//		Player::dropItem(%clientId,%item);
+				//	}
+				//}
+				//else if (%item.className == Equipped)
+				//{
+				//	Client::sendMessage(%clientId, $MsgRed, "You can't drop an equipped item!~wC_BuySell.wav");
+				//}
+				//else if ($LoreItem[%item])
+				//{
+				//	Client::sendMessage(%clientId, $MsgRed, "You can't drop a lore item!~wC_BuySell.wav");
+				//}
+				//else 
+				//	Player::dropItem(%clientId,%item);
 			}
 		}
 	}
@@ -383,7 +445,10 @@ function remoteConsider(%clientId)
 
 		if(%obj == "Player")
 		{
-			DisplayGetInfo(%clientId, %cl, %object);
+            if(!Player::isAIControlled(%cl))
+                DisplayGetInfo(%clientId, %cl, %object);
+            else
+                DisplayTargetStats(%clientId,%cl,%object);
 			%sawsomething = True;
 		}
 		else if(%obj == "InteriorShape" && %object.tag != "" && %clientId.adminLevel >= 1)

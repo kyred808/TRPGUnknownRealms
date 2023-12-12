@@ -146,6 +146,8 @@ function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
         storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
         storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
+        //prevents AI::setupAI being called after death
+        storeData(%aiId, "SpawnBotInfo","dummyInfo");
         
         refreshHPREGEN(%AiId);
 		refreshStaminaREGEN(%AiId);
@@ -153,8 +155,9 @@ function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
 		storeData(%AiId, "LCK", 0);
         
         //AI::setAutomaticTargets(%aiName);
-        
+        return true;
     }
+    return false;
 }
 
 //----------------------------------
@@ -214,13 +217,14 @@ function AI::setupAI(%key, %team)
 function AI::setWeapons(%aiName, %loadout, %callback)
 {
 	dbecho($dbechoMode, "AI::setWeapons(" @ %aiName @ ")");
-
+    
 	%aiId = AI::getId(%aiName);
-    echo("Loadout: "@ %loadout);
+    Player::mountItem(%aiId,BaseWeapon,$BaseWeaponSlot);
+    //echo("Loadout: "@ %loadout);
 	if(%loadout == -1 || %loadout == "" || String::ICompare(%loadout, "default") == 0)
 	{
 		%items = $BotInfo[%aiName, ITEMS];
-        echo("Items: "@ %items);
+        //echo("Items: "@ %items);
 		if(%items == "")
 			GiveThisStuff(%aiId, $BotEquipment[clipTrailingNumbers(%aiName)], False);
 		else
@@ -260,6 +264,16 @@ function CalcVecRotToObj(%startPos,%obj,%offset)
     //%vec = Vector::sub(%objPos, %startPos);
     //%vecRot = Vector::getRotation(%vec);
     return Vector::getRotation(Vector::Normalize(Vector::sub(Vector::add(Gamebase::getPosition(%obj),%offset), %startPos)));
+}
+
+function RaycastUp(%clientId,%range)
+{
+    %pitch = Player::getPitch(%clientId);
+    %upRot = $pi/2;
+    
+    %diff = %upRot - %pitch;
+    
+    return Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),%range,%diff@" 0 0");
 }
 
 function RaycastCheck(%player,%eyeTrans,%otherObj,%range,%offset)
@@ -534,34 +548,36 @@ function AI::Periodic(%aiName)
 function AI::NextWeapon(%aiId)
 {
 	dbecho($dbechoMode, "AI::NextWeapon(" @ %aiId @ ")");
-
-	%item = Player::getMountedItem(%aiId, $WeaponSlot);
-
-	if(%item == -1 || $NextWeapon[%item] == "")
-		selectValidWeapon(%aiId);
-	else
-	{
-		for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
-		{
-			if(isSelectableWeapon(%clientId, %weapon))
-			{
-				%x = "";
-				if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
-				{
-					%x = GetBestRangedProj(%aiId, %weapon);
-					if(%x != -1)
-						storeData(%aiId, "LoadedProjectile " @ %weapon, %x);
-				}
-
-				if(%x != -1)
-				{
-					Player::useItem(%aiId, %weapon);
-					if(Player::getMountedItem(%clientId, $WeaponSlot) == %weapon || Player::getNextMountedItem(%aiId, $WeaponSlot) == %weapon)
-						break;
-				}
-			}
-		}
-	}
+    remoteNextWeapon(%aiId);
+    
+	//%item = fetchData(%aiId,"EquippedWeapon"); //Player::getMountedItem(%aiId, $WeaponSlot);
+    //
+	//if(%item == "" || $NextWeapon[%item] == "")
+	//	selectValidWeapon(%aiId);
+	//else
+	//{
+	//	for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
+	//	{
+	//		if(isSelectableWeapon(%clientId, %weapon))
+	//		{
+	//			%x = "";
+	//			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
+	//			{
+	//				%x = GetBestRangedProj(%aiId, %weapon);
+	//				if(%x != -1)
+	//					storeData(%aiId, "LoadedProjectile " @ %weapon, %x);
+	//			}
+    //
+	//			if(%x != -1)
+	//			{
+    //                Player::equipWeapon(%aiId,%weapon);
+	//				//Player::useItem(%aiId, %weapon);
+	//				if(fetchData(%aiId,"EquippedWeapon") == %weapon) //|| Player::getNextMountedItem(%aiId, $WeaponSlot) == %weapon)
+	//					break;
+	//			}
+	//		}
+	//	}
+	//}
 
 	AI::SetSpotDist(%aiId);
 }
@@ -571,11 +587,11 @@ function AI::SelectBestWeapon(%aiId)
 	dbecho($dbechoMode, "AI::SelectBestWeapon(" @ %aiId @ ")");
 
 	%weapon = GetBestWeapon(%aiId);
-    echo(%weapon);
 	if(%weapon != -1)
 	{
 		%x = "";
-		if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
+        %label = RPGItem::ItemTagToLabel(%weapon);
+		if(GetAccessoryVar(%label, $AccessoryType) == $RangedAccessoryType)
 		{
 			%x = GetBestRangedProj(%aiId, %weapon);
 			if(%x != -1)
@@ -584,8 +600,9 @@ function AI::SelectBestWeapon(%aiId)
 
 		if(%x != -1)
 		{
-            echo(%weapon);
-			Player::useItem(%aiId, %weapon);
+            //echo(%weapon);
+            Player::equipWeapon(%aiId,%weapon);
+			//Player::useItem(%aiId, %weapon);
 			AI::SetSpotDist(%aiId);
 		}
 	}
@@ -600,8 +617,9 @@ function AI::SetSpotDist(%aiId)
 	if(fetchData(%aiId, "frozen") || fetchData(%aiId, "dumbAIflag"))
 		return;
 
-	%item = Player::getMountedItem(%aiId, $WeaponSlot);
-
+	%item = fetchData(%aiId,"EquippedWeapon");//Player::getMountedItem(%aiId, $WeaponSlot);
+    %item = RPGItem::ItemTagToLabel(%item);
+    
 	AI::setVar(fetchData(%aiId, "BotInfoAiName"), SpotDist, GetRange(%item));
 	AI::setVar(fetchData(%aiId, "BotInfoAiName"), triggerPct, 1.0);
 }
@@ -1172,6 +1190,7 @@ function AI::onDroneKilled(%aiName)
         Player::setJet(Client::getOwnedObject(%aiId),false);
       	%team = fetchData(%aiId, "botTeam");
 		storeData(%aiId, "botTeam", "");
+        //echo(%aiName @" died");
 		$aiNumTable[$tmpbotn[%aiName]] = "";
 		$tmpbotn[%aiName] = "";
         
@@ -1233,7 +1252,7 @@ function AI::onTargetLOSAcquired(%aiName, %idNum)
     {
         storeData(%aiId,"targetFound",%idNum);
     }
-    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+    else if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag") && !fetchData(%idNum,"invisible"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 
@@ -1248,7 +1267,7 @@ function AI::onTargetLOSLost(%aiName, %idNum)
         storeData(%aiId,"targetFound","");
     }
     
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }
 
@@ -1257,8 +1276,8 @@ function AI::onTargetLOSRegained(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSRegained(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("Target Reacquired");
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+    echo("Target Reacquired: "@%idNum);
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag") && !fetchData(%idNum,"invisible"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
 
@@ -1267,8 +1286,8 @@ function AI::onTargetDied(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetDied(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-
-	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag"))
+    echo("TARGET DIED");
+	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }                                 
 
@@ -1417,7 +1436,7 @@ function HardcodeAIskills(%aiId)
 	$PlayerSkill[%aiId, $SkillArchery] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillOffensiveCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillDefensiveCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
-	$PlayerSkill[%aiId, $SkillNeutralCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
+	$PlayerSkill[%aiId, $SkillNatureCasting] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	$PlayerSkill[%aiId, $SkillEnergy] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
 	//$PlayerSkill[%aiId, $SkillSpeech] = $SkillCap;
 	$PlayerSkill[%aiId, $SkillWeightCapacity] = (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel);
@@ -1426,7 +1445,7 @@ function HardcodeAIskills(%aiId)
 
 	%a = (  (getRandom() * $SkillRangePerLevel) + ((fetchData(%aiId, "LVL")-1) * $SkillRangePerLevel)  ) / 2;
 	%sr = round(%a * GetSkillMultiplier(%aiId, $SkillOffensiveCasting));
-	$PlayerSkill[%aiId, $SkillSpellResistance] = %sr;
+	$PlayerSkill[%aiId, $SkillManaManipulation] = %sr;
 	//=============================================================
 }
 

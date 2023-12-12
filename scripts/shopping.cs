@@ -7,27 +7,38 @@ function SetupShop(%clientId, %id)
 
 	%clientId.bulkNum = "";
 
-	Client::clearItemShopping(%clientId);
-	Client::clearItemBuying(%clientId);
-
+	//Client::clearItemShopping(%clientId);
+	//Client::clearItemBuying(%clientId);
+    remoteEval(%clientId,"ClearBuyList");
 	Client::setGuiMode(%clientId, 4);
 
 	%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
 	Client::setInventoryText(%clientId, %txt);
 
 	%info = $BotInfo[%id.name, SHOP];	
-
+    %buyList = "";
     // Speed improved over 100x
-	for(%i = 0; GetWord(%info, %i) != -1; %i++)
+	for(%i = 0; (%item = GetWord(%info, %i)) != -1; %i++)
 	{
-		%a = GetWord(%info, %i);
+        %desc = RPGItem::getItemNameFromTag(%item);
+        %cost = getBuyCost(%clientId, %item);
+        %type = RPGItem::getItemGroupFromTag(%item);
+        if(%cost == "")
+            %cost = 0;
+        %len = String::len(%buyList);
         
-        %item = $Shop::IndexItem[%a];
-        if(%item != "")
+        %itemStr = %item @"|"@ %desc @"|"@%cost@"|"@%type @",";
+        %strLen = String::len(%itemStr);
+        
+        if(%len + %strLen > 200)
         {
-            Client::setItemShopping(%clientId, %item);
-            Client::setItemBuying(%clientId, %item);
+            %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+            remoteEval(%clientId,"BufferedBuyList",%ll,true,false);
+            %buyList = "";
         }
+        
+        %buyList = %buyList @ %itemStr;// = %id @"|"@ %desc @"|"@%cost@"|"@%type @",";
+
         
         // Very wasteful code
 		//%max = getNumItems();		
@@ -42,6 +53,8 @@ function SetupShop(%clientId, %id)
 		//	}
 		//}
 	}
+    %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+    remoteEval(%clientId,"BufferedBuyList",%buyList,true,true);
 }
 
 function SetupBank(%clientId, %id)
@@ -53,24 +66,52 @@ function SetupBank(%clientId, %id)
 
 	%clientId.bulkNum = "";
 
-	Client::clearItemShopping(%clientId);
-	Client::clearItemBuying(%clientId);
+	//Client::clearItemShopping(%clientId);
+	//Client::clearItemBuying(%clientId);
+    remoteEval(%clientId,"ClearBuyList");
 
 	if(Client::getGuiMode(%clientId) != 4)
 		Client::setGuiMode(%clientId, 4);
-
-	%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
+    %coins =  fetchData(%clientId, "COINS");
+	%txt = "<f1><jc>COINS: " @ %coins;
 	Client::setInventoryText(%clientId, %txt);
 
-	%info = fetchData(%clientId, "BankStorage");
-
+	%info = RPGItem::getFullItemList(%clientId,true);
+    echo(%info);
+    %buyList = ""; //"COINS|COINS|"@fetchData(%clientId,"BANK")@"|Money,";
 	for(%i = 0; GetWord(%info, %i) != -1; %i+=2)
 	{
-		%item = GetWord(%info, %i);
-
-		Client::setItemShopping(%clientId, %item);
-		Client::setItemBuying(%clientId, %item);
+		%itemTag = GetWord(%info, %i);
+        %amnt = GetWord(%info, %i+1);
+        if(%itemTag != "")
+        {
+            %desc = RPGItem::getItemNameFromTag(%itemTag);
+            %cost = %amnt;
+            %type = RPGItem::getItemGroupFromTag(%itemTag);
+            
+            %len = String::len(%buyList);
+            if(%cost == "")
+                %cost = 0;
+            %itemStr = %itemTag @"|"@ %desc @"|"@%cost@"|"@%type @",";
+            %strLen = String::len(%itemStr);
+            
+            if(%len + %strLen > 200)
+            {
+                %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+                remoteEval(%clientId,"BufferedBuyList",%ll,false,false);
+                %buyList = "";
+            }
+            
+            %buyList = %buyList @ %itemStr;
+        }
 	}
+    %ll = String::getSubStr(%buyList,0,%len-1); //Drop the last comma
+    remoteEval(%clientId,"BufferedBuyList",%buyList,false,true);
+    
+    //if(%coins > 0)
+    //{
+    //    remoteEval(%clientId,"SetItemCount","COINS","COINS",%coins,"Money");
+    //}
 }
 
 function SetupBlacksmith(%clientId, %id)
@@ -160,7 +201,7 @@ function ClearCurrentShopVars(%clientId)
       %clientId.currentBank = "";
       %clientId.currentSmith = "";
 	%clientId.currentInvSteal = "";
-
+    //remoteEval(%clientId,"SetItemCount","COINS","COINS",0,"Money");
 	storeData(%clientId, "TempPack", "");
 	storeData(%clientId, "TempSmith", "");
 }
@@ -251,11 +292,6 @@ $AccessoryVar[RShortBow, $ShopIndex] = 95;
 $AccessoryVar[RLightCrossbow, $ShopIndex] = 96;
 $AccessoryVar[RWarAxe, $ShopIndex] = 97;
 
-//Move to belt
-//$AccessoryVar[BlackStatue, $ShopIndex] = 100;
-//$AccessoryVar[SkeletonBone, $ShopIndex] = 101;
-//$AccessoryVar[EnchantedStone, $ShopIndex] = 102;
-
 $AccessoryVar[KeldriniteLS, $ShopIndex] = 104;
 $AccessoryVar[AeolusWing, $ShopIndex] = 112;
 //$AccessoryVar[StoneFeather, $ShopIndex] = 113;
@@ -275,114 +311,10 @@ $AccessoryVar[QuarterStaff, $ShopIndex] = 131;
 $AccessoryVar[LongStaff, $ShopIndex] = 132;
 $AccessoryVar[JusticeStaff, $ShopIndex] = 133;
 
-
-$ShopIndexItem[1] = BluePotion;
-
-
-$AccessoryVar[BluePotion, $ShopIndex] = 1;
-$AccessoryVar[CrystalBluePotion, $ShopIndex] = 2;
-$AccessoryVar[EnergyVial, $ShopIndex] = 3;
-$AccessoryVar[CrystalEnergyVial, $ShopIndex] = 4;
-$AccessoryVar[PaddedArmor, $ShopIndex] = 18;
-$AccessoryVar[LeatherArmor, $ShopIndex] = 19;
-$AccessoryVar[StuddedLeather, $ShopIndex] = 20;
-$AccessoryVar[SpikedLeather, $ShopIndex] = 21;
-$AccessoryVar[HideArmor, $ShopIndex] = 22;
-$AccessoryVar[ScaleMail, $ShopIndex] = 23;
-$AccessoryVar[BrigandineArmor, $ShopIndex] = 24;
-$AccessoryVar[ChainMail, $ShopIndex] = 25;
-$AccessoryVar[RingMail, $ShopIndex] = 26;
-$AccessoryVar[BandedMail, $ShopIndex] = 27;
-$AccessoryVar[SplintMail, $ShopIndex] = 28;
-$AccessoryVar[BronzePlateMail, $ShopIndex] = 29;
-$AccessoryVar[PlateMail, $ShopIndex] = 30;
-$AccessoryVar[FieldPlateArmor, $ShopIndex] = 31;
-$AccessoryVar[FullPlateArmor, $ShopIndex] = 32;
-$AccessoryVar[ApprenticeRobe, $ShopIndex] = 79;
-$AccessoryVar[LightRobe, $ShopIndex] = 80;
-$AccessoryVar[BloodRobe, $ShopIndex] = 81;
-$AccessoryVar[AdvisorRobe, $ShopIndex] = 82;
-$AccessoryVar[RobeOfVenjance, $ShopIndex] = 83;
-$AccessoryVar[PhensRobe, $ShopIndex] = 84;
-
-$AccessoryVar[CheetaursPaws, $ShopIndex] = 33;
-$AccessoryVar[BootsOfGliding, $ShopIndex] = 34;
-$AccessoryVar[WindWalkers, $ShopIndex] = 35;
-
-$AccessoryVar[Hatchet, $ShopIndex] = 39;
-$AccessoryVar[BroadSword, $ShopIndex] = 40;
-$AccessoryVar[WarAxe, $ShopIndex] = 41;
-$AccessoryVar[LongSword, $ShopIndex] = 42;
-$AccessoryVar[BattleAxe, $ShopIndex] = 43;
-$AccessoryVar[BastardSword, $ShopIndex] = 44;
-$AccessoryVar[Halberd, $ShopIndex] = 45;
-$AccessoryVar[Claymore, $ShopIndex] = 46;
-$AccessoryVar[Club, $ShopIndex] = 47;
-$AccessoryVar[SpikedClub, $ShopIndex] = 48;
-$AccessoryVar[Mace, $ShopIndex] = 49;
-$AccessoryVar[HammerPick, $ShopIndex] = 50;
-$AccessoryVar[WarHammer, $ShopIndex] = 53;
-$AccessoryVar[WarMaul, $ShopIndex] = 54;
-$AccessoryVar[Knife, $ShopIndex] = 55;
-$AccessoryVar[Dagger, $ShopIndex] = 56;
-$AccessoryVar[ShortSword, $ShopIndex] = 57;
-$AccessoryVar[Spear, $ShopIndex] = 58;
-$AccessoryVar[Gladius, $ShopIndex] = 59;
-$AccessoryVar[Trident, $ShopIndex] = 60;
-$AccessoryVar[Rapier, $ShopIndex] = 61;
-$AccessoryVar[AwlPike, $ShopIndex] = 62;
-$AccessoryVar[PickAxe, $ShopIndex] = 63;
-$AccessoryVar[Sling, $ShopIndex] = 64;
-$AccessoryVar[ShortBow, $ShopIndex] = 65;
-$AccessoryVar[LongBow, $ShopIndex] = 66;
-$AccessoryVar[ElvenBow, $ShopIndex] = 67;
-$AccessoryVar[CompositeBow, $ShopIndex] = 68;
-$AccessoryVar[LightCrossbow, $ShopIndex] = 69;
-$AccessoryVar[HeavyCrossbow, $ShopIndex] = 70;
-$AccessoryVar[RepeatingCrossbow, $ShopIndex] = 71;
-//$AccessoryVar[SmallRock, $ShopIndex] = 72;
-//$AccessoryVar[BasicArrow, $ShopIndex] = 73;
-//$AccessoryVar[SheafArrow, $ShopIndex] = 74;
-//$AccessoryVar[BladedArrow, $ShopIndex] = 75;
-//$AccessoryVar[LightQuarrel, $ShopIndex] = 76;
-//$AccessoryVar[HeavyQuarrel, $ShopIndex] = 77;
-//$AccessoryVar[ShortQuarrel, $ShopIndex] = 78;
-$AccessoryVar[CastingBlade, $ShopIndex] = 85;
-$AccessoryVar[Tent, $ShopIndex] = 98;
-$AccessoryVar[OrbOfLuminance, $ShopIndex] = 99;
-$AccessoryVar[OrbOfBreath, $ShopIndex] = 103;
-
-$AccessoryVar[RHatchet, $ShopIndex] = 86;
-$AccessoryVar[RBroadSword, $ShopIndex] = 87;
-$AccessoryVar[RLongSword, $ShopIndex] = 88;
-$AccessoryVar[RClub, $ShopIndex] = 89;
-$AccessoryVar[RSpikedClub, $ShopIndex] = 90;
-$AccessoryVar[RKnife, $ShopIndex] = 91;
-$AccessoryVar[RDagger, $ShopIndex] = 92;
-$AccessoryVar[RShortSword, $ShopIndex] = 93;
-$AccessoryVar[RPickAxe, $ShopIndex] = 94;
-$AccessoryVar[RShortBow, $ShopIndex] = 95;
-$AccessoryVar[RLightCrossbow, $ShopIndex] = 96;
-$AccessoryVar[RWarAxe, $ShopIndex] = 97;
-
-$AccessoryVar[KeldriniteLS, $ShopIndex] = 104;
-$AccessoryVar[AeolusWing, $ShopIndex] = 112;
-//$AccessoryVar[StoneFeather, $ShopIndex] = 113;
-//$AccessoryVar[MetalFeather, $ShopIndex] = 114;
-//$AccessoryVar[Talon, $ShopIndex] = 115;
-//$AccessoryVar[CeraphumsFeather, $ShopIndex] = 116;
-$AccessoryVar[BoneClub, $ShopIndex] = 117;
-$AccessoryVar[SpikedBoneClub, $ShopIndex] = 118;
-$AccessoryVar[JusticeStaff, $ShopIndex] = 119;
-$AccessoryVar[DragonScale, $ShopIndex] = 125;
-$AccessoryVar[FineRobe, $ShopIndex] = 126;
-$AccessoryVar[ElvenRobe, $ShopIndex] = 127;
-$AccessoryVar[DragonMail, $ShopIndex] = 128;
-$AccessoryVar[DragonShield, $ShopIndex] = 129;
-$AccessoryVar[KeldrinArmor, $ShopIndex] = 130;
-$AccessoryVar[QuarterStaff, $ShopIndex] = 131;
-$AccessoryVar[LongStaff, $ShopIndex] = 132;
-$AccessoryVar[JusticeStaff, $ShopIndex] = 133;
+$AccessoryVar[NoviceStaff, $ShopIndex] = 134;
+$AccessoryVar[MagesStaff, $ShopIndex] = 135;
+$AccessoryVar[FireStaff, $ShopIndex] = 136;
+$AccessoryVar[ThornStaff, $ShopIndex] = 137;
 
 $Shop::IndexItem[1] = BluePotion;
 $Shop::IndexItem[2] = CrystalBluePotion;
@@ -488,3 +420,8 @@ $Shop::IndexItem[130] = KeldrinArmor;
 $Shop::IndexItem[131] = QuarterStaff;
 $Shop::IndexItem[132] = LongStaff;
 $Shop::IndexItem[133] = JusticeStaff;
+
+$Shop::IndexItem[134] = NoviceStaff;
+$Shop::IndexItem[135] = MagesStaff;
+$Shop::IndexItem[136] = FireStaff;
+$Shop::IndexItem[137] = ThornStaff;

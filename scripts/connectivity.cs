@@ -126,7 +126,16 @@ function Game::initialMissionDrop(%clientId)
 		if(%clientId.choosingGroup)
                   StartStatSelection(%clientId);
 		else
-			Game::playerSpawn(%clientId, false);
+        {
+            if(%clientId.spawnDead)
+            {
+                %clientId.spawnDead = "";
+                Game::playerSpawn(%clientId, true);
+                schedule("Client::sendMessage("@ %clientId@","@$MsgRed@",\"You were dead during last world saved, so you respawned in town.\");",1);
+            }
+            else
+                Game::playerSpawn(%clientId, false);
+        }
 	}
 }
 
@@ -164,8 +173,8 @@ function Server::onClientDisconnect(%clientId)
 			DoCampSetup(%clientId, 5);
 
 		SaveCharacter(%clientId);
-
-		ClearEvents(%clientId);
+        ClearVariables(%clientId);
+		//ClearEvents(%clientId);
 	}
 
 	for(%i = 0; %i < 10; %i++)
@@ -214,10 +223,13 @@ function Server::onClientConnect(%clientId)
 	//for the other half of this check.
 	remoteeval(%clientid, RepackIdent, true);
 
+    remoteeval(%clientId, RPGMenuInfo);
+    
 //-------------------------------------------------------------
 
 	ClearVariables(%clientId);			//this needs to be done so the profile is as clean as possible...
 	Game::refreshClientScore(%clientId);	//so the player appears in the score list right away
+    //remoteeval(%clientId, "CSA::CheckFeatures");
 }
 
 function Game::onPlayerConnected(%playerId)

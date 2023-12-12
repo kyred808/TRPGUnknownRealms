@@ -1,6 +1,63 @@
 function GetWeight(%clientId)
 {
-	dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
+    dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
+
+	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
+		return 0;
+
+    %weight = fetchData(%clientId,"totalWeight");
+        
+	$GetWeight::ArmorMod = "";
+    //%itemList = RPGItem::getFullItemList(%clientId,false);
+    
+    %itemList = GetAccessoryList(%clientId, 2, 8);
+    
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+    {
+        %checkItem = RPGItem::ItemTagToLabel(%itemTag);
+        %specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
+        for(%k = 0; (%sv = getWord(%specialvar,%k)) != -1; %k+=2)
+        {
+            if(%sv == 8)
+            {
+                $GetWeight::ArmorMod = GetWord(%specialvar, %k+1);
+                break;
+            }
+        }
+        if($GetWeight::ArmorMod != "")
+            break;
+    }
+	return %weight;
+}
+
+function WeightRecalculate(%clientId)
+{
+    %total = 0;
+    %itemList = RPGItem::getFullItemList(%clientId,false);
+    
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+    {
+        %checkItem = RPGItem::ItemTagToLabel(%itemTag);
+        %cnt = getWord(%itemList,%i+1);
+        %weight = GetAccessoryVar(%checkItem, $Weight);
+        if(%weight != "")
+            %total += %weight * %cnt;
+    }
+    
+    //add up coins
+	%total += fetchData(%clientId, "COINS") * $coinweight;
+
+	//storeData(%clientId, "tmpWeight", %total);
+    
+    %x = fetchData(%clientId,"totalWeight");
+    %error = (%x - %total)/%total;
+    echo("error: "@ 100*%error);
+	return %total;
+}
+
+function OldGetWeight(%clientId)
+{
+    dbecho($dbechoMode, "GetWeight(" @ %clientId @ ")");
 
 	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid)
 		return 0;
@@ -14,26 +71,23 @@ function GetWeight(%clientId)
 
 	$GetWeight::ArmorMod = "";
 	%total = 0;
-
-	//add up items
-	%max = getNumItems();
-	for(%i = 0; %i < %max; %i++)
-	{
-		%checkItem = getItemData(%i);
-		%itemcount = Player::getItemCount(%clientId, %i);
-
-		if(%itemcount && %checkItem != "")
-		{
-			%weight = GetAccessoryVar(%checkItem, $Weight);
-			if(%weight != "" && %weight != False)
-				%total += %weight * %itemcount;
-
-			//Replaces the laggy AddPoints(%clientId, 8) in RefreshWeight (the real lag comes from GetAccessoryList however)
-			%specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
-			if(GetWord(%specialvar, 0) == 8 && %checkItem.className == Equipped)
+    %itemList = fetchData(%clientId,"InvItemList");
+    
+    for(%i = 0; String::getWord(%itemList,",",%i) != ","; %i++)
+    {
+        %checkItem = String::getWord(%itemList,",",%i);
+        %itemcount = Player::getItemCount(%clientId, %checkItem);
+        if(%itemcount)
+        {
+            %weight = GetAccessoryVar(%checkItem, $Weight);
+            if(%weight != "" && %weight != False)
+                %total += %weight * %itemcount;
+                
+            %specialvar = GetAccessoryVar(%checkItem, $SpecialVar);
+            if(GetWord(%specialvar, 0) == 8 && %checkItem.className == Equipped)
 				$GetWeight::ArmorMod = GetWord(%specialvar, 1);
-		}
-	}
+        }
+    }
     
     %beltList = fetchData(%clientId,"AllBelt");
     %i = 0;
@@ -102,8 +156,21 @@ function RefreshWeight(%clientId)
 		}
 		else
 		{
+            %mod = "";
+            if(AddBonusStatePoints(%clientId,"SPD") > 0)
+            {
+                %mod = 4;
+            }
 			//when not overweight, the special armor-modifying items come in
 			%x = $GetWeight::ArmorMod;
+            if(%mod == 4)
+            {
+                if(%x == 1)
+                    %x = 5; //Haste + Paws
+                else
+                    %x = 4;
+            }
+            //echo(%x);
 			if(%x > 0)
 				%newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %x];
 		}

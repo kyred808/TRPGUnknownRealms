@@ -396,32 +396,36 @@ function RPG::gameMenu(%clientId,%page)
                 Client::addMenuItem(%clientId, %curItem++ @ "Ranged weapons..." , "rweapons");
                 
             Client::addMenuItem(%clientId, %curItem++ @ "Skill points..." , "sp");
+            Client::addMenuItem(%clientId, %curItem++ @ "Skill Book..." , "skillbook");
             Client::addMenuItem(%clientId, %curItem++ @ "Spell Book..." , "spellbook");
-            Client::addMenuItem(%clientId, %curItem++ @ "Belt","viewbelt");
-            if(fetchData(%clientId, "ignoreGlobal"))
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-            else
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+            Client::addMenuItem(%clientId, %curItem++ @ "Belt...","viewbelt");
+            
                 
             
             
             if(%curItem < 7)
             {
-                if(fetchData(%clientId, "LCKconsequence") == "miss")
-                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
-                else if(fetchData(%clientId, "LCKconsequence") == "death")
-                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
+                if(fetchData(%clientId, "ignoreGlobal"))
+                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+                else
+                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+                
             }
             
             Client::addMenuItem(%clientId, "nNext >>" , "page "@ %page+1);
         }
         else if(%page == 2)
         {
+            if(fetchData(%clientId, "ignoreGlobal"))
+                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+            else
+                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
             if(fetchData(%clientId, "LCKconsequence") == "miss")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
             else if(fetchData(%clientId, "LCKconsequence") == "death")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
             Client::addMenuItem(%clientId, %curItem++ @ "Party options..." , "partyoptions");
+            
             
             
             Client::addMenuItem(%clientId, "pPrev <<" , "page "@ %page-1);
@@ -520,7 +524,7 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "Coins: " @ fetchData(%clientId, "COINS") @ " - Bank: " @ fetchData(%clientId, "BANK") @ "\n";
 		%a[%tmp++] = "TOTAL $: " @ fetchData(%clientId, "COINS") + fetchData(%clientId, "BANK") @ "\n\n";
 		
-		%a[%tmp++] = "Weight: " @ fetchData(%clientId, "Weight") @ " / " @ fetchData(%clientId, "MaxWeight") @ "\n";
+		%a[%tmp++] = "Weight: " @ Number::Beautify(fetchData(%clientId, "Weight"),0,2) @ " / " @ Number::Beautify(fetchData(%clientId, "MaxWeight"),0,2) @ "\n";
 		%a[%tmp++] = "Mana: " @ fetchData(%clientId, "MANA") @ " / " @ fetchData(%clientId, "MaxMANA") @ "\n";
 
 		for(%i = 1; %a[%i] != ""; %i++)
@@ -546,6 +550,11 @@ function processMenuOptions(%clientId, %option)
     else if(%opt == "spellbook")
     {
         MenuViewSpellBook(%clientid, 1);
+        return;
+    }
+    else if(%opt == "skillbook")
+    {
+        MenuViewSkillBook(%clientId,"root",1);
         return;
     }
     else if(%opt == "page")
@@ -646,8 +655,9 @@ function processMenuOptions(%clientId, %option)
 		for(%i = 0; GetWord(%list, %i) != -1; %i++)
 		{
 			%item = GetWord(%list, %i);
-
-			Client::addMenuItem(%clientId, %curitem++ @ %item.description, %item);
+            %name = RPGItem::getItemNameFromTag(%item);
+            
+			Client::addMenuItem(%clientId, %curitem++ @ %name, %item);
 		}
 		return;
 	}
@@ -742,8 +752,10 @@ function processMenuselectrweapon(%clientId, %item)
 	{
 		%proj = GetWord(%list, %i);
         //echo(%proj);
-		if(String::findSubStr($ProjRestrictions[%proj], "," @ %item @ ",") != -1)
-			Client::addMenuItem(%clientId, %curitem++ @ $beltitem[%proj, "Name"], %item @ " " @ %proj);
+        %name = RPGItem::getItemNameFromTag(%proj);
+        %label = RPGItem::ItemTagToLabel(%proj);
+		if(String::findSubStr($ProjRestrictions[%label], "," @ RPGItem::ItemTagToLabel(%item) @ ",") != -1)
+			Client::addMenuItem(%clientId, %curitem++ @ %name, %item @ " " @ %proj);
 	}
 	return;
 }

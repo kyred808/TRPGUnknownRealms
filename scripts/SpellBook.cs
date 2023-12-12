@@ -17,46 +17,87 @@ function SpellBook::AddSpellToType(%spellTypeLabel,%spellIndex)
 $SpellType::NumSpellTypes = 0;
 SpellBook::AddSpellType("offcast","Offensive Casting",$SkillOffensiveCasting,0);
 SpellBook::AddSpellType("defcast","Defensive Casting",$SkillDefensiveCasting,1);
-SpellBook::AddSpellType("neucast","Neutral Casting",$SkillNeutralCasting,2);
+SpellBook::AddSpellType("neucast","Nature Casting",$SkillNatureCasting,2);
 
-SpellBook::AddSpellToType("offcast",$Spell::index[thorn]);
-SpellBook::AddSpellToType("offcast",$Spell::index[fireball]);
-SpellBook::AddSpellToType("offcast",$Spell::index[firebomb]);
+SpellBook::AddSpellToType("offcast",$Spell::index[arcshot]);
+SpellBook::AddSpellToType("offcast",$Spell::index[firebolt]);
 SpellBook::AddSpellToType("offcast",$Spell::index[icespike]);
-SpellBook::AddSpellToType("offcast",$Spell::index[icestorm]);
 SpellBook::AddSpellToType("offcast",$Spell::index[ironfist]);
 SpellBook::AddSpellToType("offcast",$Spell::index[cloud]);
 SpellBook::AddSpellToType("offcast",$Spell::index[melt]);
-SpellBook::AddSpellToType("offcast",$Spell::index[powercloud]);
-SpellBook::AddSpellToType("offcast",$Spell::index[hellstorm]);
 SpellBook::AddSpellToType("offcast",$Spell::index[beam]);
 SpellBook::AddSpellToType("offcast",$Spell::index[dimensionrift]);
 
+SpellBook::AddSpellToType("defcast",$Spell::index[repent]);
 SpellBook::AddSpellToType("defcast",$Spell::index[heal]);
+SpellBook::AddSpellToType("defcast",$Spell::index[wrath]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal1]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal2]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal3]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advheal4]);
-SpellBook::AddSpellToType("defcast",$Spell::index[advheal5]);
-SpellBook::AddSpellToType("defcast",$Spell::index[advheal6]);
-SpellBook::AddSpellToType("defcast",$Spell::index[godlyheal]);
-SpellBook::AddSpellToType("defcast",$Spell::index[fullheal]);
-SpellBook::AddSpellToType("defcast",$Spell::index[massheal]);
-SpellBook::AddSpellToType("defcast",$Spell::index[massfullheal]);
 SpellBook::AddSpellToType("defcast",$Spell::index[shield]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield1]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield2]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield3]);
 SpellBook::AddSpellToType("defcast",$Spell::index[advshield4]);
-SpellBook::AddSpellToType("defcast",$Spell::index[advshield5]);
-SpellBook::AddSpellToType("defcast",$Spell::index[massshield]);
+SpellBook::AddSpellToType("defcast",$Spell::index[smite]);
+SpellBook::AddSpellToType("defcast",$Spell::index[shell]);
+SpellBook::AddSpellToType("defcast",$Spell::index[shell2]);
 
+SpellBook::AddSpellToType("neucast",$Spell::index[thorn]);
+SpellBook::AddSpellToType("neucast",$Spell::index[soften]);
 SpellBook::AddSpellToType("neucast",$Spell::index[teleport]);
+SpellBook::AddSpellToType("neucast",$Spell::index[icestorm]);
+SpellBook::AddSpellToType("neucast",$Spell::index[breeze]);
+SpellBook::AddSpellToType("neucast",$Spell::index[soften2]);
 SpellBook::AddSpellToType("neucast",$Spell::index[transport]);
 SpellBook::AddSpellToType("neucast",$Spell::index[advtransport]);
-SpellBook::AddSpellToType("neucast",$Spell::index[remort]);
-SpellBook::AddSpellToType("neucast",$Spell::index[mimic]);
-SpellBook::AddSpellToType("neucast",$Spell::index[masstransport]);
+SpellBook::AddSpellToType("neucast",$Spell::index[translocate]);
+SpellBook::AddSpellToType("neucast",$Spell::index[fasttranslocate]);
+SpellBook::AddSpellToType("neucast",$Spell::index[advtranslocate]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[remort]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[mimic]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[masstransport]);
+
+
+//SpellBook::AddSpellToType("offcast",$Spell::index[thorn]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[fireball]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[firebomb]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[icespike]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[icestorm]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[ironfist]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[cloud]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[melt]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[powercloud]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[hellstorm]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[beam]);
+//SpellBook::AddSpellToType("offcast",$Spell::index[dimensionrift]);
+//
+//SpellBook::AddSpellToType("defcast",$Spell::index[heal]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advheal1]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advheal2]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advheal3]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advheal4]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advheal5]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advheal6]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[godlyheal]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[fullheal]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[massheal]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[massfullheal]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[shield]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advshield1]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advshield2]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advshield3]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advshield4]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[advshield5]);
+//SpellBook::AddSpellToType("defcast",$Spell::index[massshield]);
+//
+//SpellBook::AddSpellToType("neucast",$Spell::index[teleport]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[transport]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[advtransport]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[remort]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[mimic]);
+//SpellBook::AddSpellToType("neucast",$Spell::index[masstransport]);
 
 function MenuViewSpellBook(%clientId, %page)
 {
@@ -244,8 +285,19 @@ function processMenuSelectSpellInfo(%clientId,%opt)
         %prevType = getWord(%opt,2);
         %prevPage = getWord(%opt,3);
         
-        %msg = WhatIs($Spell::keyword[%spellIndex]);
-		bottomprint(%clientId, %msg, floor(String::len(%msg) / 15));
+        %msg = Spell::WhatIsSpell(%clientId,$Spell::keyword[%spellIndex]);
+        
+        %len = String::len(%msg);
+        if(%len > 255)
+        {
+            %substr = String::getsubstr(%msg,0,255);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%msg) / 20), 1);
+            %substr = String::getSubstr(%msg,255,%len);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+        }
+        else 
+            bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+
         MenuSelectSpellInfo(%clientId,%spellIndex,%prevType,%prevPage);
     }
     else if(%option == "cast")

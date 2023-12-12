@@ -262,7 +262,7 @@ function CreateArenaStorage(%clientId)
 			
 			storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %b, %checkItemCount));
 			$ArenaStorage[%clientId, %ii] = %b @ " " @ %checkItemCount;
-			Player::setItemCount(%clientId, %checkItem, 0);
+			RPGItem::setItemCount(%clientId, %checkItem, 0);
 		}
 	}
 

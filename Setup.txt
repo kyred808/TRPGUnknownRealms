@@ -1,0 +1,3 @@
+Place scripts and missions in RPG folder.
+Place menuinv.gui in Tribes/gui
+Place NewRPG_Inventory.cs in Tribes/config and add exec(NewRPG_Inventory); to autoexec.cs

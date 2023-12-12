@@ -20,6 +20,23 @@
 //10: HP regen
 //11: Mana regen	
 
+$SpecialVarAMR = 1;
+$SpecialVarMDEF = 3;
+$SpecialVarHP = 4;
+$SpecialVarMana = 5;
+$SpecialVarATK = 6;
+$SpecialVarDEF = 7;
+$SpecialVarSPEED = 8;
+$SpeicalVarHPRegen = 10;
+$SpecialVarManaRegen = 11;
+$SpecialVarManaThief = 12;
+$SpecialVarManaHarvest = 13;
+$SpecialVarMaxStam = 14;
+$SpecialVarArmorPiercing = 15;
+$SpecialVarStamRegen = 16;
+$SpecialVarRestStamRegen = 17;
+$SpecialVarIdleStamRegen = 18;
+
 $SpecialVarDesc[1] = "AMR";
 $SpecialVarDesc[2] = "";
 $SpecialVarDesc[3] = "MDEF (Magical)";
@@ -31,6 +48,13 @@ $SpecialVarDesc[8] = "[Internal]";
 $SpecialVarDesc[9] = "";
 $SpecialVarDesc[10] = "HP regen";
 $SpecialVarDesc[11] = "Mana regen";
+$SpecialVarDesc[12] = "Mana Thief";
+$SpecialVarDesc[13] = "Mana Harvest";
+$SpecialVarDesc[14] = "Max Stamina";
+$SpecialVarDesc[15] = "AMR Pierce";
+$SpecialVarDesc[16] = "Stam Regen";
+$SpecialVarDesc[17] = "Rest Stam";
+$SpecialVarDesc[18] = "Idle Stam";
 
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;
@@ -46,6 +70,7 @@ $RangedAccessoryType = 11;
 $ProjectileAccessoryType = 12;
 $ShortBladeAccessoryType = 13;
 $PickAxeAccessoryType = 14;
+$MageStaffAccessoryType = 15;
 
 $LocationDesc[$RingAccessoryType] = "Ring";
 $LocationDesc[$BodyAccessoryType] = "Body";
@@ -61,6 +86,7 @@ $LocationDesc[$RangedAccessoryType] = "Ranged";
 $LocationDesc[$ProjectileAccessoryType] = "Projectile";
 $LocationDesc[$ShortBladeAccessoryType] = "ShortBlade";
 $LocationDesc[$PickAxeAccessoryType] = "PickAxe";
+$LocationDesc[$MageStaffAccessoryType] = "Staff";
 
 $maxAccessory[$RingAccessoryType] = 2;
 $maxAccessory[$BodyAccessoryType] = 1;
@@ -137,7 +163,7 @@ function getCroppedItem(%item)
 	return %nitem;
 }
 
-function GetAccessoryList(%clientId, %type, %filter)
+function OldOldGetAccessoryList(%clientId, %type, %filter)
 {
 	dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
 
@@ -279,7 +305,312 @@ function GetAccessoryList(%clientId, %type, %filter)
 	return %list;
 }
 
+function UnitTest_GetAccessoryList(%clientId)
+{
+    RPGItem::incItemCount(%clientId,"id"@RPGItem::LabelToItemID("hidearmor0"),1,true);
+    RPGItem::incItemCount(%clientId,"id"@RPGItem::LabelToItemID("hidearmor"),1,true);
+    
+    echo(GetAccessoryList(%clientId, 2, -1));
+    echo(GetAccessoryList(%clientId, 13, -1));
+    echo(GetAccessoryList(%clientId, 3, -1));
+}
+
+function GetAccessoryList(%clientId, %type, %filter)
+{
+    dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
+    //echo("GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
+	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid || %clientId.choosingGroup || %clientId.choosingClass)
+		return "";
+        
+    if(%filter == "")
+        %filter = -1;
+        
+    %list = "";
+    %invList = "";
+    if(%type == 1)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::AccessoryClass,InventoryTag]);
+    }
+    else if(%type == 2 || %type == 13)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    }
+    else if(%type == 3)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::AccessoryClass,InventoryTag]) @ 
+            RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    }
+    else if(%type == 4)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]) @
+            RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::WeaponClass,InventoryTag]);
+    }
+    else if(%type == 10)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::AmmoClass,InventoryTag]);
+    }
+    else if(%type >= 5 && %type < 13) //Don't have to worry about 10, as it is taken care of already in the if/else chain
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::WeaponClass,InventoryTag]);
+    }
+    else if(%type == 14)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    }
+    else if(%type == -1)
+    {
+        %list = RPGItem::getFullItemList(%clientId,false);
+    }
+    //echo(%list);
+    if(%list != "")
+    {
+        %c[5] = $SwordAccessoryType;
+        %c[6] = $AxeAccessoryType;
+        %c[7] = $PolearmAccessoryType;
+        %c[8] = $BludgeonAccessoryType;
+        %c[9] = $RangedAccessoryType;
+        %c[11] = $ShortBladeAccessoryType;
+        %c[12] = $PickAxeAccessoryType;
+        %c[13] = $BodyAccessoryType;
+        
+        for(%i = 0; (%itemTag = getWord(%list,%i)) != -1; %i+=2)
+        {
+            %item = RPGItem::ItemTagToLabel(%itemTag);
+            %typeCheck = false;
+            // Verify %type requirement
+            if(%type == 1 || %type == 2 || %type == 3 || %type == 10 || %type == -1) //These autopass
+                %typeCheck = true;
+            else if(%type == 4)
+            {
+                %weap = fetchData(%clientId,"EquippedWeapon");
+                %itemCl = RPGItem::getItemGroupFromTag(%itemTag);
+                if(%itemCl == $RPGItem::WeaponClass && %weap == %itemTag)
+                    %typeCheck = true;
+                else if(%itemCl == $RPGItem::EquipppedClass)
+                    %typeCheck = true;
+            }
+            else if(%type == 13)
+            {
+                if($AccessoryVar[getCroppedItem(%item), $AccessoryType] == $BodyAccessoryType)
+                    %typeCheck = true;
+            }
+            else if(%c[%type] == $AccessoryVar[%item, $AccessoryType])
+                %typeCheck = true;
+            
+            // Add item to list if it passes the filter
+            if(%typeCheck)
+            {
+                %bFilter = %filter != -1;
+                if(%bFilter)
+                {
+                    %flag2 = "";
+                    %av = GetAccessoryVar(%item, $SpecialVar);
+                    //echo("Spec Vars: "@ %item @" - "@ %av);
+                    for(%j = 0; (%w = GetWord(%av, %j)) != -1; %j+=2)
+                    {
+                        if(String::findSubStr(%filter, %w) != -1)
+                        {
+                            %flag2 = true;
+                            break;
+                        }
+                    }
+                    
+                }
+                if(!%bFilter || %flag2)
+                    %invList = %invList @ %itemTag @ " ";
+            }
+        }
+    }
+    
+    return %invList;
+}
+function OldGetAccessoryList(%clientId, %type, %filter)
+{
+	dbecho($dbechoMode, "GetAccessoryList(" @ %clientId @ ", " @ %type @ ", " @ %filter @ ")");
+
+	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid || %clientId.choosingGroup || %clientId.choosingClass)
+		return "";
+
+    if(%type == 10) //$ProjectileAccessoryType
+    {
+        %max = $Belt::ItemGroupItemCount["AmmoItems"];
+        for(%i = 0; %i < %max; %i++)
+        {
+            %item = $beltitem[%i+1,"Num","AmmoItems"];
+            %count = Belt::HasThisStuff(%clientId,%item);
+            if(%count)
+            {
+                if(%filter != -1)
+                {
+                    %flag2 = False;
+                    %av = GetAccessoryVar(%item, $SpecialVar);
+                    for(%j = 0; GetWord(%av, %j) != -1; %j+=2)
+                    {
+                        %w = GetWord(%av, %j);
+                        if(String::findSubStr(%filter, %w) != -1)
+                            %flag2 = True;
+                    }
+                }
+                if(%filter == -1 || %flag2)
+                    %list = %list @ %item @ " ";
+            }
+		}
+		return %list;
+    }
+    
+	%list = "";
+    
+    %itemList = fetchData(%clientId,"InvItemList");
+    
+    for(%i = 0; String::getWord(%itemList,",",%i) != ","; %i++)
+    {
+        %itemName = String::getWord(%itemList,",",%i);
+        
+        %count = RPGItem::getItemCount(%clientId, %itemName);
+
+        if(%count)
+        {
+            %item = getItemData($RPGItem::InvItem[%itemName,Index]);
+            %flag = "";
+            %class = %item.className;
+            
+			if(%type == 1)
+			{
+				if(%class == "Accessory")
+					%flag = True;
+			}
+			else if(%type == 2)
+			{
+				if(%class == "Equipped")
+					%flag = True;
+			}
+			else if(%type == 3)
+			{
+				if(%class == "Accessory" || %class == "Equipped")
+					%flag = True;
+			}
+			else if(%type == 4)
+			{
+                %weapCk = String::icompare(%class,"Weapon") == 0;
+                %bpCk = String::icompare(%class,"Backpack") == 0;
+				if(String::icompare(%class,"Equipped") == 0|| %weapCk || %bpCk)
+				{
+					if(%weapCk)
+					{
+						if(Player::getMountedItem(%clientId, $WeaponSlot) == %item)
+							%flag = True;
+					}
+					else
+						%flag = True;
+				}
+			}
+			else if(%type == 5)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $SwordAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 6)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $AxeAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 7)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $PolearmAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 8)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $BludgeonAccessoryType)
+					%flag = True;
+			}
+			else if(%type == 9)
+			{
+				if($AccessoryVar[%item, $AccessoryType] == $RangedAccessoryType)
+					%flag = True;
+			}
+			//else if(%type == 10)
+			//{
+			//	if($AccessoryVar[%item, $AccessoryType] == $ProjectileAccessoryType)
+			//		%flag = True;
+			//}
+            else if(%type == 11)
+            {
+                if($AccessoryVar[%item, $AccessoryType] == $ShortBladeAccessoryType)
+                    %flag = True;
+            }
+            else if(%type == 12)
+            {
+                if($AccessoryVar[%item, $AccessoryType] == $PickAxeAccessoryType)
+                    %flag = True;
+            }
+            else if(%type == 13)
+            {
+                if(%class == "Equipped" && $AccessoryVar[getCroppedItem(%item), $AccessoryType] == $BodyAccessoryType)
+                    %flag = true;
+            }
+			else if(%type == -1)
+				%flag = True;
+
+			if(%flag)
+			{
+				if(%filter != -1)
+				{
+					%flag2 = "";
+					%av = GetAccessoryVar(%item, $SpecialVar);
+					for(%j = 0; GetWord(%av, %j) != -1; %j+=2)
+					{
+						%w = GetWord(%av, %j);
+						if(String::findSubStr(%filter, %w) != -1)
+							%flag2 = True;
+					}
+				}
+				if(%filter == -1 || %flag2)
+					%list = %list @ %item @ " ";
+			}
+        }
+    }
+	return %list;
+}
+
 function AddPoints(%clientId, %char)
+{
+    dbecho($dbechoMode, "AddPoints(" @ %clientId @ ", " @ %char @ ")");
+    
+    %add = 0;
+	%list = GetAccessoryList(%clientId, 4, %char);
+    
+    for(%i = 0; (%w = GetWord(%list, %i)) != -1; %i++)
+	{
+        %slot = "";
+        %item = RPGItem::ItemTagToLabel(%w);
+        
+        if(RPGItem::getItemGroupFromTag(%w) == $RPGItem::WeaponClass)
+        {
+            %weap = fetchData(%clientId,"EquippedWeapon");
+            if(%weap == %w)
+				%count = 1;
+            else
+                %count = 0;
+        }
+        else
+            %count = RPGItem::getItemCount(%clientId, %w);
+            
+        %tmp = GetAccessoryVar(%item, $SpecialVar);
+        for(%j = 0; (%e = getWord(%tmp,%j)) != -1; %j+=2)
+        {
+            if(%char == %e)
+            {
+                echo(%e);
+                %add += getWord(%tmp,%j+1) * %count;
+            }
+        }
+    }
+    
+    return %add;
+}
+
+function OldAddPoints(%clientId, %char)
 {
 	dbecho($dbechoMode, "AddPoints(" @ %clientId @ ", " @ %char @ ")");
 
@@ -288,8 +619,6 @@ function AddPoints(%clientId, %char)
 	for(%i = 0; GetWord(%list, %i) != -1; %i++)
 	{
 		%w = GetWord(%list, %i);
-        if(%char == 10)
-            echo(%add @" "@%w);
 		%slot = "";
 		if(%w.className == Weapon)
 			%slot = $WeaponSlot;
@@ -307,15 +636,15 @@ function AddPoints(%clientId, %char)
 			%count = Player::getItemCount(%clientId, %w);
 
 		%tmp = GetAccessoryVar(%w, $SpecialVar);
-        echo("Temp: "@ %tmp);
+        
 		for(%j = 0; GetWord(%tmp, %j) != -1; %j+=2)
 		{
 			%e = GetWord(%tmp, %j);
-			if(String::findSubStr(%char, %e) != -1)
+            //echo(%e);
+			//if(String::findSubStr(%char, %e) != -1)
+            if(%char == %e)
             {
 				%add += GetWord(%tmp, %j+1) * %count;
-                if(%char == 10)
-                    echo(%add @" "@%e);
             }
 		}
 	}
@@ -323,6 +652,7 @@ function AddPoints(%clientId, %char)
 	return %add;
 }
 
+//%item is a label
 function AddItemSpecificPoints(%item, %char)
 {
 	dbecho($dbechoMode, "AddItemSpecificPoints(" @ %item @ ", " @ %char @ ")");
@@ -371,26 +701,9 @@ function NullItemList(%clientId, %type, %msgcolor, %msg)
 	for(%z = 1; $ItemList[%type, %z] != ""; %z++)
 	{
 		%item = $ItemList[%type, %z];
-		if(Player::getItemCount(%clientId, %item))
+		if(RPGItem::getItemCount(%clientId, %item))
 		{
-			Player::setItemCount(%clientId, %item, 0);
-
-			%newmsg = nsprintf(%msg, %item.description);
-			Client::sendMessage(%clientId, %msgcolor, %newmsg);
-		}
-	}
-}
-
-function NullBeltList(%clientId, %msgcolor, %msg)
-{
-	dbecho($dbechoMode, "NullItemList(" @ %clientId @ ", " @ %type @ ", " @ %msgcolor @ ", " @ %msg @ ")");
-
-	for(%i = 0; (%item=getword(fetchData(%clientId, "LoreItems"), %i)) != ""; %i+=2)
-	{
-		if(Player::getItemCount(%clientId, %item))
-		{
-		%amnt = getword(fetchData(%clientId, "LoreItems"), %i+1);
-			Belt::TakeThisStuff(%clientid,%item,%amnt);
+			RPGItem::setItemCount(%clientId, %item, 0);
 
 			%newmsg = nsprintf(%msg, %item.description);
 			Client::sendMessage(%clientId, %msgcolor, %newmsg);
@@ -399,6 +712,22 @@ function NullBeltList(%clientId, %msgcolor, %msg)
 }
 
 function GetCurrentlyWearingArmor(%clientId)
+{
+	dbecho($dbechoMode, "GetCurrentlyWearingArmor(" @ %clientId @ ")");
+    
+    //This should do it too, but to reduce testing, i'll match the other way.
+    //return GetAccessoryList(%clientId, 13, -1);
+    
+	for(%i = 1; $ArmorList[%i] != ""; %i++)
+	{
+        %amrTag = RPGItem::LabelToItemTag($ArmorList[%i]@"0");
+        if(RPGItem::getItemCount(%clientId,%amrTag))
+			return $ArmorList[%i];
+	}
+	return "";
+}
+
+function OldGetCurrentlyWearingArmor(%clientId)
 {
 	dbecho($dbechoMode, "GetCurrentlyWearingArmor(" @ %clientId @ ")");
 
@@ -1167,6 +1496,25 @@ ItemData OrbOfBreath0
 	imageType = OrbOfBreathImage;
 
 	heading = "aArmor";
+};
+
+ItemData MeteorBits
+{
+    description = "MeteorBit";
+	shapeFile = "saphire";
+	heading = "eMiscellany";
+	shadowDetailMask = 4;
+	price = 5;
+	className = "HandAmmo";
+};
+ItemData MeteorBitsRed
+{
+    description = "MeteorBit";
+	shapeFile = "ruby";
+	heading = "eMiscellany";
+	shadowDetailMask = 4;
+	price = 5;
+	className = "HandAmmo";
 };
 
 ItemData Grenade

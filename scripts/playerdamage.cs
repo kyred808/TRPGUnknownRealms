@@ -8,6 +8,13 @@ function Client::onKilled(%clientId, %killerId, %damageType)
 	//we can award the other players exp
 	DistributeExpForKilling(%clientId);
 
+    %mh = fetchData(%killerId,"MANAHarvest");
+    if(%mh > 0)
+    {
+        refreshMANA(%killerId,-1*%mh);
+        Client::sendMessage(%killerId,$MsgWhite,"You restored "@%mh@" mana.");
+    }
+    
 	//The player with the killshot gets the official "kill"
 	if(!IsInCommaList(fetchData(%killerId, "TempKillList"), Client::getName(%clientId)))
 		storeData(%killerId, "TempKillList", AddToCommaList(fetchData(%killerId, "TempKillList"), Client::getName(%clientId)));
@@ -104,94 +111,156 @@ function Player::onKilled(%this)
 		if(fetchData(%clientId, "COINS") > 0)
 			%tmploot = %tmploot @ "COINS " @ floor(fetchData(%clientId, "COINS")) @ " ";
 		storeData(%clientId, "COINS", 0);
-
-		%max = getNumItems();
-		for (%i = 0; %i < %max; %i++)
-		{
-			%a = getItemData(%i);
-			%itemcount = Player::getItemCount(%clientId, %a);
-
-			if(%itemcount)
-			{
-				%flag = False;
-
-				if(fetchData(%clientId, "LCK") >= 0)
-				{
-					//currently mounted weapon and all equipped stuff + lore items are thrown into lootbag.
-					if(Player::getMountedItem(%clientId, $WeaponSlot) == %a || %a.className == "Equipped" || $LoreItem[%a] == True)
-						%flag = True;
-				}
-				else
-					%flag = True;
-
-				if(fetchData(%clientId, "LCK") < 0 && Player::isAiControlled(%clientId))
-					%flag = True;
-
-				if(%a == CastingBlade)
-					%flag = False;		//HARDCODED because we DONT want any players to have this item.
-				
-                if(%a == Treeatk)
-                    %flag = False;
+        
+        %itemList = RPGItem::getFullItemList(%clientId,false);
+        
+        for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
+        {
+            %bInclude = false;
+            %a = RPGItem::ItemTagToLabel(%itemTag);
+            
+            if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
+            {
+                %bInclude = false;
+            }
+            else
+            {
+                if(fetchData(%clientId,"LCK") >= 0)
+                {
+                    %eq = fetchData(%clientId,"EquippedWeapon");
+                    %class = RPGItem::getItemGroupFromTag(%itemTag);
+                    
+                    if(%eq == %itemTag || %class == $RPGItem::EquipppedClass || $LoreItem[%label] == true)
+                    {
+                        %bInclude = true;
+                    }
+                }
+                else
+                    %bInclude = true;
                 
-				if($StealProtectedItem[%a])
-					%flag = False;
+                if(%a == CastingBlade)
+					%bInclude = false;
+                else if(%a == Treeatk)
+                    %bInclude = false;
+                
+                if($StealProtectedItem[%a])
+					%bInclude = false;
+            }
+            
+            if(%bInclude)
+            {
+                %b = %a;
+                %class = RPGItem::getItemGroupFromTag(%itemTag);
+                %eq = fetchData(%clientId,"EquippedWeapon");
+                if(%class == $RPGItem::EquipppedClass)
+                    %b = String::getSubStr(%b, 0, String::len(%b)-1);
 
-				if(%flag)
-				{
-					%b = %a;
-					if(%b.className == "Equipped")
-						%b = String::getSubStr(%b, 0, String::len(%b)-1);
-
-					if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
-					{
-						//special handling for currently held weapon
-						%tmploot = %tmploot @ %b @ " 1 ";
-						Player::decItemCount(%clientId, %a);
-					}
-					else
-					{
-						%tmploot = %tmploot @ %b @ " " @ Player::getItemCount(%clientId, %a) @ " ";
-						Player::setItemCount(%clientId, %a, 0);
-					}
-					if(String::len(%tmploot) > 200)
-					{
-						if(Player::isAiControlled(%clientId))
-							TossLootbag(%clientId, %tmploot, 1, "*", 300);
-						else
-						{
-							%namelist = Client::getName(%clientId) @ ",";
-							if(fetchData(%clientId, "LCK") >= 0)
-								%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
-							else
-								%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
-						}
-						%tmploot = "";
-					}
-				}
-			}
-		}
+                if(%eq == %itemTag)
+                {
+                    //special handling for currently held weapon
+                    %tmploot = %tmploot @ %itemTag @ " 1 ";
+                    RPGItem::decItemCount(%clientId, %itemTag);
+                }
+                else
+                {
+                    %tmploot = %tmploot @ %itemTag @ " " @ getWord(%itemList,%i+1) @ " ";
+                    RPGItem::setItemCount(%clientId, %itemTag, 0);
+                }
+                if(String::len(%tmploot) > 200)
+                {
+                    if(Player::isAiControlled(%clientId))
+                        TossLootbag(%clientId, %tmploot, 1, "*", 300);
+                    else
+                    {
+                        %namelist = Client::getName(%clientId) @ ",";
+                        if(fetchData(%clientId, "LCK") >= 0)
+                            %tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
+                        else
+                            %tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
+                    }
+                    %tmploot = "";
+                }
+            }
+        }
         
-        %beltItems = Belt::getDeathItems(%clientid);
+        //Rework needed for virtual items
+        //Needs optimization, but not critical yet
+		//%max = getNumItems();
+		//for (%i = 0; %i < %max; %i++)
+		//{
+		//	%a = getItemData(%i);
+		//	%itemcount = Player::getItemCount(%clientId, %a);
+        //
+		//	if(%itemcount)
+		//	{
+		//		%flag = False;
+        //
+		//		if(fetchData(%clientId, "LCK") >= 0)
+		//		{
+		//			//currently mounted weapon and all equipped stuff + lore items are thrown into lootbag.
+		//			if(Player::getMountedItem(%clientId, $WeaponSlot) == %a || %a.className == "Equipped" || $LoreItem[%a] == True)
+		//				%flag = True;
+		//		}
+		//		else
+		//			%flag = True;
+        //
+		//		if(fetchData(%clientId, "LCK") < 0 && Player::isAiControlled(%clientId))
+		//			%flag = True;
+        //
+		//		if(%a == CastingBlade)
+		//			%flag = False;		//HARDCODED because we DONT want any players to have this item.
+		//		
+        //        if(%a == Treeatk)
+        //            %flag = False;
+        //        
+		//		if($StealProtectedItem[%a])
+		//			%flag = False;
+        //        
+        //        if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
+        //        {
+        //            
+        //            //echo(%a," "@fetchData(%clientId,"NoDropLootList"));
+        //            %flag = False;
+        //        }
+        //        
+		//		if(%flag)
+		//		{
+		//			%b = %a;
+		//			if(%b.className == "Equipped")
+		//				%b = String::getSubStr(%b, 0, String::len(%b)-1);
+        //
+		//			if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
+		//			{
+		//				//special handling for currently held weapon
+		//				%tmploot = %tmploot @ %b @ " 1 ";
+		//				Player::decItemCount(%clientId, %a);
+		//			}
+		//			else
+		//			{
+		//				%tmploot = %tmploot @ %b @ " " @ Player::getItemCount(%clientId, %a) @ " ";
+		//				RPGItem::setItemCount(%clientId, %a, 0);
+		//			}
+		//			if(String::len(%tmploot) > 200)
+		//			{
+		//				if(Player::isAiControlled(%clientId))
+		//					TossLootbag(%clientId, %tmploot, 1, "*", 300);
+		//				else
+		//				{
+		//					%namelist = Client::getName(%clientId) @ ",";
+		//					if(fetchData(%clientId, "LCK") >= 0)
+		//						%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
+		//					else
+		//						%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
+		//				}
+		//				%tmploot = "";
+		//			}
+		//		}
+		//	}
+		//}
         
-        %tmploot = %tmploot @ %beltItems; 
-        //echo("Death Loot: "@ %tmploot);
-        //if(fetchdata(%clientId, "AllBelt") != "")
-        //{
-        //    %a[1] = "RareItems";
-        //    %a[1] = "KeyItems";
-        //    %a[1] = "GemItems";
-        //    %a[1] = "LoreItems";
-        //    %b = 1;
-        //    Belt::TossBelt(%clientId, 0, "*", 300);
-        //    for(%i=0; (%item=getword(fetchdata(%clientId, %a[%b]), %i)) != -1; %i+=2)
-        //    {
-        //        %amnt = getword(fetchdata(%clientId, "AllBelt"), %i+1);
-        //        Belt::TakeThisStuff(%clientId, %item, %amnt);
-        //        if(getword(fetchdata(%clientId, %a[%b]), %i+2) == -1)
-        //            %b++;
-        //    }
-        //}
-        
+        //%beltItems = Belt::getDeathItems(%clientid);
+        //
+        //%tmploot = %tmploot @ %beltItems; 
 		if(%tmploot != "")
 		{
 			if(Player::isAiControlled(%clientId))
@@ -208,7 +277,7 @@ function Player::onKilled(%this)
 			}
 		}
 
-		updateSpawnStuff(%clientId);
+		//updateSpawnStuff(%clientId);
 
 		//house stuff
 		%victimH = fetchData(%clientId, "MyHouse");
@@ -307,6 +376,7 @@ function Player::onKilled(%this)
 	storeData(%clientId, "noDropLootbagFlag", "");
 
 	storeData(%clientId, "SpellCastStep", "");
+    storeData(%clientId, "EquippedWeapon", "");
 	%clientId.sleepMode = "";
 	refreshHPREGEN(%clientId);
 	refreshStaminaREGEN(%clientId);
@@ -330,7 +400,6 @@ function Player::onKilled(%this)
 		schedule("Game::autoRespawn(" @ %clientId @ ");",$AutoRespawn,%clientId);
 
 	Player::setDamageFlash(%this,0.75);
-
 	if(%clientId != -1)
 	{
 		if(%this.vehicle != "")
@@ -376,15 +445,29 @@ function CalculateDamageReduction(%clientId)
 {
     %def = fetchData(%clientId, "DEF");
     
-    if(%def <= 500)
+    if(%def <= 150)
     {
-        return (%def /1000);
+        return %def / 1000;
+    }
+    else if(%def <= 500)
+    {
+        %upper = ((%def - 150) / 20)/100;
+        return 0.15 + %upper;
     }
     else
     {
-        %upper = ((%def-500)/15)/100;
-        return 0.5 + %upper;
+        %upper = ((%def - 500) / 30)/100;
+        return 0.15 + 0.175 + %upper;
     }
+    //if(%def <= 500)
+    //{
+    //    return (%def /1000);
+    //}
+    //else
+    //{
+    //    %upper = ((%def-500)/15)/100;
+    //    return 0.5 + %upper;
+    //}
    //if(%def <= 300)
    //{
    //    return (%def/1000);
@@ -407,17 +490,26 @@ function CalculateDamageReduction(%clientId)
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-    //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-	%skilltype = $SkillType[%weapon];
-
+    echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+    
+    %weapTag = %weapon;
+    %weapon = RPGItem::ItemTagToLabel(%weapon);
+    %skilltype = $SkillType[%weapon];
+    
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
 	{
 		%damagedClient = Player::getClient(%this);
 		%shooterClient = %object;
         
-        if(fetchData(%damagedClient,"isUberBoss") && fetchData(%aiId,"ubCombatStarted") == "")
+        if(%type == $MissileDamageType)
         {
-            %swState = fetchData(%aiId,"ubStandWaiting");
+            %weapon = RPGItem::ItemTagToLabel(fetchData(%shooterClient,"EquippedWeapon"));
+            %skilltype = $SkillType[%weapon];  
+        }
+        
+        if(fetchData(%damagedClient,"isUberBoss") && fetchData(%damagedClient,"ubCombatStarted") == "")
+        {
+            %swState = fetchData(%damagedClient,"ubStandWaiting");
             if(%swState != "")
             {
                 if(%swState == 1)
@@ -453,6 +545,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		%Bash = False;
 		%arenaNull = False;
 		%sameTeamNull = False;
+        %heavyStrike = false;
+        if(fetchData(%shooterClient,"HeavyStrikeFlag") && %weapon != "")
+            %heavyStrike = true;
 
         if(fetchData(%shooterClient,"NextHitFlurry"))
         {
@@ -468,22 +563,40 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 return;
             }
         }
-
 		//------------- CREATE DAMAGE VALUE -------------
-		if(%type == $SpellDamageType)
+		if(%type == $SpellDamageType || %type == $StaffDamageType)
 		{
-            %skilltype = $skilloffensivecasting;
-			//For the case of SPELLS, the initial damage has already been determined before calling this function
-
-			%dmg = %value;
+            //For the case of SPELLS, the initial damage has already been determined before calling this function
+            
+            if(%type == $StaffDamageType)
+            {
+                //%staffWeap = Player::getMountedItem(%shooterClient,$WeaponSlot);
+                %staffWeap = RPGItem::ItemTagToLabel(fetchData(%shooterClient,"EquippedWeapon"));
+                %skilltype = $SkillType[%staffWeap];
+                %atkIdx = Word::FindWord($AccessoryVar[%staffWeap, $SpecialVar],$SpecialVarATK)+1;
+                %value = getWord($AccessoryVar[%staffWeap, $SpecialVar],%atkIdx) * %value; //Projectile damage should always be 1 for staff proj
+            }
+            else
+            {
+                if($Spell::index[%weapon] != "")
+                {
+                    %skilltype = $SkillType[%weapon];
+                }
+                else
+                    %skilltype = $skilloffensivecasting;
+            }
+                
+			%sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
+			%dmg = %value + %sdm;
 			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
 
-			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10)) + 1;
+			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10));
 			%value = Cap(%value - %ab, 0, "inf");
 
 			%value = (%value / $TribesDamageToNumericDamage);
+            echo("Spell Damage: "@%value);
 		}
-		else if(%type != $LandingDamageType)
+		else if(%type != $LandingDamageType && %type != $MeteorDamageType)
 		{
 			%multi = 1;
             
@@ -507,11 +620,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					}
 				}
 				if(%shooterClient.adminLevel < 5)
-					UnHide(%shooterClient);
+					UnHide(%shooterClient,"Attacking has revealed you!");
 			}
 			if(fetchData(%damagedClient, "invisible") && %damagedClient.adminLevel < 5)
 			{
-				UnHide(%damagedClient);
+				UnHide(%damagedClient,"An attack has revealed you!");
 			}
 
 			//Bash
@@ -521,7 +634,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					%multi += CalculatePlayerSkill(%shooterClient, $SkillBashing) / 470;
 					%b = GameBase::getRotation(%shooterClient);
-					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing) / 15;
+					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing)/15;
+                    if(fetchData(%shooterClient,"isUberBoss"))
+                        %c = %c * 1.4;
 
 					%Bash = True;
 
@@ -535,24 +650,39 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			//	%rweapondamage = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
 			//else
 			//	%rweapondamage = 0;
+
 			%weapondamage = fetchData(%shooterClient,"ATK"); //GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
+            if(%weapon == "UBBlast")
+                %weapondamage = %value;
+                
+            if(%type == $BladeBoltDamageType)
+            {
+                %skilltype = $SkillType[RPGItem::ItemTagToLabel(fetchData(%shooterClient,"EquippedWeapon"))];
+                %weapondamage = %weapondamage*0.75;
+            }
             
 			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
-
-            %dmgRedPct = CalculateDamageReduction(%damagedClient);
-            
-            %amr = fetchData(%damagedClient,"AMR");
-            
-            echo("Value: "@%value @" ","DmgPct: "@ %dmgRedPct*100 @" ","AMR: "@%amr);
-			
-			%value = Cap(%value - %amr, 1, "inf");
-
-			%a = (%value * 0.15);
+            %a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
 			%value += %r;
+            %amrAdj = (1 - Cap(fetchData(%shooterClient,"AMRP"),0,100)/100);
+            //Value before any armor reduction.
+            %trueDmg = %value;
             
-            %value = %value * (%dmgRedPct);
             
+            
+			%amr = fetchData(%damagedClient,"AMR");
+            if(%heavyStrike)
+                %amr = Cap(%amr - 5,"0","inf");
+			%value = Cap(%value - (%amr * %amrAdj), 1, "inf");
+            
+            %dmgRedPct = CalculateDamageReduction(%damagedClient);
+        
+            %reductionValue = %value * (%dmgRedPct);
+            //echo("AMRP: "@ %amrp);
+            echo("DR: "@ %reductionValue);
+            %value = %value - ((%reductionValue)*%amrAdj);
+
 			if(%value < 1)
 				%value = 1;
 
@@ -560,7 +690,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			{
 				%c1 = ( %c / 15 * %value );
 				%c2 = %c2 / 10;
-				%mom = Vector::getFromRot( %b, %c1, %c2 );
+				%mom = Vector::Add(%mom,Vector::getFromRot( %b, %c1, %c2 ));
 			}
             
             //Maybe a little too harsh.  Will handle with ATK and DEF/MDEF stats instead.
@@ -571,6 +701,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             //    %value = %value * %stam/25;
 
 			%value = (%value / $TribesDamageToNumericDamage);
+            
 		}
 
 		//------------- DETERMINE MISS OR HIT -------------
@@ -626,6 +757,20 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		{
 			if(Zone::getType(fetchData(%damagedClient, "zone")) == "WATER")
 				%value *= $waterDamageAmp;
+                
+            if(fetchData(%damagedClient,"CatsFeetFlag"))
+            {
+                if(getSimTime() <= fetchData(%damagedClient,"CatsFeetTimeout") )
+                {
+                    %value = 0;
+                }
+                else
+                {
+                    storeData(%damagedClient,"CatsFeetFlag","");
+                }
+            }
+            
+            %value *= $FallDamageScale;
 		}
 		//============================================================================================
 
@@ -714,6 +859,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		{
 			if(%type == $SpellDamageType)
 				%value = %value / 3;
+            if(%type == $BladeBoltDamageType)
+                %value = 0;
 		}
 
 		//-------------------------------------------------
@@ -735,6 +882,12 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			%arenaNull = True;
 		}
 
+        if(fetchData(%damagedClient,"ubShielded"))
+        {
+            %isMiss = true;
+            %noImpulse = true;
+        }
+        
 		if(!IsDead(%this))
 		{
 			%armor = Player::getArmor(%this);
@@ -784,7 +937,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					UseSkill(%shooterClient, %skilltype, False, True);
 					UseSkill(%damagedClient, $SkillEndurance, True, True, 60);
 					if(%type == $SpellDamageType)
-						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
+						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 					//else
 						//UseSkill(%damagedClient, $SkillDodging, True, True, %base2 * (3/5));
 				}
@@ -793,15 +946,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					UseSkill(%shooterClient, %skilltype, False, True);
 					UseSkill(%damagedClient, $SkillEndurance, True, True, 60);
 					if(%type == $SpellDamageType)
-						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
+						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 					//else
 						//UseSkill(%damagedClient, $SkillDodging, True, True, %base2 * (3/5));
 				}
 				else
 				{
+                    UseSkill(%damagedClient, $SkillEndurance, True, True, 80);
 					UseSkill(%shooterClient, %skilltype, True, True, %base1);
 					if(%type == $SpellDamageType)
-						UseSkill(%damagedClient, $SkillSpellResistance, True, True, %base2);
+						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 				}
 
 				if(%Backstab)
@@ -826,14 +980,34 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                     ForceWakeUp(%damagedClient);
                 }
                 
+                if(!%sameTeamNull && %heavyStrike)
+                {
+                    UpdateBonusState(%damagedClient,"AMR -5",$Ability::ticks[$Ability::index[heavystrike]]);
+                }
+                
 				%rhp = refreshHP(%damagedClient, %value);
-
+                if(%shooterClient != %damagedClient && %type != $SpellDamageType)
+                {
+                    %mt = fetchData(%shooterClient,"MANAThief");
+                    if(%mt > 0)
+                    {
+                        refreshMANA(%shooterClient,-1*%mt);
+                        
+                        Client::sendMessage(%shooterClient,$MsgWhite,"You restored "@%mt@" mana.");
+                    }
+                }
+                
 				if(%rhp == -1)
 					%value = -1;	//There was an LCK miss
 				else
 				{
-                    echo("Bashed Impulse: "@ %mom);
-					if(!%noImpulse) Player::applyImpulse(%this,%mom);
+					if(!%noImpulse)
+                    {
+                        %brace = fetchData(%damagedClient,"Brace");
+                        if(%brace > 0)
+                            %mom = ScaleVector(%mom,%brace/100);
+                        Player::applyImpulse(%this,%mom);
+                    }
 					%noImpulse = "";
 
 					if(%damagedCurrentArmor != "")
@@ -854,8 +1028,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					if(!IsDead(%damagedClient))
 					{
-						if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
-							AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                        if(fetchData(%damagedClient,"customAIFlag") == "")
+                        {
+                            if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
+                                AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                        }
 					}
 
 					PlaySound(RandomRaceSound(fetchData(%damagedClient, "RACE"), Hit), %damagedClientPos);
@@ -876,7 +1053,12 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 							%hitby = "yourself";
 					}
 					else if(%shooterClient == 0)
-						%hitby = "an NPC";
+                    {
+                        if(%type == $MeteorDamageType)
+                            %hitby = "meteor";
+                        else
+                            %hitby = "an NPC";
+                    }
 					else
 					{
 						if(fetchData(%shooterClient, "invisible"))
@@ -895,6 +1077,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 						%daction = "bashed";
 						%saction = "bashed";
 					}
+                    else if(%heavyStrike)
+                    {
+                        %daction = "heavily struck";
+                        %saction = "heavily struck";
+                    }
 					else
 					{
 						%daction = "damaged";
@@ -929,7 +1116,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					else
 					{
 						if(fetchData(%shooterClient, "invisible"))
-							%sname = "An unknown assailant";
+							//%sname = "An unknown assailant";
+                            %sname = "A smooth criminal";
 						else
 							%sname = Client::getName(%shooterClient);
 						%dname = Client::getName(%damagedClient);
@@ -985,14 +1173,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				Player::setDamageFlash(%this,%flash);
 
 				//slow the player down for a bit
-				if(!Player::isAiControlled(%damagedClient))
-				{
-					storeData(%damagedClient, "SlowdownHitFlag", True);
-					RefreshWeight(%damagedClient);
-					schedule("storeData(" @ %damagedClient @ ", \"SlowdownHitFlag\", False);", $SlowdownHitDelay);
-					schedule("RefreshWeight(" @ %damagedClient @ ");", $SlowdownHitDelay, Client::getOwnedObject(%damagedClient));
-				}
-
+                if($SlowDownHitEnabled)
+                {
+                    if(!Player::isAiControlled(%damagedClient))
+                    {
+                        storeData(%damagedClient, "SlowdownHitFlag", True);
+                        RefreshWeight(%damagedClient);
+                        schedule("storeData(" @ %damagedClient @ ", \"SlowdownHitFlag\", False);", $SlowdownHitDelay);
+                        schedule("RefreshWeight(" @ %damagedClient @ ");", $SlowdownHitDelay, Client::getOwnedObject(%damagedClient));
+                    }
+                }
 				//If player not dead then play a random hurt sound
 				if(!Player::IsDead(%this))
 				{
@@ -1027,7 +1217,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 			if(%isMiss)
 			{
-				if(fetchData(%damagedClient, "isBonused"))
+				if(fetchData(%damagedClient, "isBonused") || fetchData(%damagedClient,"ubShielded"))
 				{
 					GameBase::activateShield(%this, "0 0 1.57", 1.47);
 					PlaySound(SoundHitShield, %damagedClientPos);

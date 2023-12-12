@@ -68,6 +68,34 @@ function String::ofindSubStr(%s, %f, %o)
 
 	%ns = String::NEWgetSubStr(%s, %o, 99999);
 	return String::findSubStr(%ns, %f);
+}
+
+function BeltMenu::GetUpperLowerBounds(%numElements,%page,%offset)
+{
+    %numLines = 6;
+    %extra = 0;
+    if(%offset != "")
+        %extra = %offset;
+    
+    %numElements += %extra;
+    //echo(%numElements);
+    %numFullPages = floor((%numElements)/ %numLines);
+    
+    %lowerBound = (%page * %numLines) - (%numLines-1);
+    %upperBound = %lowerBound + (%numLines-1);
+    
+    
+    %lowerBound -= %extra;
+    if(%lowerBound < 1)
+        %lowerBound = 1;
+    
+
+    if(%upperBound > %numElements)
+        %upperBound = %numElements;
+
+    %upperBound -= %extra;
+    
+    return %numFullPages@" "@ %lowerBound @" "@ %upperBound;
 }
 //Client will only identify to this if they have been
 //asked by the server; see connectivity.cs
@@ -80,13 +108,22 @@ function viewGroupList(%clientId)
 
 	bottomprint(%clientId, fetchData(%clientId, "grouplist"), 8);
 }
+
 function updateSpawnStuff(%clientId)
+{
+    dbecho($dbechoMode2, "updateSpawnStuff(" @ %clientId @ ")");
+    
+    storeData(%clientId, "spawnStuff", RPGItem::getFullItemList(%clientId,false));
+}
+
+function OldupdateSpawnStuff(%clientId)
 {
 	dbecho($dbechoMode2, "updateSpawnStuff(" @ %clientId @ ")");
 
 	//determine what player is carrying and transfer to spawnList
 	%s = "";
-	%max = getNumItems();
+    // This one can stay inefficient, because it is savecharacter related
+	%max = getNumItems(); 
 	for(%i = 0; %i < %max; %i++)
 	{
 		%checkItem = getItemData(%i);
@@ -366,7 +403,7 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 13]"] = fetchData(%clientId, "PlayerInfo");
 	$funk::var["[\"" @ %name @ "\", 0, 14]"] = fetchData(%clientId, "deathmsg");
 	//15 is done lower
-	$funk::var["[\"" @ %name @ "\", 0, 16]"] = fetchData(%clientId, "BankStorage");
+	//$funk::var["[\"" @ %name @ "\", 0, 16]"] = fetchData(%clientId, "BankStorage");
 	$funk::var["[\"" @ %name @ "\", 0, 17]"] = fetchData(%clientId, "campRot");
 	$funk::var["[\"" @ %name @ "\", 0, 18]"] = fetchData(%clientId, "HP");
 	$funk::var["[\"" @ %name @ "\", 0, 19]"] = fetchData(%clientId, "Stamina");
@@ -381,13 +418,35 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
     $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
+    $funk::var["[\"" @ %name @ "\", 0, 33]"] = IsDead(%clientId);
+    $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "attunedWeapon");
+    $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "attunedWeaponMana");
     
-    
-    for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+    for(%i = 0; (%inv = $RPGItem::InvItemLists[%i]) != ""; %i++)
     {
-        $funk::var["[\"" @ %name @ "\", 9, "@%i@"]"] = fetchData(%clientId, $Belt::ItemGroup[%i]);
-        $funk::var["[\"" @ %name @ "\", 10, "@%i@"]"] = fetchData(%clientId, "Stored"@$Belt::ItemGroup[%i]);
+        %invStr = fetchData(%clientId,%inv);
+        for(%k = 0; %k < ceil(String::len(%invStr)/200); %k++)
+        {
+            %substr = String::getSubStr(%invStr,%k*200,200);
+            $funk::var["[\"" @ %name @ "\", 9, "@%i@", "@%k@"]"] = %substr;
+        }
     }
+    
+    for(%i = 0; (%inv = $RPGItem::StorageItemLists[%i]) != ""; %i++)
+    {
+        %invStr = fetchData(%clientId,%inv);
+        for(%k = 0; %k < ceil(String::len(%invStr)/200); %k++)
+        {
+            %substr = String::getSubStr(%invStr,%k*200,200);
+            $funk::var["[\"" @ %name @ "\", 10, "@%i@", "@%k@"]"] = %substr;
+        }
+    }
+    
+    //for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+    //{
+    //    $funk::var["[\"" @ %name @ "\", 9, "@%i@"]"] = fetchData(%clientId, $Belt::ItemGroup[%i]);
+    //    $funk::var["[\"" @ %name @ "\", 10, "@%i@"]"] = fetchData(%clientId, "Stored"@$Belt::ItemGroup[%i]);
+    //}
     
     // Realms
     $funk::var["[\"" @ %name @ "\", 30, 0]"] = fetchData(%clientId, "Realm");
@@ -434,11 +493,11 @@ function SaveCharacter(%clientId)
 		$funk::var["[\"" @ %name @ "\", 4, " @ %cnt++ @ "]"] = $SkillCounter[%clientId, %i];
 	}
     
-    for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
-    {
-        %slotName = $BeltEquip::Slot[%i,Name];
-        $funk::var["[\"" @ %name @ "\", 8, "@%i@"]"] = $ClientData::BeltEquip[%clientId,%slotName];
-    }
+    //for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
+    //{
+    //    %slotName = $BeltEquip::Slot[%i,Name];
+    //    $funk::var["[\"" @ %name @ "\", 8, "@%i@"]"] = $ClientData::BeltEquip[%clientId,%slotName];
+    //}
 
 	//IP dump, for server admin look-up purposes
 	$funk::var["[\"" @ %name @ "\", 0, 666]"] = Client::getTransportAddress(%clientId);
@@ -447,23 +506,24 @@ function SaveCharacter(%clientId)
 
 	//determine which weapons player has
 
-	if(!IsDead(%clientId))
-	{
-		%s = "";
-		%max = getNumItems();
-		for(%i = 0; %i < %max; %i++)
-		{
-			%checkItem = getItemData(%i);
-			%itemcount = Player::getItemCount(%clientId, %checkItem);
-			if(%itemcount > $maxItem)
-				%itemcount = $maxItem;
-			if(%itemcount > 0)
-				%s = %s @ %checkItem @ " " @ %itemcount @ " ";
-		}
-		$funk::var["[\"" @ %name @ "\", 0, 15]"] = %s;
-	}
-	else
-		$funk::var["[\"" @ %name @ "\", 0, 15]"] = fetchData(%clientId, "spawnStuff");
+	//if(!IsDead(%clientId))
+	//{
+	//	%s = "";
+    //    // Save character related, so it can stay inefficient
+	//	%max = getNumItems();
+	//	for(%i = 0; %i < %max; %i++)
+	//	{
+	//		%checkItem = getItemData(%i);
+	//		%itemcount = Player::getItemCount(%clientId, %checkItem);
+	//		if(%itemcount > $maxItem)
+	//			%itemcount = $maxItem;
+	//		if(%itemcount > 0)
+	//			%s = %s @ %checkItem @ " " @ %itemcount @ " ";
+	//	}
+	//	$funk::var["[\"" @ %name @ "\", 0, 15]"] = %s;
+	//}
+	//else
+	//	$funk::var["[\"" @ %name @ "\", 0, 15]"] = fetchData(%clientId, "spawnStuff");
 
 	%cnt = 0;
 	%list = GetBotIdList();
@@ -534,8 +594,8 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "inArena", $funk::var[%name, 0, 12]);
 		storeData(%clientId, "PlayerInfo", $funk::var[%name, 0, 13]);
 		storeData(%clientId, "deathmsg", $funk::var[%name, 0, 14]);
-		storeData(%clientId, "spawnStuff", $funk::var[%name, 0, 15]);
-		storeData(%clientId, "BankStorage", $funk::var[%name, 0, 16]);
+		//storeData(%clientId, "spawnStuff", $funk::var[%name, 0, 15]);
+		//storeData(%clientId, "BankStorage", $funk::var[%name, 0, 16]);
 		storeData(%clientId, "campRot", $funk::var[%name, 0, 17]);
 		storeData(%clientId, "tmphp", $funk::var[%name, 0, 18]);
 		storeData(%clientId, "tmpstam", $funk::var[%name, 0, 19]);
@@ -551,11 +611,44 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
         storeData(%clientId, "MANA", $funk::var[%name, 0, 32]);
         
-        for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+        // Player saved while dead
+        if($funk::var[%name, 0, 33])
+            %clientId.spawnDead = true;
+            
+        storeData(%clientId,"attunedWeapon",$funk::var[%name, 0, 34]);
+        storeData(%clientId,"attunedWeaponMana",$funk::var[%name, 0, 35]);
+        
+        //for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+        //{
+        //    storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 9, %i]);
+        //    //echo(getWordCount($funk::var[%name, 9, %i]));
+        //    if(getWordCount($funk::var[%name, 9, %i]) > 0)
+        //        RPGItem::forceUpdateBeltItems(%clientId,$Belt::ItemGroup[%i]);
+        //    storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 10, %i]);
+        //}
+        
+        //A buffered method might be better, but this seems to work well enough.
+        %invStr = "";
+        for(%i = 0; (%inv = $RPGItem::InvItemLists[%i]) != ""; %i++)
         {
-            storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 9, %i]);
-            storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 10, %i]);
+            
+            for(%k = 0; (%str = $funk::var[%name, 9, %i, %k]) != ""; %k++)
+            {
+                %invStr = %invStr @ %str;
+            }
         }
+        storeData(%clientId, "spawnStuff", %invStr);
+        for(%i = 0; (%inv = $RPGItem::StorageItemLists[%i]) != ""; %i++)
+        {
+            %invStr = "";
+            for(%k = 0; (%str = $funk::var[%name, 10, %i, %k]) != ""; %k++)
+            {
+                %invStr = %invStr @ %str;
+            }
+            storeData(%clientId,%inv,%invStr);
+        }
+        
+        //%clientId.loadCharacterFlag = true;
 
         if($funk::var[%name, 30, 0] != "")
             storeData(%clientId,"Realm",$funk::var[%name, 30, 0]);
@@ -605,11 +698,11 @@ function LoadCharacter(%clientId)
 		$numMessage[%clientId, "numpad+"] = $funk::var[%name, 7, "numpad+"];
 
         //Belt Equip
-        for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
-        {
-            %slotName = $BeltEquip::Slot[%i,Name];
-            $ClientData::BeltEquip[%clientId,%slotName] = $funk::var[%name,8,%i];
-        }
+        //for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
+        //{
+        //    %slotName = $BeltEquip::Slot[%i,Name];
+        //    $ClientData::BeltEquip[%clientId,%slotName] = $funk::var[%name,8,%i];
+        //}
 
 		//skill variables
 		%cnt = 0;
@@ -676,10 +769,11 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "RankPoints", 0);
 
 		%clientId.choosingGroup = True;
-
+        %clientId.loadCharacterFlag = false;
+        
 		SetAllSkills(%clientId, 0);
 
-		storeData(%clientId, "spawnStuff", "PickAxe 1 BluePotion 1 CrystalBluePotion 3");
+		storeData(%clientId, "spawnStuff", "PickAxe 1 BluePotion 1 CrystalBluePotion 3 ");
 	}
 
 	ClearFunkVar(%name);
@@ -841,6 +935,7 @@ function SaveWorld()
 	}
     
     Farming::SaveWorld();
+    MeteorData::SaveWorld();
     
 	echo("Deleting old file before save for '" @ $missionName @ "_worldsave_.cs'...");
 	File::delete("temp\\" @ $missionName @ "_worldsave_.cs");
@@ -856,6 +951,7 @@ function LoadWorld()
 	%filename = $missionName @ "_worldsave_.cs";
 
     Farming::LoadWorld();
+    MeteorData::LoadWorld();
     
 	if(isFile("temp\\" @ %filename))
 	{
@@ -1075,11 +1171,11 @@ function UpdateAppearance(%clientId)
 		if(Player::getMountedItem(%clientId, 2) != -1)
 			Player::unmountItem(%clientId, 2);
 
-		for(%i = 1; $ItemList[Orb, %i] != ""; %i++)
-		{
-			if(Player::getItemCount(%clientId, $ItemList[Orb, %i] @ "0"))
-				Player::mountItem(%clientId, $ItemList[Orb, %i] @ "0", 2);
-		}
+		//for(%i = 1; $ItemList[Orb, %i] != ""; %i++)
+		//{
+		//	if(Player::getItemCount(%clientId, $ItemList[Orb, %i] @ "0"))
+		//		Player::mountItem(%clientId, $ItemList[Orb, %i] @ "0", 2);
+		//}
 	}
 }
 
@@ -1157,6 +1253,8 @@ function ClearVariables(%clientId)
 	%clientId.zoneLastPos = "";
 	%clientId.roll = "";
 	%clientId.lbnum = "";
+    %clientId.loadCharacterFlag = "";
+    $lastAttackTime[%clientId] = -1;
 	$numMessage[%clientId, 1] = "";
 	$numMessage[%clientId, 2] = "";
 	$numMessage[%clientId, 3] = "";
@@ -1209,6 +1307,7 @@ function ClearVariables(%clientId)
 	deleteVariables("BonusStateCnt" @ %clientId @ "*");
 
 	deleteVariables("ClientData" @ %clientId @ "*");
+    deleteVariables("ClientData::BeltEquip"@ %clientId @"*");
 }
 function ClearFunkVar(%name)
 {
@@ -1790,6 +1889,7 @@ function RefreshAll(%clientId, %equip)
 	refreshHPREGEN(%clientId);
 	refreshStaminaREGEN(%clientId);
 	Game::refreshClientScore(%clientId);
+    storeData(%clientId,"tempMaxStam","");
 }
 
 function RefreshEquipment(%clientId)
@@ -1826,8 +1926,8 @@ function RefreshEquipment(%clientId)
                 %sound = false;
             }
 			Client::sendMessage(%clientId, $MsgRed,%msg);
-			Player::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
-			Player::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
+			RPGItem::setItemCount(%player, %item, RPGItem::getItemCount(%player, %item)-1);
+			RPGItem::setItemCount(%player, %o, RPGItem::getItemCount(%player, %o)+1);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);
@@ -1835,24 +1935,24 @@ function RefreshEquipment(%clientId)
     }
 
     //Belt Items
-    for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
-    {
-        %item = BeltEquip::GetEquippedItem(%clientId,%slotId);
-        if(%item != "")
-        {
-            if(!BeltEquip::CanUseItem(%clientId,%item))
-            {
-                %msg = "You lack the skills to use " @ %item @ ".";
-                if(%sound)
-                {
-                    %msg = %msg @ "~wPku_weap.wav"; 
-                    %sound = false;
-                }
-                BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%id,Name],false);
-                Client::sendMessage(%clientId,$MsgRed,%msg);
-            }
-        }
-    }
+    //for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+    //{
+    //    %item = BeltEquip::GetEquippedItem(%clientId,%slotId);
+    //    if(%item != "")
+    //    {
+    //        if(!BeltEquip::CanUseItem(%clientId,%item))
+    //        {
+    //            %msg = "You lack the skills to use " @ %item @ ".";
+    //            if(%sound)
+    //            {
+    //                %msg = %msg @ "~wPku_weap.wav"; 
+    //                %sound = false;
+    //            }
+    //            BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%id,Name],false);
+    //            Client::sendMessage(%clientId,$MsgRed,%msg);
+    //        }
+    //    }
+    //}
 }
 
 function HasThisStuff(%clientId, %list, %multiplier)
@@ -2015,20 +2115,25 @@ function HasThisStuff(%clientId, %list, %multiplier)
 			else
 				return False;
 		}
-        else if(isBeltItem(%w))
-		{
-			%amnt = Belt::HasThisStuff(%clientid,%w);
-            
-			if(%amnt >= %w2)
-				%flag = True;
-			else
-				return False;
-		}
+        //else if(isBeltItem(%w))
+		//{
+		//	%amnt = Belt::HasThisStuff(%clientid,%w);
+        //    
+		//	if(%amnt >= %w2)
+		//		%flag = True;
+		//	else
+		//		return False;
+		//}
 		else if(%w != "COINS" && %w != "REMORT" && %w != "LVLG" && %w != "LVLS" && %w != "LVLE" && %w != "CNT" && %w != "CNTAFFECTS" && %w != "RankPoints" && %w != "AI" && %w != "EXP")
 		{
-			if(Player::getItemCount(%clientId, %w) >= %w2)
-				%flag = True;
-			else
+            if(RPGItem::isItemTag(%w))
+                %itemTag = %w;
+            else
+                %itemTag = RPGItem::LabelToItemTag(%w);
+            //Curretnly only works with unmodified items (ie. has just the base tag).
+            if(RPGItem::getItemCount(%clientId, %itemTag) >= %w2)
+                %flag = True;
+            else
 				return False;
 		}
 	}
@@ -2079,9 +2184,14 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 		}
 		else
 		{
-			%amount = Player::getItemCount(%clientId, %w);
+            if(RPGItem::isItemTag(%w))
+                %tag = %w;
+            else
+                %tag = RPGItem::LabelToItemTag(%w);
+			//%amount = Player::getItemCount(%clientId, %w);
+            %amount = RPGItem::getItemCount(%clientId,%tag);
 			if(%amount >= %w2)
-				Player::setItemCount(%clientId, %w, %amount-%w2);
+				RPGItem::setItemCount(%clientId, %tag, %amount-%w2);
 			else
 				return False;
 		}
@@ -2089,6 +2199,45 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 
 	return True;
 }
+//====================
+//DropRateCalc tests
+//====================
+function SlashTest(%w2)
+{
+    %spos = String::findSubStr(%w2, "/");
+    if(%spos > 0)
+    {
+        %original = String::getSubStr(%w2, 0, %spos);
+        %perc = String::getSubStr(%w2, %spos+1, 99999);
+
+        %r = floor(getRandomMT() * (100-%perc))+%perc;
+        if(%r > 100) %r = 100;
+
+        %w2 = round(%original * (%r/100));
+        if(%w2 < 0) %w2 = 0;
+    }
+    
+    return %w2;
+}
+
+function DropRateTest(%w2,%num)
+{
+    deleteVariables("STestResult*");
+    %cnt = 0;
+    for(%i = 0; %i < %num; %i++)
+    {
+        %check = SlashTest(%w2);
+        if(%check > 0)
+            %cnt++;
+        
+    }
+    
+    return ((%cnt/%num) * 100) @"%";
+}
+//======================
+//End DropRateCalc tests
+//======================
+
 
 function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 {
@@ -2106,6 +2255,14 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		%w = GetWord(%list, %i);
 		%w2 = GetWord(%list, %i+1);
 
+        %wsPos = String::findSubStr(%w, "/x");
+        if(%wsPos > 0 && Player::isAIControlled(%clientId))
+        {
+            %original = String::getSubStr(%w, 0, %wsPos);
+            storeData(%clientId,"NoDropLootList",%original @" ","strinc");
+            %w = %original;
+        }
+        
 		//if there is a / in %w2, then what trails after the / is the minimum random number between 0 and 100 which
 		//is applied as a percentage to the starting number of %w2
 		%spos = String::findSubStr(%w2, "/");
@@ -2177,10 +2334,10 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 			storeData(%clientId, "RankPoints", %w2, "inc");
 			if(%echo) Client::sendMessage(%clientId, 0, "You received " @ %w2 @ " Rank Points.");
 		}
-        else if(isBeltItem(%w))
-		{
-			Belt::GiveThisStuff(%clientId, %w, %w2, %echo);
-		}
+        //else if(isBeltItem(%w))
+		//{
+		//	Belt::GiveThisStuff(%clientId, %w, %w2, %echo);
+		//}
 		else if(%w == "CNT")
 		{
 			%cntindex++;
@@ -2192,7 +2349,18 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 		else
 		{
-			Item::giveItem(Client::getOwnedObject(%clientId), %w, %w2, %echo);
+            if(%w2 > 0)
+            {
+                //echo("Inc Item Count: "@ %w @" "@%w2);
+                if(RPGItem::isItemTag(%w))
+                    %itemTag = %w;
+                else
+                    %itemTag = RPGItem::LabelToItemTag(%w);
+                //echo(%w @" vs "@%itemTag);
+                //Currently only works for unmodified items
+                RPGItem::incItemCount(%clientId,%itemTag,%w2,%echo);
+                //RPGItem::incItemCount(%clientId,%w,%w2,%echo);
+            }
 		}
 	}
 
@@ -2247,7 +2415,7 @@ function FellOffMap(%id)
 		Item::setVelocity(%id, "0 0 0");
         if($Realms::MapUsesRealms)
         {
-            Realms::KickPlayerBackInRealm(%id,fetchData(%id,"Realm"));
+            Realm::KickPlayerBackInRealm(%id,fetchData(%id,"Realm"));
             return;
         }
         else
@@ -2258,8 +2426,11 @@ function FellOffMap(%id)
 }
 
 
-function SetStuffString(%stuff,%item,%amount)
+function SetStuffString(%stuff,%item,%amount,%mod)
 {
+    if(%mod == "")
+        %mod = "inc";
+    $RPGStuffStr::amount = "";
     %stuff = FixStuffString(%stuff);
     //echo(%stuff);
     %w = Word::FindWord(%stuff,%item);
@@ -2269,19 +2440,36 @@ function SetStuffString(%stuff,%item,%amount)
         %ret = %stuff;
         if(%amount > 0)
             %ret = %ret @ %item @ " " @ %amount @ " ";
+        
+        $RPGStuffStr::amount = %amount;
         return %ret;
     }
     else
     {
         %entry = Word::getSubWord(%stuff,%w,2);
-        %newAmount = getWord(%entry,1) + %amount;
-        
+        if(%mod == "inc")
+            %newAmount = getWord(%entry,1) + %amount;
+        else if(%mod == "dec")
+            %newAmount = getWord(%entry,1) - %amount;
+        else if(%mod == "set")
+            %newAmount = %amount;
+            
         if(%newAmount > 0)
+        {
             %new = %item @" "@ %newAmount @ " ";
+            $RPGStuffStr::amount = %newAmount;
+        }
         else
+        {
             %new = "";
+            $RPGStuffStr::amount = 0;
+        }
         
-        %ret = String::Replace(%stuff,%entry,%new);
+        %begin = Word::getSubWord(%stuff,0,%w);
+        %end = Word::getSubWord(%stuff,%w+2,9999);
+        %ret = %begin @ %new @ %end;
+        
+        //%ret = String::Replace(%stuff,%entry,%new);
         //echo("Ret: "@%ret);
         if(String::left(%ret,1) != " ")
             %ret = " " @ %ret;
@@ -2312,14 +2500,22 @@ function FixStuffString(%stuff)
 {
 	dbecho($dbechoMode, "FixStuffString(" @ %stuff @ ")");
 
-	%nstuff = " ";
-	for(%i = 0; GetWord(%stuff, %i) != -1; %i++)
-	{
-		%w = GetWord(%stuff, %i);
-		%nstuff = %nstuff @ %w @ " ";
-	}
-
-	return %nstuff;
+    %nstuff = String::replace(%stuff,"  "," ");
+    if(String::left(%nstuff,1) != " ")
+        %nstuff = " "@%nstuff;
+    
+    if(String::right(%nstuff,1) != " ")
+        %nstuff = %nstuff @" ";
+        
+    return %nstuff;
+	//%nstuff = " ";
+	//for(%i = 0; GetWord(%stuff, %i) != -1; %i++)
+	//{
+	//	%w = GetWord(%stuff, %i);
+	//	%nstuff = %nstuff @ %w @ " ";
+	//}
+    //
+	//return %nstuff;
 }
 
 function IsStuffStringEquiv(%s1, %s2, %dblCheck)
@@ -2609,21 +2805,20 @@ function WalkSlowInvisLoop(%clientId, %delay, %grace)
 	if(fetchData(%clientId, "lastPos") == "")
 		storeData(%clientId, "lastPos", %pos);
 
-	if(Vector::getDistance(%pos, fetchData(%clientId, "lastPos")) <= %grace && fetchData(%clientId, "invisible"))
-	{
-		storeData(%clientId, "lastPos", GameBase::getPosition(%clientId));
-		schedule("WalkSlowInvisLoop(" @ %clientId @ ", " @ %delay @ ", " @ %grace @ ");", %delay, %clientId);
-	}
-	else
-	{
-		if(fetchData(%clientId, "invisible"))
-			UnHide(%clientId);
-
-		Client::sendMessage(%clientId, $MsgRed, "You are no longer Hiding In Shadows.");
-
-	}
+    if(fetchData(%clientId, "invisible"))
+    {
+        if(Vector::getDistance(%pos, fetchData(%clientId, "lastPos")) <= %grace && fetchData(%clientId, "invisible"))
+        {
+            storeData(%clientId, "lastPos", GameBase::getPosition(%clientId));
+            schedule("WalkSlowInvisLoop(" @ %clientId @ ", " @ %delay @ ", " @ %grace @ ");", %delay, %clientId);
+        }
+        else
+        {
+            UnHide(%clientId);
+        }
+    }
 }
-function UnHide(%clientId)
+function UnHide(%clientId, %reason)
 {
 	dbecho($dbechoMode, "UnHide(" @ %clientId @ ")");
 
@@ -2631,11 +2826,18 @@ function UnHide(%clientId)
 	{
 		GameBase::startFadeIn(%clientId);
 		storeData(%clientId, "invisible", "");
-	}
 
-	storeData(%clientId, "lastPos", "");
-	storeData(%clientId, "blockHide", True);
-	schedule("storeData(" @ %clientId @ ", \"blockHide\", \"\");", 10);
+
+        if(%reason)
+            Client::sendMessage(%clientId, $MsgRed,%reason);
+        else
+            Client::sendMessage(%clientId, $MsgRed,"You are no longer Hiding In Shadows.");
+            
+        storeData(%clientId, "lastPos", "");
+        storeData(%clientId, "blockHide", True);
+        Game::refreshClientScore(%clientId); //So their true zone updates
+    }
+    schedule("storeData(" @ %clientId @ ", \"blockHide\", \"\");", 10);
 }
 
 function DisplayGetInfo(%clientId, %id, %obj)
@@ -2657,6 +2859,30 @@ function DisplayGetInfo(%clientId, %id, %obj)
 		%msg = %msg @ "This player has not setup his/her information.  Use #setinfo to set this type of information.";
 
 	bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+}
+
+function DisplayTargetStats(%clientId,%id,%obj)
+{
+    if(%clientId.adminLevel >= 1)
+		%showid = %id @ " (" @ %obj @ ")";
+    %str = "<f1>" @ Client::getName(%id) @ ", LEVEL " @ fetchData(%id, "LVL") @ " " @ fetchData(%id, "RACE") @ " " @ fetchData(%id, "CLASS") @ " "@ %showid @"<f0>\n\n";
+    %str = %str@"ATK: " @ Number::Beautify(fetchData(%id, "ATK"),0,2) @ "\n";
+    %str = %str@"DEF: " @ Number::Beautify(fetchData(%id, "DEF"),0,2) @ " ("@ round(CalculateDamageReduction(%id)*100) @"%)\n";
+    %str = %str@"AMR: " @ Number::Beautify(fetchData(%id, "AMR"),0,2) @ "\n";
+    %str = %str@"MDEF: " @ Number::Beautify(fetchData(%id, "MDEF"),0,2) @ "\n";
+    %str = %str@"Hit Pts: " @ fetchData(%id, "HP") @ " / " @ fetchData(%id, "MaxHP") @ "\n";
+    %str = %str@"LCK: " @ fetchData(%id, "LCK") @ "\n";
+    
+    %len = String::len(%str);
+    if(%len > 255)
+    {
+        %substr = String::getsubstr(%str,0,255);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%str) / 20), 1);
+        %substr = String::getSubstr(%str,255,%len);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+    }
+    else 
+        bottomprint(%clientId, %str, floor(String::len(%str) / 20));
 }
 
 function AddToTargetList(%clientId, %cl)
@@ -2691,16 +2917,24 @@ function RemoveFromTargetList(%clientId, %cl)
 function WhatIs(%item)
 {
 	dbecho($dbechoMode, "WhatIs(" @ %item @ ")");
-
+    if(RPGItem::isItemTag(%item))
+    {
+        %tag = %item;
+        %item = getCroppedItem(RPGItem::ItemTagToLabel(%item));
+        %desc = RPGItem::getItemNameFromTag(%tag);
+    }
+    else
+        %desc = RPGItem::LabelToItemName(%item);
 	//--------- GATHER INFO ------------------
-	if(%item.description == False)	
-		%desc = %item;
-	else
-		%desc = %item.description;
+    
+	//if(%item.description == False)	
+	//	%desc = %item;
+	//else
+	//	%desc = %item.description;
 
 	%t = GetAccessoryVar(%item, $AccessoryType);
 	%w = GetAccessoryVar(%item, $Weight);
-	%c = GetItemCost(%item);
+	%c = GetItemCost(%item,%tag);
 	%s = $SkillDesc[$SkillType[%item]];
 
 	if(GetDelay(%item) != "" && GetDelay(%item) != 0)
@@ -2708,11 +2942,11 @@ function WhatIs(%item)
 	else
 		%sd = "";
 
-    %craftReqs = Crafting::getSkillReqs(%item);
-    %cr = "";
-    if(%craftReqs != "")
-        %cr = WhatSkills(Crafting::GetFullCraftCommand(%item));
-    %craftItems = Crafting::getrecipe(%item);
+    //%craftReqs = Crafting::getSkillReqs(%item);
+    //%cr = "";
+    //if(%craftReqs != "")
+    //    %cr = WhatSkills(Crafting::GetFullCraftCommand(%item));
+    //%craftItems = Crafting::getrecipe(%item);
     
 	if($LocationDesc[%t] != "")
 		%loc = " - Type: " @ $LocationDesc[%t];
@@ -2734,24 +2968,45 @@ function WhatIs(%item)
 		%sr = $Spell::recoveryTime[%si];
 		%sm = $Spell::manaCost[%si];
 	}
+    
+    %abi = $Ability::index[%item];
+    if(%abi != "")
+    {
+        %desc = $Ability::name[%abi];
+        %nfo = $Ability::description[%abi];
+        %coolD = "";
+        if($Ability::cooldownTime[%abi] != "")
+            %coolD = $Ability::cooldownTime[%abi] @"s";
+        else if($Ability::cooldownTicks[%abi] != "")
+            %coolD = 2*$Ability::cooldownTicks[%abi] @"s";
+    }
 
+    %specialVars = "";
+    //if(BeltEquip::IsBeltEquipItem(%item))
+    //{
+    //    %specialVars = BeltEquip::TranslateSpecialVars(BeltEquip::GetSpecialVars(%item));
+    //}
+    //else
+    %specialVars = WhatSpecialVars(%item);
+    
+    %restrict = WhatSkills(%item);
 	//--------- BUILD MSG --------------------
 	%msg = "";
-	%msg = %msg @ "<f1>" @ %desc @ %loc @ "\n";
-	%msg = %msg @ "\nBonuses: " @ WhatSpecialVars(%item);
+	%msg = %msg @ "<f1>" @ %desc @ %loc @ " <f0>"@%tag@"<f1>\n";
+    if(%abi == "" && %specialVars != "None")
+        %msg = %msg @ "\nBonuses: " @ %specialVars;
+    if(%coolD != "")
+        %msg = %msg @ "\nCooldown: " @ %coolD;
 	if(%s != "")
 		%msg = %msg @ "\nSkill Type: " @ %s;
-	%msg = %msg @ "\nRestrictions: " @ WhatSkills(%item);
+    if(%restrict != "None")
+	%msg = %msg @ "\nRestrictions: " @ %restrict;
 	if(%w != "")
 		%msg = %msg @ "\nWeight: " @ %w;
 	if(%c != "")
 		%msg = %msg @ "\nPrice: $" @ %c;
 	if(%sd != "")
 		%msg = %msg @ "\nDelay: " @ %sd @ " sec";
-    if(%cr != "")
-        %msg = %msg @ "\nCraft Skill: "@ %cr;
-    if(%craftItems != "")
-        %msg = %msg @ "\nCraft recipe: "@ %craftItems;
 	if(%sr != "")
 		%msg = %msg @ "\nRecovery: " @ %sr @ " sec";
 	if(%sm != "")
@@ -3023,30 +3278,39 @@ function nsprintf(%in, %a1, %a2, %a3, %a4, %a5, %a6, %a7, %a8)
 	return msprintf(%in, %a[1], %a[2], %a[3], %a[4], %a[5], %a[6], %a[7], %a[8]);
 }
 
+
 function UnequipMountedStuff(%clientId)
 {
 	dbecho($dbechoMode, "UnequipMountedStuff(" @ %clientId @ ")");
-
-	%max = getNumItems();
-	for(%i = 0; %i < %max; %i++)
-	{
-		%a = getItemData(%i);
-		%itemcount = Player::getItemCount(%clientId, %a);
-
-		if(%itemcount)
-		{
-			if(%a.className == "Equipped")
-			{
-				%b = String::getSubStr(%a, 0, String::len(%a)-1);
-				Player::decItemCount(%clientId, %a, 1);
-				Player::incItemCount(%clientId, %b, 1);
-			}
-			else if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
-			{
-				Player::unMountItem(%clientId, $WeaponSlot);
-			}
-		}
-	}
+    // Rarely gets called.  Only when a player remorts or gets booted from a house
+    
+    %itemList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    
+    for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+= 2)
+    {
+        //Do unequip
+    }
+    
+	//%max = getNumItems();
+	//for(%i = 0; %i < %max; %i++)
+	//{
+	//	%a = getItemData(%i);
+	//	%itemcount = Player::getItemCount(%clientId, %a);
+    //
+	//	if(%itemcount)
+	//	{
+	//		if(%a.className == "Equipped")
+	//		{
+	//			%b = String::getSubStr(%a, 0, String::len(%a)-1);
+	//			Player::decItemCount(%clientId, %a, 1);
+	//			Player::incItemCount(%clientId, %b, 1);
+	//		}
+	//		else if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
+	//		{
+	//			Player::unMountItem(%clientId, $WeaponSlot);
+	//		}
+	//	}
+	//}
 }
 
 function LTrim(%s)
@@ -3106,15 +3370,15 @@ function DotProd(%vec, %scalar)
 	return %return;
 }	
 
-function Sin(%theta)
-{
-	return (%theta - (pow(%theta,3)/6) + (pow(%theta,5)/120) - (pow(%theta,7)/5040) + (pow(%theta,9)/362880) - (pow(%theta,11)/39916800));
-}
-
-function Cos(%theta)
-{
-	return (1 - (pow(%theta,2)/2) + (pow(%theta,4)/24) - (pow(%theta,6)/720) + (pow(%theta,8)/40320) - (pow(%theta,10)/3628800));
-}
+//function Sin(%theta)
+//{
+//	return (%theta - (pow(%theta,3)/6) + (pow(%theta,5)/120) - (pow(%theta,7)/5040) + (pow(%theta,9)/362880) - (pow(%theta,11)/39916800));
+//}
+//
+//function Cos(%theta)
+//{
+//	return (1 - (pow(%theta,2)/2) + (pow(%theta,4)/24) - (pow(%theta,6)/720) + (pow(%theta,8)/40320) - (pow(%theta,10)/3628800));
+//}
 function repackAlert(%clientId)
 {
 	if(%clientId.repack == "")
