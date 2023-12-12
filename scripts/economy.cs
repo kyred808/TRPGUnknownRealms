@@ -803,6 +803,8 @@ function remoteSellItem(%clientId, %type, %amnt)
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
 	{
+        if(%amnt <= 0 && %amnt != "ALL")
+            return 0;
 		%clientId.lastWaitActionTime = %time;
         //echo("Type: "@%type);
 		//%item = RPGItem::ItemIDToLabel(%type);//getItemData(%type);

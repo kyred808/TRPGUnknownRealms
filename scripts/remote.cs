@@ -331,7 +331,7 @@ function remoteThrowItem(%clientId,%type,%strength)
 function remoteDropItem(%clientId,%type,%amnt)
 {
 	dbecho($dbechoMode, "remoteDropItem(" @ %clientId @ ", " @ %item @ ")");
-    if(%amnt == "")
+    if(%amnt < 1)
         %amnt = 1;
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)

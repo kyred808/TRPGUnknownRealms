@@ -586,11 +586,12 @@ function RPGItem::equipItem(%clientId,%itemTag)
 // WIP
 function RPGItem::dropItem(%clientId,%itemTag,%amnt)
 {
-    if(%amnt == "")
+    if(%amnt < 1)
         %amnt = 1;
     if(%amnt == "ALL")
         %amnt = RPGItem::getItemCount(%clientId,%itemTag);
-    
+    else if(!Math::isInteger(%amnt))
+        return;
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     if(RPGItem::isValidItem(%itemId))
     {
