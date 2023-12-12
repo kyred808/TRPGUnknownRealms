@@ -140,7 +140,7 @@ function Player::onKilled(%this)
                 
                 if(%a == CastingBlade)
 					%bInclude = false;
-                else if(String::icomapre(%a,"TreeAtk") == 0)
+                else if(String::icompare(%a,"TreeAtk") == 0)
                     %bInclude = false;
                 
                 if($StealProtectedItem[%a])
@@ -523,6 +523,12 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                     return;
                 }
             }
+        }
+        
+        if(Player::isAIControlled(%damagedClient) && fetchData(%damagedClient,"AiIgnoreTargets") != "")
+        {
+            storeData(%damagedClient,"AiIgnoreTargets","");
+            AI::newDirectiveFollow(fetchData(%damagedClient, "BotInfoAiName"), %shooterClient, 0, 99);
         }
         
         //if(%shooterClient == 0 && fetchData(%damagedClient,"dragonAttack") != "")
@@ -1030,8 +1036,15 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					{
                         if(fetchData(%damagedClient,"customAIFlag") == "")
                         {
-                            if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
-                                AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                            %tgt = AI::getTarget(fetchData(%damagedClient, "BotInfoAiName"));
+                            if(%tgt != %shooterClient)
+                            {
+                                if(fetchData(%damagedClient,"aiAutoRetaliate") && %tgt == -1)
+                                    AI::newDirectiveFollow(fetchData(%damagedClient, "BotInfoAiName"), %shooterClient, 0, 99);
+                                else
+                                    AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                                
+                            }
                         }
 					}
 

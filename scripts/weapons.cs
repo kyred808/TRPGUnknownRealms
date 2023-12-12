@@ -999,7 +999,7 @@ function GenerateItemCost(%item)
 
 ItemImageData BaseWeaponImage
 {
-	shapeFile  = "bullet"; //"invisable";
+	shapeFile  = "invisable";
 	mountPoint = 0;
 
 	weaponType = 1;

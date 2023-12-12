@@ -1414,7 +1414,7 @@ instant SimGroup "MissionGroup" {
                     instant Marker "Marker1" {
                         dataBlock = "PathMarker";
                         name = "";
-                        position = "-2397.03 1870.9 65";
+                        position = "-2397.03 1870.9 63.2";
                         rotation = "0 0 0";
                     };
                     instant Marker "Marker1" {

@@ -425,8 +425,11 @@ function Zone::DoQuantumUpdate(%zid)
                                     deleteObject(%obj);
                                     %aiName = AI::helper($spawnIndex[%mob],$spawnIndex[%mob],"ZoneSpawn "@ %zid @" "@ %ptIdx);
                                     %aiCl = AI::getId(%aiName);
-                                    Gamebase::setPosition(%aiCl);
+                                    Gamebase::setPosition(%aiCl,%pos);
                                     storeData(%aiCl,"QTObjIndex",%zid@" "@%g@" "@%i);
+                                    storeData(%aiCl,"aiGuardMarker",$Zone::QuantumObjs[%zid,%g,Points,%ptIdx]);
+                                    storeData(%aiCl,"aiAutoRetaliate",true);
+                                    Ai::callbackPeriodic(%aiName, 3, AI::GuardPositionPeriodic);
                                     AI::CallbackDied(%aiName,QTObjMob::onDeath);
                                 }
                             }
