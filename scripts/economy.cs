@@ -78,7 +78,6 @@ function BuySell(%player, %item, %delta, %buyORsell)
 			%cost = getSellCost(%clientId, %item) * %delta;
 		}
 		UseSkill(%clientId, $SkillHaggling, True, True);
-        echo(%cost);
 		storeData(%clientId, "COINS", %cost, "inc");
 	}
 

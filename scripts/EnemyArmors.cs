@@ -244,7 +244,7 @@ $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 
 
 $BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 Grain 1/-100";
 
-$BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 Treeatk 1";
+$BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 TreeAtk 1";
 
 $BotEquipment[Dragon] = "CLASS Fighter LVL 50 COINS 3000";
 //------------------------------
@@ -2895,14 +2895,7 @@ PlayerData EnchantedArmor
 //****************************************************************************************************
 //   Treeatk
 //****************************************************************************************************
-$SkillType[Treeatk] = $SkillPiercing;
-$AccessoryVar[Treeatk, $AccessoryType] = $PolearmAccessoryType;
-$AccessoryVar[Treeatk, $SpecialVar] = "6 30";
-$AccessoryVar[Treeatk, $MiscInfo] = "A Treeatk";
-$AccessoryVar[Treeatk, $Weight] = 0.1;
-$WeaponRange[Treeatk] = $minRange + 1;
-$WeaponDelay[Treeatk] = 2;
-$HardcodedItemCost[Treeatk] = 0;
+
 
 ItemImageData TreeatkImage
 {

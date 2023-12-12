@@ -138,6 +138,15 @@ RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpel
 RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
 RPGItem::AddWeapon("TreeAtk","TreeAtk",45,$RPGItem::WeaponTypeMelee,TreeShapeItem);
 
+$SkillType[TreeAtk] = $SkillPiercing;
+$AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;
+$AccessoryVar[TreeAtk, $SpecialVar] = "6 35";
+$AccessoryVar[TreeAtk, $MiscInfo] = "A Treeatk";
+$AccessoryVar[TreeAtk, $Weight] = 0.1;
+$WeaponRange[TreeAtk] = $minRange + 1;
+$WeaponDelay[TreeAtk] = 2;
+$HardcodedItemCost[TreeAtk] = 0;
+
 //RPGItem::AddWeapon("sling","Sling",39,$RPGItem::WeaponTypeMelee,DaggerShape);
 //RPGItem::AddWeapon("sling","Sling",40,$RPGItem::WeaponTypeMelee,DaggerShape);
 //RPGItem::AddWeapon("sling","Sling",41,$RPGItem::WeaponTypeMelee,DaggerShape);

@@ -875,62 +875,6 @@ function gravWorkaround(%clientId, %method)
 	}
 }
 
-function DoSpookyZoneCalc(%object)
-{
-    $Zone::SpookyWellPlayerCount++;
-    
-    if(!$Zone::SomeoneIsLookingAtWell)
-    {
-        $los::object = "";
-        %fov = deg2rad(90);
-        %cast = RaycastCheck(%object,"",$Zone::SpookyWell["WellMarker"],100,"0 0 0"); //Offset by 1.5 so we aren't checking feet
-        %vecRot = $RayCast::Rotation;
-        //echo("Cast Check: "@ %cast);
-        if(%vecRot < %fov && %vecRot >= -1*%fov)
-        {
-            $Zone::SomeoneIsLookingAtWell = true;
-        }
-    }
-}
-
-function DebugSpookyWell()
-{
-    echo("Spooky Well Object: "@ $Zone::SpookyWell[0,Objects]);
-    echo("Spooky Well Object: "@ $Zone::SpookyWell[1,Objects]);
-    echo("Spooky Well Marker: "@ $Zone::SpookyWell["WellMarker"]);
-    echo("Spooky Well Marker: "@ $Zone::SpookyWell["RockMarker"]);
-}
-
-function Zone::setupSpookyWell(%zoneGrp)
-{
-
-    $Zone::SpookyWellZone[%zoneGrp] = true;
-    for(%i = 0; %i < Group::objectCount(%zoneGrp); %i++)
-    {
-        %obj = Group::getObject(%zoneGrp,%i);
-        
-        %name = Object::getName(%obj);
-        
-        if(%name == "Objs")
-        {
-            
-            for(%k = 0; %k < Group::objectCount(%obj); %k++)
-            {
-                %wellObjs = Group::getObject(%obj,%k);
-                $Zone::SpookyWell[%k,Objects] = %wellObjs;
-            }
-        }
-        else if(%name == "Markers")
-        {
-            for(%k = 0; %k < Group::objectCount(%obj); %k++)
-            {
-                %wellMkrs = Group::getObject(%obj,%k);
-                $Zone::SpookyWell[Object::getName(%wellMkrs)] = %wellMkrs;
-            }
-        }
-    }
-}
-
 function Zone::DoEnter(%z, %clientId)
 {
 	dbecho($dbechoMode, "Zone::DoEnter(" @ %z @ ", " @ %clientId @ ")");
@@ -1216,7 +1160,9 @@ function Zone::onExit(%clientId, %zoneLeft)
         $Zone::Active[Zone::getIndex(%zoneLeft)] = false;
     }
     
-    if($CleanUpBotsOnZoneEmpty && Zone::getType(%zoneLeft) == "DUNGEON")
+    %type = Zone::getType(%zoneLeft);
+    
+    if($CleanUpBotsOnZoneEmpty &&  (%type == "DUNGEON" || %type == "FREEFORALL"))
     {
         %isAi = Player::isAiControlled(%clientId);
         if(%isAi && !$ZoneCleanupProtected[%clientId])
