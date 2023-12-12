@@ -140,7 +140,7 @@ function Player::onKilled(%this)
                 
                 if(%a == CastingBlade)
 					%bInclude = false;
-                else if(%a == Treeatk)
+                else if(String::icomapre(%a,"TreeAtk") == 0)
                     %bInclude = false;
                 
                 if($StealProtectedItem[%a])
