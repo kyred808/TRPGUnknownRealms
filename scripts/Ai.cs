@@ -1878,6 +1878,8 @@ function GatherBotInfo(%group)
 				$BotInfo[%aiName, LCK] = %info;
 			else if(%type == "SIMGROUP")
 				$BotInfo[%aiName, SIMGROUP] = %info;
+            else if(%type == "ZONE")
+                $BotInfo[%aiName, ZONE] = %info;
 
 			if(%type2 == "SAY")
 				$BotInfo[%aiName, SAY, %n] = %info;

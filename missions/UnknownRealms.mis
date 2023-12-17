@@ -901,7 +901,50 @@ instant SimGroup "MissionGroup" {
                     rotation = "0 0 0";
                 };
             };
-            
+            instant SimGroup "DUNGEON New Player Cave" {
+                instant SimGroup "ENTERSOUND object_harp.wav";
+                instant SimGroup "DropPoints" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2339.71 57.9231 63.7279";
+                        rotation = "0 -0 1.63999";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2337.89 61.4884 64.0368";
+                        rotation = "0 -0 2.23998";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-2338.16 55.2567 63.9266";
+                        rotation = "0 -0 1.25999";
+                    };
+                    instant Marker "Map Marker1" {
+                        dataBlock = "MapMarker";
+                        name = "";
+                        position = "-2335.99 57.9604 63.5123";
+                        rotation = "0 -0 1.63999";
+                    };
+                };
+                instant SimGroup "AMBIENTSOUND ambient_cleardrop.wav 10";
+                instant Marker "200 150 100 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2307.19 108.485 98.181";
+                    rotation = "0 0 0";
+                };
+                instant SimGroup "SpawnPoints" {
+                    instant Marker "2 1 2 20 50 56" {
+                        dataBlock = "PathMarker";
+                        name = "mine small bat";
+                        position = "-2305.42 139.415 61";
+                        rotation = "0 0 0";
+                    };
+                };
+            };
             instant SimGroup "FREEFORALL Top of Well" {
                 instant SimGroup "MUSIC minemusic.wav 24";
                 instant SimGroup "MUSIC minemusic2.wav 24";
@@ -3032,6 +3075,28 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NEED AI false";
                 instant SimGroup "GSAY You have been teleported outside the Uber Zone.~wPortal6.wav";
             };
+            instant SimGroup "newbie teleport out" {
+                instant SimGroup "Input" {
+                    instant Trigger "OneWayTeleport" {
+                        dataBlock = "GroupTrigger";
+                        name = "";
+                        position = "-2218.91 43.6818 61.668";
+                        rotation = "0 0 0";
+                        boundingBox = "-1.5 -1.5 -1.5 1.5 1.5 1.5";
+                        isSphere = "True";
+                    };
+                };
+                instant SimGroup "Output" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2208.41 -257.593 69.179";
+                        rotation = "0 -0 2.6632";
+                    };
+                };
+                instant SimGroup "NEED AI false";
+                instant SimGroup "GSAY You squeezed through the rocks.";
+            };
             instant SimGroup "hemac teleport to tree" {
                 instant SimGroup "Input" {
                     instant StaticShape "BigElectroBeam1" {
@@ -3777,6 +3842,57 @@ instant SimGroup "MissionGroup" {
                 locked = "0";
             };
         };
+        instant SimGroup "NewPlayerCave" {
+            instant InteriorShape "mine81" {
+                fileName = "MINE8.dis";
+                isContainer = "1";
+                position = "-2205.53 -252.396 71.4213";
+                rotation = "0 -0 -0.499995";
+                lightParams = "0 ";
+            };
+            instant InteriorShape "mines1" {
+                fileName = "MINES.dis";
+                isContainer = "1";
+                position = "-2305.62 109.826 55.1662";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+                locked = "1";
+            };
+            instant InteriorShape "lrock21" {
+                fileName = "lrock2.dis";
+                isContainer = "1";
+                position = "-2218.76 41.7363 60.1662";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+            };
+            instant SimLight "PointLight1" {
+                type = "2";
+                range = "8";
+                color = "1 1 1";
+                ambient = "0 0 0";
+                position = "-2366.4 61.6702 65.4731";
+                aim = "-NAN -NAN -NAN";
+                isStatic = "False";
+            };
+            instant SimLight "PointLight1" {
+                type = "2";
+                range = "8";
+                color = "1 1 1";
+                ambient = "0 0 0";
+                position = "-2349.13 73.1639 73.1657";
+                aim = "8.3139e-42 0.999999 -0";
+                isStatic = "False";
+            };
+            instant SimLight "PointLight1" {
+                type = "2";
+                range = "8";
+                color = "1 1 1";
+                ambient = "0 0 0";
+                position = "-2334.7 74.2991 72.5657";
+                aim = "1.07035e-13 0 0.999999";
+                isStatic = "False";
+            };
+        };
         instant SimGroup "Feltz" {
             instant InteriorShape "ctown1" {
                 fileName = "ctown.dis";
@@ -4189,6 +4305,79 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "CUE10 okay";
                 instant SimGroup "SAY11 Best of luck to ya!";
                 instant SimGroup "SOUND11 SoundMaleHumanBye";
+            };
+            instant SimGroup "newquest1" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2366.96 61.9076 63.2276";
+                    rotation = "0 -0 -1.99996";
+                };
+                instant SimGroup "NAME PlayerGuide";
+                instant SimGroup "ITEMS CLASS Ranger LVL 10 LCK 0 Dagger 1";
+                instant SimGroup "RACE FemaleHuman";
+                instant SimGroup "ZONE New Player Cave";
+                instant SimGroup "SAY1 Hello! Welcome to Tribes RPG! If you are new to this server, take the time to go through this short cave.";
+                instant SimGroup "SOUND1 SoundFemaleHumanHey";
+                instant SimGroup "CUE1 cave";
+                instant SimGroup "SAY2 You'll find a handful of NPC guides in this room. Especially talk to the StatsHelper, if this is your first time here.";
+                instant SimGroup "SOUND2 SoundFemaleHumanBye";
+            };
+            instant SimGroup "newquest2" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2364.16 79.3944 71.8528";
+                    rotation = "0 -0 2.43997";
+                };
+                instant SimGroup "NAME MovementHelper";
+                instant SimGroup "ITEMS CLASS Ranger LVL 10 LCK 0 Dagger 1";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "ZONE New Player Cave";
+                instant SimGroup "SAY1 Some items and abilities can assist with movement.  The area above is unreachable for now.";
+                instant SimGroup "SOUND1 SoundMaleHumanHey";
+                instant SimGroup "CUE1 how";
+                instant SimGroup "SAY2 You might be able to get up there if you come back later when you have the ability to fly or teleport.";
+            };
+            instant SimGroup "newquest3" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2348.91 73.577 72.3006";
+                    rotation = "0 -0 2.02319";
+                };
+                instant SimGroup "NAME StatsHelper";
+                instant SimGroup "ITEMS CLASS Ranger LVL 10 LCK 0 Dagger 1";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "ZONE New Player Cave";
+                instant SimGroup "SAY1 Are you familar with Stamina?";
+                instant SimGroup "SOUND1 SoundMaleHumanHey";
+                instant SimGroup "CUE1 stamina";
+                instant SimGroup "SAY2 Abilities, spells, and using your weapon will consume some stamina. As your skill with a weapon type improves, the amount of stamina will decrease. If you are below 25 stamina, your ATK and DEF start to fall off.";
+                instant SimGroup "CUE2 recover";
+                instant SimGroup "SAY3 Aside from potions, the fastest way to recover stamina is to use #rest. But don't get hit while doing this or you'll take 10x damage! You also recover stamina faster if you stand still and don't attack for a few seconds.";
+                instant SimGroup "CUE3 stats";
+                instant SimGroup "SAY4 Your levels in Energy and Endurance contribute to your passive stamina regen. Endurance has a stronger influence on your stamina regen when standing still (idle regen).";
+                instant SimGroup "CUE4 healing";
+                instant SimGroup "SAY5 You can use stamina to heal yourself at any time with #heal. But just like #rest, don't be hit while using it. Your Healing skill will gradually improve your recovery speed. It's slower than potions, but better than nothing.";
+                instant SimGroup "CUE5 mana";
+                instant SimGroup "SAY6 Many spells and abilities use stamina, but some also require Mana. Mana recovers slowly over time. Some rare items can also help recover it. If you run out of mana, you might just have to wait for it to recover.";
+            };
+            instant SimGroup "newquest4" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2334.68 74.3118 71.9267";
+                    rotation = "0 -0 2.11997";
+                };
+                instant SimGroup "NAME AbilityHelper";
+                instant SimGroup "ITEMS CLASS Ranger LVL 10 LCK 0 Dagger 1";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "ZONE New Player Cave";
+                instant SimGroup "SAY1 Press tab and check the Skill Book to see what # commands are available in this server. Spell Book will show spells, but only ones you currently know how to cast.";
+                instant SimGroup "SOUND1 SoundMaleHumanHey";
+                instant SimGroup "CUE1 next";
+                instant SimGroup "SAY2 There should be some bats in the next room you can practice attacking. From there, continue on through the cave until you find a rock to squeeze past.";
             };
             instant SimGroup "quest5" {
                 instant SimGroup "NAME Nevim";

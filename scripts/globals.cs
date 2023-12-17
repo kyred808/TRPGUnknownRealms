@@ -78,7 +78,7 @@ $ExtraCraftingRequirements = true;
 $BaseCraftingDifficulty = 10;
 $MaxCraftingBatch = 100;
 
-$NewPlayerSpawnZone = "PROTECTED New Player Camp";
+$NewPlayerSpawnZone = "DUNGEON New Player Cave";
 
 $ManaEnergyFactor = 1/25;
 

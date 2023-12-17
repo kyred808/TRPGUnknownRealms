@@ -571,16 +571,17 @@ function RPGItem::GetPlayerEquipStats(%clientId,%statType)
 
 function RPGItem::ClearPlayerEquipStats(%clientId)
 {
-    for(%i = 1; $SpecialVarDesc[%i] != ""; %i++)
-    {
-        echo("CLEARING: "@$SpecialVarDesc[%i]);
-        storeData(%clientId,"EquipStat"@%i,0);
-    }
-    
-    for(%i = 1; %i <= $NumberOfSkills; %i++)
-    {
-        storeData(%clientId,"EquipStatSKILL"@%i,0);
-    }
+    deleteVariables("ClientData"@%clientId@"_EquipStat*");
+    //for(%i = 1; $SpecialVarDesc[%i] != ""; %i++)
+    //{
+    //    //echo("CLEARING: "@$SpecialVarDesc[%i]);
+    //    storeData(%clientId,"EquipStat"@%i,0);
+    //}
+    //
+    //for(%i = 1; %i <= $NumberOfSkills; %i++)
+    //{
+    //    storeData(%clientId,"EquipStatSKILL"@%i,0);
+    //}
 }
 
 //Allow for item tag values to add to stats later

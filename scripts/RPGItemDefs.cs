@@ -256,7 +256,7 @@ AddItemHelper("DeezNuts","Deez Nuts","Plants",131,0.3,1500,MiscLootShape);
 AddItemHelper("Lunabrosia","Lunabrosia","Plants",132,0.3,3000,MiscLootShape);
 
 AddItemHelper("quartz","Quartz","Gems",133,0.2,250,MiscLootShape);
-AddItemHelper("granite","Granite","Gems",124,0.2,480,MiscLootShape);
+AddItemHelper("granite","Granite","Gems",134,0.2,480,MiscLootShape);
 AddItemHelper("opal","Opal","Gems",135,0.2,600,MiscLootShape);
 AddItemHelper("jade","Jade","Gems",136,0.25,750,MiscLootShape);
 AddItemHelper("turquoise","Turquoise","Gems",137,0.3,1350,MiscLootShape);
@@ -346,6 +346,17 @@ RPGItem::AddAccessoryEquipment(BandedMail,"Banded Mail",$RPGItem::AccessoryClass
 //WIP
 RPGItem::AddAccessoryEquipment(OrbOfLuminance,"Orb of Luminance",$RPGItem::AccessoryClass,178,MiscLootShape);
 RPGItem::AddAccessoryEquipment(OrbOfBreath,"Orb of Breath",$RPGItem::AccessoryClass,180,MiscLootShape);
+
+RPGItem::AddWeapon("batteeth","BatTeeth",182,$RPGItem::WeaponTypeMelee,InvisShape);
+$SkillType[batteeth] = $SkillPiercing;
+$AccessoryVar[batteeth, $AccessoryType] = $ShortBladeAccessoryType;
+$AccessoryVar[batteeth, $SpecialVar] = "6 10";
+$AccessoryVar[batteeth, $MiscInfo] = "Teeth of a bat.";
+$AccessoryVar[batteeth, $Weight] = 0.1;
+$WeaponRange[batteeth] = $minRange + 1;
+$WeaponDelay[batteeth] = 2;
+$HardcodedItemCost[batteeth] = 0;
+$StealProtectedItem[batteeth] = true;
 
 function AddRingItemHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
 {

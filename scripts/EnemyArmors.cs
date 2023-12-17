@@ -80,7 +80,7 @@ $NameForRace[Sloth] = "Uber";
 $NameForRace[Gohort] = "Uber";
 
 $NameForRace[Ent] = "Enchanted";
-
+$NameForRace[Small] = "Bat";
 
 //------------------------------
 
@@ -183,6 +183,7 @@ $spawnIndex[53] = "Spawn";
 
 $spawnIndex[54] = "Bat";
 $spawnIndex[55] = "Ent";
+$spawnIndex[56] = "Small";
 //------------------------------
 
 //Drop rate explained:
@@ -249,11 +250,13 @@ $BotEquipment[Reaper] = 	"CLASS Mage LVL 174/50 COINS 105/50 LCK 2 CastingBlade 
 $BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 RLongSword 1 DragonScale 1/-3000 Gold 1/-1000";
 $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000";
 
-$BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 Grain 1/-100";
+$BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 batteeth_im10 1 Grain 1/-100";
 
 $BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 TreeAtk 1";
 
 $BotEquipment[Dragon] = "CLASS Fighter LVL 50 COINS 3000";
+
+$BotEquipment[Small] = 		"CLASS Fighter LVL 1 COINS 1/-10 batteeth 1 LCK 0 Grain 1/-100";
 //------------------------------
 
 $TeamForRace[Traveller] = 1;
