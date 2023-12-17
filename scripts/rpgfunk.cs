@@ -1088,13 +1088,16 @@ function UpdateAppearance(%clientId)
 	%armor = -1;
 	%shield = -1;
 	%list = GetAccessoryList(%clientId, 2, "3 7");
-	for(%i = 0; (%w = getCroppedItem(GetWord(%list, %i))) != -1; %i++)
+	for(%i = 0; (%w = GetWord(%list, %i)) != -1; %i++)
 	{
-		if($AccessoryVar[%w, $AccessoryType] == $BodyAccessoryType)
-			%armor = %w;
-		else if($AccessoryVar[%w, $AccessoryType] == $ShieldAccessoryType)
-			%shield = %w;
+        %label = getCroppedItem(RPGItem::ItemTagToLabel(%w));
+        echo(%label);
+		if($AccessoryVar[%label, $AccessoryType] == $BodyAccessoryType)
+			%armor = %label;
+		else if($AccessoryVar[%label, $AccessoryType] == $ShieldAccessoryType)
+			%shield = %label;
 	}
+    
 	%player = Client::getOwnedObject(%clientId);
 	%race = fetchData(%clientId, "RACE");
 	%model = Player::getArmor(%clientId);
@@ -1926,33 +1929,15 @@ function RefreshEquipment(%clientId)
                 %sound = false;
             }
 			Client::sendMessage(%clientId, $MsgRed,%msg);
-			RPGItem::setItemCount(%player, %item, RPGItem::getItemCount(%player, %item)-1);
-			RPGItem::setItemCount(%player, %o, RPGItem::getItemCount(%player, %o)+1);
+            
+            RPGItem::UnequipItem(%clientId,%item,false);
+			//RPGItem::setItemCount(%player, %item, RPGItem::getItemCount(%player, %item)-1);
+			//RPGItem::setItemCount(%player, %o, RPGItem::getItemCount(%player, %o)+1);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);
         }
     }
-
-    //Belt Items
-    //for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
-    //{
-    //    %item = BeltEquip::GetEquippedItem(%clientId,%slotId);
-    //    if(%item != "")
-    //    {
-    //        if(!BeltEquip::CanUseItem(%clientId,%item))
-    //        {
-    //            %msg = "You lack the skills to use " @ %item @ ".";
-    //            if(%sound)
-    //            {
-    //                %msg = %msg @ "~wPku_weap.wav"; 
-    //                %sound = false;
-    //            }
-    //            BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%id,Name],false);
-    //            Client::sendMessage(%clientId,$MsgRed,%msg);
-    //        }
-    //    }
-    //}
 }
 
 function HasThisStuff(%clientId, %list, %multiplier)
@@ -2357,6 +2342,17 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
                 else
                     %itemTag = RPGItem::LabelToItemTag(%w);
                 //echo(%w @" vs "@%itemTag);
+                
+                //if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquippedClass)
+                //{
+                //    %newTag = RPGItem::getAlternateTag(%itemTag);
+                //    RPGItem::incItemCount(%clientId,%newTag,%w2,%echo);
+                //    for(%i = 0; %i < %w2; %i++)
+                //    {
+                //        RPGItem::EquipItem(%clientId,%newTag,false);
+                //    }
+                //}
+                //else
                 //Currently only works for unmodified items
                 RPGItem::incItemCount(%clientId,%itemTag,%w2,%echo);
                 //RPGItem::incItemCount(%clientId,%w,%w2,%echo);
@@ -3284,7 +3280,7 @@ function UnequipMountedStuff(%clientId)
 	dbecho($dbechoMode, "UnequipMountedStuff(" @ %clientId @ ")");
     // Rarely gets called.  Only when a player remorts or gets booted from a house
     
-    %itemList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+    %itemList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]);
     
     for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+= 2)
     {

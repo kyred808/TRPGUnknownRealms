@@ -4151,7 +4151,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id99"; //134 135 136 137";
+                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id99 id238"; //134 135 136 137";
             };
             //New Player Guide
             instant SimGroup "newquest55" {
@@ -4604,11 +4604,11 @@ instant SimGroup "MissionGroup" {
                     dataBlock = "PathMarker";
                     name = "";
                     position = "-2401.68 -253.268 65";
-                    rotation = "0 0 0";
+                    rotation = "0 0 -2.15";
                 };
                 instant SimGroup "NAME Doric";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "BELTSHOP 900 901 902 916 914 915 903 904 905 906 907 908 909 910 911 912 800";
+                instant SimGroup "SHOP id200 id202 id204 id226 id228 id230 id206 id208 id210 id212 id214 id216 id218 id220 id222 id224 id234";
             };
             instant SimGroup "merchant7" { //Feltz merchant
                 instant Marker "Marker1" {
@@ -4619,7 +4619,7 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NAME Sarah";
                 instant SimGroup "RACE FemaleHuman";
-                instant SimGroup "BELTSHOP 900 901 902 916 914 915 903 904 905 906 907 908 909 910 911 912 800";
+                instant SimGroup "SHOP id200 id202 id204 id240";
             };
         };
         instant InteriorShape "RemorterHall1" {

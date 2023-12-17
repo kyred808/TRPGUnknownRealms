@@ -5,7 +5,7 @@ $RPGItem::WeaponTypeBotSpell = 3;
 
 $RPGItem::AccessoryClass = "Accessory";
 $RPGItem::WeaponClass = "Weapon";
-$RPGItem::EquipppedClass = "Equipped";
+$RPGItem::EquippedClass = "Equipped";
 $RPGItem::AmmoClass = "Ammo";
 
 $RPGItem::PlayerWeaponList = "WeaponItemInv";
@@ -35,7 +35,7 @@ function TestItemMax()
 function RPGItem::AddAccessoryEquipment(%label,%name,%class,%id,%datablk)
 {
     RPGItem::AddItemDefinition(%label,%name,%class,%id,%datablk);
-    RPGItem::AddItemDefinition(%label@"0",%name,$RPGItem::EquipppedClass,%id+1,%datablk);
+    RPGItem::AddItemDefinition(%label@"0",%name,$RPGItem::EquippedClass,%id+1,%datablk);
     RPGItem::pairEquipWithItem(%id,%id+1);
 }
 
@@ -74,6 +74,8 @@ $RangeWeaponFireVel[lightcrossbow] = 100;
 $RangeWeaponFireVel[heavycrossbow] = 100;
 $RangeWeaponFireVel[repeatingcrossbow] = 100;
 $RangeWeaponFireVel[aeoluswing] = 100;
+
+$RangeWeaponFireVel[rshortbow] = 100;
 
 RPGItem::AddItemClass("Weapon","Weapons","WeaponItemInv","WeaponItemStorage");
 RPGItem::AddItemClass("Equipped","Equipped","EquippedItemInv","");
@@ -137,6 +139,10 @@ RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAx
 RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpell,DaggerShape);
 RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
 RPGItem::AddWeapon("TreeAtk","TreeAtk",45,$RPGItem::WeaponTypeMelee,TreeShapeItem);
+RPGItem::AddWeapon("rshortbow","Cracked Short Bow",46,$RPGItem::WeaponTypeRange,LongBowShape);
+RPGItem::AddWeapon("rbroadsword","Rusty Broadsword",47,$RPGItem::WeaponTypeMelee,SwordShape);
+RPGItem::AddWeapon("rlongsword","Rusty Longsword",48,$RPGItem::WeaponTypeMelee,LongswordShape);
+RPGItem::AddWeapon("rspikedclub","Cracked Spiked Club",49,$RPGItem::WeaponTypeMelee,MaceShape);
 
 $SkillType[TreeAtk] = $SkillPiercing;
 $AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;
@@ -180,7 +186,7 @@ RPGItem::AddAccessoryEquipment(ElvenRobe,"Elven Robe",$RPGItem::AccessoryClass,9
 RPGItem::AddAccessoryEquipment(DragonMail,"Dragon Mail",$RPGItem::AccessoryClass,96,MiscLootShape);
 RPGItem::AddAccessoryEquipment(KeldrinArmor,"Keldrin Armor",$RPGItem::AccessoryClass,98,MiscLootShape);
 
-
+$HardcodedItemCost[SmallRock] = 13;
 AddItemHelper(BasicArrow,"Basic Arrow","Ammo",99,0.1,GenerateItemCost(BasicArrow),BowArrow);
 AddItemHelper(SheafArrow,"Sheaf Arrow","Ammo",100,0.1,GenerateItemCost(SheafArrow),BowArrow);
 AddItemHelper(BladedArrow,"Bladed Arrow","Ammo",101,0.1,GenerateItemCost(BladedArrow),BowArrow);
@@ -341,6 +347,70 @@ RPGItem::AddAccessoryEquipment(BandedMail,"Banded Mail",$RPGItem::AccessoryClass
 RPGItem::AddAccessoryEquipment(OrbOfLuminance,"Orb of Luminance",$RPGItem::AccessoryClass,178,MiscLootShape);
 RPGItem::AddAccessoryEquipment(OrbOfBreath,"Orb of Breath",$RPGItem::AccessoryClass,180,MiscLootShape);
 
+function AddRingItemHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
+{
+    RPGItem::AddAccessoryEquipment(%label,%name,$RPGItem::AccessoryClass,%id,%datablk);
+    $AccessoryVar[%label, $AccessoryType] = $RingAccessoryType;
+    $AccessoryVar[%label, $Weight] = %weight;
+    $HardcodedItemCost[%label] = %cost;
+    $AccessoryVar[%label, $SpecialVar] = %special;
+}
+
+function AddArmAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
+{
+    RPGItem::AddAccessoryEquipment(%label,%name,$RPGItem::AccessoryClass,%id,%datablk);
+    $AccessoryVar[%label, $AccessoryType] = $ArmAccessoryType;
+    $AccessoryVar[%label, $Weight] = %weight;
+    $HardcodedItemCost[%label] = %cost;
+    $AccessoryVar[%label, $SpecialVar] = %special;
+}
+
+// Rings
+AddRingItemHelper(ringofharm,"Ring of Harm",200,MiscLootShape,0.2,10000,$SpecialVarATK@" 10");
+AddRingItemHelper(ringofdefense,"Ring of Defense",202,MiscLootShape,0.2,8000,$SpecialVarDEF@" 50");
+AddRingItemHelper(ringofstamina,"Ring of Stamina",204,MiscLootShape,0.2,12000,$SpecialVarMaxStam@" 10");
+AddRingItemHelper(bladering,"Blade Ring",206,MiscLootShape,0.2,15000,"SKILL"@$SkillSlashing@" 20");
+AddRingItemHelper(sharpring,"Sharp Ring",208,MiscLootShape,0.2,15000,"SKILL"@$SkillPiercing@" 20");
+AddRingItemHelper(bluntring,"Blunt Ring",210,MiscLootShape,0.2,15000,"SKILL"@$SkillBludgeoning@" 20");
+AddRingItemHelper(bashring,"Bash Ring",212,MiscLootShape,0.2,15000,"SKILL"@$SkillBashing@" 20");
+AddRingItemHelper(backstabring,"Backstab Ring",214,MiscLootShape,0.2,15000,"SKILL"@$SkillBackstabbing@" 20");
+AddRingItemHelper(hidering,"Hide Ring",216,MiscLootShape,0.2,15000,"SKILL"@$SkillHiding@" 20");
+AddRingItemHelper(wizardring,"Wizard Ring",218,MiscLootShape,0.2,15000,"SKILL"@$SkillOffensiveCasting@" 25");
+AddRingItemHelper(healerring,"Healer Ring",220,MiscLootShape,0.2,15000,"SKILL"@$SkillDefensiveCasting@" 25");
+AddRingItemHelper(naturering,"Nature Ring",222,MiscLootShape,0.2,15000,"SKILL"@$SkillNatureCasting@" 25");
+AddRingItemHelper(harvestring,"Harvest Ring",224,MiscLootShape,0.2,15000,"SKILL"@$SkillFarming@" 20");
+AddRingItemHelper(archeryring,"Archery Ring",226,MiscLootShape,0.2,15000,"SKILL"@$SkillArchery@" 20");
+AddRingItemHelper(ringofrest,"Ring of Rest",228,MiscLootShape,0.2,8000,$SpecialVarRestStamRegen@" 0.8");
+AddRingItemHelper(ringofidle,"Ring of Idle",230,MiscLootShape,0.2,8000,$SpecialVarIdleStamRegen@" 0.2");
+AddRingItemHelper(manaring,"Mana Ring",232,MiscLootShape,0.2,25000,$SpecialVarMana@" 50");
+
+$AccessoryVar[ringofharm, $MiscInfo] = "Ring that gives <f0>+10 ATK";
+$AccessoryVar[ringofdefense, $MiscInfo] = "Ring that gives <f0>+50 DEF";
+$AccessoryVar[ringofstamina, $MiscInfo] = "Ring that gives <f0>+10 Max Stamina";
+$AccessoryVar[bladering, $MiscInfo] = "Ring that gives <f0>+20 Slashing";
+$AccessoryVar[sharpring, $MiscInfo] = "Ring that gives <f0>+20 Piercing";
+$AccessoryVar[bluntring, $MiscInfo] = "Ring that gives <f0>+20 Bludgeoning";
+$AccessoryVar[bashring, $MiscInfo] = "Ring that gives <f0>+20 Bashing";
+$AccessoryVar[backstabring, $MiscInfo] = "Ring that gives <f0>+20 Backstabbing";
+$AccessoryVar[hidering, $MiscInfo] = "Ring that gives <f0>+20 Hiding";
+$AccessoryVar[wizardring, $MiscInfo] = "Ring that gives <f0>+25 Offensive Casting";
+$AccessoryVar[healerring, $MiscInfo] = "Ring that gives <f0>+25 Defensive Casting";
+$AccessoryVar[naturering, $MiscInfo] = "Ring that gives <f0>+25 Nature Casting";
+$AccessoryVar[harvestring, $MiscInfo] = "Ring that gives <f0>+25 Farming";
+$AccessoryVar[ringofrest, $MiscInfo] = "Ring that gives <f0>+0.8 <f1>stamina regen when resting.";
+$AccessoryVar[ringofidle, $MiscInfo] = "Ring that gives <f0>+0.2 stamina regen idle (no moving or attacking).";
+$AccessoryVar[archeryring, $MiscInfo] = "Ring that gives <f0>+20 Archery";
+$AccessoryVar[manaring, $MiscInfo] = "Ring that gives <f0>+50 Max Mana";
+
+AddArmAccessoryHelper(soldierband,"Soldier Band",234,MiscLootShape,0.2,150000,"SKILL"@$SkillSlashing@" 100 SKILL"@$SkillPiercing@" 100 SKILL"@ $SkillBludgeoning @" 100");
+AddArmAccessoryHelper(exileband,"Exile Band",236,MiscLootShape,0.2,150000,"SKILL"@$SkillNatureCasting@" 180");
+AddArmAccessoryHelper(energyband,"Energy Band",238,MiscLootShape,0.2,25000,$SpecialVarMaxStam@" 50");
+AddArmAccessoryHelper(bashersbangle,"Basher's Bangle",240,MiscLootShape,0.2,250000,"SKILL"@ $SkillBludgeoning @" 20 SKILL"@$SkillBashing@" 100");
+
+$AccessoryVar[soldierband, $MiscInfo] = "A clasp that raises all your melee weapon skills by 100";
+$AccessoryVar[exileband, $MiscInfo] = "An armband that raises your Nature Casting 180";
+$AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina by 50";
+$AccessoryVar[bashersbangle, $MiscInfo] = "Bangle that increashing your Bludgeoning by 20 and Bashing by 100";
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {
@@ -397,55 +467,3 @@ function RestoreMana(%clientId,%amt,%desc)
     refreshMana(%clientId,%amt*-1);
     Client::sendMessage(%clientId, $MsgWhite, "You "@%desc@" and recovered "@ %amt @" Mana~wActivateAR.wav");
 }
-
-//RPGItem::AddItemDefinition("shiv","Shiv",$RPGItem::WeaponClass,0,DaggerShape);
-//RPGItem::AddItemDefinition("bluepotion","Blue Potion","Potion",1);
-//RPGItem::AddItemDefinition("crystalbluepotion","Crystal Blue Potion","Potion",2);
-//RPGItem::AddItemDefinition("hidearmor0","Hide Armor",$RPGItem::EquipppedClass,3,MiscLootShape);
-//RPGItem::AddItemDefinition("hidearmor","Hide Armor",$RPGItem::AccessoryClass,4,MiscLootShape);
-//
-//RPGItem::pairEquipWithItem(3,4);
-//
-//RPGItem::AddWeapon("club","Club",5,$RPGItem::WeaponTypeMelee,MaceShape);
-//RPGItem::AddWeapon("spear","Spear",6,$RPGItem::WeaponTypeMelee,SpearShape);
-//RPGItem::AddWeapon("dagger","Dagger",7,$RPGItem::WeaponTypeMelee,DaggerShape);
-//
-//RPGItem::AddWeapon("rknife","Rusty Knife",9,$RPGItem::WeaponTypeMelee,DaggerShape);
-//Roadmap
-//Weapons //Backend done.  Conversions needed
-//Armor
-//Usable Items
-//Accessories (rings and other equippables)
-
-//Accessory.cs
-//Functions needing replacement:
-//GetAccessoryList //Done but needs testing
-//AddPoints //Needs testing
-//NullItemList //Might be fine?
-//GetCurrentlyWearingArmor //Needs testing
-
-//RPGFunk.cs
-//HasThisStuff //Needs more tests but should be working
-//TakeThisStuff //Needs more tests but should be working
-//GiveThisStuff //Needs more tests but should be working
-//WhatIs //Done
-
-//UnequipMountedStuff //TO DO
-
-//Economy.cs
-//BuyItem
-//SellItem
-
-//Weapon.cs //Need to convert weapons to new item format
-//WeaponHandling.cs //Still needs testing, but should be working
-
-//ItemEvents.cs
-//Item::onCollision
-//Item::onDrop //Needs replacement
-//Item::onUse //Needs replacement
-
-//Search for .className
-
-//Remove all belt references
-
-//Player::onKilled //Needs testing, but should be working

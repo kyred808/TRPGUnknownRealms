@@ -180,7 +180,7 @@ function remoteNextWeapon(%clientId)
         %nextWeap = getWord(%itemList,%next);
         if(isSelectableWeapon(%clientId, %nextWeap))
         {
-            Player::equipWeapon(%clientId,%nextWeap);
+            RPGItem::EquipItem(%clientId,%nextWeap);
             break;
         }
         return;
@@ -191,7 +191,7 @@ function remoteNextWeapon(%clientId)
         %nextWeap = getWord(%itemList,%next);
         if(isSelectableWeapon(%clientId, %nextWeap))
         {
-            Player::equipWeapon(%clientId,%nextWeap);
+            RPGItem::EquipItem(%clientId,%nextWeap);
             break;
         }
         %next = SelectNextWeapon(%clientId,%next,%len,"inc");
@@ -217,14 +217,14 @@ function remoteNextWeapon(%clientId)
 	//}
 }
 
-function Player::equipWeapon(%clientId,%itemTag)
-{
-    RPGMountItem(%clientId,%itemTag,$WeaponSlot);
-    refreshHP(%clientId, 0);
-    refreshMANA(%clientId, 0);
-    refreshStamina(%clientId, 0);
-    RefreshAll(%clientId,false);
-}
+//function Player::equipWeapon(%clientId,%itemTag)
+//{
+//    RPGMountItem(%clientId,%itemTag,$WeaponSlot);
+//    refreshHP(%clientId, 0);
+//    refreshMANA(%clientId, 0);
+//    refreshStamina(%clientId, 0);
+//    RefreshAll(%clientId,false);
+//}
 
 function remotePrevWeapon(%clientId)
 {
@@ -251,7 +251,7 @@ function remotePrevWeapon(%clientId)
         %nextWeap = getWord(%itemList,%next);
         if(isSelectableWeapon(%clientId, %nextWeap))
         {
-            Player::equipWeapon(%clientId,%nextWeap);
+            RPGItem::EquipItem(%clientId,%nextWeap);
             break;
         }
         return;
@@ -264,7 +264,7 @@ function remotePrevWeapon(%clientId)
         %nextWeap = getWord(%itemList,%next);
         if(isSelectableWeapon(%clientId, %nextWeap))
         {
-            Player::equipWeapon(%clientId,%nextWeap);
+            RPGItem::EquipItem(%clientId,%nextWeap);
             break;
         }
         %next = SelectNextWeapon(%clientId,%next,%len,"dec");
@@ -404,7 +404,7 @@ function GetBestRangedProj(%clientId, %item)
 	{
 		%proj = GetWord(%list, %i);
         %label = RPGItem::ItemTagToLabel(%proj);
-		if(String::findSubStr($ProjRestrictions[%label], "," @ RPGItem::ItemTagToLabel(%item) @ ",") != -1) // && belt::hasthisstuff(%clientId, %proj) > 0)
+		if(String::findSubStr($ProjRestrictions[%label], "," @ RPGItem::ItemTagToLabel(%item) @ ",") != -1 && RPGItem::getItemCount(%clientId,%item) > 0) // && belt::hasthisstuff(%clientId, %proj) > 0)
 		{
             
 			%v = AddItemSpecificPoints(%label, 6);

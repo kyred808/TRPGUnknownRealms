@@ -331,7 +331,7 @@ function remoteThrowItem(%clientId,%type,%strength)
 function remoteDropItem(%clientId,%type,%amnt)
 {
 	dbecho($dbechoMode, "remoteDropItem(" @ %clientId @ ", " @ %item @ ")");
-    if(%amnt < 1)
+    if(%amnt < 1 && Math::isInteger(%amnt))
         %amnt = 1;
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
@@ -341,7 +341,7 @@ function remoteDropItem(%clientId,%type,%amnt)
 		if($droppingAllowed == 1)
 		{
 			if((Client::getOwnedObject(%clientId)).driver != 1) {
-				echo("Drop item: "@%type);
+				echo("Drop item: "@%type @" "@%amnt);
 				%clientId.throwStrength = 1;
                 if(RPGItem::isItemTag(%type))
                 {

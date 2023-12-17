@@ -193,6 +193,7 @@ function Game::playerSpawned(%pl, %clientId, %armor)
             storeData(%clientId,"spawnStuff","");
         }
         storeData(%clientId,"totalWeight",WeightRecalculate(%clientId));
+        RPGItem::RefreshPlayerEquipStats(%clientId);
         //if(%clientId.loadCharacterFlag)
         //{
         //    %clientId.loadCharacterFlag = false;

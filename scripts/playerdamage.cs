@@ -130,7 +130,7 @@ function Player::onKilled(%this)
                     %eq = fetchData(%clientId,"EquippedWeapon");
                     %class = RPGItem::getItemGroupFromTag(%itemTag);
                     
-                    if(%eq == %itemTag || %class == $RPGItem::EquipppedClass || $LoreItem[%label] == true)
+                    if(%eq == %itemTag || %class == $RPGItem::EquippedClass || $LoreItem[%label] == true)
                     {
                         %bInclude = true;
                     }
@@ -149,12 +149,13 @@ function Player::onKilled(%this)
             
             if(%bInclude)
             {
-                %b = %a;
                 %class = RPGItem::getItemGroupFromTag(%itemTag);
+                %newTag = %itemTag;
                 %eq = fetchData(%clientId,"EquippedWeapon");
-                if(%class == $RPGItem::EquipppedClass)
-                    %b = String::getSubStr(%b, 0, String::len(%b)-1);
-
+                if(%class == $RPGItem::EquippedClass)
+                    %newTag = RPGItem::getAlternateTag(%itemTag);
+                
+                echo("Tag: "@ %itemTag @" NewTag: "@%newTag);
                 if(%eq == %itemTag)
                 {
                     //special handling for currently held weapon
@@ -163,8 +164,9 @@ function Player::onKilled(%this)
                 }
                 else
                 {
-                    %tmploot = %tmploot @ %itemTag @ " " @ getWord(%itemList,%i+1) @ " ";
-                    RPGItem::setItemCount(%clientId, %itemTag, 0);
+                    %tmploot = %tmploot @ %newTag @ " " @ getWord(%itemList,%i+1) @ " ";
+                    RPGItem::setItemCount(%clientId, %itemTag, 0); //Don't worry about equip stats.  Will be refreshed on spawn.
+                    
                 }
                 if(String::len(%tmploot) > 200)
                 {
@@ -1036,6 +1038,18 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					{
                         if(fetchData(%damagedClient,"customAIFlag") == "")
                         {
+                            %loadOutTag = fetchData(%damagedClient,"BotLoadoutTag");
+                            if(%loadOutTag == "")
+                                %loadOutTag = "Default";
+                            if($AIBehavior[%loadOutTag,RunOnLowHP])
+                            {
+                                %perc = fetchData(%damagedClient,"HP") / fetchData(%damagedClient,"MaxHP");
+                                echo(%perc);
+                                if(%perc <= 0.15)
+                                {
+                                    AI::RunAway(fetchData(%damagedClient, "BotInfoAiName"));
+                                }
+                            }
                             %tgt = AI::getTarget(fetchData(%damagedClient, "BotInfoAiName"));
                             if(%tgt != %shooterClient)
                             {

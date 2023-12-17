@@ -164,6 +164,18 @@ function RPGItem::isValidItem(%itemId)
     return $RPGItem::ItemDef[%itemId,BaseName] != "";
 }
 
+function RPGItem::getAlternateTag(%itemTag)
+{
+    %id = RPGItem::getItemIDFromTag(%itemTag);
+    if($RPGItem::ItemDef[%id,Alternate] != "")
+    {
+        %newId = $RPGItem::ItemDef[%id,Alternate];
+        return RPGItem::transferAffixesToItem(%itemTag,%newId);
+    }
+    else
+        return %itemTag;
+}
+
 function RPGItem::SendItemDataToClient(%clientId,%itemTag,%amt,%storageFlag)
 {
     if(%storageFlag == "")
@@ -192,6 +204,7 @@ function RPGItem::transferAffixesToItem(%itemTag,%newItemId)
     {
         %affixes = String::getSubStr(%itemTag,%affixesIdx,9999); //If an item name is >250 we got a problem
         %ret = %ret @ %affixes;
+        return %ret;
     }
 }
 
@@ -498,7 +511,6 @@ function RPGItem::getUseAction(%itemTag)
     return $RPGItem::ItemDef[%id,Action];
 }
 
-// WIP
 function RPGItem::useItem(%clientId,%itemTag,%amnt)
 {
     if(RPGItem::getItemCount(%clientId,%itemTag) > 0)
@@ -508,14 +520,23 @@ function RPGItem::useItem(%clientId,%itemTag,%amnt)
             %action = RPGItem::getUseAction(%itemTag);
             
             %class = RPGItem::getItemGroupFromTag(%itemTag);
-            echo(%action);
-            if(%class == $RPGItem::WeaponClass && %itemTag != fetchData(%clientId,"EquippedWeapon"))
+            //echo(%action);
+            if(%class == $RPGItem::WeaponClass)
             {
-                Player::equipWeapon(%clientId,%itemTag);
+                if(fetchData(%clientId,"EquippedWeapon") != %itemTag)
+                {
+                    RPGItem::EquipItem(%clientId,%itemTag);
+                }
+                else
+                    RPGItem::UnequipItem(%clientId,%itemTag);
             }
-            else if(%class == $RPGItem::AccessoryClass || %class == $RPGItem::EquipppedClass)
+            else if(%class == $RPGItem::AccessoryClass)
             {
-                RPGItem::equipItem(%clientId,%itemTag);
+                RPGItem::EquipItem(%clientId,%itemTag);
+            }
+            else if(%class == $RPGItem::EquippedClass)
+            {
+                RPGItem::UnequipItem(%clientId,%itemTag,true);
             }
             else if(%action != "")
             {
@@ -525,27 +546,83 @@ function RPGItem::useItem(%clientId,%itemTag,%amnt)
     }
     else
     {
-        Client::sendMessage(%clientId, $MsgRed, "Don't have any "@ RPGItem::getItemNameFromTag(%itemTag)@"!~wC_BuySell.wav");
+        Client::sendMessage(%clientId, $MsgRed, "You don't have any "@ RPGItem::getItemNameFromTag(%itemTag)@"!~wC_BuySell.wav");
         RPGItem::SendItemDataToClient(%clientId,%itemTag,0); //Clear out the item if there was one.
     }
 }
 
-function RPGItem::equipItem(%clientId,%itemTag)
+function RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,%specialVar,%mod)
 {
+    for(%i = 0; (%s = getWord(%specialVar,%i)) != -1; %i+= 2)
+    {
+        //%stats = SetStuffString(%stats,%s,getWord(%specialVar,%i+1),"inc");
+        storeData(%clientId,"EquipStat"@%s,getWord(%specialVar,%i+1),%mod);
+    }
+}
+
+function RPGItem::GetPlayerEquipStats(%clientId,%statType)
+{
+    %amt = fetchData(%clientId,"EquipStat"@%statType);
+    if(%amt == "")
+        return 0;
+        
+    return %amt;
+}
+
+function RPGItem::ClearPlayerEquipStats(%clientId)
+{
+    for(%i = 1; $SpecialVarDesc[%i] != ""; %i++)
+    {
+        echo("CLEARING: "@$SpecialVarDesc[%i]);
+        storeData(%clientId,"EquipStat"@%i,0);
+    }
+    
+    for(%i = 1; %i <= $NumberOfSkills; %i++)
+    {
+        storeData(%clientId,"EquipStatSKILL"@%i,0);
+    }
+}
+
+//Allow for item tag values to add to stats later
+function RPGItem::GetEquipmentStats(%itemTag,%itemLabel,%mult)
+{
+    if(%itemLabel == "")
+        %itemLabel = RPGItem::ItemTagToLabel(%itemTag);
+    
+    if(%mult == "" || %mult == 1)
+        return GetAccessoryVar(%itemLabel, $SpecialVar);
+    else
+    {
+        %stats = GetAccessoryVar(%itemLabel, $SpecialVar);
+        %nstats = "";
+        for(%i = 0; (%s = getWord(%stats,%i)) != -1; %i+=2)
+        {
+            %nstats = %nstats @ %s @" "@ getWord(%stats,%i+1)*%mult @" ";
+        }
+        return %nstats;
+    }
+}
+
+//Handles equiping items and applying stats to the character
+function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
+{
+    if(%showmsg == "")
+        %showmsg = true;
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     if($RPGItem::ItemDef[%itemId,Equippable])
     {
         %class = RPGItem::getItemGroup(%itemId);
         %label = $RPGItem::ItemDef[%itemId,Label];
-        if(%class == $RPGItem::AccessoryClass)
+        %refreshEquip = false;
+        if(SkillCanUse(%clientId, %label))
         {
-            if(SkillCanUse(%clientId, %label))
+            if(%class == $RPGItem::AccessoryClass)
             {
                 %equipId = $RPGItem::ItemDef[%itemId,Alternate];
                 %equipTag = "id"@%equipId;
-                echo("ItemTag vs EquipTag: "@ %itemTag @" "@ %equipTag);
+                //echo("ItemTag vs EquipTag: "@ %itemTag @" "@ %equipTag);
                 //%cnt = RPGItem::getItemCount(%clientId,%equipTag,false);
-                %equipList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquipppedClass,InventoryTag]);
+                %equipList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]);
                 for(%i = 0; (%eqItem = getWord(%equipList,%i)) != -1; %i+=2)
                 {
                     %eqLabel = RPGItem::ItemTagToLabel(%eqItem);
@@ -556,59 +633,134 @@ function RPGItem::equipItem(%clientId,%itemTag)
                 
                 if(%cnt < $maxAccessory[GetAccessoryVar(%label, $AccessoryType)])
                 {
-                    Client::sendMessage(%clientId, $MsgBeige, "You equipped " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
+                    if(%showmsg)
+                        Client::sendMessage(%clientId, $MsgBeige, "You equipped " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
                     %equipTag = RPGItem::transferAffixesToItem(%itemTag,%equipId);
                     RPGItem::decItemCount(%clientId,%itemTag,1,false);
                     RPGItem::incItemCount(%clientId,%equipTag,1,false);
+                    RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,%label),"inc");
                 }
-                else
+                else if(%showmsg)
                     Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you have too many already equipped.~wC_BuySell.wav");
             }
-            else
-                Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you lack the necessary skills.~wC_BuySell.wav");
+            else if(%class == $RPGItem::WeaponClass)
+            {
+                %curWeapon = fetchData(%clientId,"EquippedWeapon");
+                if(%curWeapon != %itemTag)
+                {
+                    if(%curWeapon != "")
+                    {
+                        RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%curWeapon,"",1),"dec");
+                        %refreshEquip = true;
+                    }
+                    RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,"",1),"inc");
+                    RPGmountItem(Client::getOwnedObject(%clientId), %itemTag, $WeaponSlot);
+                }
+            }
+            
+            refreshHP(%clientId, 0);
+            refreshMANA(%clientId, 0);
+            refreshStamina(%clientId, 0);
+            RefreshAll(%clientId,%refreshEquip);
         }
-        else if(%class == $RPGItem::EquipppedClass)
+        else if(%showmsg)
+            Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you lack the necessary skills.~wC_BuySell.wav");
+    }
+}
+
+function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg)
+{
+    %itemId = RPGItem::getItemIDFromTag(%itemTag);
+    if($RPGItem::ItemDef[%itemId,Equippable])
+    {
+        %class = RPGItem::getItemGroup(%itemId);
+        %label = $RPGItem::ItemDef[%itemId,Label];
+        %refresh = true;
+        if(%class == $RPGItem::EquippedClass)
         {
             %unequipId = $RPGItem::ItemDef[%itemId,Alternate];
-            Client::sendMessage(%clientId, $MsgBeige, "You unequipped " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
+            if(%showmsg)
+                Client::sendMessage(%clientId, $MsgBeige, "You unequipped " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
             %unequipTag = RPGItem::transferAffixesToItem(%itemTag,%unequipId);
             RPGItem::decItemCount(%clientId,%itemTag,1,false);
             RPGItem::incItemCount(%clientId,%unequipTag,1,false);
+            RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,getCroppedItem(%label)),"dec");
+        }
+        else if(%class == $RPGItem::WeaponClass)
+        {
+            %curWeapon = fetchData(%clientId,"EquippedWeapon");
+            if(%itemTag == %curWeapon)
+            {
+                RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%curWeapon,"",1),"dec");
+                storeData(%clientId,"EquippedWeapon","");
+                Player::unmountItem(Client::getOwnedObject(%clientId),$WeaponSlot);
+            }
+            else
+            {
+                Client::sendMessage(%clientId, $MsgRed, RPGItem::getItemNameFromTag(%itemTag) @ " is not currently equipped.");
+                %refresh = false;
+            }
         }
         
-        refreshHP(%clientId, 0);
-        refreshMANA(%clientId, 0);
-        refreshStamina(%clientId, 0);
-        RefreshAll(%clientId,true);
+        if(%refresh)
+        {
+            refreshHP(%clientId, 0);
+            refreshMANA(%clientId, 0);
+            refreshStamina(%clientId, 0);
+            RefreshAll(%clientId,true);
+        }
+    }
+}
+
+function RPGItem::RefreshPlayerEquipStats(%clientId)
+{
+    %equipList = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]) @ fetchData(%clientId,"EquippedWeapon");
+    RPGItem::ClearPlayerEquipStats(%clientId);
+    for(%i = 0; (%itemTag = getWord(%equipList,%i)) != -1; %i+=2)
+    {
+        if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::WeaponClass)
+            %amnt = 1;
+        else
+            %amnt = getWord(%equipList,%i+1);
+        //%label = getCroppedItem(RPGItem::ItemTagToLabel(%itemTag)); //GetAccessoryVar handles the cropping
+        %label = RPGItem::ItemTagToLabel(%itemTag);
+        RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,%label,%amnt),"inc");
     }
 }
 
 // WIP
 function RPGItem::dropItem(%clientId,%itemTag,%amnt)
 {
-    if(%amnt < 1)
-        %amnt = 1;
     if(%amnt == "ALL")
         %amnt = RPGItem::getItemCount(%clientId,%itemTag);
+    if(%amnt < 1)
+        %amnt = 1;
+    
     else if(!Math::isInteger(%amnt))
         return;
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     if(RPGItem::isValidItem(%itemId))
     {
-        %class = RPGItem::getItemGroup(%clientId,%itemId);
+        %class = RPGItem::getItemGroup(%itemId);
         
         %curAmnt = RPGItem::getItemCount(%clientId,%itemTag);
         if(%curAmnt >= %amnt)
         {
-            if(%class == $RPGItem::EquipppedClass)
+            echo("Item Class: "@ %class);
+            if(%class == $RPGItem::EquippedClass)
             {
                 Client::sendMessage(%clientId, $MsgRed, "You can't drop an equipped item!~wC_BuySell.wav");
                 return;
             }
             else if(%class == $RPGItem::WeaponClass)
             {
+                echo("New Amnt: "@ %curAmnt - %amnt);
                 if(%curAmnt - %amnt == 0 && fetchData(%clientId,"EquippedWeapon") == %itemTag)
-                    Player::unmountItem(%clientId,$WeaponSlot);
+                {
+                    echo("Dropping Equipped Weapon");
+                    RPGItem::UnequipItem(%clientId,%itemTag,true);
+                    //Player::unmountItem(%clientId,$WeaponSlot);
+                }
             }
             else if ($LoreItem[%item])
             {

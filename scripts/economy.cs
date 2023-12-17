@@ -573,8 +573,13 @@ function sellItem(%clientId,%itemTag, %amnt)
                 //}
                 //else
                 //{
-                    if(RPGItem::getItemGroupFromTag(%itemTag) != "Equipped")
+                    %class = RPGItem::getItemGroupFromTag(%itemTag);
+                    if(%class != $RPGItem::EquippedClass)
                     {
+                        if(%itemTag == fetchData(%clientId,"EquippedWeapon"))
+                        {
+                            RPGItem::UnequipItem(%clientId,%itemTag,false);
+                        }
                         RPGItem::decItemCount(%clientId, %itemTag, %n);
                         RPGItem::incStorageItemCount(%clientId,%itemTag,%n,true);
                         //storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, %n));
@@ -622,7 +627,7 @@ function sellItem(%clientId,%itemTag, %amnt)
 			else
 			{
 				%itemCnt = RPGItem::getItemCount(%clientId, %itemTag,true);
-				if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquipppedClass)
+				if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquippedClass)
 				{
 					Client::sendMessage(%clientId, $MsgRed, "You cannot sell an equipped item.~wC_BuySell.wav");
 				}
@@ -636,7 +641,10 @@ function sellItem(%clientId,%itemTag, %amnt)
 	
 					//%count = RPGItem::getItemCount(%clientId, %item);
 					%numsell = %clientId.bulkNum;
-	
+                    if(%itemTag == fetchData(%clientId,"EquippedWeapon"))
+                    {
+                        RPGItem::UnequipItem(%clientId,%itemTag,false);
+                    }
 					BuySell(%player, %itemTag, %clientId.bulkNum, SELL);
 					RPGItem::decItemCount(%clientId,%itemTag,%numsell); //setItemCount(%player, %item, (%count-%numsell));
 					Client::SendMessage(%clientId, $MsgWhite, "~wbuysellsound.wav");

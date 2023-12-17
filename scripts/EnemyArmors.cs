@@ -195,10 +195,17 @@ $BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 RKnife 1 Sling
 $BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 manaring 1/-2000 Turquoise 1/-500 GoblinEar 1/-500";
 $BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 RPickAxe 1 BlackStatue 1/-150 Jade 1/-300 GoblinEar 1/-400";
 
+$AIBehavior[Runt,UseBackstab] = true;
+$AIBehavior[Thief,RunOnLowHP] = true;
+
 $BotEquipment[Pup] = 		"CLASS Fighter LVL 10/50 COINS 6/50 LCK 0 RClub 1 CrystalBluePotion 1 Ruby 1/-2000";
 $BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 manaring 1/-2000 EnergyShot 1/-50 RClub 1";
 $BotEquipment[Scavenger] = 	"CLASS Fighter LVL 15/50 COINS 8/50 LCK 0 RClub 1 Sapphire 2/-5000 traitorsamulet 1/-2000";
 $BotEquipment[Hunter] = 	"CLASS Ranger LVL 17/50 COINS 9/50 LCK 0 RWarAxe 1 Sling 1 SmallRock 20/50 Topaz 3/-3000";
+
+$AIBehavior[Pup,RunOnLowHP] = true;
+$AIBehavior[Pup,UseBash] = true;
+$AIBehavior[Scavenger,UseBash] = true;
 
 $BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 20/50 LCK 0 CastingBlade 1 EnchantedStone 1/-100";
 $BotEquipment[Berserker] = 	"CLASS Fighter LVL 20/50 COINS 13/50 LCK 0 RBroadSword 1 Topaz 4/-500";

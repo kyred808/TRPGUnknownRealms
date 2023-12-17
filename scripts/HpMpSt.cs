@@ -114,7 +114,7 @@ function refreshHPREGEN(%clientId,%zone)
             %b+=1;
         }
     }
-	%c = AddPoints(%clientId, 10) / 2000;
+	%c = RPGItem::GetPlayerEquipStats(%clientId,$SpeicalVarHPRegen) / 2000;//AddPoints(%clientId, 10) / 2000;
 
 	%r = %a + %b + %c;
     //echo(%a @" "@ %b @" "@ %c);
@@ -161,7 +161,7 @@ function calcRechargeRate(%clientId)
 	else
 		%b = %a;
 
-	%c = AddPoints(%clientId, 11) / 800;
+	%c = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarManaRegen) / 800; //AddPoints(%clientId, 11) / 800;
 
 	%r = %b + %c;
     if(%clientId.sleepMode == 3)
@@ -200,6 +200,7 @@ $WeaponStamina::MinStamUsage = 0.5;
 function WeaponStamina(%clientId,%weapon,%mult)
 {
     dbecho($dbechoMode, "WeaponStamina(" @ %clientId @ ", " @ %weapon @ ")");
+    %label = RPGItem::ItemTagToLabel(%weapon);
     if(Player::isAiControlled(%clientId))
     {
         return;
@@ -208,7 +209,7 @@ function WeaponStamina(%clientId,%weapon,%mult)
     if(%mult == "")
         %mult = 1;
     
-    %skillType = $SkillType[%weapon];
+    %skillType = $SkillType[%label];
     %skill = CalculatePlayerSkill(%clientId, %skillType);
     
     if(%clientId.isAtRest == 1)
@@ -219,9 +220,9 @@ function WeaponStamina(%clientId,%weapon,%mult)
     %clientId.isAtRestCounter = 0;
     
     %minSkill = 1;
-    %wx = Word::FindWord($SkillRestriction[%weapon],%skillType);
+    %wx = Word::FindWord($SkillRestriction[%label],%skillType);
     if(%wx != -1)
-        %minSkill = Cap(getWord($SkillRestriction[%weapon],%wx+1),1,"inf");
+        %minSkill = Cap(getWord($SkillRestriction[%label],%wx+1),1,"inf");
         
     //%stamCost = Cap(GetAccessoryVar(%weapon, $Weight) + (%minSkill-%skill)/(1.5*%minSkill),$WeaponStamina::MinStamUsage,"inf");
     
@@ -229,7 +230,7 @@ function WeaponStamina(%clientId,%weapon,%mult)
     if(fetchData(%clientId,"HeavyStrikeFlag"))
         %minStam += 5;
     
-    %w = GetAccessoryVar(%weapon, $Weight);
+    %w = GetAccessoryVar(%label, $Weight);
     %weightFactor = $WeaponStamina::MinStamUsage-%w;
     %growthFactor = $WeaponStamina::ScaleFactor-1;
     

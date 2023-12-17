@@ -9,7 +9,8 @@ function fetchData(%clientId, %type)
 	}
     else if(%type == "AMR")
     {
-        %a = AddPoints(%clientId, 1);
+        //%a = AddPoints(%clientId, 1);
+        %a = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarAMR);
         %b = AddBonusStatePoints(%clientId, "AMR");
         //%belt = BeltEquip::AddBonusStats(%clientId,"AMR");
         //%v = Cap(%a + %b + %belt,0,"inf");
@@ -19,7 +20,8 @@ function fetchData(%clientId, %type)
     }
 	else if(%type == "DEF")
 	{
-		%a = AddPoints(%clientId, 7);
+		//%a = AddPoints(%clientId, 7);
+        %a = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarDEF);
 		%b = AddBonusStatePoints(%clientId, "DEF");
         //%belt = BeltEquip::AddBonusStats(%clientId,"DEF");
 		%c = (%a + %b); //+ %belt);
@@ -37,7 +39,8 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "MDEF")
 	{
-		%a = AddPoints(%clientId, 3);
+		//%a = AddPoints(%clientId, 3);
+        %a = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMDEF);
 		%b = AddBonusStatePoints(%clientId, "MDEF");
 		%c = (%a + %b); //+ BeltEquip::AddBonusStats(%clientId,"MDEF");
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
@@ -56,31 +59,39 @@ function fetchData(%clientId, %type)
 	{
         %weapTag = fetchData(%clientId,"EquippedWeapon");
 		%weapon = RPGItem::ItemTagToLabel(%weapTag);
-        
-		if(%weapon != -1)
+		if(%weapon != "")
 		{
 			%a = AddBonusStatePoints(%clientId, "ATK");
-            %extra = 0;
+            %projAtk = 0;
 			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
             {
-				%rweapon = fetchData(%clientId, "LoadedProjectile " @ %weapon);
-                %rweaponLabel = RPGItem::ItemTagToLabel(%rweapon);
-                %bb = GetWord(GetAccessoryVar(%rweaponLabel, $SpecialVar), 1);
-                %im = RPGItem::getAffixValue(%weapTag,"im");
-                if(%im != 0)
-                    %bb += round(%bb * 0.1 * %im);
-                %extra = %bb;
+				%rweapon = fetchData(%clientId, "LoadedProjectile " @ %weapTag);
+                if(%rweapon != "")
+                {
+                    %rweaponLabel = RPGItem::ItemTagToLabel(%rweapon);
+                    
+                    %bb = GetWord(GetAccessoryVar(%rweaponLabel, $SpecialVar), 1);
+                    %im = RPGItem::getAffixValue(%rweapon,"im");
+                    if(%im != 0)
+                        %bb += round(%bb * 0.1 * %im);
+                    %projAtk = %bb;
+                }
             }
+            
+            //Includes weapon ATK
+            %equipAtkStats = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarATK);
+
             //This may need a refactor, as ATK might not be the first item
             %baseAtk = GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1);
             %im = RPGItem::getAffixValue(%weapTag,"im");
+            %affixBonus = 0;
             if(%im != 0)
             {
-                %b = %baseAtk + round(%baseAtk * 0.1 * %im);
+                %affixBonus = round(%baseAtk * 0.1 * %im);
             }
-            %b = %baseAtk + %extra;
+            //%b = %baseAtk + %extra;
             
-            %val = %a + %b; //+ %c;
+            %val = %a + %equipAtkStats + %projAtk + %affixBonus; //+ %c;
             if(!Player::isAiControlled(%clientId))
             {
                 %stam = fetchData(%clientId,"Stamina");
@@ -96,7 +107,8 @@ function fetchData(%clientId, %type)
 	else if(%type == "MaxHP")
 	{
 		%a = $MinHP[fetchData(%clientId, "RACE")] + (CalculatePlayerSkill(%clientId, $SkillEndurance) * 0.6);
-		%b = AddPoints(%clientId, 4);
+		//%b = AddPoints(%clientId, 4);
+        %b = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarHP);
 		%c = floor(fetchData(%clientId, "RemortStep") * (CalculatePlayerSkill(%clientId, $SkillEndurance) / 8));
 		%d = fetchData(%clientId, "LVL");
 		%e = AddBonusStatePoints(%clientId, "MaxHP");
@@ -126,13 +138,14 @@ function fetchData(%clientId, %type)
         if(%temp != "")
             return %temp;
         %a = 100;
+        %b = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMaxStam);
         //%c = BeltEquip::AddBonusStats(%clientId,"MaxStam");
         //echo("Check");
         //Lots of resource use for something that doesn't exist yet.
         //%b = AddBonusStatePoints(%clientId, "MaxStam");
         //%e = AddPoints(%clientId, $SpecialVarMaxStam);
         //return floor(%a + %b + %c + %e);
-        %result = floor(%a); // + %c);
+        %result = floor(%a + %b); // + %c);
         storeData(%clientId,"tempMaxStam",%result);
         schedule("storeData("@%clientId@",\"tempMaxStam\",\"\");",1,%clientId);
         return %result;
@@ -143,10 +156,11 @@ function fetchData(%clientId, %type)
         %rl = fetchData(%clientId,"RemortStep");
         %eng = floor( CalculatePlayerSkill(%clientId, $SkillEnergy) * $ManaEnergyFactor );
         //%eqp = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
+        %eqp = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMana);
         %extra = 0;
         if(fetchData(%clientId,"Class") == "Mage")
             %extra = 15;
-        return 5*%lvl + 3*%rl + %eng + %extra; //%eqp + %extra;
+        return 5*%lvl + 3*%rl + %eng + %eqp + %extra;
         
 		//%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
 		//%b = AddPoints(%clientId, 5);
@@ -168,13 +182,15 @@ function fetchData(%clientId, %type)
 	{
 		%a = 50 + CalculatePlayerSkill(%clientId, $SkillWeightCapacity);
 		//%b = AddPoints(%clientId, 9);
+        %b = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMaxWeight);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");
-		return FixDecimals(%a + %c);
+		return FixDecimals(%a + %b + %c);
 	}
     else if(%type == "MANAThief")
     {
         %bonus = AddBonusStatePoints(%clientId, "MANAThief");
-        %equip = AddPoints(%clientId, $SpecialVarManaThief);
+        //%equip = AddPoints(%clientId, $SpecialVarManaThief);
+        %equip = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarManaThief);
         return %bonus + %equip;
     }
     else if(%type == "MANAHarvest")
@@ -185,7 +201,7 @@ function fetchData(%clientId, %type)
     }
     else if(%type == "AMRP")
     {
-        %equip = AddPoints(%clientId, $SpecialVarArmorPiercing);
+        %equip = RPGItem::GetPlayerEquipStats(%clientId,%clientId, $SpecialVarArmorPiercing);
         %bonus = AddBonusStatePoints(%clientId, "AMRP");
         return %bonus + %equip;
     }
@@ -380,10 +396,10 @@ function MenuSP(%clientId, %page)
 
 	for(%i = %lb; %i <= %ub; %i++)
     {
-        //%bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
-        //if(%bonus > 0)
-        //    Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
-        //else
+        %bonus = RPGItem::GetPlayerEquipStats(%clientId,"SKILL"@%i);//BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
+        if(%bonus > 0)
+            Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
+        else
             Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ ") " @ $SkillDesc[%i], %i @ " " @ %page);
     }
 

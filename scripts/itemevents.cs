@@ -225,6 +225,8 @@ function Item::onCollision(%this,%object)
             %damagedClient = %clientId;
             %shooterClient = %this.owner;
             %item = %this.itemProj;
+            if(%item == "")
+                %item = %this.itemTag; //If the item was dropped instead of shot
             %label = RPGItem::ItemTagToLabel(%item);
             
             if(%shooterClient != "")

@@ -352,6 +352,8 @@ $WeaponRange[HeavyCrossbow] = 500;
 $WeaponRange[RepeatingCrossbow] = 280;
 $WeaponRange[CastingBlade] = 1000;	//will swing from anywhere...BUT will be able to snipe with beam
 
+$WeaponRange[rshortbow] = 120;
+
 $WeaponDelay[Sling] = 1.5;
 
 $ProjRestrictions[SmallRock] = ",Sling,";
@@ -999,7 +1001,8 @@ function GenerateItemCost(%item)
 
 ItemImageData BaseWeaponImage
 {
-	shapeFile  = "invisable";
+    //More invisible than invisable
+	shapeFile  =  "OneWayWallInvis_8x8";//"invisable";
 	mountPoint = 0;
 
 	weaponType = 1;
