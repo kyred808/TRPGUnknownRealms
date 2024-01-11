@@ -84,6 +84,7 @@ function InitRealms()
             
             $RealmData[%label, Active] = false;
             $RealmData[%label, ForceActive] = false;
+            $RealmData[%label, CrystalCount] = 0;
             
             echo("Realm"@ %i@": "@%label @" aka "@ %name @" ["@$RealmData[%label, MinHeight] @","@$RealmData[%label, MaxHeight] @"]");
             
@@ -99,6 +100,37 @@ function InitRealms()
     
 }
 
+function Realms::UpdateRealm(%realm)
+{
+    //echo("REALM UPDATE: "@ %realm);
+    %time = getSimTime();
+    //Check crystals
+    //echo("Realm Crystal Count: " @ $RealmData[%realm,CrystalCount]);
+    for(%i = 0; %i < $RealmData[%realm,CrystalCount]; %i++)
+    {
+        echo("Crystal Info "@%i@": S - "@ $RealmData[%realm,CrystalSpawned,%i] @" R - "@$RealmData[%realm,CrystalRespawnTime,%i]);
+        //echo("Crystal "@%i@" Check: "@ $RealmData[%realm,CrystalSpawned,%i]);
+        if(!$RealmData[%realm,CrystalSpawned,%i] && $RealmData[%realm,CrystalRespawnTime,%i] <= %time)
+        {
+            %cmkr = $RealmData[%realm,CrystalMarkerList,%i];
+            %crystal = newObject("OreCrystal",StaticShape,"OreCrystal",true);
+            %crystal.id = %realm @" "@ %i;
+            
+            Gamebase::setPosition(%crystal,Gamebase::getPosition(%cmkr));
+            Gamebase::setRotation(%crystal,Gamebase::getRotation(%cmkr));
+            
+            for(%k = 1; %cmkr.bonus[%k] != ""; %k++)
+            {
+                %crystal.bonus[%k] = %cmkr.bonus[%k];
+            }
+            Gamebase::startFadeIn(%crystal);
+            addToSet("MissionCleanup\\"@%realm,%crystal);
+            $RealmData[%realm,CrystalSpawned,%i] = true;
+        }
+    }
+    
+}
+
 function Realms::InitZones()
 {
     deleteVariables("Zone::*");
@@ -107,6 +139,45 @@ function Realms::InitZones()
     {
         Realms::InitializeZone("MissionGroup\\Realm"@%i@"\\Zones",$RealmData::RealmIdToLabel[%i]);
     }
+}
+
+function Realms::InitCrystals()
+{
+	//dbecho($dbechoMode, "Realms::InitCrystals()");
+    echo("Realms Init Crystals!");
+    for(%i = 0; nameToID("MissionGroup\\Realm"@%i) != -1; %i++)
+    {
+        Realms::InitializeCrystals("MissionGroup\\Realm"@%i@"\\Crystals",$RealmData::RealmIdToLabel[%i]);
+    }
+}
+
+function Realms::InitializeCrystals(%groupPath,%realm)
+{
+    %group = nameToID(%groupPath);
+    echo("Crystal Group: "@%group);
+	if(%group != -1)
+	{
+		for(%i = 0; %i <= Group::objectCount(%group)-1; %i++)
+		{
+			%this = Group::getObject(%group, %i);
+			%info = Object::getName(%this);
+            echo("Crystal: "@%info);
+			if(%info != "")
+			{
+				%cnt = 0;
+				for(%z = 0; (%p1 = GetWord(%info, %z)) != -1; %z+=2)
+				{
+					%p2 = GetWord(%info, %z+1);
+					%this.bonus[%cnt++] = %p2;
+				}
+                %num = $RealmData[%realm,CrystalCount];
+                $RealmData[%realm,CrystalMarkerList,%num] = %this;
+                $RealmData[%realm,CrystalSpawned,%num] = false;
+                $RealmData[%realm,CrystalRespawnTime,%num] = 0;
+                $RealmData[%realm,CrystalCount]++;
+			}
+		}
+	}
 }
 
 function Realms::InitializeZone(%groupPath,%realm)

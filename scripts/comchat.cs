@@ -2318,6 +2318,60 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
 			return;
         }
+        if(%w1 == "#refine")
+        {
+            $los::object = "";
+            %los = Gamebase::getLOSInfo(Client::getControlObject(%TrueClientId),5);
+            %flag = false;
+            if(%los)
+            {
+                %obj = $los::object;
+                if(String::ICompare(clipTrailingNumbers(Object::getName(%obj)),"anvil") == 0)
+                {
+                    %flag = true;
+                }
+            }
+            
+            if(!%flag)
+            {
+                Client::SendMessage(%TrueClientId,$MsgWhite,"You must be looking at an anvil to refine items.");
+                return;
+            }
+            
+            %weap = fetchData(%TrueClientId,"EquippedWeapon");
+            if(%weap != "")
+            {
+                %curLevel = RPGItem::getImprovementLevel(%weap);
+                if(%curLevel < 5)
+                {
+                    %cnt = RPGItem::getItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"));
+                    if(%curLevel <= 0)
+                        %reqAmt = 1;
+                    else
+                    {
+                        %reqAmt = %curLevel;
+                    }
+                    
+                    if(%cnt >= %reqAmt)
+                    {
+                        RPGItem::decItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"),%reqAmt,true);
+                        %newItem = RPGItem::setItemAffix(%weap,"im",1,"inc");
+                        RPGItem::decItemCount(%TrueClientId,%weap,1);
+                        RPGItem::incItemCount(%TrueClientId,%newItem,1);
+                        RPGItem::EquipItem(%TrueClientId,%newItem);
+                        Client::SendMessage(%TrueClientId,$MsgWhite,"You upgraded "@ RPGItem::getItemNameFromTag(%weap) @" to "@ RPGItem::getItemNameFromTag(%newItem) @".");
+                        playSound(SoundSmith, GameBase::getPosition(%TrueClientId));
+                    }
+                    else
+                    {
+                        Client::SendMessage(%TrueClientId,$MsgWhite,"You need "@ %reqAmt @" Titanite Shards to refine "@ RPGItem::getItemNameFromTag(%weap) @".");
+                    }
+                    
+                }
+                return;
+            }
+        }
+        
         if(%w1 == "#smith" || %w1 == "#craft") //|| %w1 == "#smelt" || %w1 == "#cook")
         {
             %item = getWord(%cropped,0);

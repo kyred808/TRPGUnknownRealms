@@ -322,9 +322,9 @@ function MenuViewSkillBook(%clientId,%groupLabel,%page)
     %x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
 	{
-        echo(%x);
+        //echo(%x);
         %entry = $SkillBook::SkillGroup[%groupLabel,Entry,%x];
-        echo(%entry);
+        //echo(%entry);
         %disp = "";
         %type = $SkillBook::Type[%entry];
         if(%type == $SkillBook::TypeGroup)
@@ -334,7 +334,7 @@ function MenuViewSkillBook(%clientId,%groupLabel,%page)
         else if(%type == $SkillBook::TypeSkill)
         {
             %disp = $SkillBook::Skill[%entry,Name] @ " ("@$SkillBook::Skill[%entry,IDLabel]@")";
-            echo(%disp);
+            //echo(%disp);
         }
         Client::addMenuItem(%clientId, %cnt++ @ %disp, %entry @" "@%groupLabel);
         %x++;

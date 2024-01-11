@@ -613,7 +613,7 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
 {
     %obj = getObjectType(%target);
     %type = GameBase::getDataName(%target);
-
+    echo(%type);
     if(%type == "Crystal")
     {
         %brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
@@ -638,6 +638,35 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
         }
         else
             playSound(SoundHitore2, GameBase::getPosition(%target));
+    }
+    else if(%type == "OreCrystal")
+    {
+        //%brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
+        //echo(%brflag);
+        //if(Vector::getDistance(%clientId.lastMinePos, GameBase::getPosition(%clientId)) > 1.0 && %brflag != -1)
+        if(!Player::isAIControlled(%clientId))
+        {
+            playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
+
+            %score = DoRandomMining(%clientId, %target);
+            if(%score != "")
+            {
+                %itemTag = RPGItem::LabelToItemTag(%score);
+                
+                %ntag = GenerateGemAffix(%itemTag);
+                RPGItem::incItemCount(%clientId,%ntag,1,true);
+                RefreshAll(%clientId,false);
+                //Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
+
+                if( floor(getRandom() * 10) == 5)
+                    %clientId.lastMinePos = GameBase::getPosition(%clientId);
+            }
+            UseSkill(%clientId, $SkillMining, True, True);
+            //Damage crystal
+            GameBase::virtual(%target, "onDamage", %clientId, 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+        }
+        //else
+        //    playSound(SoundHitore2, GameBase::getPosition(%target));
     }
     else if(%type == "MeteorCrystal")
     {
@@ -2180,10 +2209,10 @@ ItemData FireChage3Item
 
 ItemImageData ChargeMagicImage
 {
-	shapeFile = "bullet";
+	shapeFile = "OneWayWallInvis_8x8";
 	mountPoint = 0;
-    mountOffset = { 0, -0.6, 0 };
-	mountRotation = { -1.57 ,0 ,0 };
+    //mountOffset = { 0, -0.6, 0 };
+	//mountRotation = { -1.57 ,0 ,0 };
 	weaponType = 2;
 	//projectileType = ThornStaffBolt;
 	minEnergy = 0;
@@ -2210,95 +2239,7 @@ ItemData ChargeMagicItem
 	showWeaponBar = false;
 };
 
-function ChargeMagicImage::onActivate(%player,%slot)
-{
-    echo("ChargeMagicImage::onActivate("@%player@","@%slot@")");
-    %player.chargeStartTime = getSimTime();
-    %player.chargeStage = -1;
-}
 
-function ChargeMagicImage::onDeactivate(%player,%slot)
-{
-    echo("ChargeMagicImage::onDeactivate("@%player@","@%slot@")");
-    %trans = Gamebase::getEyeTransform(%player);
-    %vel = Item::getVelocity(%player);
-    echo(%player.chargeStage);
-    if(%player.chargeStage == 0)
-    {
-        Projectile::spawnProjectile(Firebolt,%trans,%player,%vel);
-        playSound(HitPawnDT,Gamebase::getPosition(%player));
-    }
-    else if(%player.chargeStage == 1)
-    {
-        Projectile::spawnProjectile(Fireball,%trans,%player,%vel);
-        playSound(ActivateAB,Gamebase::getPosition(%player));
-    }
-    else if(%player.chargeStage == 2)
-    {
-        Projectile::spawnProjectile(Melt,%trans,%player,%vel);
-        playSound(LaunchFB,Gamebase::getPosition(%player));
-    }
-    
-    Player::unmountItem(%player,7);
-    %player.chargeStartTime = "";
-    %player.chargeStage = "";
-}
-
-$Charge::spacerLen = 20;
-$ChargeTime = 4;
-
-function ChargeMagicImage::onUpdateFire(%player,%slot)
-{
-    echo("ChargeMagicImage::onUpdateFire("@%player@","@%slot@")");
-    
-    %clientId = Player::getClient(%player);
-    %timeDiff = getSimTime() - %player.chargeStartTime;
-    
-    if(%timeDiff <= $ChargeTime)
-    {
-        echo(%timeDiff);
-        %stage = floor(%timeDiff/2);
-        if(%player.chargeStage != %stage)
-        {
-            %player.chargeStage = %stage;
-            if(%stage == 0)
-                Player::mountItem(%player,FireChage1Item,7);
-            else if(%stage == 1)
-            {
-                Player::unmountItem(%player,7);
-                Player::mountItem(%player,FireChage2Item,7);
-            }
-            
-        }
-        %msg = ChargeMagic::CreateBottomPrintMsg(%clientId,%timeDiff);
-    }
-    else
-    {
-        if(%player.chargeStage < 2)
-        {
-            %player.chargeStage = 2;
-            Player::unmountItem(%player,7);
-            Player::mountItem(%player,FireChage3Item,7);
-        }
-        %msg = "<jc>Charge:\n<f1>[====================]\n<f0>You are ready to cast!";
-    }
-    
-    bottomprint(%clientId,%msg,1);
-    
-    //%player.chargeLastUpdate = getSimTime();
-}
-
-function ChargeMagic::CreateBottomPrintMsg(%clientId,%timeDiff)
-{
-    %mm = floor(%timeDiff* $Charge::spacerLen/$ChargeTime);
-    %bmsg = "<jc>Charge: "@ floor(100*(%timeDiff/$ChargeTime)) @"%\n[<f1>";
-    %msg = String::rpad(%bmsg,String::len(%bmsg) +%mm,"=");
-    %bb = ceil($Charge::spacerLen - %mm);
-    %msg = String::rpad(%msg,String::len(%msg)+%bb," ");
-   // echo(%mm @" "@ %bb);
-    %msg = %msg @ "<f0>]";
-    return %msg;
-}
 
 //****************************************************************************************************
 //   GLADIUS

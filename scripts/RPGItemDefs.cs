@@ -423,6 +423,11 @@ $AccessoryVar[exileband, $MiscInfo] = "An armband that raises your Nature Castin
 $AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina by 50";
 $AccessoryVar[bashersbangle, $MiscInfo] = "Bangle that increashing your Bludgeoning by 20 and Bashing by 100";
 
+
+AddItemHelper("titaniteshard","Titanite Shard","Ores",242,1,15000,MiscLootShape);
+
+$AccessoryVar[titaniteshard, $MiscInfo] = "A shard of titanite, used for weapon upgrading";
+
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {
     %type = getWord(%action,0);

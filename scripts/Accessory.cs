@@ -453,7 +453,7 @@ function AddPoints(%clientId, %char)
         {
             if(%char == %e)
             {
-                echo(%e);
+                //echo(%e);
                 %add += getWord(%tmp,%j+1) * %count;
             }
         }
@@ -1355,6 +1355,15 @@ ItemData OrbOfBreath0
 	imageType = OrbOfBreathImage;
 
 	heading = "aArmor";
+};
+
+ItemData OreShape
+{
+    description = "OreShape";
+	shapeFile = "Emerald";
+	heading = "eMiscellany";
+	shadowDetailMask = 4;
+	price = 5;
 };
 
 ItemData MeteorBits

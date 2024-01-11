@@ -175,7 +175,7 @@ function UberBoss::AllMobsDead(%aiName)
     storeData(%aiId,"ubCombatState",$UberBoss::CombatStateAttacking);
     UberBoss::switchTarget(%aiName,%aiId,fetchData(%aiId,"currentTarget"));
     AI::setVar(%aiName, spotDist, GetRange(warhammer));
-    Player::mountItem(%aiId,"warhammer",0);
+    Player::mountItem(%aiId,"warhammer",$WeaponSlot);
 }
 
 function UberBoss::clearVars(%aiId)
@@ -214,7 +214,7 @@ function UberBoss::DoReset(%aiName,%aiId)
     AI::newDirectiveRemove(%aiName, 99);
     AI::newDirectiveRemove(%aiName, 100);
     storeData(%aiId,"ubStandWaiting",0);
-    Player::unmountItem(Client::getOwnedObject(%aiId),0);
+    Player::unmountItem(Client::getOwnedObject(%aiId),$WeaponSlot);
 }
 
 function UberBoss::switchTarget(%aiName,%aiId,%targetClient)
@@ -484,7 +484,7 @@ function UberBoss::PreCombat(%aiName,%aiId)
     %pos = Gamebase::getPosition(%aiId);
     //playSound(SoundUberBossLaugh1,%pos);
     Gamebase::playSound(Client::getOwnedObject(%aiId),SoundUberBossLaugh1,0);
-    schedule("Player::mountItem("@%aiId@",warhammer,0);",1.7);
+    schedule("Player::mountItem("@%aiId@",warhammer,"@$WeaponSlot@");",1.7);
     schedule("UberBoss::StartCombat("@%aiName@","@%aiId@");",2);
 }
 
@@ -494,7 +494,7 @@ function UberBoss::StartCombat(%aiName,%aiId,%interrupt)
 {
     dbecho($dbechoMode, "UberBoss::StartCombat(" @ %aiName @ ","@%aiId@","@%interrupt@")");
     if(%interrupt != "")
-        Player::mountItem(%aiId,"warhammer",0);
+        Player::mountItem(%aiId,"warhammer",$WeaponSlot);
     storeData(%aiId,"ubCombatReady","");
     storeData(%aiId,"ubStandWaiting","");
     //playSound(SoundUberBossAcquired1,Gamebase::getPosition(%aiId));
@@ -666,7 +666,7 @@ function UB::CheckLeap(%aiId,%mkr)
         Item::setVelocity(Client::getOwnedObject(%aiId),"0 0 0");
         Gamebase::setPosition(%aiId,%mkrPos);
         storeData(%aiId,"ubLeapTime","");
-        Player::unmountItem(Client::getOwnedObject(%aiId),0);
+        Player::unmountItem(Client::getOwnedObject(%aiId),$WeaponSlot);
         %stopFlag = true;
     }
     
@@ -729,5 +729,6 @@ function UberBoss::GiveStuff(%aiId)
     //HardcodeAIskills(%aiId);
     UberBoss::SkillSetup(%aiId);
     RPGItem::incItemCount(%aiId,FieldPlateArmor0);
-    //Player::mountItem(%aiId,WarMaul,0);
+    RPGItem::RefreshPlayerEquipStats(%aiId);
+    //Player::mountItem(%aiId,WarMaul,$WeaponSlot);
 }

@@ -16,6 +16,11 @@ function RPGItem::setItemAffix(%itemTag,%affixType,%amt,%special)
     %bFound = false;
     for(%i = 0; (%w = String::getWord(%itemTag,"_",%i)) != "_"; %i++)
     {
+        if(%i == 0)
+        {
+            %tag = %w;
+            continue;
+        }
         //echo(Math::isInteger(String::right(%w,String::len(%w)-%affixLen)));
         if(String::findSubStr(%w,%affixType) == 0) // && Math::isInteger(String::right(%w,String::len(%w)-%affixLen)))
         {
@@ -73,6 +78,27 @@ function RPGItem::ParseAffixes(%itemTag)
         %affix = String::getSubStr(%w,0,$RPGItem::affixLen);
         %val = String::getSubStr(%w,$RPGItem::affixLen,9999);
         $ParseAffix[%affix] = %val;
+    }
+}
+
+function RPGItem::getImprovementLevel(%itemTag)
+{
+    RPGItem::ParseData(%itemTag);
+    return $RPGItemAffix::improvementLevel[%itemTag];
+}
+
+function RPGItem::ParseData(%itemTag)
+{
+    if(!$RPGItem::Cached[%itemTag])
+    {
+        deleteVariables("ParseAffix*");
+        RPGItem::ParseAffixes(%itemTag);
+        if($ParseAffix["im"] == "")
+            $RPGItemAffix::improvementLevel[%itemTag] = 0;
+        else
+            $RPGItemAffix::improvementLevel[%itemTag] = $ParseAffix["im"];
+        
+        $RPGItem::Cached[%itemTag] = true;
     }
 }
 

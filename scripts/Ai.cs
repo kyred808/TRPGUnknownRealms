@@ -283,7 +283,7 @@ function RaycastCheck(%player,%eyeTrans,%otherObj,%range,%offset)
     $RayCast::Rotation = "";
     if(%eyeTrans == "")
         %eyeTrans = Gamebase::getEyeTransform(%player);
-    echo(%player @" Eye: "@ %eyeTrans);
+    //echo(%player @" Eye: "@ %eyeTrans);
     %eyePos = Word::getSubWord(%eyeTrans,9,3);
     %eyeDir = Word::getSubWord(%eyeTrans,3,3);
     %eyeRot = Vector::getRotation(%eyeDir);
@@ -1820,7 +1820,7 @@ function RotateTownBot(%id, %rot, %realmId)
 
 function GatherBeltShopInfo(%aiName,%info)
 {
-    echo("AI Name: "@ %aiName);
+    //echo("AI Name: "@ %aiName);
     for(%i = 0; GetWord(%info, %i) != -1; %i++)
     {
         %itemIdx = GetWord(%info, %i);

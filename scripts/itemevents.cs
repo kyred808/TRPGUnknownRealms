@@ -296,7 +296,7 @@ function Item::onCollision(%this,%object)
                 deleteObject(%this);
             }
 		}
-        else if(%item == "MeteorBits" || %item == "MeteorBitsRed")
+        else if(%item == "MeteorBits" || %item == "MeteorBitsRed" || %item == "OreShape")
         {
             %itemType = %this.itemObj;
             if(%itemType != "")

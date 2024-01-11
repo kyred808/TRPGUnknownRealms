@@ -100,6 +100,16 @@ function RPGItem::LabelToItemName(%itemLabel)
     return $RPGItem::ItemDef[RPGItem::LabelToItemID(%itemLabel),Name];
 }
 
+function RPGItem::GetItemGroupFromTag(%itemTag)
+{
+    return RPGItem::getItemGroup(RPGItem::getItemIDFromTag(%itemTag));
+}
+
+function RPGItem::GetBaseTag(%itemTag)
+{
+    return $RPGItem::ItemDef[RPGItem::getItemIDFromTag(%itemTag),BaseItemTag];
+}
+
 //Careful when using this
 function RPGItem::LabelToItemTag(%itemLabel)
 {
@@ -128,7 +138,7 @@ function RPGItem::getItemNameFromTag(%itemTag)
             if( %im > 0)
                 %ret = "+"@%im@" "@%ret;
             else if(%im < 0)
-                %ret = "-"@%im@" "@%ret;
+                %ret = %im@" "@%ret;
         }
     }
     //if(RPGItem::getItemGroupFromTag(%itemTag) == "Gems")
@@ -609,6 +619,7 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
 {
     if(%showmsg == "")
         %showmsg = true;
+
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     if($RPGItem::ItemDef[%itemId,Equippable])
     {
@@ -646,6 +657,10 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
             }
             else if(%class == $RPGItem::WeaponClass)
             {
+                if(Player::getMountedItem(%clientId,$BaseWeaponSlot) != "BaseWeapon")
+                {
+                    Player::mountItem(%clientId,"BaseWeapon",$BaseWeaponSlot);
+                }
                 %curWeapon = fetchData(%clientId,"EquippedWeapon");
                 if(%curWeapon != %itemTag)
                 {

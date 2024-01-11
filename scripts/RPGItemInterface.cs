@@ -117,7 +117,7 @@ function RPGItem::forceUpdateBeltItems(%clientId,%type)
 {
     %ns = Belt::GetNS(%clientId,%type);
     %itemList = Word::getSubWord(%ns,1,9999);
-    echo(%ns);
+    //echo(%ns);
     for(%i = 0; %i < getWord(%ns,0); %i++)
     {
         %item = getWord(%itemList,%i);

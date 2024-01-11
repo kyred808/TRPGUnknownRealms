@@ -197,7 +197,7 @@ function createServer(%mission, %dedicated)
     
     
     
-	$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
+	//$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
 
 	Server::storeData();
 
@@ -229,7 +229,8 @@ function createServer(%mission, %dedicated)
 	LoadWorld();
     if($Realms::MapUsesRealms)
         InitRealms();
-	InitCrystals();
+	//InitCrystals();
+    Realms::InitCrystals();
     Realms::InitZones();
     Realms::InitFerry();
     Realms::InitTownBots();

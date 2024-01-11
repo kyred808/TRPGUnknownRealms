@@ -187,7 +187,7 @@ function AddBonusStatePoints(%clientId, %filter)
 
 function UpdateBonusState(%clientId, %type, %ticks)
 {
-    echo("Bonus: "@%type@" "@ %ticks);
+    //echo("Bonus: "@%type@" "@ %ticks);
 	//look thru the current bonus states and attempt to update
 	%flag = False;
 	for(%i = 1; %i <= $maxBonusStates; %i++)

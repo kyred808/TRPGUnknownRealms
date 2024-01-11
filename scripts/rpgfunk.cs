@@ -664,8 +664,6 @@ function LoadCharacter(%clientId)
         //storeData(%clientId, "StoredLoreItems", $funk::var[%name, 0, 38]);
         //storeData(%clientId, "StoredEquipItems", $funk::var[%name, 0, 39]);
         
-        Belt::refreshFullBeltList(%clientId);
-
 		$numMessage[%clientId, 1] = $funk::var[%name, 7, 1];
 		$numMessage[%clientId, 2] = $funk::var[%name, 7, 2];
 		$numMessage[%clientId, 3] = $funk::var[%name, 7, 3];
@@ -1091,7 +1089,7 @@ function UpdateAppearance(%clientId)
 	for(%i = 0; (%w = GetWord(%list, %i)) != -1; %i++)
 	{
         %label = getCroppedItem(RPGItem::ItemTagToLabel(%w));
-        echo(%label);
+        //echo(%label);
 		if($AccessoryVar[%label, $AccessoryType] == $BodyAccessoryType)
 			%armor = %label;
 		else if($AccessoryVar[%label, $AccessoryType] == $ShieldAccessoryType)
@@ -1903,7 +1901,7 @@ function RefreshEquipment(%clientId)
     if(%weapon != -1)
     {
         //echo(%weapon);
-        echo(SkillCanUse(%clientId,%weapon));
+        //echo(SkillCanUse(%clientId,%weapon));
         if(!SkillCanUse(%clientId,%weapon))
         {
             Player::unMountItem(%clientId, $WeaponSlot);
@@ -2918,6 +2916,13 @@ function WhatIs(%item)
         %tag = %item;
         %item = getCroppedItem(RPGItem::ItemTagToLabel(%item));
         %desc = RPGItem::getItemNameFromTag(%tag);
+        if(RPGItem::GetItemGroupFromTag(%tag) == $RPGItem::WeaponClass)
+        {
+            %im = RPGItem::getImprovementLevel(%tag);
+            echo("TAG: "@ %tag);
+            echo("IM: "@ %im);
+            %bonusAtk = round(GetWord(GetAccessoryVar(%item, $SpecialVar), 1) * %im * 0.1);
+        }
     }
     else
         %desc = RPGItem::LabelToItemName(%item);
@@ -2990,7 +2995,21 @@ function WhatIs(%item)
 	%msg = "";
 	%msg = %msg @ "<f1>" @ %desc @ %loc @ " <f0>"@%tag@"<f1>\n";
     if(%abi == "" && %specialVars != "None")
+    {
+        //if(%bonusAtk != "")
+        //{
+        //    if(%bonusAtk > 0)
+        //        %msg = %msg @ "\nBonuses: " @ %specialVars+%bonusAtk @" (+"@%bonusAtk@")";
+        //    else
+        //        %msg = %msg @ "\nBonuses: " @ %specialVars+%bonusAtk @" ("@%bonusAtk@")";
+        //}
+        //else
         %msg = %msg @ "\nBonuses: " @ %specialVars;
+        if(%bonusAtk > 0)
+            %msg = %msg @ " (ATK+"@%bonusAtk@")";
+        else if(%bonusAtk < 0)
+            %msg = %msg @ " (ATK"@%bonusAtk@")";
+    }
     if(%coolD != "")
         %msg = %msg @ "\nCooldown: " @ %coolD;
 	if(%s != "")

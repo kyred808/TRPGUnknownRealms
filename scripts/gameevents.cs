@@ -589,6 +589,13 @@ function RecursiveWorld(%seconds)
     PlayerRealmCheck();
     WorldEventsCheck();
     
+    for(%i = 0; (%realm = $RealmData::RealmIdToLabel[%i]) != ""; %i++)
+    {
+        //Realm activation is WIP
+        //if($RealmData[%realm, Active])
+            Realms::UpdateRealm(%realm);
+    }
+    
 	if($ticker[1] >= (($SaveWorldFreq-60) / %seconds) && !$tmpNoticeSaveWorld)
 	{
 		messageAll(2, "Notice: SaveWorld will occur in 60 seconds.");

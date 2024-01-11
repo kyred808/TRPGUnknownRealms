@@ -31,6 +31,9 @@ instant SimGroup "MissionGroup" {
         instant SimVolume "tedFile" {
 			fileName = "missions\\RMR.ted";
 		};
+        instant SimVolume "RedPlanet" { //Must be high so correct mines.dis is loaded
+            fileName = "Redplanet.vol";
+        };
 		instant SimVolume "hosedfrt" {
 			fileName = "hosedfrt.vol";
 		};
@@ -1920,14 +1923,11 @@ instant SimGroup "MissionGroup" {
                 locked = "0";
             };
         };
-        instant SimGroup "crystals" {
-            instant StaticShape "1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 200 12 0 13 0" {
-                dataBlock = "Crystal";
-                name = "";
+        instant SimGroup "Crystals" {
+            instant Marker "1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 200 12 0 13 0" {
+                dataBlock = "CrystalMarker";
                 position = "-1338 2874.25 285.375";
                 rotation = "-0.244355 -0.36233 1.47106";
-                destroyable = "True";
-                deleteOnDestroy = "False";
                 locked = "0";
                 bonus1 = "0";
                 bonus2 = "0";
@@ -1943,13 +1943,10 @@ instant SimGroup "MissionGroup" {
                 bonus12 = "0";
                 bonus13 = "0";
             };
-            instant StaticShape "1 0 2 0 3 0 4 0 5 0 6 300 7 0 8 0 9 0 10 0 11 0 12 3 13 0" {
-                dataBlock = "Crystal";
-                name = "";
+            instant Marker "1 0 2 0 3 0 4 0 5 0 6 300 7 0 8 0 9 0 10 0 11 0 12 3 13 0" {
+                dataBlock = "CrystalMarker";
                 position = "-1218.75 -2620.25 143.625";
                 rotation = "0.25693 -0.0395074 1.72395";
-                destroyable = "True";
-                deleteOnDestroy = "False";
                 locked = "0";
                 bonus1 = "0";
                 bonus2 = "0";
@@ -1965,13 +1962,10 @@ instant SimGroup "MissionGroup" {
                 bonus12 = "3";
                 bonus13 = "0";
             };
-            instant StaticShape "1 50 2 0 3 50 4 5 5 0 6 15 7 10 8 5 9 0 10 0 11 0 12 0 13 0" {
-                dataBlock = "Crystal";
-                name = "";
+            instant Marker "1 50 2 0 3 50 4 5 5 0 6 15 7 10 8 5 9 0 10 0 11 0 12 0 13 0" {
+                dataBlock = "CrystalMarker";
                 position = "-1748 -1071 277.125";
                 rotation = "0 0 0";
-                destroyable = "True";
-                deleteOnDestroy = "False";
                 locked = "0";
                 bonus1 = "50";
                 bonus2 = "0";
@@ -1987,13 +1981,10 @@ instant SimGroup "MissionGroup" {
                 bonus12 = "0";
                 bonus13 = "0";
             };
-            instant StaticShape "1 10 2 50 3 50 4 5 5 50 6 0 7 0 8 30 9 0 10 0 11 0 12 0 13 0" {
-                dataBlock = "Crystal";
-                name = "";
+            instant Marker "1 10 2 50 3 50 4 5 5 50 6 0 7 0 8 30 9 0 10 0 11 0 12 0 13 0" {
+                dataBlock = "CrystalMarker";
                 position = "-1712 -1177 255.09";
                 rotation = "0 0 0";
-                destroyable = "True";
-                deleteOnDestroy = "False";
                 locked = "0";
                 bonus1 = "10";
                 bonus2 = "50";
@@ -2009,13 +2000,10 @@ instant SimGroup "MissionGroup" {
                 bonus12 = "0";
                 bonus13 = "0";
             };
-            instant StaticShape "1 100 2 50 3 0 4 20 5 200 6 10 7 0 8 0 9 25 10 15 11 10 12 5 13 0" {
-                dataBlock = "Crystal";
-                name = "";
+            instant Marker "1 100 2 50 3 0 4 20 5 200 6 10 7 0 8 0 9 25 10 15 11 10 12 5 13 0" {
+                dataBlock = "CrystalMarker";
                 position = "-1632 -1116 215.086";
                 rotation = "0 0 0";
-                destroyable = "True";
-                deleteOnDestroy = "False";
                 locked = "0";
                 bonus1 = "100";
                 bonus2 = "50";
@@ -2031,13 +2019,10 @@ instant SimGroup "MissionGroup" {
                 bonus12 = "5";
                 bonus13 = "0";
             };
-            instant StaticShape "1 400 2 300 3 500 4 20 5 50 6 30 7 300 8 20 9 100 10 15 11 5 12 25 13 50" {
-                dataBlock = "Crystal";
-                name = "";
+            instant Marker "1 400 2 300 3 500 4 20 5 50 6 30 7 300 8 20 9 100 10 15 11 5 12 25 13 50" {
+                dataBlock = "CrystalMarker";
                 position = "-1544 -1116 293.125";
                 rotation = "0 0 0";
-                destroyable = "True";
-                deleteOnDestroy = "False";
                 locked = "0";
                 bonus1 = "400";
                 bonus2 = "300";
@@ -3259,6 +3244,15 @@ instant SimGroup "MissionGroup" {
                 rotation = "0 0 0";
                 destroyable = "false";
                 deleteOnDestroy = "False";
+            };
+        };
+        instant SimGroup "GDenDungeon" {
+            instant InteriorShape "gdenfinal1" {
+                fileName = "gdenfinal.dis";
+                isContainer = "1";
+                position = "-1692.42 986.679 273.15";
+                rotation = "0 -0 -1.57997";
+                lightParams = "0 ";
             };
         };
         instant SimGroup "HemacTower" {

@@ -77,7 +77,7 @@ function SetupBank(%clientId, %id)
 	Client::setInventoryText(%clientId, %txt);
 
 	%info = RPGItem::getFullItemList(%clientId,true);
-    echo(%info);
+    //echo(%info);
     %buyList = ""; //"COINS|COINS|"@fetchData(%clientId,"BANK")@"|Money,";
 	for(%i = 0; GetWord(%info, %i) != -1; %i+=2)
 	{

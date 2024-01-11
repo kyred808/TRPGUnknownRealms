@@ -585,77 +585,145 @@ function BaseWeaponImage::onFire(%player,%slot)
             schedule("Player::trigger("@%player@","@$WeaponSlot@",false);",0.1,%player);
         }
     }
+    //New to adapt a new weapon type
+    //else
+    //{
+    //    %spell = fetchData(%clientId,"EquippedSpell");
+    //    if(%spell != "")
+    //    {
+    //        if(Player::isTriggered(%player,%slot))
+    //        {
+    //            if(getSimTime() >= $lastAttackTime[%clientId] + 0.2) //Spell update rate
+    //            {
+    //                %time = getSimTime();
+    //                if(%player.startChargeTime == "")
+    //                    %player.startChargeTime = %time;
+    //                $lastAttackTime[%clientId] = %time;
+    //                %timeDiff = %time - %player.startChargeTime;
+    //                if(%timeDiff < $Spell::chargeTime[%spell])
+    //                {
+    //                    %msg = ChargeMagic::CreateBottomPrintMsg(%clientId,%spell,%timeDiff);
+    //                }
+    //                else
+    //                {
+    //                    %msg = "<jc>Charge:\n<f1>[====================]\n<f0>You are ready to cast!";
+    //                }
+    //                
+    //                bottomprint(%clientId,%msg,0.4);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            %time = getSimTime();
+    //            %timeDiff = %time - %player.startChargeTime;
+    //            if(%timeDiff >= $Spell::chargeTime[%spell])
+    //            {
+    //            
+    //            }
+    //            %player.startChargeTime = "";
+    //        }
+    //    }
+    //}
 }
 
-//function BaseWeaponImage::onActivate(%player,%slot)
-//{
-//    echo("BaseWeaponImage::onActivate("@%player@","@%slot@")");
-//    %clientId = Player::getClient(%player);
-//    %mm = Player::getMountedItem(%player,$WeaponSlot);
-//    echo(%mm);
-//    if(%mm == -1)
-//    {
-//        storeData(%clientId,"EquippedWeapon","");
-//        return;
-//    }
-//    
-//    %weapon = fetchData(%clientId,"EquippedWeapon");
-//    %id = RPGItem::getItemIDFromTag(%weapon);
-//    %wtype = $RPGItem::ItemDef[%id,WeaponType];
-//    %label = $RPGItem::ItemDef[%id,Label];
-//    echo(%id);
-//    if(%wtype != "")
-//    {
-//        $lastAttackTime[%clientId] = getSimTime();
-//        if(%wtype == $RPGItem::WeaponTypeMelee)
-//        {
-//            echo(%label @" "@ GetDelay(%label));
-//            MeleeAttack(%player, GetRange(%label), %label);
-//        }
-//        else if(%wtype == $RPGItem::WeaponTypeRange)
-//        {
-//            //Need to fix for other weapons
-//            %vel = 100;
-//            ProjectileAttack(%clientId, %label, %vel);
-//        }
-//        else if(%wtype == $RPGItem::WeaponTypePick)
-//        {
-//            PickAxeSwing(%player, GetRange(%label), %label);
-//        }
-//        
-//        Player::trigger(%player,$WeaponSlot,true);
-//    }
-//    
-//}
-//
-//function BaseWeaponImage::onUpdateFire(%player,%slot)
-//{
-//    %clientId = Player::getClient(%player);
-//    %id = RPGItem::getItemIDFromTag(fetchData(%clientId,"EquippedWeapon"));
-//    %label = $RPGItem::ItemDef[%id,Label];
-//    
-//    if(getSimTime() >= $lastAttackTime[%clientId] + GetDelay(%label))
-//    {
-//        %wtype = $RPGItem::ItemDef[%id,WeaponType];
-//        if(%wtype == $RPGItem::WeaponTypeMelee)
-//        {
-//            MeleeAttack(%player, GetRange(%label), %label);
-//        }
-//        else if(%wtype == $RPGItem::WeaponTypeRange)
-//        {
-//            //Need to fix for other weapons
-//            %vel = 100;
-//            ProjectileAttack(%clientId, %label, %vel);
-//        }
-//        else if(%wtype == $RPGItem::WeaponTypePick)
-//        {
-//            PickAxeSwing(%player, GetRange(%label), %label);
-//        }
-//        $lastAttackTime[%clientId] = getSimTime();
-//    }
-//}
-//
-//function BaseWeaponImage::onDeactivate(%player,%slot)
-//{
-//    Player::trigger(%player,$WeaponSlot,false);
-//}
+function ChargeMagicImage::onActivate(%player,%slot)
+{
+    //echo("ChargeMagicImage::onActivate("@%player@","@%slot@")");
+    %player.chargeStartTime = getSimTime();
+    %clientId = Player::getClient(%player);
+    %i = fetchData(%clientId,"EquippedSpell");
+    playSound($Spell::chargeSound[%i], GameBase::getPosition(%clientId));
+    //%player.chargeStage = -1;
+    %ct = $Spell::chargeTime[%i];
+    remoteEval(%clientId,"rpgbarhud",%ct,1,0,"||",4,$Spell::name[%i]);
+}
+
+function ChargeMagicImage::onDeactivate(%player,%slot)
+{
+    //echo("ChargeMagicImage::onDeactivate("@%player@","@%slot@")");
+    //%trans = Gamebase::getMuzzleTransform(%player);
+    //%vel = Item::getVelocity(%player);
+    %clientId = Player::getClient(%player);
+    %spell = fetchData(%clientId,"EquippedSpell");
+    %timeDiff = getSimTime()-%player.chargeStartTime;
+    Spell::CastChargedMagic(%clientId,%spell,%timeDiff);
+    
+    if(%timeDiff < $Spell::chargeTime[%spell])
+        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"CANCELLED");
+    //if(%player.chargeStage == 0)
+    //{
+    //    Projectile::spawnProjectile(Firebolt,%trans,%player,%vel);
+    //    playSound(HitPawnDT,Gamebase::getPosition(%player));
+    //}
+    //else if(%player.chargeStage == 1)
+    //{
+    //    Projectile::spawnProjectile(Fireball,%trans,%player,%vel);
+    //    playSound(ActivateAB,Gamebase::getPosition(%player));
+    //}
+    //else if(%player.chargeStage == 2)
+    //{
+    //    Projectile::spawnProjectile(Melt,%trans,%player,%vel);
+    //    playSound(LaunchFB,Gamebase::getPosition(%player));
+    //}
+    
+    //Player::unmountItem(%player,7);
+    %player.chargeStartTime = "";
+    //%player.chargeStage = "";
+}
+
+$Charge::spacerLen = 20;
+
+function ChargeMagicImage::onUpdateFire(%player,%slot)
+{
+    //echo("ChargeMagicImage::onUpdateFire("@%player@","@%slot@")");
+    
+    %clientId = Player::getClient(%player);
+    %time = getSimTime();
+    %timeDiff = %time - %player.chargeStartTime;
+    %spell = fetchData(%clientId,"EquippedSpell");
+    
+    if(%timeDiff >= $Spell::chargeTime[%spell])
+    {
+        if(%time >= $lastAttackTime[%clientId] + 3)
+        {
+            $lastAttackTime[%clientId] = %time;
+            remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"You are ready to cast!");
+        }
+    }
+    
+    //if(%time >= $lastAttackTime[%clientId] + 0.2) //Spell update rate
+    //{
+    //    
+    //    
+    //    %chargeTime = $Spell::chargeTime[%spell];
+    //    if(%timeDiff < %chargeTime)
+    //    {
+    //        //%msg = ChargeMagic::CreateBottomPrintMsg(%clientId,%spell,%timeDiff);
+    //    }
+    //    else
+    //    {
+    //        
+    //        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"You are ready to cast!");
+    //        //if(%player.flash)
+    //        //    %msg = "<jc>Charge:\n<f1>[====================]\n<f0>You are ready to cast!";
+    //        //else
+    //        //    %msg = "<jc>Charge:\n<f1>[====================]\n<f1>You are ready to cast!";
+    //        //%player.flash = !%player.flash;
+    //    }
+    //    
+    //    bottomprint(%clientId,%msg,0.4);
+    //}
+    //%player.chargeLastUpdate = getSimTime();
+}
+
+function ChargeMagic::CreateBottomPrintMsg(%clientId,%spellIndex,%timeDiff)
+{
+    %chargeTime = $Spell::chargeTime[%spellIndex];
+    %mm = floor(%timeDiff* $Charge::spacerLen/%chargeTime);
+    %bmsg = "<jc>Charge: "@ floor(100*(%timeDiff/%chargeTime)) @"%\n[<f1>";
+    %msg = String::rpad(%bmsg,String::len(%bmsg) +%mm,"=");
+    %bb = ceil($Charge::spacerLen - %mm);
+    %msg = String::rpad(%msg,String::len(%msg)+%bb," ");
+    %msg = %msg @ "<f0>]";
+    return %msg;
+}
