@@ -492,7 +492,7 @@ function CalculateDamageReduction(%clientId)
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
 	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-    //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+    echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     
     %weapTag = %weapon;
     %weapon = RPGItem::ItemTagToLabel(%weapon);
@@ -586,14 +586,15 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
             else
             {
-                if($Spell::index[%weapon] != "")
+                echo($Spell::index[%weapTag]);
+                if($Spell::index[%weapTag] != "")
                 {
-                    %skilltype = $SkillType[%weapon];
+                    %skilltype = $SkillType[%weapTag];
                 }
                 else
                     %skilltype = $skilloffensivecasting;
             }
-                
+            echo("Spell Type: "@ %skilltype);
 			%sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
 			%dmg = %value + %sdm;
 			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));

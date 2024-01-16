@@ -600,7 +600,7 @@ function AI::Periodic(%aiName)
                     
                     if($AccessoryVar[%weap, $AccessoryType] == $RangedAccessoryType)
                     {
-                        echo(%closest);
+                        //echo(%closest);
                         AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
                         if(%closest <= 10)
                         {

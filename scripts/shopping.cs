@@ -57,6 +57,28 @@ function SetupShop(%clientId, %id)
     remoteEval(%clientId,"BufferedBuyList",%buyList,true,true);
 }
 
+function SetupItemRefinement(%clientId,%anvilObj)
+{
+    %clientId.currentAnvil = "RefineEquip "@%anvilObj;
+    remoteEval(%clientId,"ClearBuyList");
+    remoteEval(%clientId,"SetMenuOptions",false);
+	Client::setGuiMode(%clientId, 4);
+    %clientId.bulkNum = "";
+    
+    %txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
+	Client::setInventoryText(%clientId, %txt);
+    
+}
+
+//WIP
+//function SetupItemOptions(%clientId,%itemTag)
+//{
+//    remoteEval(%clientId,"ClearBuyList");
+//    
+//    %itemStr = %itemTag @"|What is?|0|Options";
+//    remoteEval(%clientId,"BufferedBuyList",%itemStr,true,true);
+//}
+
 function SetupBank(%clientId, %id)
 {
 	dbecho($dbechoMode, "SetupBank(" @ %clientId @ ", " @ %id @ ")");
@@ -197,10 +219,13 @@ function ClearCurrentShopVars(%clientId)
 {
 	dbecho($dbechoMode, "ClearCurrentShopVars(" @ %clientId @ ")");
 
-      %clientId.currentShop = "";
-      %clientId.currentBank = "";
-      %clientId.currentSmith = "";
+    %clientId.currentShop = "";
+    %clientId.currentBank = "";
+    %clientId.currentSmith = "";
 	%clientId.currentInvSteal = "";
+    remoteEval(%clientId,"SetMenuOptions",true); //Restore to default
+    %clientId.currentAnvil = "";
+    
     //remoteEval(%clientId,"SetItemCount","COINS","COINS",0,"Money");
 	storeData(%clientId, "TempPack", "");
 	storeData(%clientId, "TempSmith", "");

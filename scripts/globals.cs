@@ -29,7 +29,7 @@ if($joinHouseRankPoints == "") $joinHouseRankPoints = 4;
 
 if($spawnMultiplier == "") $spawnMultiplier = "1.0";
 if($allowDuplicateIPs == "") $allowDuplicateIPs = True;
-if($recallDelay == "") $recallDelay = 300;
+if($recallDelay == "") $recallDelay = 30;
 
 if($hardcore == "") $hardcore = False;
 if($SlowdownHitDelay == "") $SlowdownHitDelay = 1.0;
@@ -69,6 +69,8 @@ $SkillBoostMax = 5;
 $SkillBoostNumPrimary = 3; //Rest are secondary
 $SkillPrimaryBonus = 40;
 $SkillSecondaryBonus = 20;
+
+$IdleStaminaBaseRecovery = 1.0; //0.3
 
 //Hear air in mountains
 $UnknownZoneAmbientSoundMinHeight = 300;

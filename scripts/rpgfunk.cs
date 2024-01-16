@@ -2919,8 +2919,6 @@ function WhatIs(%item)
         if(RPGItem::GetItemGroupFromTag(%tag) == $RPGItem::WeaponClass)
         {
             %im = RPGItem::getImprovementLevel(%tag);
-            echo("TAG: "@ %tag);
-            echo("IM: "@ %im);
             %bonusAtk = round(GetWord(GetAccessoryVar(%item, $SpecialVar), 1) * %im * 0.1);
         }
     }
@@ -2983,11 +2981,7 @@ function WhatIs(%item)
     }
 
     %specialVars = "";
-    //if(BeltEquip::IsBeltEquipItem(%item))
-    //{
-    //    %specialVars = BeltEquip::TranslateSpecialVars(BeltEquip::GetSpecialVars(%item));
-    //}
-    //else
+
     %specialVars = WhatSpecialVars(%item);
     
     %restrict = WhatSkills(%item);

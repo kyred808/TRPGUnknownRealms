@@ -716,7 +716,7 @@ $Spell::recoveryTime[28] = 4.65;
 $Spell::castType[28] = $SpellCastTypeBomb;
 $Spell::bombData[28] = Bomb2;
 $Spell::radius[28] = 15;
-$Spell::damageValue[28] = 50;
+$Spell::damageValue[28] = 100;
 $Spell::trackTarget[28] = true;
 $Spell::LOSrange[28] = 80;
 $Spell::startSound[28] = DeActivateWA;
@@ -741,7 +741,7 @@ $Spell::recoveryTime[29] = 10;
 $Spell::castType[29] = $SpellCastTypeBomb;
 $Spell::bombData[29] = Bomb1;
 $Spell::radius[29] = 25;
-$Spell::damageValue[29] = 175;
+$Spell::damageValue[29] = 275;
 $Spell::LOSrange[29] = 80;
 $Spell::startSound[29] = SpellCastSnd;
 $Spell::endSound[29] = holysmite;
@@ -1346,11 +1346,13 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
     }
     else if(%castType == $SpellCastTypeSelfOrLOS)
     {
-        if(%castObj == 0)
+        %objtype = getObjectType(%castObj);
+        if(%castObj == 0 || %objtype != "Player")
         {
             Spell::ApplyEffectVars(%clientId,%clientId,%index);
             %castPos = GameBase::getPosition(%clientId);
             %overrideEndSound = $Spell::overrideEndSound[%index];
+            Client::sendMessage(%clientId, $MsgBeige, "Received "@ $Spell::name[%index]);
             %returnFlag = true;
         }
         else if(getObjectType(%castObj) == "Player")

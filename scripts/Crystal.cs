@@ -44,29 +44,33 @@ function OreCrystal::onRemove(%this)
 
 function OreCrystal::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss)
 {
-    %this.hp = %this.hp - 1;
-    if(%this.hp < 1)
+    if($AccessoryVar[RPGItem::ItemTagToLabel(%weapon), $AccessoryType] == $PickAxeAccessoryType)
     {
-        %pos = Gamebase::getPosition(%this);
-        %above = Vector::add(%pos,Vector::getFromRot(Gamebase::getRotation(%this),2));
-        GameBase::setDamageLevel(%this,1);
-        %amt = getIntRandomMT(1,4);
-        for(%i = 0; %i < %amt; %i++)
+        %this.hp = %this.hp - 1;
+        if(%this.hp < 1)
         {
-            %bits = newObject("", "Item", OreShape, 1, false);
-            %bits.itemObj = RPGItem::LabelToItemTag("TitaniteShard");
-            addToSet("MissionCleanup", %bits);
-            schedule("Item::Pop(" @ %bits @ ");", 500, %bits);
-            %rot = "0 0 "@getRandomMT()*2*$PI;
-            %vel = Vector::getFromRot(%rot,$MeteorBitsSpeed,$MeteorBitsZSpeed);
-            Gamebase::setPosition(%bits,%above);
-            Gamebase::setRotation(%bits,%rot);
-            Item::setVelocity(%bits,%vel);
+            %pos = Gamebase::getPosition(%this);
+            %above = Vector::add(%pos,Vector::getFromRot(Gamebase::getRotation(%this),2));
+            GameBase::setDamageLevel(%this,1);
+            %amt = getIntRandomMT(1,4);
+            //echo("SpawnAmt: "@ %amt);
+            for(%i = 0; %i < %amt; %i++)
+            {
+                %bits = newObject("", "Item", OreShape, 1, false);
+                %bits.itemObj = RPGItem::LabelToItemTag("TitaniteShard");
+                addToSet("MissionCleanup", %bits);
+                schedule("Item::Pop(" @ %bits @ ");", 500, %bits);
+                %rot = "0 0 "@getRandomMT()*2*$PI;
+                %vel = Vector::getFromRot(%rot,$MeteorBitsSpeed,$MeteorBitsZSpeed);
+                Gamebase::setPosition(%bits,%above);
+                Gamebase::setRotation(%bits,%rot);
+                Item::setVelocity(%bits,%vel);
+            }
+            %realm = getWord(%this.id,0);
+            %id = getWord(%this.id,1);
+            $RealmData[%realm,CrystalSpawned,%id] = false;
+            $RealmData[%realm,CrystalRespawnTime,%id] = getSimTime() + getIntRandomMT($OreCrystalData::MinRespawnTime,$OreCrystalData::MaxRespawnTime);
         }
-        %realm = getWord(%this.id,0);
-        %id = getWord(%this.id,1);
-        $RealmData[%realm,CrystalSpawned,%id] = false;
-        $RealmData[%realm,CrystalRespawnTime,%id] = getSimTime() + getIntRandomMT($OreCrystalData::MinRespawnTime,$OreCrystalData::MaxRespawnTime);
     }
 }
 

@@ -7,6 +7,15 @@ function fetchData(%clientId, %type)
 		%a = GetLevel(fetchData(%clientId, "EXP"), %clientId);
 		return %a;
 	}
+    else if(%type == "HealBurstMax")
+    {
+        return Cap(1 + floor(CalculatePlayerSkill(%clientId, $SkillHealing) / 125),1,5);
+    }
+    else if(%type == "HealBurstCounterToNext")
+    {
+        %curAmt = fetchData(%clientId,"HealBurst");
+        return (1+%curAmt)*1000;
+    }
     else if(%type == "AMR")
     {
         //%a = AddPoints(%clientId, 1);
@@ -90,7 +99,9 @@ function fetchData(%clientId, %type)
                 %affixBonus = round(%baseAtk * 0.1 * %im);
             }
             //%b = %baseAtk + %extra;
-            
+            //echo("AB: "@ %affixBonus);
+            //echo(%a);
+            //echo(%equipAtkStats);
             %val = %a + %equipAtkStats + %projAtk + %affixBonus; //+ %c;
             if(!Player::isAiControlled(%clientId))
             {
@@ -342,6 +353,39 @@ function storeData(%clientId, %type, %amt, %special)
 			$ClientData[%clientId, "COINS"] = %amt;
             $ClientData[%clientId, "totalWeight"] += %diff * $coinweight;
             storeData(%clientId,"refreshWeight",1,"inc");
+        }
+    }
+    else if(%type == "HealBurstCounter")
+    {
+        %tnb = fetchData(%clientId,"HealBurstCounterToNext");
+        %max = fetchData(%clientId,"HealBurstMax");
+        if(fetchData(%clientId,"HealBurst") < %max)
+        {
+            if(%special == "inc")
+                $ClientData[%clientId, %type] += %amt;
+            else if(%special == "dec")
+                $ClientData[%clientId, %type] -= %amt;
+            else
+                $ClientData[%clientId, %type] = %amt;
+            
+            %new = $ClientData[%clientId, %type];
+            
+            if(%new >= %tnb)
+            {
+                storeData(%clientId,"HealBurst",1,"inc");
+                %n = fetchData(%clientId,"HealBurst");
+                Client::sendMessage(%clientId,$MsgWhite,"You gained a heal burst! ("@%n@"/"@%max@")~wUnravelAM.wav");
+                if(%n < %max)
+                {
+                    %cnt = %new - %tnb;
+                    //This could recurse, if %cnt is high enough
+                    storeData(%clientId,"HealBurstCounter",%cnt);
+                }
+                else
+                    $ClientData[%clientId, %type] = 0;
+                
+                
+            }
         }
     }
     else if(%type == "refreshWeight") //Prevent weight from drifting due to floating point error
@@ -885,7 +929,7 @@ function DistributeExpForKilling(%damagedClient)
 			{
 				%value = 0;
 			}
-
+            
 			//rank point bonus
 			if(fetchData(%listClientId, "MyHouse") != "")
 			{
@@ -918,6 +962,12 @@ function DistributeExpForKilling(%damagedClient)
 			}
 
 			Game::refreshClientScore(%listClientId);
+            
+            if(fetchData(%TrueClientId,"HealBurst") < fetchData(%TrueClientId,"HealBurstMax"))
+            {
+                storeData(%listClientId,"HealBurstCounter",%final + %pvalue,"inc");
+                //Client::sendMessage(%listClientId, $MsgWhite, "You have gained " @ %pvalue @ " party experience!");
+            }
 		}
 	}
 }

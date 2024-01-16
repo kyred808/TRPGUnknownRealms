@@ -344,7 +344,8 @@ function RPGItem::decItemCount(%clientId,%itemTag,%amt,%showmsg)
         {
             if($RPGItem::ItemDef[%itemId,ClassName] == $RPGItem::WeaponClass && %itemTag == fetchData(%clientId,"EquippedWeapon"))
             {
-                Player::unmountItem(%clientId,$WeaponSlot);
+                //Player::unmountItem(%clientId,$WeaponSlot);
+                RPGItem::UnequipItem(%clientId,%itemTag,false);
                 storeData(%clientId,"EquippedWeapon","");
             }
         }
@@ -402,7 +403,8 @@ function RPGItem::setItemCount(%clientId,%itemTag,%amt)
         {
             if($RPGItem::ItemDef[%itemId,ClassName] == $RPGItem::WeaponClass && %itemTag == fetchData(%clientId,"EquippedWeapon"))
             {
-                Player::unmountItem(%clientId,$WeaponSlot);
+                //Player::unmountItem(%clientId,$WeaponSlot);
+                RPGItem::UnequipItem(%clientId,%itemTag,false);
                 storeData(%clientId,"EquippedWeapon","");
             }
         }

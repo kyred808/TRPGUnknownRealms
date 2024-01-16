@@ -15,7 +15,7 @@ $MaxMeteorCrystals = 35;
 $MeteorCrystalCount = 0;
 $MeteorCrystalLightTimeInSeconds = 120;
 
-$MeteorCrystalData::MaxTicks = 2160; //3 hours in 5s ticks
+$MeteorCrystalData::MaxTicks = 3600; //5 hours in 5s ticks
 $MeteorCrystalData::HitMax = 8;
 
 //3 to 5 mins in 5 sec ticks

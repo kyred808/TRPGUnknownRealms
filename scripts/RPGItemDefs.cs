@@ -22,16 +22,6 @@ $RPGItem::StorageItemLists[1] = "AccessoryItemStorage";
 $RPGItem::StorageItemLists[2] = "PouchItemStorage";
 $RPGItem::StorageItemLists[3] = "AmmoItemStorage";
 
-$TestCnt = 0;
-$TestLimit = 50;
-function TestItemMax()
-{
-    $TestCnt++;
-    RPGItem::incItemCount(2049,"id6_"@$TestCnt,1,false);
-    if($TestCnt < $TestLimit)
-        schedule("TestItemMax();",0.2);
-}
-
 function RPGItem::AddAccessoryEquipment(%label,%name,%class,%id,%datablk)
 {
     RPGItem::AddItemDefinition(%label,%name,%class,%id,%datablk);
@@ -424,9 +414,55 @@ $AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina 
 $AccessoryVar[bashersbangle, $MiscInfo] = "Bangle that increashing your Bludgeoning by 20 and Bashing by 100";
 
 
-AddItemHelper("titaniteshard","Titanite Shard","Ores",242,1,15000,MiscLootShape);
+AddItemHelper("titaniteshard","Titanite Shard","Ores",242,0.3,1500,MiscLootShape);
 
 $AccessoryVar[titaniteshard, $MiscInfo] = "A shard of titanite, used for weapon upgrading";
+
+AddItemHelper("lowqscrap","Low Quality Scrap","Pouch",243,0.1,0,MiscLootShape);
+$AccessoryVar[lowqscrap, $MiscInfo] = "Low quality scrap";
+
+AddItemHelper(EnergyShot,"Energy Shot","Potion",250,0.2,50,PotionShape,"DrinkStaminaPotion 15");
+AddItemHelper(EnergyVial,"Energy Vial","Potion",251,0.5,250,PotionShape,"DrinkStaminaPotion 25");
+
+
+AddItemHelper(Bread,"Bread","Pouch",252,0.5,1200,MiscLootShape,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+AddItemHelper(EarBread,"Ear Bread?","Pouch",253,0.5,25000,MiscLootShape,"EatFoodItem,cooldown 80,StamRegen 0.3 80,HPRegen "@0.45/$TribesDamageToNumericDamage@" 80,ATK 10 80");
+AddItemHelper(GobCookie,"Gob Cookie","Pouch",254,0.5,1200,MiscLootShape,"EatFoodItem,cooldown 60,StamRegen 0.5 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+AddItemHelper(YucJuice,"Yuc Juice","Pouch",255,0.5,7500,MiscLootShape,"EatFoodItem,cooldown 100,StamRegen 0.4 100,HPRegen "@0.5/$TribesDamageToNumericDamage@" 100");
+AddItemHelper(RedBerryPie,"Red Berry Pie","Pouch",256,0.5,12500,MiscLootShape);
+AddItemHelper(StrawberryCake,"Strawberry Cake","Pouch",257,0.5,25000,MiscLootShape);
+
+// Food Items
+//BeltItem::Add("Bread","Bread","FoodItems",0.5,1200,"","EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+//BeltItem::Add("Ear Bread?","EarBread","FoodItems",0.5,25000,750,"EatFoodItem,cooldown 80,StamRegen 0.3 80,HPRegen "@0.45/$TribesDamageToNumericDamage@" 80,ATK 10 80");
+//BeltItem::Add("Gob Cookie","GobCookie","FoodItems",0.5,1200,751,"EatFoodItem,cooldown 60,StamRegen 0.5 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
+//BeltItem::Add("YucJuice","YucJuice","FoodItems",0.5,7500,752,"EatFoodItem,cooldown 100,StamRegen 0.4 100,HPRegen "@0.5/$TribesDamageToNumericDamage@" 100");
+//BeltItem::Add("Red Berry Pie","RedBerryPie","FoodItems",0.5,12500,753);
+//BeltItem::Add("Strawberry Cake","StrawberryCake","FoodItems",0.5,25000,754);
+
+$AccessoryVar[Bread, $MiscInfo] = "A loaf of bread.  Eating it will boost health and stamina regen slightly.";
+$AccessoryVar[EarBread, $MiscInfo] = "Is this edible? Boosts health and stam regen and raises ATK by 10";
+$AccessoryVar[GobCookie, $MiscInfo] = "A cookie made of Gobbie Berries.  Eating it will boost stamina regen";
+$AccessoryVar[YucJuice, $MiscInfo] = "A flask of healthy yuccavera juice.  Eating it will boost health and stamina regen."; 
+$AccessoryVar[RedBerryPie, $MiscInfo] = "Delicious red berry pie. Eating it will boost stamina regen.";
+$AccessoryVar[StrawberryCake, $MiscInfo] = "A cake slices of strawberries.  Greatly boosts stamina regen.";
+
+
+RPGItem::AddWeapon(morningstar,"Morning Star",280,$RPGItem::WeaponTypeMelee,MaceShape);
+$AccessoryVar[morningstar, $AccessoryType] = $BludgeonAccessoryType;
+$AccessoryVar[morningstar, $SpecialVar] = "6 95";
+$AccessoryVar[morningstar, $Weight] = 6;
+$AccessoryVar[morningstar, $MiscInfo] = "A morning star";
+$SkillType[morningstar] = $SkillBludgeoning;
+$ItemCost[morningstar] = GenerateItemCost(morningstar);
+$SkillRestriction[morningstar] = $SkillBludgeoning @ " 250";
+
+
+function RPGItem::ScrapItem(%itemTag)
+{
+    %value = GetItemCost(RPGItem::ItemTagToLabel(%itemTag),%itemTag);
+    
+}
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {
@@ -457,6 +493,50 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
         RPGItem::decItemCount(%clientId,%itemTag,1);
         return true;
     }
+    else if(String::getWord(%action,",",0) == "EatFoodItem")
+    {
+        if(AddBonusStatePoints(%clientId,"FoodCooldown") == 0)
+        {
+            if(%clientId.sleepMode == "")
+            {
+                EatFoodItem(%clientId,RPGItem::getItemNameFromTag(%itemTag),Word::getSubWord(%action,1,999,","));
+                RPGItem::decItemCount(%clientId,%itemTag,1);
+                RefreshAll(%clientId,false);
+            }
+            else
+                Client::sendMessage(%clientId, $MsgWhite, "You can't eat right now.");
+        }
+        else
+            Client::sendMessage(%clientId, $MsgWhite, "You aren't ready to eat again.");
+            
+        return true;
+    }
+}
+
+function EatFoodItem(%clientId,%item,%special)
+{
+    //"EatFoodItem,Cooldown 80,StamRegen 0.1 60,HPRegen 0.1 60"
+    %cooldown = "";
+    
+    for(%i = 0; String::getWord(%special,",",%i) != ","; %i++)
+    {
+        %data = String::getWord(%special,",",%i);
+        //echo(%data);
+        if(String::icompare(getWord(%data,0),"cooldown") == 0)
+            %cooldown = getWord(%data,1);
+        else
+        {
+            %bonusType = getWord(%data,0);
+            //echo(%bonusType);
+            %bonusAmnt = getWord(%data,1);
+            %bonusTicks = getWord(%data,2);
+            UpdateBonusState(%clientId, %bonusType @" "@%bonusAmnt, %bonusTicks);
+        }
+    }
+    refreshHPREGEN(%clientId);
+    refreshStaminaREGEN(%clientId);
+    UpdateBonusState(%clientId, "FoodCooldown 1", %cooldown);
+    Client::sendMessage(%clientId, $MsgWhite, "You ate a "@%item@".");
 }
 
 function NewDrinkHealingPotion(%clientId,%itemName,%amt)

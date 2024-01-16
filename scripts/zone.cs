@@ -716,6 +716,17 @@ function UpdateZone(%object)
 	//-----------------------------------------------------------
 	DecreaseBonusStateTicks(%clientId);
 
+    //Heal burst stuff
+    if(fetchData(%clientId,"HealBurst") < fetchData(%clientId,"HealBurstMax"))
+    {
+        %rate = fetchData(%clientId,"HealBurstRate");
+        if(%rate == "")
+            %rate = 5;
+            
+        storeData(%clientId,"HealBurstCounter",2*%rate,"inc");
+        
+    }
+    
     if(%clientId.currentShop != "")
     {
         %pos = Gamebase::getPosition(%clientId);
@@ -730,6 +741,17 @@ function UpdateZone(%object)
     {
         %pos = Gamebase::getPosition(%clientId);
         if(Vector::getDistance(Gamebase::getPosition(%clientId.currentBank),%pos) > $maxSAYdistVec)
+        {
+            ClearCurrentShopVars(%clientId);
+            Client::setGuiMode(%clientId, $GuiModePlay);
+        }
+    }
+    
+    if(%clientId.currentAnvil != "")
+    {
+        %obj = getWord(%clientId.currentAnvil,1);
+        %pos = Gamebase::getPosition(%clientId);
+        if(Vector::getDistance(Gamebase::getPosition(%obj),%pos) > $maxSAYdistVec)
         {
             ClearCurrentShopVars(%clientId);
             Client::setGuiMode(%clientId, $GuiModePlay);
@@ -824,7 +846,7 @@ function UpdateZone(%object)
             %clientId.isMoving = 0;
             refreshStaminaREGEN(%clientId);
         }
-        if(%clientId.isAtRestCounter > 1)
+        if(%clientId.isAtRestCounter > 0)
         {
             %clientId.isAtRest = 1;
             refreshStaminaREGEN(%clientId);
@@ -889,11 +911,13 @@ function Zone::DoEnter(%z, %clientId)
 	if($Zone::Type[%z] == "PROTECTED")
 	{
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".  This is protected territory.";
+        storeData(%clientId,"HealBurstRate",100);
 		%color = $MsgBeige;
 	}
 	else if($Zone::Type[%z] == "DUNGEON")
 	{
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".  Beware of enemies!";
+        storeData(%clientId,"HealBurstRate",1);
 		%color = $MsgRed;
 	}
 	else if($Zone::Type[%z] == "WATER")
@@ -902,6 +926,7 @@ function Zone::DoEnter(%z, %clientId)
 	}
 	else if($Zone::Type[%z] == "FREEFORALL")
 	{
+        storeData(%clientId,"HealBurstRate",1);
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".";
 		%color = $MsgRed;
 	}
@@ -953,6 +978,7 @@ function Zone::DoExit(%z, %clientId)
 		%msg = "You have left " @ $Zone::Desc[%z] @ ".";
 		%color = $MsgBeige;
 	}
+    storeData(%clientId,"HealBurstRate",5);
 
 	//Repack zone exit
 	if(%clientId.repack){

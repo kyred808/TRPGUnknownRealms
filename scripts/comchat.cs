@@ -1662,26 +1662,36 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
-//		if(%w1 == "#roll")
-//		{
-//	//		%c1 = GetWord(%cropped, 0);
-//	//
-//	//		if(%c1 != -1)
-//	//			Client::sendMessage(%TrueClientId, 0, %c1 @ ": " @ GetRoll(%c1));
-//	//		else
-//	//			Client::sendMessage(%TrueClientId, 0, "Please specify a roll (example: 1d6)");
-//	//
-//			Client::sendMessage(%TrueClientId, 0, "Do not use this command again.");
-//			if(%TrueClientId.roll == "")
-//				%TrueClientId.roll = 1;
-//			else
-//			{
-//				Jail(%TrueClientId, 300, 1);
-//				messageall(0,%nameomg @ " has been jailed for 300 seconds for using #roll.");
-//			}
-//
-//			return;
-//		}
+        
+        if(%w1 == "#healburst")
+        {
+            %amt = fetchData(%TrueClientId,"HealBurst");
+            
+            if(%amt > 0)
+            {
+                %hp = fetchData(%TrueClientId,"HP");
+                if(%hp < fetchData(%TrueClientId,"MaxHP"))
+                {
+                    %healAmt = Cap(25 + CalculatePlayerSkill(%TrueClientId,$SkillHealing) / 5,25,"inf");
+                    setHP(%TrueClientId,%hp + %healAmt);
+                    UseSkill(%TrueClientId, $SkillHealing, True, True);
+                    Client::sendMessage(%clientId, $MsgWhite, "You recovered "@ %healAmt @"HP~wActivateAR.wav");
+                    storeData(%TrueClientId,"HealBurst",1,"dec");
+                }
+                else
+                {
+                    Client::sendMessage(%TrueClientId, $MsgWhite, "You are already at full health.");
+                    return;
+                }
+            }
+            else
+            {
+                Client::sendMessage(%TrueClientId, $MsgRed, "You are out of heal bursts.");
+                return;
+            }
+            return;
+        }
+        
 		if(%w1 == "#hide")
 		{
 			if(SkillCanUse(%TrueClientId, "#hide"))
@@ -2338,38 +2348,42 @@ function remoteSay(%clientId, %team, %message, %senderName)
                 return;
             }
             
-            %weap = fetchData(%TrueClientId,"EquippedWeapon");
-            if(%weap != "")
-            {
-                %curLevel = RPGItem::getImprovementLevel(%weap);
-                if(%curLevel < 5)
-                {
-                    %cnt = RPGItem::getItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"));
-                    if(%curLevel <= 0)
-                        %reqAmt = 1;
-                    else
-                    {
-                        %reqAmt = %curLevel;
-                    }
-                    
-                    if(%cnt >= %reqAmt)
-                    {
-                        RPGItem::decItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"),%reqAmt,true);
-                        %newItem = RPGItem::setItemAffix(%weap,"im",1,"inc");
-                        RPGItem::decItemCount(%TrueClientId,%weap,1);
-                        RPGItem::incItemCount(%TrueClientId,%newItem,1);
-                        RPGItem::EquipItem(%TrueClientId,%newItem);
-                        Client::SendMessage(%TrueClientId,$MsgWhite,"You upgraded "@ RPGItem::getItemNameFromTag(%weap) @" to "@ RPGItem::getItemNameFromTag(%newItem) @".");
-                        playSound(SoundSmith, GameBase::getPosition(%TrueClientId));
-                    }
-                    else
-                    {
-                        Client::SendMessage(%TrueClientId,$MsgWhite,"You need "@ %reqAmt @" Titanite Shards to refine "@ RPGItem::getItemNameFromTag(%weap) @".");
-                    }
-                    
-                }
-                return;
-            }
+            SetupItemRefinement(%TrueClientId,%obj);
+            
+            //%weap = fetchData(%TrueClientId,"EquippedWeapon");
+            //if(%weap != "")
+            //{
+            //    %curLevel = RPGItem::getImprovementLevel(%weap);
+            //    if(%curLevel < 5)
+            //    {
+            //        %cnt = RPGItem::getItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"));
+            //        //%money = GetItemCost(%item,%tag);
+            //        if(%curLevel <= 0)
+            //            %reqAmt = 5;
+            //        else
+            //        {
+            //            %reqAmt = 5*(%curLevel+1);
+            //        }
+            //        
+            //        if(%cnt >= %reqAmt)
+            //        {
+            //            RPGItem::decItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"),%reqAmt,true);
+            //            %newItem = RPGItem::setItemAffix(%weap,"im",1,"inc");
+            //            RPGItem::decItemCount(%TrueClientId,%weap,1);
+            //            RPGItem::incItemCount(%TrueClientId,%newItem,1);
+            //            RPGItem::EquipItem(%TrueClientId,%newItem);
+            //            Client::SendMessage(%TrueClientId,$MsgWhite,"You upgraded "@ RPGItem::getItemNameFromTag(%weap) @" to "@ RPGItem::getItemNameFromTag(%newItem) @".");
+            //            playSound(SoundSmith, GameBase::getPosition(%TrueClientId));
+            //        }
+            //        else
+            //        {
+            //            Client::SendMessage(%TrueClientId,$MsgWhite,"You need "@ %reqAmt @" Titanite Shards to refine "@ RPGItem::getItemNameFromTag(%weap) @".");
+            //        }
+            //        
+            //    }
+            //    return;
+            //}
+            return;
         }
         
         if(%w1 == "#smith" || %w1 == "#craft") //|| %w1 == "#smelt" || %w1 == "#cook")

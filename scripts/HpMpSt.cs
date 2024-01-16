@@ -145,7 +145,7 @@ function calcRechargeRate(%clientId)
     
     if(%clientId.isAtRest && %clientId.sleepMode == "")
     {
-        %a = %a + 0.3 + %end/600;
+        %a = %a + Cap($IdleStaminaBaseRecovery + %end/600,"inf",2.05);
         //%a = %a + BeltEquip::AddBonusStats(%clientId,"IdleStam");
     }
     

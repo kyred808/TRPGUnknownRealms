@@ -108,7 +108,7 @@ function Realms::UpdateRealm(%realm)
     //echo("Realm Crystal Count: " @ $RealmData[%realm,CrystalCount]);
     for(%i = 0; %i < $RealmData[%realm,CrystalCount]; %i++)
     {
-        echo("Crystal Info "@%i@": S - "@ $RealmData[%realm,CrystalSpawned,%i] @" R - "@$RealmData[%realm,CrystalRespawnTime,%i]);
+        //echo("Crystal Info "@%i@": S - "@ $RealmData[%realm,CrystalSpawned,%i] @" R - "@$RealmData[%realm,CrystalRespawnTime,%i]);
         //echo("Crystal "@%i@" Check: "@ $RealmData[%realm,CrystalSpawned,%i]);
         if(!$RealmData[%realm,CrystalSpawned,%i] && $RealmData[%realm,CrystalRespawnTime,%i] <= %time)
         {
