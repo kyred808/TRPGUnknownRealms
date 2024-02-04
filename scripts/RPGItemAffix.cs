@@ -2,6 +2,7 @@ $RPGItem::affixLen = 2;
 $RPGItem::AffixCount = 0;
 function RPGItem::addAffixType(%tag)
 {
+	//Currently unused
     $RPGItem::AffixType[$RPGItem::AffixCount] = %tag;
     $RPGItem::AffixCount++;
 }
@@ -37,12 +38,14 @@ function RPGItem::setItemAffix(%itemTag,%affixType,%amt,%special)
           
         }
         else
-            %tag = %tag @"_"@ %w;
+            %tag = %tag @"_"@ %w; //Might cause problems?  Keep testing
     }
     
     if(!%bFound)
     {
+		echo("Not found! "@ %amt);
         %new = RPGItem::UpdateAffixValue(0,%amt,%special);
+		echo("New: "@ %new);
         if(%new != "")
             return %tag @"_"@ %affixType @%new;
     }
@@ -64,8 +67,8 @@ function RPGItem::UpdateAffixValue(%current,%amt,%special)
     {
         %current -= %amt;
     }
-    
-    if(%current != 0)
+
+    if(%current != 0 || !Math::isInteger(%current) )
         return %current;
     else
         return "";

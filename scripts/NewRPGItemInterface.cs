@@ -110,7 +110,7 @@ function RPGItem::GetBaseTag(%itemTag)
     return $RPGItem::ItemDef[RPGItem::getItemIDFromTag(%itemTag),BaseItemTag];
 }
 
-//Careful when using this
+//Careful when using this, as it will ignore item affixes
 function RPGItem::LabelToItemTag(%itemLabel)
 {
     //echo("Label: "@ %itemLabel);
@@ -125,7 +125,12 @@ function RPGItem::ItemTagToLabel(%itemTag)
 
 function RPGItem::getItemNameFromTag(%itemTag)
 {
-    %ret = RPGItem::getItemName(RPGItem::getItemIDFromTag(%itemTag));
+	%customName = RPGItem::getAffixValue(%itemTag,"nn");
+	if(!Math::IsInteger(%customName))
+		%ret = %customName;
+	else
+		%ret = RPGItem::getItemName(RPGItem::getItemIDFromTag(%itemTag));
+	
     %im = RPGItem::getAffixValue(%itemTag,"im");
     if(%im != 0)
     {

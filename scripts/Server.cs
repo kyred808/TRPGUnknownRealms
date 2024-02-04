@@ -165,7 +165,7 @@ function createServer(%mission, %dedicated)
 	//exec(depbase);
 	exec(ferry);
 	exec(Player);
-	exec(Vehicle);
+	//exec(Vehicle);
 	exec(Turret);
 	exec(Beacon);
 	exec(StaticShape);

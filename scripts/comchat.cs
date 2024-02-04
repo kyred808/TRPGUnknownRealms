@@ -2385,6 +2385,21 @@ function remoteSay(%clientId, %team, %message, %senderName)
             //}
             return;
         }
+		
+		if(%w1 == "#rename")
+		{
+			%itemTag = fetchData(%TrueClientId,"EquippedWeapon");
+			%name = %cropped; //Needs string input protection
+			
+			%newItemTag = RPGItem::setItemAffix(%itemTag,"nn",%name);
+			echo(%newItemTag);
+			RPGItem::decItemCount(%TrueClientId,%itemTag,1,false);
+			RPGItem::incItemCount(%TrueClientId,%newItemTag,1,false);
+			RPGItem::EquipItem(%TrueClientId,%newItemTag);
+			
+			Client::sendMessage(%TrueClientId,$MsgWhite,"You renamed "@ RPGItem::getItemNameFromTag(%itemTag) @" to "@ RPGItem::getItemNameFromTag(%newItemTag) );
+			return;
+		}
         
         if(%w1 == "#smith" || %w1 == "#craft") //|| %w1 == "#smelt" || %w1 == "#cook")
         {
