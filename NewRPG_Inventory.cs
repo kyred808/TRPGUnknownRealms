@@ -24,9 +24,20 @@ $RPGMenu::unlimittedItemMenu = false;
 $RPGMenu::buyListTempBuffer = "";
 $RPGMenu::playerInvListTempBuffer = "";
 
+$RPGMenu::Option[expandable] = false;
+
+
 //================================
 // Remote Functions
 //================================
+function remoteSetMenuOptions(%mgr,%expand)
+{
+    if(%mgr != 2048)
+        return;
+        
+    $RPGMenu::Option[expandable] = %expand;
+}
+
 
 //%costFlag determines if items of 0 value should be kept in the list
 function remoteBufferedBuyList(%mgr,%shopList,%costFlag,%finish)
@@ -48,7 +59,7 @@ function remoteBufferedBuyList(%mgr,%shopList,%costFlag,%finish)
     {
         %temp = $RPGMenu::itemList[Buy,Showing];
         $RPGMenu::itemList[Buy,Showing] = false;
-        echo($RPGMenu::buyListTempBuffer @" "@ String::len($RPGMenu::buyListTempBuffer));
+        //echo($RPGMenu::buyListTempBuffer @" "@ String::len($RPGMenu::buyListTempBuffer));
         
         
         for(%i = 0; (%elem = String::getWord($RPGMenu::buyListTempBuffer,",",%i)) != ","; %i++)
@@ -76,7 +87,7 @@ function remoteBufferedPlayerInvList(%mgr,%shopList,%finish)
 		return;
 	}
     
-    echo("Length: "@ String::len(%shopList));
+    //echo("Length: "@ String::len(%shopList));
     
     $RPGMenu::playerInvListTempBuffer = $RPGMenu::playerInvListTempBuffer @","@ %shopList;
     
@@ -84,7 +95,7 @@ function remoteBufferedPlayerInvList(%mgr,%shopList,%finish)
     {
         %temp = $RPGMenu::itemList[Inv,Showing];
         $RPGMenu::itemList[Inv,Showing] = false;
-        echo($RPGMenu::playerInvListTempBuffer @" "@ String::len($RPGMenu::playerInvListTempBuffer));
+        //echo($RPGMenu::playerInvListTempBuffer @" "@ String::len($RPGMenu::playerInvListTempBuffer));
         
         for(%i = 0; (%elem = String::getWord($RPGMenu::playerInvListTempBuffer,",",%i)) != ","; %i++)
         {
@@ -93,7 +104,7 @@ function remoteBufferedPlayerInvList(%mgr,%shopList,%finish)
             //String::getWord(%elem,"|",2); //Cost
             //String::getWord(%elem,"|",3); //Type
             %uniqueId = buildUniqueId(String::getWord(%elem,"|",0), String::getWord(%elem,"|",1));
-            echo("UNIQUE_ID: "@ %uniqueId);
+            //echo("UNIQUE_ID: "@ %uniqueId);
             RPGMenu::UpdateInventoryList(%uniqueId,String::getWord(%elem,"|",2),String::getWord(%elem,"|",3),Inv);
             //remoteSetItemCount(2048, String::getWord(%elem,"|",0), String::getWord(%elem,"|",1), String::getWord(%elem,"|",2), String::getWord(%elem,"|",3));
         }
@@ -138,7 +149,7 @@ function remoteSetBuyList(%mgr, %num, %name, %amt, %type)
 //Add an item to the inventory list (aka Sell list)
 function remoteSetItemCount(%mgr, %num, %name, %amt, %type)
 {
-    echo("remoteSetItemCount("@%mgr@","@%num@","@%name@","@%amt@","@%type@")");
+    //echo("remoteSetItemCount("@%mgr@","@%num@","@%name@","@%amt@","@%type@")");
     if(%mgr != 2048)
 	{
 		return;
@@ -179,7 +190,7 @@ function remoteClearBuyList(%mgr)
 	{
 		return;
 	}
-    echo("CLEAR");
+    //echo("CLEAR");
     %temp = $RPGMenu::itemList[Buy,Showing];
 	//TextList::clear(RPGBuy);
 	//TextList::clear(RPGBuyCnt);
@@ -429,7 +440,7 @@ function Inv::buySelectedItem()
 	%itemNum = determineItemNum(%val);
     if(%itemNum != "")
     {
-        if(!$RPGMenu::expandItemOptions[Buy] && $RPGMenu::bulkCount == 1)
+        if($RPGMenu::Option[expandable] && !$RPGMenu::expandItemOptions[Buy] && $RPGMenu::bulkCount == 1)
         {
             
             $RPGMenu::expandItemOptions[Buy] = true;
@@ -478,7 +489,7 @@ function Inv::dropSelectedItem()
     %itemNum = determineItemNum(%val);
     if(%itemNum != "")
     {
-        if(!$RPGMenu::expandItemOptions[Inv] && $RPGMenu::bulkCount == 1)
+        if($RPGMenu::Option[expandable] && !$RPGMenu::expandItemOptions[Inv] && $RPGMenu::bulkCount == 1)
         {
             $RPGMenu::expandItemOptions[Inv] = true;
             $RPGMenu::expandType[Inv] = "Drop";
@@ -522,7 +533,7 @@ function Inv::sellSelectedItem()
 	%itemNum = determineItemNum(%val);
     if(%itemNum != "")
     {
-        if($RPGMenu::buyListActive && !$RPGMenu::expandItemOptions[Inv] && $RPGMenu::bulkCount == 1 )
+        if($RPGMenu::Option[expandable] && $RPGMenu::buyListActive && !$RPGMenu::expandItemOptions[Inv] && $RPGMenu::bulkCount == 1 )
         {
             $RPGMenu::expandItemOptions[Inv] = true;
             if($RPGMenu::unlimittedItemMenu)
@@ -700,7 +711,7 @@ function RPGMenu::ReloadInventoryBuyList()
                         addAmt(%amt,bl);
                     }
                     
-                    echo($RPGMenu::expandItemOptions[Buy]);
+                    //echo($RPGMenu::expandItemOptions[Buy]);
                     
                     if(determineItemNum(%itemUID) == determineItemNum($RPGMenu::itemList[Buy,Select]) && $RPGMenu::expandItemOptions[Buy])
                     {
@@ -724,7 +735,7 @@ function RPGMenu::ReloadInventoryBuyList()
 
 function RPGMenu::UpdateInventoryList(%uid,%amt,%type,%listTag)
 {
-    echo("RPGMenu::UpdateInventoryList("@%uid@","@%amt@","@%type@","@%listTag@")");
+    //echo("RPGMenu::UpdateInventoryList("@%uid@","@%amt@","@%type@","@%listTag@")");
     if($RPGMenu::itemList[%listTag,TypeItemList,%type,ListCount] == "")
     {
 		if(String::iCompare(%type, "Armor") == 0 || String::iCompare(%type, "Equipped") == 0)
