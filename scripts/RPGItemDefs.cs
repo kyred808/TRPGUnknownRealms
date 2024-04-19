@@ -534,7 +534,8 @@ function EatFoodItem(%clientId,%item,%special)
         }
     }
     refreshHPREGEN(%clientId);
-    refreshStaminaREGEN(%clientId);
+    //refreshStaminaREGEN(%clientId);
+    refreshMANAREGEN(%clientId);
     UpdateBonusState(%clientId, "FoodCooldown 1", %cooldown);
     Client::sendMessage(%clientId, $MsgWhite, "You ate a "@%item@".");
 }
@@ -551,7 +552,7 @@ function NewDrinkHealingPotion(%clientId,%itemName,%amt)
 function NewDrinkStaminaPotion(%clientId,%itemName,%amt)
 {
     %stam = fetchData(%clientId,"Stamina");
-    refreshStamina(%clientId,%amt*-1);
+    //refreshStamina(%clientId,%amt*-1);
     if(fetchData(%clientId,"Stamina") != %stam)
         UseSkill(%clientId, $SkillEnergy, True, True);
     Client::sendMessage(%clientId, $MsgWhite, "You drank a "@%itemName@" and recovered "@ %amt @" Stamina~wActivateAR.wav");

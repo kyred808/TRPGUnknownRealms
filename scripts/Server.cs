@@ -128,8 +128,8 @@ function createServer(%mission, %dedicated)
 	exec(Trigger);
     exec(Realms);
 	exec(zone);
-	//exec(spells);
-    exec(NewSpells);
+	exec(spells);
+    //exec(NewSpells);
     exec(SpellBook);
 	exec(classes);
 	exec(party);

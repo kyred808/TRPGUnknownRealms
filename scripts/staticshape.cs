@@ -931,3 +931,19 @@ StaticShapeData AuraCharge
 	isTranslucent = "True";
     disableCollision = true;
 };
+
+StaticShapeData APOC
+{
+    shapeFile = "ha_apoc";
+	maxDamage = 999.0;
+	//isTranslucent = "false";
+};
+
+function SpawnHERC(%clientId)
+{
+    focusServer();
+    Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),50);
+    %obj = newObject("herc",StaticShape,"APOC",true);
+    Gamebase::setPosition(%obj,$los::position);
+    addToSet(nameToId("MissionCleanup"),%obj);
+}

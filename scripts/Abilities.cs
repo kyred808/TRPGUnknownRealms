@@ -331,8 +331,8 @@ function Ability::DoAbilityCost(%clientId,%idx)
     if($Ability::cost[%idx,Mana])
         refreshMANA(%clientId,$Ability::cost[%idx,Mana]);
 
-    if($Ability::cost[%idx,Stam])
-        refreshStamina(%clientId,$Ability::cost[%idx,Stam]);
+    //if($Ability::cost[%idx,Stam])
+    //    refreshStamina(%clientId,$Ability::cost[%idx,Stam]);
         
     if($Ability::cost[%idx,Item])
         TakeThisStuff(%clientId,$Ability::cost[%idx,Item]);
@@ -355,18 +355,18 @@ function Ability::CheckCost(%clientId,%idx)
         return false;
     }
     
-    if($Ability::cost[%idx,Stam])
-    {
-        %stam = fetchData(%clientId,"Stamina");
-        if(%stam < $Ability::cost[%idx,Stam])
-            %flag = false;
-    }
+    //if($Ability::cost[%idx,Stam])
+    //{
+    //    %stam = fetchData(%clientId,"Stamina");
+    //    if(%stam < $Ability::cost[%idx,Stam])
+    //        %flag = false;
+    //}
     
-    if(!%flag)
-    {
-        $AbilityFailReason = "You do not have enough stamina ("@$Ability::cost[%idx,Stam]@")";
-        return false;
-    }
+    //if(!%flag)
+    //{
+    //    $AbilityFailReason = "You do not have enough stamina ("@$Ability::cost[%idx,Stam]@")";
+    //    return false;
+    //}
     
     if($Ability::cost[%idx,Item])
     {

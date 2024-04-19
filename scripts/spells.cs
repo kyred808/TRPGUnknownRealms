@@ -776,6 +776,56 @@ $SkillRestriction[haste] = $SkillNatureCasting @ " 15";
 
 //----------------------------------------------------------------------------------------------------------------
 
+function Spell::WhatIsSpell(%clientId,%keyword)
+{
+    %si = $Spell::index[%keyword];
+	if(%si != "")
+	{
+		%desc = $Spell::name[%si];
+        %reqs = WhatSkills(%keyword);
+		%nfo = $Spell::description[%si];
+        //%type = $Spell::type[%si];
+		%atkinfo = $Spell::damageValue[%si];
+		%sd = $Spell::delay[%si];
+		%sr = $Spell::recoveryTime[%si];
+        %sm = $Spell::manaCost[%si];
+        //if(%type == $SpellTypeCantrip)
+        //{
+        //    %stam = Cap(Spell::CalculateCantripStamina(%clientId,%si),0,$Spell::baseStamina[%si]);
+        //    %minStam = $Spell::minStamina[%si];
+        //    %sm = $Spell::manaCost[%si];
+        //}
+        //else
+        //{
+        //    %stam = $Spell::baseStamina[%si];
+        //    %sm = $Spell::manaCost[%si];
+        //}
+        %effects = TranslateEffectVars($Spell::effectVars[%si]);
+	}
+    %typeStr = "";
+    //if(%type == $SpellTypeCantrip)
+    //    %typeStr = "Cantrip";
+    //else if(%type == $SpellTypeMagic)
+    //    %typeStr = "Magic";
+    %msg = "";
+	%msg = %msg @ "<f1>" @ %desc @" - <f0>\n"; //@%typeStr@"<f1>\n";
+    %msg = %msg @ "\nSkill Type: " @ $SkillDesc[$SkillType[%keyword]];
+    if(%atkinfo != "")
+        %msg = %msg @ "\nATK: " @ %atkinfo;
+    %msg = %msg @ "\nRestrictions: " @ %reqs;
+    if(%effects != "")
+        %msg = %msg @ "\nBonuses: "@ %effects;
+    %msg = %msg @ "\nDelay: " @ %sd @ " sec";
+    %msg = %msg @ "\nRecovery: " @ %sr @ " sec";
+    //%msg = %msg @ "\nStamina: "@ %stam;
+    //if(%minStam && (%stam > %minStam))
+    //    %msg = %msg @ "\nMinStam: "@ %minStam;
+    if(%sm)
+        %msg = %msg @ "\nMana: " @ %sm;
+	%msg = %msg @ "\n\n<f0>" @ %nfo;
+    return %msg;
+}
+
 function BeginCastSpell(%clientId, %keyword)
 {
 	dbecho($dbechoMode, "BeginCastSpell(" @ %clientId @ ", " @ %keyword @ ")");
@@ -793,7 +843,7 @@ function BeginCastSpell(%clientId, %keyword)
 			if(SkillCanUse(%clientId, $Spell::keyword[%i]))
 			{
                 //Need to change later
-				if(fetchData(%clientId, "Stamina") >= $Spell::manaCost[%i])
+				if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "Casting " @ $Spell::name[%i] @ ".");
 
@@ -812,7 +862,8 @@ function BeginCastSpell(%clientId, %keyword)
 					storeData(%clientId, "SpellCastStep", 1);
 	
 					%tempManaCost = floor($Spell::manaCost[%i] / 2);
-					refreshStamina(%clientId, %tempManaCost);
+                    refreshMANA(%clientId, %tempManaCost);
+					//refreshStamina(%clientId, %tempManaCost);
 					playSound($Spell::startSound[%i], GameBase::getPosition(%clientId));
 
 					%skt = $SkillType[$Spell::keyword[%i]];
@@ -830,9 +881,9 @@ function BeginCastSpell(%clientId, %keyword)
                         Player::mountItem(%player,$Spell::auraEffect[%i],$SpellAuraSlot);
                     
                     //if(Player::isAiControlled(%clientId))
-                    //    schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                    //    schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
 					//else
-                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
                     schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
 		
 					return True;

@@ -85,11 +85,10 @@ function createAI(%aiName, %markerGroup, %name)
 		storeData(%AiId, "tmpbotdata", "");
 
 		storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
-        storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
 
 		refreshHPREGEN(%AiId);
-		refreshStaminaREGEN(%AiId);
+		refreshMANAREGEN(%AiId);
 
 		storeData(%AiId, "LCK", $BotInfo[%aiName, LCK]);
 		if(%group != -1)
@@ -146,13 +145,12 @@ function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
 		storeData(%AiId, "tmpbotdata", "");
         
         storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
-        storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
         //prevents AI::setupAI being called after death
         storeData(%aiId, "SpawnBotInfo","dummyInfo");
         
         refreshHPREGEN(%AiId);
-		refreshStaminaREGEN(%AiId);
+		refreshMANAREGEN(%AiId);
 
 		storeData(%AiId, "LCK", 0);
         
@@ -1032,11 +1030,10 @@ function AI::setupMobDefaults(%AiId,%aiName,%race,%lck)
     storeData(%AiId, "tmpbotdata", "");
 
     storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
-    storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
     storeData(%AiId, "MANA", 1000);
     
     refreshHPREGEN(%AiId);
-    refreshStaminaREGEN(%AiId);
+    refreshMANAREGEN(%AiId);
     
     if(%lck == "")
         %lck = -1;

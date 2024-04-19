@@ -299,7 +299,6 @@ function selectValidWeapon(%clientId)
             RPGMountItem(%clientId,%itemTag,$WeaponSlot);
             refreshHP(%clientId, 0);
             refreshMANA(%clientId, 0);
-            refreshStamina(%clientId, 0);
             RefreshAll(%clientId,false);
             break;
         }

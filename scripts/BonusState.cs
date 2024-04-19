@@ -41,7 +41,7 @@ function DecreaseBonusStateTicks(%clientId, %b)
 			$BonusState[%clientId, %b] = "";
 			playSound(BonusStateExpire, GameBase::getPosition(%clientId));
             refreshHPREGEN(%clientId);
-            refreshStaminaREGEN(%clientId);
+            refreshMANAREGEN(%clientId);
             refreshAll(%clientId,false);
 		}
 	}
@@ -70,7 +70,7 @@ function DecreaseBonusStateTicks(%clientId, %b)
 					$BonusState[%clientId, %i] = "";
 					playSound(BonusStateExpire, GameBase::getPosition(%clientId));
                     refreshHPREGEN(%clientId);
-                    refreshStaminaREGEN(%clientId);
+                    refreshMANAREGEN(%clientId);
                     refreshAll(%clientId,false);
 				}
 				else

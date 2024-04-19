@@ -381,7 +381,7 @@ function Player::onKilled(%this)
     storeData(%clientId, "EquippedWeapon", "");
 	%clientId.sleepMode = "";
 	refreshHPREGEN(%clientId);
-	refreshStaminaREGEN(%clientId);
+    refreshMANAREGEN(%clientId);
 
 	Client::setControlObject(%clientId, %clientId);
 	storeData(%clientId, "dumbAIflag", "");

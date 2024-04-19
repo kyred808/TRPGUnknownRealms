@@ -686,7 +686,8 @@ function UpdateZone(%object)
         {
             if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
             {
-                Realm::KickPlayerBackInRealm(%clientId,%currentRealm);
+                if(fetchData(%clientId,"noRealmCheck") == "")
+                    Realm::KickPlayerBackInRealm(%clientId,%currentRealm);
             }
         }
 
@@ -761,12 +762,12 @@ function UpdateZone(%object)
     //-----------------------------------------------------------
 	// Do passive mana regen ticks
 	//-----------------------------------------------------------
-    ManaRegenTick(%clientId);
+    //ManaRegenTick(%clientId);
     
-    if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
-    {
-        UseSkill(%clientId, $SkillEnergy, True, True);
-    }
+    //if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
+    //{
+    //    UseSkill(%clientId, $SkillEnergy, True, True);
+    //}
     
 	//-----------------------------------------------------------
 	// Check if the player has moved since last ZoneCheck
@@ -780,7 +781,7 @@ function UpdateZone(%object)
             %clientId.isMoving = 1;
             %clientId.isAtRestCounter = 0;
             %clientId.isAtRest = 0;
-            refreshStaminaREGEN(%clientId);
+            //refreshStaminaREGEN(%clientId);
         }
 		//train Weight Capacity
 		if(OddsAre(8))
@@ -844,12 +845,12 @@ function UpdateZone(%object)
         if(%clientId.isMoving == 1)
         {
             %clientId.isMoving = 0;
-            refreshStaminaREGEN(%clientId);
+            //refreshStaminaREGEN(%clientId);
         }
         if(%clientId.isAtRestCounter > 0)
         {
             %clientId.isAtRest = 1;
-            refreshStaminaREGEN(%clientId);
+            //refreshStaminaREGEN(%clientId);
         }
         else
             %clientId.isAtRestCounter++;

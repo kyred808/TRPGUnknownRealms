@@ -146,19 +146,29 @@ function Game::playerSpawn(%clientId, %respawn)
 			Client::setControlObject(%clientId, %pl);
 			Game::playerSpawned(%pl, %clientId, %armor, %respawn);
 
+            %spawnhp = 1;
+			%spawnmana = 0;
+            
 			if(%respawn)	      
 			{
-				setHP(%clientId, fetchData(%clientId, "MaxHP"));
-				setStamina(%clientId, fetchData(%clientId, "MaxStam"));
+                %spawnhp = fetchData(%clientId, "MaxHP");
+				%spawnmana = fetchData(%clientId, "MaxMANA");
+				//setHP(%clientId, fetchData(%clientId, "MaxHP"));
+				//setStamina(%clientId, fetchData(%clientId, "MaxMANA"));
 			}
 			else
 			{
-				setHP(%clientId, fetchData(%clientId, "tmphp"));
-				setStamina(%clientId, fetchData(%clientId, "tmpstam"));
+				%spawnhp = fetchData(%clientId, "tmphp");
+				%spawnmana = fetchData(%clientId, "tmpmana");
 				storeData(%clientId, "tmphp", "");
-				storeData(%clientId, "tmpstam", "");
+				storeData(%clientId, "tmpmana", "");
 			}
+            if(%spawnhp < 1){ %spawnhp = 1; echo("Error: spawn hp was less than 1"); }
+			if(%spawnmana < 0){ %spawnmana = 0; echo("Error: spawn mp was less than 0"); }
+			setHP(%clientId, %spawnhp);
+			setMANA(%clientId, %spawnmana);
 			storeData(%clientId.possessId, "dumbAIflag", "");
+            storeData(%clientId, "isDead", False);
 		}
 		schedule("repackAlert("@%clientId@");",0.1);
 		return true;

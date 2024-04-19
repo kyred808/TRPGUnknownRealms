@@ -683,7 +683,6 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
             
             refreshHP(%clientId, 0);
             refreshMANA(%clientId, 0);
-            refreshStamina(%clientId, 0);
             RefreshAll(%clientId,%refreshEquip);
         }
         else if(%showmsg)
@@ -729,7 +728,6 @@ function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg)
         {
             refreshHP(%clientId, 0);
             refreshMANA(%clientId, 0);
-            refreshStamina(%clientId, 0);
             RefreshAll(%clientId,true);
         }
     }

@@ -406,7 +406,7 @@ function SaveCharacter(%clientId)
 	//$funk::var["[\"" @ %name @ "\", 0, 16]"] = fetchData(%clientId, "BankStorage");
 	$funk::var["[\"" @ %name @ "\", 0, 17]"] = fetchData(%clientId, "campRot");
 	$funk::var["[\"" @ %name @ "\", 0, 18]"] = fetchData(%clientId, "HP");
-	$funk::var["[\"" @ %name @ "\", 0, 19]"] = fetchData(%clientId, "Stamina");
+	$funk::var["[\"" @ %name @ "\", 0, 19]"] = fetchData(%clientId, "MANA");
 	$funk::var["[\"" @ %name @ "\", 0, 20]"] = fetchData(%clientId, "LCKconsequence");
 	$funk::var["[\"" @ %name @ "\", 0, 21]"] = fetchData(%clientId, "RemortStep");
 	$funk::var["[\"" @ %name @ "\", 0, 22]"] = fetchData(%clientId, "LCK");
@@ -417,7 +417,7 @@ function SaveCharacter(%clientId)
 	//$funk::var["[\"" @ %name @ "\", 0, 29]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
-    $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
+    //$funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
     $funk::var["[\"" @ %name @ "\", 0, 33]"] = IsDead(%clientId);
     $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "attunedWeapon");
     $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "attunedWeaponMana");
@@ -598,7 +598,7 @@ function LoadCharacter(%clientId)
 		//storeData(%clientId, "BankStorage", $funk::var[%name, 0, 16]);
 		storeData(%clientId, "campRot", $funk::var[%name, 0, 17]);
 		storeData(%clientId, "tmphp", $funk::var[%name, 0, 18]);
-		storeData(%clientId, "tmpstam", $funk::var[%name, 0, 19]);
+		storeData(%clientId, "tmpmana", $funk::var[%name, 0, 19]);
 		storeData(%clientId, "LCKconsequence", $funk::var[%name, 0, 20]);
 		storeData(%clientId, "RemortStep", $funk::var[%name, 0, 21]);
 		storeData(%clientId, "LCK", $funk::var[%name, 0, 22]);
@@ -609,7 +609,7 @@ function LoadCharacter(%clientId)
 		//$funk::var[%name, 0, 29]);
 		storeData(%clientId, "MyHouse", $HouseName[$funk::var[%name, 0, 30]]);
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
-        storeData(%clientId, "MANA", $funk::var[%name, 0, 32]);
+        //storeData(%clientId, "MANA", $funk::var[%name, 0, 32]);
         
         // Player saved while dead
         if($funk::var[%name, 0, 33])
@@ -731,8 +731,8 @@ function LoadCharacter(%clientId)
 			storeData(%clientId, "LCKconsequence", "death");
 		if(fetchData(%clientId, "tmphp") == "")
 			storeData(%clientId, "tmphp", 1);
-		if(fetchData(%clientId, "tmpstam") == "")
-			storeData(%clientId, "tmpstam", 1);
+		if(fetchData(%clientId, "tmpmana") == "")
+			storeData(%clientId, "tmpmana", 1);
 		if(fetchData(%clientId, "tmpname") == "")
 			storeData(%clientId, "tmpname", %name);
 		//------------
@@ -757,7 +757,7 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "ignoreGlobal", "");
 		storeData(%clientId, "LCKconsequence", "death");
 		storeData(%clientId, "tmphp", "");
-		storeData(%clientId, "tmpstam", "");
+		storeData(%clientId, "tmpmana", "");
 		storeData(%clientId, "RemortStep", 0);
 		storeData(%clientId, "tmpname", %name);
 		storeData(%clientId, "tmpLastSaveVer", $rpgver);
@@ -1204,8 +1204,8 @@ function ChangeRace(%clientId, %race)
 		storeData(%clientId, "RACE", "FemaleHuman");
 
 	setHP(%clientId, fetchData(%clientId, "MaxHP"));
-	//setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
-    setStamina(%clientId, fetchData(%clientId, "MaxStam"));
+	setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
+    //setStamina(%clientId, fetchData(%clientId, "MaxStam"));
 	RefreshAll(%clientId,true);
 }
 
@@ -1888,9 +1888,10 @@ function RefreshAll(%clientId, %equip)
 
 	UpdateAppearance(%clientId);
 	refreshHPREGEN(%clientId);
-	refreshStaminaREGEN(%clientId);
+	//refreshStaminaREGEN(%clientId);
+    refreshMANAREGEN(%clientId);
 	Game::refreshClientScore(%clientId);
-    storeData(%clientId,"tempMaxStam","");
+    //storeData(%clientId,"tempMaxStam","");
 }
 
 function RefreshEquipment(%clientId)
@@ -2957,6 +2958,7 @@ function WhatIs(%item)
 	else
 		%nfo = "There is no further information available.";
 
+    echo(%item);
 	%si = $Spell::index[%item];
 	if(%si != "")
 	{

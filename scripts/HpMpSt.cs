@@ -47,7 +47,8 @@ function ForceWakeUp(%clientId)
     %clientId.sleepMode = "";
     Client::setControlObject(%clientId, %clientId);
     refreshHPREGEN(%clientId);
-    refreshStaminaREGEN(%clientId);
+    refreshMANAREGEN(%clientId);
+    //refreshStaminaREGEN(%clientId);
     %clientId.healTick = 0;
     Client::sendMessage(%clientId, $MsgWhite, "You awake.");
 }
@@ -55,21 +56,21 @@ function ForceWakeUp(%clientId)
 function HealHPCheck(%clientId)
 {
     
-    if(fetchData(%clientId, "HP") == fetchData(%clientId, "MaxHP")) // || fetchData(%clientId, "Stamina") == 0)
+    if(fetchData(%clientId, "HP") == fetchData(%clientId, "MaxHP"))
     {
         Client::sendMessage(%clientId, $MsgWhite, "Health full. Automatically switching to #rest");
         %clientId.sleepMode = 2;
         refreshHPREGEN(%clientId);
-		refreshStaminaREGEN(%clientId);
+        refreshMANAREGEN(%clientId);
         //ForceWakeUp(%clientId);
     }
-    else if( fetchData(%clientId, "Stamina") == 0 )
-    {
-        Client::sendMessage(%clientId, $MsgWhite, "Stamina empty. Automatically switching to #rest");
-        %clientId.sleepMode = 2;
-        refreshHPREGEN(%clientId);
-		refreshStaminaREGEN(%clientId);
-    }
+    //else if( fetchData(%clientId, "Stamina") == 0 )
+    //{
+    //    Client::sendMessage(%clientId, $MsgWhite, "Stamina empty. Automatically switching to #rest");
+    //    %clientId.sleepMode = 2;
+    //    refreshHPREGEN(%clientId);
+    //    refreshMANAREGEN(%clientId);
+    //}
     else if(%clientId.sleepMode == 3)
     {
         if(%clientId.healTick > 10)
@@ -123,7 +124,7 @@ function refreshHPREGEN(%clientId,%zone)
 }
 
 //======================
-// Stamina
+// Stamina  NO LONGER USED
 //======================
 
 
@@ -195,6 +196,7 @@ function refreshStamina(%clientId,%value)
     setStamina(%clientId, (fetchData(%clientId, "Stamina") - %value));
 }
 
+//No longer used
 $WeaponStamina::ScaleFactor = 1.5;
 $WeaponStamina::MinStamUsage = 0.5;
 function WeaponStamina(%clientId,%weapon,%mult)
@@ -252,37 +254,82 @@ function setMANA(%clientId, %val)
 {
 	dbecho($dbechoMode, "setMANA(" @ %clientId @ ", " @ %val @ ")");
 
-    storeData(%clientId,"MANA",%val);
-    
-	//%armor = Player::getArmor(%clientId);
-    //
-	//if(%val == "")
-	//	%val = fetchData(%clientId, "MaxMANA");
-    //
-	//%a = %val * %armor.maxEnergy;
-	//%b = %a / fetchData(%clientId, "MaxMANA");
-    //
-	//if(%b < 0)
-	//	%b = 0;
-	//else if(%b > %armor.maxEnergy)
-	//	%b = %armor.maxEnergy;
-    //
-	//GameBase::setEnergy(Client::getOwnedObject(%clientId), %b);
-}
+	%armor = Player::getArmor(%clientId);
 
+	if(%val == "")
+		%val = fetchData(%clientId, "MaxMANA");
+
+	%a = %val * %armor.maxEnergy;
+	%b = %a / fetchData(%clientId, "MaxMANA");
+
+	if(%b < 0)
+		%b = 0;
+	else if(%b > %armor.maxEnergy)
+		%b = %armor.maxEnergy;
+
+	GameBase::setEnergy(Client::getOwnedObject(%clientId), %b);
+}
 function refreshMANA(%clientId, %value)
 {
 	dbecho($dbechoMode, "refreshMANA(" @ %clientId @ ", " @ %value @ ")");
-    %amnt = fetchData(%clientId, "MANA") - %value;
-    if(%amnt < 0)
-        %amnt = 0;
-    
-    %max = fetchData(%clientId,"MaxMANA");
-    if(%amnt > fetchData(%clientId,"MaxMANA"))
-        %amnt = %max;
-	setMANA(%clientId,%amnt);
+
+	setMANA(%clientId, (fetchData(%clientId, "MANA") - %value));
+}
+function refreshMANAREGEN(%clientId)
+{
+	dbecho($dbechoMode, "refreshMANAREGEN(" @ %clientId @ ")");
+
+	%a = ($PlayerSkill[%clientId, $SkillEnergy] / 3250);
+	if(%clientId.sleepMode == 1)
+		%b = 1.0 + %a;
+	else if(%clientId.sleepMode == 2)
+		%b = 2.25 + %a;
+	else
+		%b = %a;
+
+	%c = AddPoints(%clientId, 11) / 800;
+
+	%r = %b + %c;
+
+	GameBase::setRechargeRate(Client::getOwnedObject(%clientId), %r);
 }
 
+//function setMANA(%clientId, %val)
+//{
+//	dbecho($dbechoMode, "setMANA(" @ %clientId @ ", " @ %val @ ")");
+//
+//    storeData(%clientId,"MANA",%val);
+//    
+//	//%armor = Player::getArmor(%clientId);
+//    //
+//	//if(%val == "")
+//	//	%val = fetchData(%clientId, "MaxMANA");
+//    //
+//	//%a = %val * %armor.maxEnergy;
+//	//%b = %a / fetchData(%clientId, "MaxMANA");
+//    //
+//	//if(%b < 0)
+//	//	%b = 0;
+//	//else if(%b > %armor.maxEnergy)
+//	//	%b = %armor.maxEnergy;
+//    //
+//	//GameBase::setEnergy(Client::getOwnedObject(%clientId), %b);
+//}
+//
+//function refreshMANA(%clientId, %value)
+//{
+//	dbecho($dbechoMode, "refreshMANA(" @ %clientId @ ", " @ %value @ ")");
+//    %amnt = fetchData(%clientId, "MANA") - %value;
+//    if(%amnt < 0)
+//        %amnt = 0;
+//    
+//    %max = fetchData(%clientId,"MaxMANA");
+//    if(%amnt > fetchData(%clientId,"MaxMANA"))
+//        %amnt = %max;
+//	setMANA(%clientId,%amnt);
+//}
+
+//No longer used
 function ManaRegenTick(%clientId)
 {
     dbecho($dbechoMode, "ManaRegenTick(" @ %clientId @ ")");

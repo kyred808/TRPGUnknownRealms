@@ -1065,7 +1065,7 @@ function Spell::BeginCastSpell(%clientId, %keyword)
                     storeData(%clientId, "SpellCastStep", 1);
                     
                     %tempStamCost = floor(%stamina / 2);
-                    refreshStamina(%clientId, %tempStamCost);
+                    //refreshStamina(%clientId, %tempStamCost);
                     if(%mcost > 0)
                     {
                         if(%mcost % 2 == 0)
@@ -1158,7 +1158,9 @@ function Spell::CastChargedMagic(%clientId,%index,%timeDiff)
         %stamina = Spell::CalculateCantripStamina(%clientId,%index,1);
         echo(%stamina);
         if(fetchData(%clientId, "Stamina") >= %stamina)
-            refreshStamina(%clientId,%stamina);
+        {
+            //refreshStamina(%clientId,%stamina);
+        }
         else
         {
             Client::sendMessage(%clientId, $MsgRed, "You lost too much stamina before you could finish the spell.~wUnravelAM.wav");

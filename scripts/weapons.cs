@@ -464,7 +464,6 @@ function MeleeAttack(%player, %length, %weapon)
 	%clientId.lastFireTime = %time;
 	//=======================================================
 	%mult = 1;
-    %stamMult = 1;
     %dmgMult = 1;
     %mom = "0 0 0";
     //I don't want to iterate over all bonuses every weapon swing. Making it a fetchData flag is less costly
@@ -478,7 +477,6 @@ function MeleeAttack(%player, %length, %weapon)
     }
     else if(fetchData(%clientId,"HeavyStrikeFlag"))
     {
-        %stamMult += 0.75;
         %dmgMult += 0.33;
         
         %etrans = Gamebase::getEyeTransform(%clientId);
@@ -487,10 +485,6 @@ function MeleeAttack(%player, %length, %weapon)
         //%mom = Vector::getFromRot(%clientId,$Ability::heavyStrikeForce,15);
         playSound(SoundSwing7,Gamebase::getPosition(%clientId));
     }
-    
-    %stamMult *= %mult;
-    
-    WeaponStamina(%clientId,%weapon,%stamMult);
 	
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
@@ -522,8 +516,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 	if(%time - %clientId.lastFireTime <= $fireTimeDelay)
 		return;
 	%clientId.lastFireTime = %time;
-	
-    WeaponStamina(%clientId,RPGItem::ItemTagToLabel(%weapon),1);
+
     %loadedProjectile = fetchData(%clientId, "LoadedProjectile " @ %weapon);
 	if(%loadedProjectile == "")
 		return;
@@ -720,7 +713,6 @@ function PickAxeSwing(%player, %length, %weapon)
 	%clientId.lastFireTime = %time;
 	//=======================================================
     %mult = 1;
-    %stamMult = 1;
     %dmgMult = 1;
     %mom = "0 0 0";
     if(fetchData(%clientId,"DoubleStrikeFlag"))
@@ -733,7 +725,6 @@ function PickAxeSwing(%player, %length, %weapon)
     }
     else if(fetchData(%clientId,"HeavyStrikeFlag"))
     {
-        %stamMult += 0.75;
         %dmgMult += 0.33;
         
         %etrans = Gamebase::getEyeTransform(%clientId);
@@ -742,9 +733,6 @@ function PickAxeSwing(%player, %length, %weapon)
         //%mom = Vector::getFromRot(%clientId,$Ability::heavyStrikeForce,15);
         playSound(SoundSwing7,Gamebase::getPosition(%clientId));
     }
-    
-    %stamMult *= %mult;
-    WeaponStamina(%clientId,%weapon,%stamMult);
 
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
@@ -821,7 +809,6 @@ function WoodAxeSwing(%player, %length, %weapon)
         else
             storeData(%clientId,"DoubleStrikeFlag",false);
     }
-    WeaponStamina(%clientId,%weapon,%mult);
 	$los::object = "";
 	if(GameBase::getLOSinfo(%player, %length))
 	{

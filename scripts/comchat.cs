@@ -1016,8 +1016,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					Client::sendMessage(%TrueClientId, 0, "Specify a spell.");
 		            else
 		            {
-                        Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
-					//BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        //Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        BeginCastSpell(%TrueClientId, escapestring(%cropped));
 					if(String::findSubStr(%cropped, "\"") != -1){
 						%ip = Client::getTransportAddress(%ClientId);
 						echo("Exploit attempt detected and blocked: " @ %trueClientId @ ", aka " @ %nameomg @ ", at " @ %ip @ ".");
@@ -1593,7 +1593,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
 				Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
 				refreshHPREGEN(%TrueClientId);
-				refreshStaminaREGEN(%TrueClientId);
+				//refreshStaminaREGEN(%TrueClientId);
 	
 				Client::sendMessage(%TrueClientId, $MsgWhite, "You fall asleep...  Use #wake to wake up.");
 			}
@@ -1604,32 +1604,51 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		}
         else if(%w1 == "#heal")
         {
-            if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
-			{
-                if(fetchData(%TrueClientId,"HP") < fetchData(%TrueClientId,"MaxHP"))
-                {
-                    if(fetchData(%TrueClientId,"Stamina") >= 10)
-                    {
-                        %TrueClientId.sleepMode = 3;
-                        Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
-                        Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
-                        refreshHPREGEN(%TrueClientId);
-                        refreshStaminaREGEN(%TrueClientId);
-                        HealHPCheck(%TrueClientId);
-                        Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
-                    }
-                    else
-                        Client::sendMessage(%TrueClientId, $MsgRed, "Your stamina is too low to do that.");
-                }
-                else
-                    Client::sendMessage(%TrueClientId, $MsgWhite, "Your health is already full.");
-            }
-            else
-                Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to heal.");
+            Client::sendMessage(%TrueClientId, $MsgRed, "Command Disabled");
+            //if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
+			//{
+            //    if(fetchData(%TrueClientId,"HP") < fetchData(%TrueClientId,"MaxHP"))
+            //    {
+            //        if(fetchData(%TrueClientId,"Stamina") >= 10)
+            //        {
+            //            %TrueClientId.sleepMode = 3;
+            //            Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
+            //            Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
+            //            refreshHPREGEN(%TrueClientId);
+            //            //refreshStaminaREGEN(%TrueClientId);
+            //            HealHPCheck(%TrueClientId);
+            //            Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
+            //        }
+            //        else
+            //            Client::sendMessage(%TrueClientId, $MsgRed, "Your stamina is too low to do that.");
+            //    }
+            //    else
+            //        Client::sendMessage(%TrueClientId, $MsgWhite, "Your health is already full.");
+            //}
+            //else
+            //    Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to heal.");
             
             return;
         }
 		else if(%w1 == "#rest")
+		{
+            Client::sendMessage(%TrueClientId, $MsgRed, "Command Disabled");
+			//if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
+			//{
+			//	%TrueClientId.sleepMode = 2;
+			//	Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
+			//	Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
+			//	refreshHPREGEN(%TrueClientId);
+			//	//refreshStaminaREGEN(%TrueClientId);
+	        //
+			//	Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to rest.  Use #wake to stop resting.");
+			//}
+			//else
+			//	Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to rest.");
+	
+			return;
+		}
+        else if(%w1 == "#meditate")
 		{
 			if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
 			{
@@ -1637,12 +1656,12 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
 				Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
 				refreshHPREGEN(%TrueClientId);
-				refreshStaminaREGEN(%TrueClientId);
+				refreshMANAREGEN(%TrueClientId);
 	
-				Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to rest.  Use #wake to stop resting.");
+				Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to meditate.  Use #wake to stop meditating.");
 			}
 			else
-				Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to rest.");
+				Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to meditate.");
 	
 			return;
 		}
@@ -1653,7 +1672,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				%TrueClientId.sleepMode = "";
 				Client::setControlObject(%TrueClientId, %TrueClientId);
 				refreshHPREGEN(%TrueClientId);
-				refreshStaminaREGEN(%TrueClientId);
+                refreshMANAREGEN(%TrueClientId);
 	
 				Client::sendMessage(%TrueClientId, $MsgWhite, "You awake.");
 			}

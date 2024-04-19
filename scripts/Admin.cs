@@ -499,17 +499,17 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "MDEF: " @ Number::Beautify(fetchData(%clientId, "MDEF"),0,2) @ "\n";
 		%a[%tmp++] = "Hit Pts: " @ fetchData(%clientId, "HP") @ " / " @ fetchData(%clientId, "MaxHP") @ "\n";
         
-        %recharge = calcRechargeRate(%clientId);
-        %stam = fetchData(%clientId, "Stamina");
-        %maxStam = fetchData(%clientId, "MaxStam");
-        if(%stam == %maxStam)
-            %recharge = 0;
-        if(%recharge >= 0)
-            %recharge = "+"@Number::Beautify(%recharge, 0, 2);
-        else
-            %recharge = Number::Beautify(%recharge, 0, 2);
+        //%recharge = calcRechargeRate(%clientId);
+        //%stam = fetchData(%clientId, "Stamina");
+        //%maxStam = fetchData(%clientId, "MaxStam");
+        //if(%stam == %maxStam)
+        //    %recharge = 0;
+        //if(%recharge >= 0)
+        //    %recharge = "+"@Number::Beautify(%recharge, 0, 2);
+        //else
+        //    %recharge = Number::Beautify(%recharge, 0, 2);
             
-		%a[%tmp++] = "Stamina: " @ Number::Beautify(%stam,0,2) @ " / " @ %maxStam @ " ("@%recharge@")\n";
+		//%a[%tmp++] = "Stamina: " @ Number::Beautify(%stam,0,2) @ " / " @ %maxStam @ " ("@%recharge@")\n";
         %a[%tmp++] = "LCK: " @ fetchData(%clientId, "LCK") @ "\n";
 
 		if(fetchData(%clientId, "MyHouse") != "")
