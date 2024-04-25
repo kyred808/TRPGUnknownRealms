@@ -530,46 +530,6 @@ $SkillRestriction["#shove"] = $SkillBashing @ " 5";
 $SkillRestriction["#zonelist"] = $SkillSenseHeading @ " 45";
 $SkillRestriction["#advcompass"] = $SkillSenseHeading @ " 20";
 
-// Spells
-//$SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
-//$SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20";
-//$SkillRestriction[firebomb] = $SkillOffensiveCasting @ " 35";
-//$SkillRestriction[icespike] = $SkillOffensiveCasting @ " 45";
-//$SkillRestriction[icestorm] = $SkillOffensiveCasting @ " 85";
-//$SkillRestriction[ironfist] = $SkillOffensiveCasting @ " 110";
-//$SkillRestriction[cloud] = $SkillOffensiveCasting @ " 145";
-//$SkillRestriction[melt] = $SkillOffensiveCasting @ " 220";
-//$SkillRestriction[powercloud] = $SkillOffensiveCasting @ " 340";
-//$SkillRestriction[hellstorm] = $SkillOffensiveCasting @ " 420";
-//$SkillRestriction[beam] = $SkillOffensiveCasting @ " 520";
-//$SkillRestriction[dimensionrift] = $SkillOffensiveCasting @ " 750";
-
-//$SkillRestriction[teleport] = $SkillNatureCasting @ " 60";
-//$SkillRestriction[transport] = $SkillNatureCasting @ " 200";
-//$SkillRestriction[advtransport] = $SkillNatureCasting @ " 350";
-//$SkillRestriction[remort] = $SkillNatureCasting @ " 0 " @ $MinLevel @ " 101";
-//$SkillRestriction[mimic] = $SkillNatureCasting @ " 145 " @ $MinRemort @ " 2";
-//$SkillRestriction[masstransport] = $SkillNeutralCasting @ " 650 " @ $MinRemort @ " 1";
-
-//$SkillRestriction[heal] = $SkillDefensiveCasting @ " 10";
-//$SkillRestriction[advheal1] = $SkillDefensiveCasting @ " 80";
-//$SkillRestriction[advheal2] = $SkillDefensiveCasting @ " 110";
-//$SkillRestriction[advheal3] = $SkillDefensiveCasting @ " 200";
-//$SkillRestriction[advheal4] = $SkillDefensiveCasting @ " 320";
-//$SkillRestriction[advheal5] = $SkillDefensiveCasting @ " 400";
-//$SkillRestriction[advheal6] = $SkillDefensiveCasting @ " 500";
-//$SkillRestriction[godlyheal] = $SkillDefensiveCasting @ " 600";
-//$SkillRestriction[fullheal] = $SkillDefensiveCasting @ " 750";
-//$SkillRestriction[massheal] = $SkillDefensiveCasting @ " 850 " @ $MinRemort @ " 2";
-//$SkillRestriction[massfullheal] = $SkillDefensiveCasting @ " 950 " @ $MinRemort @ " 3";
-//$SkillRestriction[shield] = $SkillDefensiveCasting @ " 20";
-//$SkillRestriction[advshield1] = $SkillDefensiveCasting @ " 60";
-//$SkillRestriction[advshield2] = $SkillDefensiveCasting @ " 140";
-//$SkillRestriction[advshield3] = $SkillDefensiveCasting @ " 290";
-//$SkillRestriction[advshield4] = $SkillDefensiveCasting @ " 420";
-//$SkillRestriction[advshield5] = $SkillDefensiveCasting @ " 635";
-//$SkillRestriction[massshield] = $SkillDefensiveCasting @ " 680";
-
 //######################################################################################
 // Skill functions
 //######################################################################################

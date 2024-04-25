@@ -475,13 +475,14 @@ function MeleeAttack(%player, %length, %weapon)
         else
             storeData(%clientId,"DoubleStrikeFlag",false);
     }
-    else if(fetchData(%clientId,"HeavyStrikeFlag"))
+
+    if(fetchData(%clientId,"HeavyStrikeFlag"))
     {
-        %dmgMult += 0.33;
+        %dmgMult += 0.5;
         
         %etrans = Gamebase::getEyeTransform(%clientId);
         %dir = Word::getSubWord(%etrans,3,3);
-        %mom = ScaleVector(%dir,$Ability::heavyStrikeForce);
+        %mom = Vector::add(ScaleVector(%dir,$Ability::heavyStrikeForce),"0 0 " @ $HeavyStrikeUpForce);
         //%mom = Vector::getFromRot(%clientId,$Ability::heavyStrikeForce,15);
         playSound(SoundSwing7,Gamebase::getPosition(%clientId));
     }

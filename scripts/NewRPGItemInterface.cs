@@ -633,6 +633,8 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
         %class = RPGItem::getItemGroup(%itemId);
         %label = $RPGItem::ItemDef[%itemId,Label];
         %refreshEquip = false;
+        %oldHp = fetchData(%clientId,"HP");
+        %oldMp = fetchData(%clientId,"MANA");
         if(SkillCanUse(%clientId, %label))
         {
             if(%class == $RPGItem::AccessoryClass)
@@ -680,10 +682,13 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
                     RPGmountItem(Client::getOwnedObject(%clientId), %itemTag, $WeaponSlot);
                 }
             }
-            
+            if(%oldHP > 0)
+                setHP(%clientId,%oldHP);
+            setMana(%clientId,%oldMP);
             refreshHP(%clientId, 0);
             refreshMANA(%clientId, 0);
             RefreshAll(%clientId,%refreshEquip);
+            
         }
         else if(%showmsg)
             Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you lack the necessary skills.~wC_BuySell.wav");
@@ -698,6 +703,8 @@ function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg)
         %class = RPGItem::getItemGroup(%itemId);
         %label = $RPGItem::ItemDef[%itemId,Label];
         %refresh = true;
+        %oldHp = fetchData(%clientId,"HP");
+        %oldMp = fetchData(%clientId,"MANA");
         if(%class == $RPGItem::EquippedClass)
         {
             %unequipId = $RPGItem::ItemDef[%itemId,Alternate];
@@ -726,7 +733,11 @@ function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg)
         
         if(%refresh)
         {
-            refreshHP(%clientId, 0);
+            if(%oldHP > 0)
+                setHP(%clientId,%oldHP);
+            setMana(%clientId,%oldMP);
+            if(fetchData(%clientId,"HP") > 0) //If the player is already dead, this risks dinging LCK twice
+                refreshHP(%clientId, 0);
             refreshMANA(%clientId, 0);
             RefreshAll(%clientId,true);
         }

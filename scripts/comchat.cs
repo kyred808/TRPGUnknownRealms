@@ -670,17 +670,21 @@ function remoteSay(%clientId, %team, %message, %senderName)
         {
             if(%cropped != "")
             {
-                %count = RPGItem::getItemCount(%TrueClientId,%cropped);
+                %tag = %cropped;
+                if(!RPGItem::isItemTag(%tag))
+                    %tag = RPGItem::LabelToItemTag(%cropped);
+                %count = RPGItem::getItemCount(%TrueClientId,%tag);
+                
                 if(%count != "")
                 {
-                    if(!RPGItem::useItem(%TrueClientId,%cropped))
+                    if(!RPGItem::useItem(%TrueClientId,%tag))
                     {
-                        Client::sendMessage(%TrueClientId, $MsgRed, "Unable to use "@ %cropped);
+                        Client::sendMessage(%TrueClientId, $MsgRed, "Unable to use "@ %tag);
                     }
                 }
                 else
                 {
-                    Client::sendMessage(%TrueClientId, 0, %cropped @" is not a valid item");
+                    Client::sendMessage(%TrueClientId, 0, %tag @" is not a valid item");
                 }
             }
             return;
@@ -1602,7 +1606,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
-        else if(%w1 == "#heal")
+        else if(%w1 == "#healold")
         {
             Client::sendMessage(%TrueClientId, $MsgRed, "Command Disabled");
             //if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
@@ -1682,7 +1686,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			return;
 		}
         
-        if(%w1 == "#healburst")
+        if(%w1 == "#heal")
         {
             %amt = fetchData(%TrueClientId,"HealBurst");
             
@@ -1691,9 +1695,9 @@ function remoteSay(%clientId, %team, %message, %senderName)
                 %hp = fetchData(%TrueClientId,"HP");
                 if(%hp < fetchData(%TrueClientId,"MaxHP"))
                 {
-                    %healAmt = Cap(25 + CalculatePlayerSkill(%TrueClientId,$SkillHealing) / 5,25,"inf");
+                    %healAmt = Cap(25 + round(CalculatePlayerSkill(%TrueClientId,$SkillHealing) / 5),25,"inf");
                     setHP(%TrueClientId,%hp + %healAmt);
-                    UseSkill(%TrueClientId, $SkillHealing, True, True);
+                    UseSkill(%TrueClientId, $SkillHealing, True, True, 2);
                     Client::sendMessage(%clientId, $MsgWhite, "You recovered "@ %healAmt @"HP~wActivateAR.wav");
                     storeData(%TrueClientId,"HealBurst",1,"dec");
                 }

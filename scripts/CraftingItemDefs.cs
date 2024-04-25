@@ -57,6 +57,8 @@ Crafting::Addrecipe("craft","StrawberryCake","","Bread 10 Eggs 5 Strawberry 15",
 //Crafting::Addrecipe("cooking","RedBerryPie",$SkillCooking @" 220","Yuccavera 2 RedBerry 10 Grain 50",1);
 //Crafting::Addrecipe("cooking","StrawberryCake",$SkillCooking @" 400","Bread 10 Eggs 5 Strawberry 15",1);
 
+Crafting::Addrecipe("craft","Magicite","","diamond 1 meteorcore 5",1,1,true);
+
 //===================
 // Smelting recipes
 //===================

@@ -530,6 +530,12 @@ function BaseWeaponImage::onFire(%player,%slot)
     %wtype = $RPGItem::ItemDef[%id,WeaponType];
     if(%wtype != "")
     {
+        %clientId.isAtRestCounter = 0;
+        if(%clientId.isAtRest)
+        {
+            %clientId.isAtRest = 0;
+            refreshHPREGEN(%clientId);
+        }
         %label = $RPGItem::ItemDef[%id,Label];
         if(getSimTime() >= $lastAttackTime[%clientId] + GetDelay(%label))
         {

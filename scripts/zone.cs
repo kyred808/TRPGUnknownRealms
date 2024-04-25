@@ -781,6 +781,7 @@ function UpdateZone(%object)
             %clientId.isMoving = 1;
             %clientId.isAtRestCounter = 0;
             %clientId.isAtRest = 0;
+            refreshHPREGEN(%clientId,%zoneflag);
             //refreshStaminaREGEN(%clientId);
         }
 		//train Weight Capacity
@@ -845,11 +846,18 @@ function UpdateZone(%object)
         if(%clientId.isMoving == 1)
         {
             %clientId.isMoving = 0;
+            refreshHPREGEN(%clientId,fetchData(%clientId, "zone"));
+            
             //refreshStaminaREGEN(%clientId);
         }
-        if(%clientId.isAtRestCounter > 0)
+        if(%clientId.isAtRestCounter > 2)
         {
             %clientId.isAtRest = 1;
+            refreshHPREGEN(%clientId,fetchData(%clientId, "zone"));
+            if(fetchData(%clientId,"HP") < fetchData(%clientId,"MaxHP"))
+            {
+                UseSkill(%clientId, $SkillHealing, True, True,12);
+            }
             //refreshStaminaREGEN(%clientId);
         }
         else

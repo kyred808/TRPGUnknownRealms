@@ -3,8 +3,7 @@
 //==================
 function setHP(%clientId, %val)
 {
-	dbecho($dbechoMode, "setHP(" @ %clientId @ ", " @ %val @ ")");
-
+    //echo("setHP: "@ %val);
 	%armor = Player::getArmor(%clientId);
 
 	if(%val < 0)
@@ -21,7 +20,7 @@ function setHP(%clientId, %val)
 	else if(%c > %armor.maxDamage)
 		%c = %armor.maxDamage;
 
-	if(%c == %armor.maxDamage && !IsStillArenaFighting(%clientId))
+	if(%c == %armor.maxDamage && !IsStillArenaFighting(%clientId) && !IsDead(%clientId))
 	{
 		storeData(%clientId, "LCK", 1, "dec");
 
@@ -106,8 +105,17 @@ function refreshHPREGEN(%clientId,%zone)
     else if(%clientId.sleepMode == 3)
         %b = 0.025 + CalculatePlayerSkill(%clientId, $SkillHealing) / 250000;
 	else
-		%b = 0;
-
+    {
+        if(%clientId.isAtRest == 1)
+        {
+            %armor = Player::getArmor(%clientId);
+            %baseRegen = %armor.maxDamage / 60;
+            %maxHP = fetchData(%clientId, "MaxHP");
+            %b = (%maxHP + CalculatePlayerSkill(%clientId, $SkillHealing)/250) * %baseRegen/60;
+        }
+        else
+            %b = 0;
+    }
     if($PlayersFastHealInProtectedZones && Zone::getType(%zone) == "PROTECTED")
     {
         if(!Player::isAIControlled(%clientId))
@@ -347,4 +355,37 @@ function ManaRegenTick(%clientId)
         refreshMANA(%clientId, -1 * %val);
         %clientId.manaRegenTick = 0;
     }
+}
+
+//=================
+//Technique Points
+//=================
+function calcTPLimit(%clientId)
+{
+    return $BaseTPLimit;
+}
+
+//Schedule does not fail on function calls
+function resetTPBlock(%clientId)
+{
+    %clientId.blockTP = "";
+}
+
+function setTP(%clientId, %val)
+{
+    %val = Cap(%val,0,calcTPLimit(%clientId));
+    %val = floor(%val); //only integers
+    storeData(%clientId,"TP",%val);
+}
+
+function addTP(%clientId, %amt)
+{
+    %current = fetchData(%clientId,"TP");
+    setTP(%clientId,%current+%amt);
+}
+
+function useTP(%clientId, %amt)
+{
+    %current = fetchData(%clientId,"TP");
+    setTP(%clientId,%current-%amt);
 }

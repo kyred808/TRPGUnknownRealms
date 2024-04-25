@@ -207,8 +207,8 @@ $SkillType[CeraphumsFeather] = $SkillArchery;
 
 AddItemHelper("bluepotion","Blue Potion","Potion",120,4,15,PotionShape,"DrinkHealingPotion 15");
 AddItemHelper(CrystalBluePotion,"Crystal Blue Potion","Potion",121,10,100,PotionShape,"DrinkHealingPotion 60");
-AddItemHelper(EnergyPotion,"Energy Potion","Potion",122,4,15,PotionShape,"DrinkStaminaPotion 25");
-AddItemHelper(CrystalEnergyPotion,"Crystal Energy Potion","Potion",123,10,100,PotionShape,"DrinkStaminaPotion 50");
+AddItemHelper(EnergyPotion,"Energy Potion","Potion",122,4,15,PotionShape,"DrinkManaPotion 16");
+AddItemHelper(CrystalEnergyPotion,"Crystal Energy Potion","Potion",123,10,100,PotionShape,"DrinkManaPotion 50");
 
 $AccessoryVar[bluepotion, $Weight] = 4;
 $AccessoryVar[CrystalBluePotion, $Weight] = 10;
@@ -227,12 +227,12 @@ $AccessoryVar[BluePotion, $MiscInfo] = "A blue potion that heals 15 HP";
 $AccessoryVar[CrystalBluePotion, $MiscInfo] = "A crystal blue potion that heals 60 HP";
 
 
-$AccessoryVar[EnergyPotion, $MiscInfo] = "An energy potion that provides 50 Stamina";
-$AccessoryVar[CrystalEnergyPotion, $MiscInfo] = "A crystal energy potion that provides 100 Stamina";
-$AccessoryVar[EnergyShot, $MiscInfo] = "A very small vial of potion that restores 15 Stamina. Not much, but very light weight."; 
-$AccessoryVar[EnergyVial, $MiscInfo] = "A small energy vial restores 15 Stamina. Doesn't seem like much, but very light weight.";
-$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A small energy vial that restores 50 Stamina. Similar to a Crystal Energy Potion, but lighter.";
-$AccessoryVar[EnergizedPotion, $MiscInfo] = "An energy potion that restores 100 Stamina.";
+$AccessoryVar[EnergyPotion, $MiscInfo] = "An energy potion that provides 16 MP";
+$AccessoryVar[CrystalEnergyPotion, $MiscInfo] = "A crystal energy potion that provides 50 MP";
+$AccessoryVar[EnergyShot, $MiscInfo] = "A very small vial of potion that restores 5 MP. Not much, but very light weight."; 
+$AccessoryVar[EnergyVial, $MiscInfo] = "A small energy vial restores 15 MP. Doesn't seem like much, but very light weight.";
+$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A small energy vial that restores 50 MP. Similar to a Crystal Energy Potion, but lighter.";
+$AccessoryVar[EnergizedPotion, $MiscInfo] = "An energy potion that restores 100 MP.";
 
 
 AddItemHelper(Grain,"Grain","Plants",124,0.2,8,MiscLootShape);
@@ -369,7 +369,7 @@ function AddArmAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
 // Rings
 AddRingItemHelper(ringofharm,"Ring of Harm",200,MiscLootShape,0.2,10000,$SpecialVarATK@" 10");
 AddRingItemHelper(ringofdefense,"Ring of Defense",202,MiscLootShape,0.2,8000,$SpecialVarDEF@" 50");
-AddRingItemHelper(ringofstamina,"Ring of Stamina",204,MiscLootShape,0.2,12000,$SpecialVarMaxStam@" 10");
+AddRingItemHelper(ringofburden,"Ring of Burden",204,MiscLootShape,0.2,12000,$SkillWeightCapacity@" 25");
 AddRingItemHelper(bladering,"Blade Ring",206,MiscLootShape,0.2,15000,"SKILL"@$SkillSlashing@" 20");
 AddRingItemHelper(sharpring,"Sharp Ring",208,MiscLootShape,0.2,15000,"SKILL"@$SkillPiercing@" 20");
 AddRingItemHelper(bluntring,"Blunt Ring",210,MiscLootShape,0.2,15000,"SKILL"@$SkillBludgeoning@" 20");
@@ -387,7 +387,7 @@ AddRingItemHelper(manaring,"Mana Ring",232,MiscLootShape,0.2,25000,$SpecialVarMa
 
 $AccessoryVar[ringofharm, $MiscInfo] = "Ring that gives <f0>+10 ATK";
 $AccessoryVar[ringofdefense, $MiscInfo] = "Ring that gives <f0>+50 DEF";
-$AccessoryVar[ringofstamina, $MiscInfo] = "Ring that gives <f0>+10 Max Stamina";
+$AccessoryVar[ringofburden, $MiscInfo] = "Ring that gives <f0>+25 Weight Capacity";
 $AccessoryVar[bladering, $MiscInfo] = "Ring that gives <f0>+20 Slashing";
 $AccessoryVar[sharpring, $MiscInfo] = "Ring that gives <f0>+20 Piercing";
 $AccessoryVar[bluntring, $MiscInfo] = "Ring that gives <f0>+20 Bludgeoning";
@@ -405,12 +405,12 @@ $AccessoryVar[manaring, $MiscInfo] = "Ring that gives <f0>+50 Max Mana";
 
 AddArmAccessoryHelper(soldierband,"Soldier Band",234,MiscLootShape,0.2,150000,"SKILL"@$SkillSlashing@" 100 SKILL"@$SkillPiercing@" 100 SKILL"@ $SkillBludgeoning @" 100");
 AddArmAccessoryHelper(exileband,"Exile Band",236,MiscLootShape,0.2,150000,"SKILL"@$SkillNatureCasting@" 180");
-AddArmAccessoryHelper(energyband,"Energy Band",238,MiscLootShape,0.2,25000,$SpecialVarMaxStam@" 50");
+AddArmAccessoryHelper(liftingband,"Lifting Band",238,MiscLootShape,0.2,25000,$SkillWeightCapacity@" 150");
 AddArmAccessoryHelper(bashersbangle,"Basher's Bangle",240,MiscLootShape,0.2,250000,"SKILL"@ $SkillBludgeoning @" 20 SKILL"@$SkillBashing@" 100");
 
 $AccessoryVar[soldierband, $MiscInfo] = "A clasp that raises all your melee weapon skills by 100";
 $AccessoryVar[exileband, $MiscInfo] = "An armband that raises your Nature Casting 180";
-$AccessoryVar[energyband, $MiscInfo] = "An armband that raises your max stamina by 50";
+$AccessoryVar[liftingband, $MiscInfo] = "An armband that raises your max weight by 150";
 $AccessoryVar[bashersbangle, $MiscInfo] = "Bangle that increashing your Bludgeoning by 20 and Bashing by 100";
 
 
@@ -421,8 +421,8 @@ $AccessoryVar[titaniteshard, $MiscInfo] = "A shard of titanite, used for weapon 
 AddItemHelper("lowqscrap","Low Quality Scrap","Pouch",243,0.1,0,MiscLootShape);
 $AccessoryVar[lowqscrap, $MiscInfo] = "Low quality scrap";
 
-AddItemHelper(EnergyShot,"Energy Shot","Potion",250,0.2,50,PotionShape,"DrinkStaminaPotion 15");
-AddItemHelper(EnergyVial,"Energy Vial","Potion",251,0.5,250,PotionShape,"DrinkStaminaPotion 25");
+AddItemHelper(EnergyShot,"Energy Shot","Potion",250,0.2,50,PotionShape,"DrinkManaPotion 5");
+AddItemHelper(EnergyVial,"Energy Vial","Potion",251,0.5,250,PotionShape,"DrinkManaPotion 15");
 
 
 AddItemHelper(Bread,"Bread","Pouch",252,0.5,1200,MiscLootShape,"EatFoodItem,cooldown 60,StamRegen 0.2 60,HPRegen "@0.32/$TribesDamageToNumericDamage@" 60");
@@ -478,10 +478,10 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
         RefreshAll(%clientId,false);
         return true;
     }
-    else if(%type == "DrinkStaminaPotion")
+    else if(%type == "DrinkManaPotion")
     {
         %baseAmt = getWord(%action,1);
-        NewDrinkStaminaPotion(%clientId,RPGItem::getItemNameFromTag(%itemTag),%baseAmt);
+        NewDrinkManaPotion(%clientId,RPGItem::getItemNameFromTag(%itemTag),%baseAmt);
         RPGItem::decItemCount(%clientId,%itemTag,1);
         RefreshAll(%clientId,false);
         return true;
@@ -549,13 +549,14 @@ function NewDrinkHealingPotion(%clientId,%itemName,%amt)
     Client::sendMessage(%clientId, $MsgWhite, "You drank a "@%itemName@" and recovered "@ %amt @"HP~wActivateAR.wav");
 }
 
-function NewDrinkStaminaPotion(%clientId,%itemName,%amt)
+function NewDrinkManaPotion(%clientId,%itemName,%amt)
 {
-    %stam = fetchData(%clientId,"Stamina");
+    %stam = fetchData(%clientId,"MANA");
     //refreshStamina(%clientId,%amt*-1);
-    if(fetchData(%clientId,"Stamina") != %stam)
+    refreshMANA(%clientId,%amt*-1);
+    if(fetchData(%clientId,"MANA") != %stam)
         UseSkill(%clientId, $SkillEnergy, True, True);
-    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@%itemName@" and recovered "@ %amt @" Stamina~wActivateAR.wav");
+    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@%itemName@" and recovered "@ %amt @" MP~wActivateAR.wav");
 
 }
 

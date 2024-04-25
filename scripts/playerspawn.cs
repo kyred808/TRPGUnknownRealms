@@ -163,7 +163,7 @@ function Game::playerSpawn(%clientId, %respawn)
 				storeData(%clientId, "tmphp", "");
 				storeData(%clientId, "tmpmana", "");
 			}
-            if(%spawnhp < 1){ %spawnhp = 1; echo("Error: spawn hp was less than 1"); }
+            if(%spawnhp < 0){ %spawnhp = ""; echo("Error: spawn hp was less than 0"); }
 			if(%spawnmana < 0){ %spawnmana = 0; echo("Error: spawn mp was less than 0"); }
 			setHP(%clientId, %spawnhp);
 			setMANA(%clientId, %spawnmana);

@@ -510,6 +510,7 @@ function processMenuOptions(%clientId, %option)
         //    %recharge = Number::Beautify(%recharge, 0, 2);
             
 		//%a[%tmp++] = "Stamina: " @ Number::Beautify(%stam,0,2) @ " / " @ %maxStam @ " ("@%recharge@")\n";
+        %a[%tmp++] = "TP: " @ fetchData(%clientId,"TP") @"\n";
         %a[%tmp++] = "LCK: " @ fetchData(%clientId, "LCK") @ "\n";
 
 		if(fetchData(%clientId, "MyHouse") != "")

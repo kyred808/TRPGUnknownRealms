@@ -65,12 +65,14 @@ $MessagePlayerIfBotStolePack = true;
 
 $FallDamageScale = 0.5;
 
+$HealBurstCntPerKill = 120;
+
 $SkillBoostMax = 5;
 $SkillBoostNumPrimary = 3; //Rest are secondary
 $SkillPrimaryBonus = 40;
 $SkillSecondaryBonus = 20;
 
-$IdleStaminaBaseRecovery = 1.0; //0.3
+$BaseTPLimit = 100;
 
 //Hear air in mountains
 $UnknownZoneAmbientSoundMinHeight = 300;

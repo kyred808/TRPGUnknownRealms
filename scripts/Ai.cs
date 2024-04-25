@@ -770,9 +770,9 @@ function AI::SelectBestWeapon(%aiId)
 
 		if(%x != -1)
 		{
-            //echo(%weapon);
             //Player::equipWeapon(%aiId,%weapon);
-            RPGItem::EquipItem(%aiId,%weapon);
+            if(fetchData(%aiId,"EquippedWeapon") != %weapon)
+                RPGItem::EquipItem(%aiId,%weapon);
 			//Player::useItem(%aiId, %weapon);
 			AI::SetSpotDist(%aiId);
 		}

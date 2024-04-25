@@ -417,7 +417,7 @@ function SaveCharacter(%clientId)
 	//$funk::var["[\"" @ %name @ "\", 0, 29]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
-    //$funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "MANA");
+    $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "TP");
     $funk::var["[\"" @ %name @ "\", 0, 33]"] = IsDead(%clientId);
     $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "attunedWeapon");
     $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "attunedWeaponMana");
@@ -609,7 +609,7 @@ function LoadCharacter(%clientId)
 		//$funk::var[%name, 0, 29]);
 		storeData(%clientId, "MyHouse", $HouseName[$funk::var[%name, 0, 30]]);
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
-        //storeData(%clientId, "MANA", $funk::var[%name, 0, 32]);
+        storeData(%clientId, "TP", $funk::var[%name, 0, 32]);
         
         // Player saved while dead
         if($funk::var[%name, 0, 33])
@@ -765,10 +765,9 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "isMimic", "");
 		storeData(%clientId, "MyHouse", "");
 		storeData(%clientId, "RankPoints", 0);
-
+        storeData(%clientId, "TP", 0);
 		%clientId.choosingGroup = True;
         %clientId.loadCharacterFlag = false;
-        
 		SetAllSkills(%clientId, 0);
 
 		storeData(%clientId, "spawnStuff", "PickAxe 1 BluePotion 1 CrystalBluePotion 3 ");
@@ -1255,6 +1254,7 @@ function ClearVariables(%clientId)
 	%clientId.roll = "";
 	%clientId.lbnum = "";
     %clientId.loadCharacterFlag = "";
+
     $lastAttackTime[%clientId] = -1;
 	$numMessage[%clientId, 1] = "";
 	$numMessage[%clientId, 2] = "";
