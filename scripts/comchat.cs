@@ -6211,6 +6211,35 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					$state[%closestId, %TrueClientId] = "";
 				}
 			}
+            else if(clipTrailingNumbers(%aiName) == "respec")
+			{
+                //process merchant code
+				%trigger[2] = "respec";
+				if($state[%closestId, %TrueClientId] == "")
+				{
+					if(%initTalk)
+					{
+                        %aiGender = $BotInfo[%aiName, RACE];
+						playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
+						AI::sayLater(%TrueClientId, %closestId, "Would you like to RESPEC?", True);
+						$state[%closestId, %TrueClientId] = 1;
+					}
+				}
+				else if($state[%closestId, %TrueClientId] == 1)
+				{
+					if(String::findSubStr(%message, %trigger[2]) != -1)
+					{
+						SetupRespec(%TrueClientId, %closestId);
+
+						$state[%closestId, %TrueClientId] = "";
+					}
+                    else if(String::findSubStr(%message, %trigger[3]) != -1)
+					{
+						Belt::BuyOrSell(%TrueClientId,%closestId);
+						$state[%closestId, %TrueClientId] = "";
+					}
+				}
+            }
 			else if(clipTrailingNumbers(%aiName) == "assassin")
 			{
 				//process assassin code

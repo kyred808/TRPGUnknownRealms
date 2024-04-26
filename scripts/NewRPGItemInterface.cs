@@ -695,7 +695,7 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
     }
 }
 
-function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg)
+function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg,%refreshEquipOverride)
 {
     %itemId = RPGItem::getItemIDFromTag(%itemTag);
     if($RPGItem::ItemDef[%itemId,Equippable])
@@ -739,7 +739,12 @@ function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg)
             if(fetchData(%clientId,"HP") > 0) //If the player is already dead, this risks dinging LCK twice
                 refreshHP(%clientId, 0);
             refreshMANA(%clientId, 0);
-            RefreshAll(%clientId,true);
+            
+            //RefreshEquipment sets this to FALSE so it doesn't constantly call itself.  Otherwise refreshEquipOverride should always be blank
+            if(%refreshEquipOverride != "")
+                RefreshAll(%clientId,%refreshEquipOverride);
+            else
+                RefreshAll(%clientId,true);
         }
     }
 }

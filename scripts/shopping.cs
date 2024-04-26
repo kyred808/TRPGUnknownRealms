@@ -57,6 +57,55 @@ function SetupShop(%clientId, %id)
     remoteEval(%clientId,"BufferedBuyList",%buyList,true,true);
 }
 
+function SetupRespec(%clientId,%id)
+{
+    %totalSP = CalcTotalSpentSP(%clientId);
+    Client::buildMenu(%clientId, "Respec: "@ %totalSP @" SP - COINS: "@ fetchData(%clientId, "COINS"), "RespecPage", true);
+    Client::addMenuItem(%clientId, "rCost: $" @ $RespecCostPerSP * %totalSP, "respec "@ %totalSP @" "@ %id);
+    Client::addMenuItem(%clientId, "xCancel", "cancel");
+}
+
+function processMenuRespecPage(%clientId,%opt)
+{
+    %select = getWord(%opt,0);
+    if(%select == "respec")
+    {
+        %totalSP = getWord(%opt,1);
+        %npc = getWord(%opt,2);
+        
+        %check = CalcTotalSpentSP(%clientId);
+        
+        //Prevent players from trying to get free sp by spending SP while in the menu somehow
+        if(%totalSP == %check)
+        {
+            %coins = fetchData(%clientId, "COINS");
+            %cost = $RespecCostPerSP * %totalSP;
+            if(%coins >= %cost)
+            {
+                Client::SendMessage(%clientId, $MsgWhite, "Your skills have been reset! "@ %totalSP @" SP refunded.~wmoney.wav");
+                storeData(%clientId,"COINS",%cost,"dec");
+                //Reset skills
+                RespecPlayer(%clientId);
+                RefreshAll(%clientId,true);
+                return;
+            }
+            else
+            {
+                Client::SendMessage(%clientId, $MsgRed,"You don't have enough COINS~wC_BuySell.wav");
+                return;
+            }
+        }
+        else
+        {
+            SetupRespec(%clientId,%npc);
+        }
+    }
+    else if(%select == "cancel")
+    {
+    
+    }
+}
+
 function SetupItemRefinement(%clientId,%anvilObj)
 {
     %clientId.currentAnvil = "RefineEquip "@%anvilObj;

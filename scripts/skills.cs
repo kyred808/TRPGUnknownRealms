@@ -585,8 +585,29 @@ function AddSkillPoint(%clientId, %skill, %delta)
 	%e = (%d / 10) * 1.000001;
 
 	$PlayerSkill[%clientId, %skill] = %e;
+    storeData(%clientId,"SPSpent_"@%skill,%delta,"inc");
 
 	return True;
+}
+
+//Flawed.  Does not account for natural skill increases
+function SumUpSkillPoints(%clientId)
+{
+    %total = 0;
+    for(%i = 1; %i <= $NumberOfSkills; %i++)
+    {
+        %mult = GetSkillMultiplier(%clientId,%i);
+        %amt = GetPlayerSkill(%clientId, %i);
+        
+        if(%amt % %mult != 0)
+        {
+            echo("ERROR: Skill Level ("@ %amt @") is not multiple of Mult ("@ %mult@")");
+        }
+        
+        %total = %total + (%amt / %mult);
+    }
+    
+    return %total;
 }
 
 function GetPlayerSkill(%clientId, %skill)
@@ -626,6 +647,41 @@ function SetAllSkills(%clientId, %n)
 
 	for(%i = 1; $SkillDesc[%i] != ""; %i++)
 		$PlayerSkill[%clientId, %i] = %n;
+}
+
+function ResetSPSpent(%clientId)
+{
+    for(%i = 1; %i <= GetNumSkills(); %i++)
+    {
+        storeData(%clientId,"SPSpent_"@%i,0);
+    }
+}
+
+function RespecPlayer(%clientId)
+{
+    %total = 0;
+    for(%i = 1; %i <= GetNumSkills(); %i++)
+    {
+        %sp = fetchData(%clientId,"SPSpent_"@%i);
+        if(%sp > 0)
+        {
+            %total += %sp;
+            %mult = GetSkillMultiplier(%clientId, %i);
+            $PlayerSkill[%clientId, %i] -= %mult * %sp;
+        }
+    }
+    
+    storeData(%clientId,"SPcredits",%total,"inc");
+}
+
+function CalcTotalSpentSP(%clientId)
+{
+    %total = 0;
+    for(%i = 1; %i <= GetNumSkills(); %i++)
+    {
+        %total += fetchData(%clientId,"SPSpent_"@%i);
+    }
+    return %total;
 }
 
 function NewSkillCanUse(%clientId, %thing)

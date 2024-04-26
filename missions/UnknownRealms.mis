@@ -295,6 +295,57 @@ instant SimGroup "MissionGroup" {
 			terrainType = "flat";
 		};
         instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "7168 -3072 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		}; 
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "13312 -3072 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		}; 
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "-11264 -3072 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		};
+        instant SimTerrain "Terrain" {
 			tedFileName = "RPGbutch1.dtf";
 			//visibleDistance = "800";
 			//hazeDistance = "475";
@@ -4261,7 +4312,18 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id99 id238"; //134 135 136 137";
+                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id122 id123 id99 id238"; //134 135 136 137";
+            };
+            instant SimGroup "respec0" {
+                instant Marker "keldrin respec" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2444.58 -297.129 65.0942";
+                    rotation = "0 -0 -1.44";
+                };
+                instant SimGroup "NAME Kalon";
+                instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
+                instant SimGroup "RACE MaleHuman";
             };
             //New Player Guide
             instant SimGroup "newquest55" {

@@ -491,6 +491,7 @@ function SaveCharacter(%clientId)
 	{
 		$funk::var["[\"" @ %name @ "\", 4, " @ %cnt++ @ "]"] = $PlayerSkill[%clientId, %i];
 		$funk::var["[\"" @ %name @ "\", 4, " @ %cnt++ @ "]"] = $SkillCounter[%clientId, %i];
+        $funk::var["[\"" @ %name @ "\", 8, " @ %i @ "]"] = fetchData(%clientId,"SPSpent_"@%i);
 	}
     
     //for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
@@ -708,6 +709,7 @@ function LoadCharacter(%clientId)
 		{
 			$PlayerSkill[%clientId, %i] = $funk::var[%name, 4, %cnt++];
 			$SkillCounter[%clientId, %i] = $funk::var[%name, 4, %cnt++];
+            storeData(%clientId,"SPSpent_"@%i,$funk::var[%name, 8, %i]);
 		}
 
 		for(%i = 1; $funk::var[%name, 3, %i] != ""; %i++)
@@ -769,7 +771,7 @@ function LoadCharacter(%clientId)
 		%clientId.choosingGroup = True;
         %clientId.loadCharacterFlag = false;
 		SetAllSkills(%clientId, 0);
-
+        ResetSPSpent(%clientId);
 		storeData(%clientId, "spawnStuff", "PickAxe 1 BluePotion 1 CrystalBluePotion 3 ");
 	}
 
@@ -1897,31 +1899,36 @@ function RefreshAll(%clientId, %equip)
 function RefreshEquipment(%clientId)
 {
     //Weapon
-    %weapon = Player::getMountedItem(%clientId, $WeaponSlot);
+    %weapon = fetchData(%clientId,"EquippedWeapon");//Player::getMountedItem(%clientId, $WeaponSlot);
     %sound = true;
-    if(%weapon != -1)
+    if(%weapon != "")
     {
-        //echo(%weapon);
-        //echo(SkillCanUse(%clientId,%weapon));
-        if(!SkillCanUse(%clientId,%weapon))
+        echo(%weapon);
+        echo("Can Use? "@ SkillCanUse(%clientId,%weapon));
+        %label = RPGItem::ItemTagToLabel(%weapon);
+        if(!SkillCanUse(%clientId,%label))
         {
-            Player::unMountItem(%clientId, $WeaponSlot);
-            Client::sendMessage(%clientId, $MsgRed, "You lack the skills to use " @ %weapon @ ".~wPku_weap.wav");
+            //Player::unMountItem(%clientId, $WeaponSlot);
+            RPGItem::UnequipItem(%clientId,%weapon,false,false);
+            Client::sendMessage(%clientId, $MsgRed, "You lack the skills to use " @ RPGItem::getItemNameFromTag(%weapon) @ ".~wPku_weap.wav");
             %sound = false;
         }
         
     }
     //Equip
     %list = GetAccessoryList(%clientId,2,-1);
-    
+    echo("LIST: "@%list);
     for(%i = 0; %i < getWordCount(%list); %i++)
     {
         %item = getWord(%list,%i);
-        if(!SkillCanUse(%clientId,%item))
+        
+        %label = RPGItem::ItemTagToLabel(RPGItem::getAlternateTag(%item));
+        echo(%item @" -> "@ %label);
+        
+        if(!SkillCanUse(%clientId,%label))
         {
             %player = Client::getControlObject(%clientId);
-            %o = String::getSubStr(%item, 0, String::len(%item)-1);	//remove the 0
-            %msg = "You lack the skills to use " @ %item.description @ ".";
+            %msg = "You lack the skills to use " @ RPGItem::getItemNameFromTag(%item) @ ".";
             if(%sound)
             {
                 %msg = %msg @ "~wPku_weap.wav";
@@ -1929,9 +1936,7 @@ function RefreshEquipment(%clientId)
             }
 			Client::sendMessage(%clientId, $MsgRed,%msg);
             
-            RPGItem::UnequipItem(%clientId,%item,false);
-			//RPGItem::setItemCount(%player, %item, RPGItem::getItemCount(%player, %item)-1);
-			//RPGItem::setItemCount(%player, %o, RPGItem::getItemCount(%player, %o)+1);
+            RPGItem::UnequipItem(%clientId,%item,false,false);
 
 			if($OverrideMountPoint[%item] == "")
 				Player::unMountItem(%player, 1);

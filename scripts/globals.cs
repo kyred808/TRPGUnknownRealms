@@ -67,6 +67,8 @@ $FallDamageScale = 0.5;
 
 $HealBurstCntPerKill = 120;
 
+$RespecCostPerSP = 100;
+
 $SkillBoostMax = 5;
 $SkillBoostNumPrimary = 3; //Rest are secondary
 $SkillPrimaryBonus = 40;

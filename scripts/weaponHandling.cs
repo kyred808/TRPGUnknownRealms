@@ -174,7 +174,7 @@ function remoteNextWeapon(%clientId)
     }
     
     %next = SelectNextWeapon(%clientId,%current,%len,"inc");
-    
+
     if(%len == 2)
     {
         %nextWeap = getWord(%itemList,%next);
@@ -188,6 +188,7 @@ function remoteNextWeapon(%clientId)
     
     while( %next != %startIdx)
     {
+        
         %nextWeap = getWord(%itemList,%next);
         if(isSelectableWeapon(%clientId, %nextWeap))
         {
@@ -195,6 +196,15 @@ function remoteNextWeapon(%clientId)
             break;
         }
         %next = SelectNextWeapon(%clientId,%next,%len,"inc");
+    }
+    
+    if(%next == %startIdx && fetchData(%clientId,"EquippedWeapon") == "")
+    {
+        %nextWeap = getWord(%itemList,%next);
+        if(isSelectableWeapon(%clientId, %nextWeap))
+        {
+            RPGItem::EquipItem(%clientId,%nextWeap);
+        }
     }
     
     //%item = Player::getMountedItem(%clientId,$WeaponSlot);
