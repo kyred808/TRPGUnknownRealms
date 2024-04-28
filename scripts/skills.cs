@@ -557,13 +557,14 @@ function CalculateSPToCurrentUpperBound(%clientId,%skill)
     return floor((%ub - %curSkill)/%mult)+1;
 }
 
-function AddSkillPoint(%clientId, %skill, %delta)
+function AddSkillPoint(%clientId, %skill, %delta, %spflag)
 {
 	dbecho($dbechoMode, "AddSkillPoint(" @ %clientId @ ", " @ %skill @ ", " @ %delta @ ")");
 
 	if(%delta == "")
 		%delta = 1;
-
+    if(%spflag == "")
+        %spflag = false;
 	////////temporary/////////////////////////
 	//if(%skill == 16)	//weapon handling
 	//	return False;
@@ -585,7 +586,8 @@ function AddSkillPoint(%clientId, %skill, %delta)
 	%e = (%d / 10) * 1.000001;
 
 	$PlayerSkill[%clientId, %skill] = %e;
-    storeData(%clientId,"SPSpent_"@%skill,%delta,"inc");
+    if(%spflag)
+        storeData(%clientId,"SPSpent_"@%skill,%delta,"inc");
 
 	return True;
 }
@@ -667,8 +669,12 @@ function RespecPlayer(%clientId)
         {
             %total += %sp;
             %mult = GetSkillMultiplier(%clientId, %i);
-            $PlayerSkill[%clientId, %i] -= %mult * %sp;
+            %n = $PlayerSkill[%clientId, %i] - %mult*%sp;
+            %d = round(%n * 10);
+            %e = (%d / 10) * 1.000001;
+            $PlayerSkill[%clientId, %i] = %e;
         }
+        storeData(%clientId,"SPSpent_"@%i,0);
     }
     
     storeData(%clientId,"SPcredits",%total,"inc");
@@ -792,6 +798,11 @@ function SkillCanUse(%clientId, %thing)
 			if(%clientId.adminLevel < %n)
 				%flag = 1;
 		}
+        else if(%s == "B")
+        {
+            if(%n == 1 && !Player::isAiControlled(%clientId))
+                %flag = 1;
+        }
 		else if(%s == "G")
 		{
 			%gcflag++;

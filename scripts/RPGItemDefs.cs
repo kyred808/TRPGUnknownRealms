@@ -119,8 +119,8 @@ RPGItem::AddWeapon("heavycrossbow","Heavy Crossbow",34,$RPGItem::WeaponTypeRange
 RPGItem::AddWeapon("repeatingcrossbow","Repeating Crossbow",35,$RPGItem::WeaponTypeRange,CrossbowShape);
 RPGItem::AddWeapon("aeoluswing","Aeolus Wing",36,$RPGItem::WeaponTypeRange,CompositeBowShape);
 
-RPGItem::AddWeapon("boneclub","Bone Club",37,$RPGItem::WeaponTypeMelee,DaggerShape);
-RPGItem::AddWeapon("spikedboneclub","Spiked Bone Club",38,$RPGItem::WeaponTypeMelee,DaggerShape);
+RPGItem::AddWeapon("boneclub","Bone Club",37,$RPGItem::WeaponTypeMelee,MaceShape);
+RPGItem::AddWeapon("spikedboneclub","Spiked Bone Club",38,$RPGItem::WeaponTypeMelee,MaceShape);
 
 RPGItem::AddWeapon("rknife","Rusty Knife",39,$RPGItem::WeaponTypeMelee,DaggerShape);
 RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
@@ -136,7 +136,7 @@ RPGItem::AddWeapon("rspikedclub","Cracked Spiked Club",49,$RPGItem::WeaponTypeMe
 
 $SkillType[TreeAtk] = $SkillPiercing;
 $AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;
-$AccessoryVar[TreeAtk, $SpecialVar] = "6 35";
+$AccessoryVar[TreeAtk, $SpecialVar] = "6 75";
 $AccessoryVar[TreeAtk, $MiscInfo] = "A Treeatk";
 $AccessoryVar[TreeAtk, $Weight] = 0.1;
 $WeaponRange[TreeAtk] = $minRange + 1;
@@ -366,6 +366,15 @@ function AddArmAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
     $AccessoryVar[%label, $SpecialVar] = %special;
 }
 
+function AddNeckAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
+{
+    RPGItem::AddAccessoryEquipment(%label,%name,$RPGItem::AccessoryClass,%id,%datablk);
+    $AccessoryVar[%label, $AccessoryType] = $TalismanAccessoryType;
+    $AccessoryVar[%label, $Weight] = %weight;
+    $HardcodedItemCost[%label] = %cost;
+    $AccessoryVar[%label, $SpecialVar] = %special;
+}
+
 // Rings
 AddRingItemHelper(ringofharm,"Ring of Harm",200,MiscLootShape,0.2,10000,$SpecialVarATK@" 10");
 AddRingItemHelper(ringofdefense,"Ring of Defense",202,MiscLootShape,0.2,8000,$SpecialVarDEF@" 50");
@@ -452,17 +461,15 @@ RPGItem::AddWeapon(morningstar,"Morning Star",280,$RPGItem::WeaponTypeMelee,Mace
 $AccessoryVar[morningstar, $AccessoryType] = $BludgeonAccessoryType;
 $AccessoryVar[morningstar, $SpecialVar] = "6 95";
 $AccessoryVar[morningstar, $Weight] = 6;
-$AccessoryVar[morningstar, $MiscInfo] = "A morning star";
+$AccessoryVar[morningstar, $MiscInfo] = "The Morning Star is a rare club that cannot be found in shops";
 $SkillType[morningstar] = $SkillBludgeoning;
-$ItemCost[morningstar] = GenerateItemCost(morningstar);
+$ItemCost[morningstar] = GenerateItemCost(morningstar)+2500; //Small rare boost
 $SkillRestriction[morningstar] = $SkillBludgeoning @ " 250";
 
+AddNeckAccessoryHelper(traitorsamulet,"Traitor's Amulet",281,MiscLootShape,0.2,150000,"SKILL"@$SkillHiding@" 100 SKILL"@$SkillBackstabbing@" 100");
+$AccessoryVar[traitorsamulet, $MiscInfo] = "A rare amulet that raises Hiding and Backstabbing by 100";
 
-function RPGItem::ScrapItem(%itemTag)
-{
-    %value = GetItemCost(RPGItem::ItemTagToLabel(%itemTag),%itemTag);
-    
-}
+//Next item starts at 283
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {

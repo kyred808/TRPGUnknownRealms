@@ -155,6 +155,7 @@ function createServer(%mission, %dedicated)
 	//exec(hp);
     exec(HpMpSt);
 	exec(rpgstats);
+    exec(DropTables);
 	exec(playerdamage);
 	exec(playerspawn);
 	exec(itemevents);

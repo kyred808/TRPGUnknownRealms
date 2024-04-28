@@ -63,6 +63,12 @@ $PlayersFastHealInProtectedZones = true;
 $BotsCanPickupPlayerPacks = true;
 $MessagePlayerIfBotStolePack = true;
 
+$ManaPerLevel = 1.5;
+
+$MeteorGroupOdds = 3; //1 in 3 chance for a meteor group to spawn
+$MeteorGroupMaxSize = 8;
+$MeteorGroupMinSize = 3;
+
 $FallDamageScale = 0.5;
 
 $HealBurstCntPerKill = 120;

@@ -140,6 +140,7 @@ $AccessoryVar[AwlPike, $SpecialVar] = "6 200";			//75 (8)
 $AccessoryVar[MeteorDagger, $SpecialVar] = "6 40 12 1"; // Mana theif
 //.................................................................................
 $AccessoryVar[CastingBlade, $SpecialVar] = "6 18";
+$AccessoryVar[CastingScepter, $SpecialVar] = "6 35";
 //.................................................................................
 $AccessoryVar[Sling, $SpecialVar] = "6 11";			//11 (2)
 $AccessoryVar[ShortBow, $SpecialVar] = "6 23";			//23 (3)

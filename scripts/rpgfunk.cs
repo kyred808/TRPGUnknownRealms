@@ -1113,7 +1113,6 @@ function UpdateAppearance(%clientId)
 			%skinbase = "rminitialequipment";
 		else
 			%skinbase = "rpgbase";
-
 		if(%armor != -1)
 			%skinbase = $ArmorSkin[%armor];
 	}

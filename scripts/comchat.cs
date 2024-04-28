@@ -2351,6 +2351,13 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
 			return;
         }
+        
+        //if(%w1 == "#scrap")
+        //{
+        //    SetupItemScrapping(%TrueClientId);
+        //    return;
+        //}
+        
         if(%w1 == "#refine")
         {
             $los::object = "";

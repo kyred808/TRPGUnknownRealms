@@ -51,6 +51,7 @@ $NameForRace[Warlock] = "Orc";
 $NameForRace[Berserker] = "Orc";
 $NameForRace[Ravager] = "Orc";
 $NameForRace[Slayer] = "Orc";
+$NameForRace[Oracle] = "Goblin";
 
 $NameForRace[Ruffian] = "Ogre";
 $NameForRace[Destroyer] = "Ogre";
@@ -184,6 +185,9 @@ $spawnIndex[53] = "Spawn";
 $spawnIndex[54] = "Bat";
 $spawnIndex[55] = "Ent";
 $spawnIndex[56] = "Small";
+
+//Orc
+$spawnIndex[57] = "Oracle";
 //------------------------------
 
 //Drop rate explained:
@@ -191,33 +195,37 @@ $spawnIndex[56] = "Small";
 //For a value of 1/(-N), the drop rate is nearly (1/(100-N))/2
 //So for 1/-3000, it is (1/(100+3000))/2 = 0.01613 or 1.613%
 
-$BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 RKnife 1 Quartz 4/-300 GobbieBerry 1/-150 GoblinEar 1/-500";
-$BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 RKnife 1 Sling 1 SmallRock 20/50 BlackStatue 1/-100 GoblinEar 1/-500";
-$BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 manaring 1/-2000 Turquoise 1/-500 GoblinEar 1/-500";
-$BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 RPickAxe 1 BlackStatue 1/-150 Jade 1/-300 GoblinEar 1/-400";
+$BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 Knife/x 1"; // Quartz 4/-300 GobbieBerry 1/-150 GoblinEar 1/-500";
+$BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 Knife/x 1 Sling/x 1 SmallRock 20/50"; //BlackStatue 1/-100 GoblinEar 1/-500";
+$BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 manaring 1/-2000"; //Turquoise 1/-500 GoblinEar 1/-500";
+$BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 PickAxe/x 1"; //BlackStatue 1/-150 Jade 1/-300 GoblinEar 1/-400";
 
 $AIBehavior[Runt,UseBackstab] = true;
 $AIBehavior[Thief,RunOnLowHP] = true;
 
-$BotEquipment[Pup] = 		"CLASS Fighter LVL 10/50 COINS 6/50 LCK 0 RClub 1 CrystalBluePotion 1 Ruby 1/-2000";
-$BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 manaring 1/-2000 EnergyShot 1/-50 RClub 1";
-$BotEquipment[Scavenger] = 	"CLASS Fighter LVL 15/50 COINS 8/50 LCK 0 RClub 1 Sapphire 2/-5000 traitorsamulet 1/-2000";
-$BotEquipment[Hunter] = 	"CLASS Ranger LVL 17/50 COINS 9/50 LCK 0 RWarAxe 1 Sling 1 SmallRock 20/50 Topaz 3/-3000";
+$BotEquipment[Pup] = 		"CLASS Fighter LVL 10/50 COINS 6/50 LCK 0 Club/x 1";
+$BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 manaring 1/-2000 Club/x 1";
+$BotEquipment[Scavenger] = 	"CLASS Fighter LVL 15/50 COINS 8/50 LCK 0 Club/x 1";
+$BotEquipment[Hunter] = 	"CLASS Ranger LVL 17/50 COINS 9/50 LCK 0 WarAxe/x 1 Sling/x 1 SmallRock 20/50"; //Topaz 3/-3000";
 
 $AIBehavior[Pup,RunOnLowHP] = true;
 $AIBehavior[Pup,UseBash] = true;
 $AIBehavior[Scavenger,UseBash] = true;
 
-$BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 20/50 LCK 0 CastingBlade 1 EnchantedStone 1/-100";
-$BotEquipment[Berserker] = 	"CLASS Fighter LVL 20/50 COINS 13/50 LCK 0 RBroadSword 1 Topaz 4/-500";
-$BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 LeatherArmor0/x 1 RBroadSword 1 BluePotion 3/30 Opal 4/-300";
-$BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 LeatherArmor0/x 1/-100 RBroadSword 1 RShortBow 1 BasicArrow 20/50 Opal 5/-250";
+$BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 20/50 LCK 0 CastingBlade 1"; //EnchantedStone 1/-100";
+$BotEquipment[Berserker] = 	"CLASS Fighter LVL 20/50 COINS 13/50 LCK 0 BroadSword/x 1"; //Topaz 4/-500";
+$BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 LeatherArmor0/x 1 BroadSword/x 1";// BluePotion 3/30 Opal 4/-300";
+$BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 LeatherArmor0/x 1/-100 BroadSword/x 1 ShortBow/x 1 BasicArrow 20/50"; // Opal 5/-250";
+$BotEquipment[Oracle] =     "CLASS Cleric LVL 25/25 COINS 20/50 LCK 0 BoneClub/x 1";
 
-$BotEquipment[Ruffian] = 	"CLASS Fighter LVL 22/50 COINS 80/50 LCK 0 RBroadSword 1 Quartz 8/-200 Yuccavera 4/-300";
-$BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 90/50 LCK 0 RSpikedClub 1 Yuccavera 4/-300";
-$BotEquipment[Halberdier] = 	"CLASS Fighter LVL 31/50 COINS 120/50 LCK 0 RBroadSword 1 BluePotion 3/30";
-$BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 310/50 LCK 1 RWarAxe 1 bashersbangle 1/-2000 RShortBow 1 BasicArrow 15/75";
-$BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1 Emerald 1/-6000 Quartz 10/-200";
+$AIBehavior[Oracle,IsHealer] = true;
+$AIBehavior[Oracle,IsHealer,Spells] = "bothealbreeze";
+
+$BotEquipment[Ruffian] = 	"CLASS Fighter LVL 22/50 COINS 80/50 LCK 0 BroadSword/x 1 Quartz 8/-200 Yuccavera 4/-300";
+$BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 90/50 LCK 0 SpikedClub/x 1 Yuccavera 4/-300";
+$BotEquipment[Halberdier] = 	"CLASS Fighter LVL 31/50 COINS 120/50 LCK 0 BroadSword/x 1 BluePotion 3/30";
+$BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 310/50 LCK 1 WarAxe/x 1 ShortBow/x 1 BasicArrow 15/75";
+$BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1";
 
 $BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 200/50 LCK 0 RSpikedClub 1 redberry 2/-300 Granite 10/-300";
 $BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 StuddedArmor0/x 1 redberry 2/-300 RLongSword 1 Opal 3/-300";
@@ -229,7 +237,18 @@ $BotEquipment[Protector] = 	"CLASS Ranger LVL 50/50 COINS 25/50 LCK 0 ScaleMail/
 $BotEquipment[Peacekeeper] =	"CLASS Ranger LVL 54/50 COINS 28/50 LCK 0 RLongSword 1 RShortBow 1 SheafArrow 40/50 Jade 5/-500";
 $BotEquipment[Lord] = 		"CLASS Ranger LVL 59/50 COINS 31/50 LCK 1 RSpikedClub 1 RLightCrossbow 1 LightQuarrel 25/75 Emerald 1/-2800";
 $BotEquipment[Champion] = 	"CLASS Ranger LVL 63/50 COINS 34/50 LCK 1 ScaleMail/x 1/-20 RLongSword 1 RLightCrossbow 1 HeavyQuarrel 25/75 Sapphire 3/-1000";
-$BotEquipment[Conjurer] =	"CLASS Mage LVL 70/50 COINS 32/50 LCK 0 CastingBlade 1 Topaz 2/-300";
+
+//$BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 200/50 LCK 0 SpikedClu/x 1 Granite 10/-300";
+//$BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 StuddedArmor0/x 1 LongSword/x 1 Opal 3/-300";
+//$BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 260/50 LCK 0 HideArmor0/x 1/-80 WarAxe/x 1 Turquoise 4/-300";
+//$BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Diamond 1/-3000";
+//$BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 590/50 LCK 2 Gladius/x 1 Diamond 1/-1000 Emerald 1/-700";
+//
+//$BotEquipment[Protector] = 	"CLASS Ranger LVL 50/50 COINS 25/50 LCK 0 ScaleMail/x 1/-20 ShortSword 1 Ruby 2/-500";
+//$BotEquipment[Peacekeeper] =	"CLASS Ranger LVL 54/50 COINS 28/50 LCK 0 LongSword 1 ShortBow 1 SheafArrow 40/50 Jade 5/-500";
+//$BotEquipment[Lord] = 		"CLASS Ranger LVL 59/50 COINS 31/50 LCK 1 SpikedClub 1 LightCrossbow 1 LightQuarrel 25/75 Emerald 1/-2800";
+//$BotEquipment[Champion] = 	"CLASS Ranger LVL 63/50 COINS 34/50 LCK 1 ScaleMail/x 1/-20 LongSword 1 LightCrossbow 1 HeavyQuarrel 25/75 Sapphire 3/-1000";
+//$BotEquipment[Conjurer] =	"CLASS Mage LVL 70/50 COINS 32/50 LCK 0 CastingBlade 1 Topaz 2/-300";
 
 $BotEquipment[Brigand] = 	"CLASS Fighter LVL 75/50 COINS 30/50 LCK 0 LongSword 1 Sapphire 2/-3000";
 $BotEquipment[Marauder] =	"CLASS Fighter LVL 79/50 COINS 33/50 LCK 0 LongSword 1 Opal 4/-300 Turquoise 1/-800";
@@ -241,13 +260,13 @@ $BotEquipment[Gladiator] =	"CLASS Fighter LVL 1 LCK 0";
 $BotEquipment[Mercenary] = 	"CLASS Ranger LVL 65/50 COINS 32/50 LCK 0 BroadSword 1";
 $BotEquipment[Militia] = 	"CLASS Paladin LVL 75/50 COINS 35/50 LCK 1 LongSword 1";
 
-$BotEquipment[Thug] = 		"CLASS Thief LVL 65/50 COINS 32/50 LCK 1 RBroadSword 1 Jade 5/-500";
-$BotEquipment[Miner] = 		"CLASS Paladin LVL 29/50 COINS 35/50 LCK 0 RPickAxe 1 Parchment 1/-16000 Quartz 10/50 Opal 5/50 Turquoise 2/-50 Emerald 1/-1000";
+$BotEquipment[Thug] = 		"CLASS Thief LVL 65/50 COINS 32/50 LCK 1 BroadSword 1 Jade 5/-500";
+$BotEquipment[Miner] = 		"CLASS Paladin LVL 29/50 COINS 35/50 LCK 0 PickAxe 1 Parchment 1/-16000 Quartz 10/50 Opal 5/50 Turquoise 2/-50 Emerald 1/-1000";
 
-$BotEquipment[Goliath] = 	"CLASS Fighter LVL 107/50 COINS 70/50 LCK 1 RBroadSword 1";
+$BotEquipment[Goliath] = 	"CLASS Fighter LVL 107/50 COINS 70/50 LCK 1 BroadSword 1";
 $BotEquipment[Reaper] = 	"CLASS Mage LVL 174/50 COINS 105/50 LCK 2 CastingBlade 1 Turquoise 5/-500";
 
-$BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 RLongSword 1 DragonScale 1/-3000 Gold 1/-1000";
+$BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 LongSword 1 DragonScale 1/-3000 Gold 1/-1000";
 $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000";
 
 $BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 batteeth_im10 1 Grain 1/-100";
@@ -1087,6 +1106,168 @@ PlayerData GnollArmor
 	shadowDetailMask = 1;
 
 	canCrouch = false;
+	visibleToSensor = True;
+	mapFilter = 1;
+	mapIcon = "M_player";
+
+	maxJetSideForceFactor = 1;
+	maxJetForwardVelocity = 1.0;
+	minJetEnergy = 60;
+	jetForce = 1;
+	jetEnergyDrain = 0.0;
+
+	maxDamage = 1.0;
+	maxForwardSpeed = $spdmed;
+	maxBackwardSpeed = $spdmed * 0.8;
+	maxSideSpeed = $spdmed * 0.75;
+	groundForce = 75 * 9.0;
+	mass = 9.0;
+	groundTraction = 3.0;
+	maxEnergy = 80;
+	drag = 1.0;
+	density = 1.2;
+
+	minDamageSpeed = 16;
+	damageScale = $damageScale;
+
+	jumpImpulse = 75;
+	jumpSurfaceMinDot = $jumpSurfaceMinDot;
+
+	// animation data:
+	// animation name, one shot, exclude, direction, firstPerson, chaseCam, thirdPerson, signalThread
+
+	// movement animations:
+	animData[0]  = { "root", none, 1, true, true, true, false, 0 };
+	animData[1]  = { "run", none, 1, true, false, true, false, 3 };
+	animData[2]  = { "runback", none, 1, true, false, true, false, 3 };
+	animData[3]  = { "side left", none, 1, true, false, true, false, 3 };
+	animData[4]  = { "side left", none, -1, true, false, true, false, 3 };
+	animData[5] = { "jump stand", none, 1, true, false, true, false, 3 };
+	animData[6] = { "jump run", none, 1, true, false, true, false, 3 };
+	animData[7] = { "crouch root", none, 1, true, true, true, false, 3 };
+	animData[8] = { "crouch root", none, 1, true, true, true, false, 3 };
+	animData[9] = { "crouch root", none, -1, true, true, true, false, 3 };
+	animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 };
+	animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 };
+	animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 };
+	animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 };
+	animData[14]  = { "fall", none, 1, true, true, true, false, 3 };
+	animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 };
+	animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 };
+	animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 };
+	animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 };
+	animData[19] = { "jet", none, 1, true, true, true, false, 3 };
+
+	// misc. animations:
+	animData[20] = { "die back", none, 1, true, false, false, false, 0 };
+	animData[21] = { "throw", none, 1, true, false, false, false, 3 };
+	animData[22] = { "flyer root", none, 1, false, false, false, false, 3 };
+	animData[23] = { "apc root", none, 1, true, true, true, false, 3 };
+	animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 };
+   
+	// death animations:
+	animData[25] = { "crouch die", none, 1, false, false, false, false, 4 };
+	animData[26] = { "die chest", none, 1, false, false, false, false, 4 };
+	animData[27] = { "die head", none, 1, false, false, false, false, 4 };
+	animData[28] = { "die grab back", none, 1, false, false, false, false, 4 };
+	animData[29] = { "die right side", none, 1, false, false, false, false, 4 };
+	animData[30] = { "die left side", none, 1, false, false, false, false, 4 };
+	animData[31] = { "die leg left", none, 1, false, false, false, false, 4 };
+	animData[32] = { "die leg right", none, 1, false, false, false, false, 4 };
+	animData[33] = { "die blown back", none, 1, false, false, false, false, 4 };
+	animData[34] = { "die spin", none, 1, false, false, false, false, 4 };
+	animData[35] = { "die forward", none, 1, false, false, false, false, 4 };
+	animData[36] = { "die forward kneel", none, 1, false, false, false, false, 4 };
+	animData[37] = { "die back", none, 1, false, false, false, false, 4 };
+
+	// signal moves:
+	animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 };
+	animData[39] = { "sign point", none, 1, true, false, false, false, 1 };
+	animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 };
+	animData[41] = { "sign stop", none, 1, true, false, false, true, 1 };
+	animData[42] = { "sign salut", none, 1, true, false, false, true, 1 }; 
+
+	// celebraton animations:
+	animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 };
+	animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 };
+	animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 };
+
+	// taunt anmations:
+	animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 };
+	animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 };
+
+	// poses:
+	animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 };
+	animData[49] = { "pose stand", none, 1, true, false, false, true, 1 };
+
+	// Bonus wave
+	animData[50] = { "wave", none, 1, true, false, false, true, 1 };
+
+	jetSound = NoSound;
+
+	rFootSounds = 
+	{
+		SoundMFootRSoft,
+		SoundMFootRHard,
+		SoundMFootRSoft,
+		SoundMFootRHard,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRHard,
+		SoundMFootRSnow,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft
+	}; 
+	lFootSounds =
+	{
+		SoundMFootLSoft,
+		SoundMFootLHard,
+		SoundMFootLSoft,
+		SoundMFootLHard,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLHard,
+		SoundMFootLSnow,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft
+	};
+
+	footPrints = { 2, 3 };
+
+	boxWidth = 0.7;
+	boxDepth = 0.7;
+	boxNormalHeight = 2.4;
+
+	boxNormalHeadPercentage  = 0.83;
+	boxNormalTorsoPercentage = 0.49;
+
+	boxHeadLeftPercentage  = 0;
+	boxHeadRightPercentage = 1;
+	boxHeadBackPercentage  = 0;
+	boxHeadFrontPercentage = 1;
+};
+
+PlayerData OrcLightArmor
+{
+	className = "Armor";
+	shapeFile = "larmor";
+	flameShapeName = "mflame";
+	shieldShapeName = "shield";
+	damageSkinData = "armorDamageSkins";
+	debrisId = playerDebris;
+	shadowDetailMask = 1;
+
+	canCrouch = true;
 	visibleToSensor = True;
 	mapFilter = 1;
 	mapIcon = "M_player";

@@ -493,7 +493,6 @@ function AI::Periodic(%aiName)
 
 	%aiTeam = GameBase::getTeam(%aiId);
 	%aiPos = GameBase::getPosition(%aiId);
-
 	//=================================================================
 	//Everytime this function is called, the bot looks at all clients
 	//(including bots) and sets a waypoint to the nearest one that is
@@ -574,16 +573,40 @@ function AI::Periodic(%aiName)
                 %b = $AImaxRange * 2;
                 %set = newObject("set", SimSet);
                 %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
+                %botType = clipTrailingNumbers(%aiName);
+                %isCasting = false;
                 for(%i = 0; %i < Group::objectCount(%set); %i++)
                 {
                     %id = Player::getClient(Group::getObject(%set, %i));
-                    if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
+                    if(GameBase::getTeam(%id) != %aiTeam)
                     {
-                        %dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
-                        if(%dist < %closest)
+                        if(!fetchData(%id, "invisible"))
                         {
-                            %closest = %dist;
-                            %closestId = %id;
+                            %dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
+                            if(%dist < %closest)
+                            {
+                                %closest = %dist;
+                                %closestId = %id;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if($AIBehavior[%botType,IsHealer] && !%isCasting)
+                        {
+                            if(fetchData(%id,"HP") < fetchData(%id,"MaxHP")*0.75)
+                            {
+                                %numSpells = getWordCount($AIBehavior[%botType,IsHealer,Spells]);
+                                if(%numSpells == 1)
+                                    %spell = $AIBehavior[%botType,IsHealer,Spells];
+                                else
+                                {
+                                    %i = getIntRandomMT(1,%numSpells);
+                                    %spell = getWord($AIBehavior[%botType,IsHealer,Spells],%i);
+                                }
+                                remoteSay(%aiId, 0, "#cast " @ %spell);
+                                %isCasting = true;
+                            }
                         }
                     }
                 }
@@ -1178,7 +1201,15 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
 		AI::setVar( %newName,  pathType, $AI::defaultPathType);
 		//AI::SetVar( %newName,  seekOff, 1);
 		AI::setAutomaticTargets( %newName );
-
+        
+        %lootTblKey = clipTrailingNumbers(%newName);
+        if($DropTable[%lootTblKey,0,Item] != "")
+            DropTable::AddTableToPlayer(%aiId,%lootTblKey);
+        
+        %race = fetchData(%aiId,"RACE");
+        if($DropTable[%race,0,Item] != "")
+            DropTable::AddTableToPlayer(%aiId,%race);
+        
 		if(%w0 == "TempSpawn")
 		{
 			//the %commandIssuer is a data string
@@ -1205,7 +1236,10 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
             %spawnIdx = getWord(fetchData(%aiId, "SpawnBotInfo"), 2);
             $Zone::SpawnPoint[%zid,%spawnIdx,SpawnCount]++;
             UpdateTeam(%aiId);
-
+            
+            if($DropTable[$Zone::Desc[%zid],0,Item] != "")
+                DropTable::AddTableToPlayer(%aiId,$Zone::Desc[%zid]);
+                
 			AI::SetVar(%newName, spotDist, $AIspotDist);
         }
 		else if(%w0 == "SpawnPoint")

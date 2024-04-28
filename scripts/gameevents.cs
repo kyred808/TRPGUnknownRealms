@@ -89,19 +89,22 @@ function WorldEventsCheck()
     if(getSimTime() >= $MeteorNextTime)
     {
         
-        if($MeteorCrystalCount <= $MaxMeteorCrystals)
+        if($MeteorCrystalCount < $MaxMeteorCrystals)
         {
             if(!oddsAre(30))
             {
                 MeteorWorldEvent();
                 %msg = "A meteor is falling!";
-                if(oddsAre(3)) //Chance to spawn 3
+                if(oddsAre($MeteorGroupOdds) && $MeteorCrystalCount+1 < $MaxMeteorCrystals) //Chance to spawn a group
                 {
-                    if($MeteorCrystalCount + 3 < $MaxMeteorCrystals)
+                    %amt = getIntRandomMT($MeteorGroupMinSize,$MeteorGroupMaxSize);
+                    if(($MeteorCrystalCount + 1 + %amt) > $MaxMeteorCrystals)
+                        %amt = $MaxMeteorCrystals - $MeteorCrystalCount; //Spawn up to max
+
+                    %msg = "A group of "@%amt@" meteors are falling!";
+                    for(%i = 1; %i < %amt; %i++) //Leave out one to account for already spawned meteor
                     {
-                        %msg = "A group of meteors are falling!";
-                        schedule("MeteorWorldEvent();",1);
-                        schedule("MeteorWorldEvent();",2);
+                        schedule("MeteorWorldEvent();",%i * 0.5);
                     }
                 }
                 messageAll($MsgBeige,%msg);
@@ -261,17 +264,21 @@ function MeteorData::SaveMeteorCrystal(%crystal)
     if(%type == "MeteorCrystal")
     {
         %idx = $MeteorWorldSave::CrystalCount;
-        $MeteorWorldSave::Crystal[%idx,Pos] = Gamebase::getPosition(%crystal);
-        $MeteorWorldSave::Crystal[%idx,Rot] = Gamebase::getRotation(%crystal);
-        $MeteorWorldSave::Crystal[%idx,Hit] = %crystal.hp;
-        $MeteorWorldSave::Crystal[%idx,Ticks] = %crystal.ticks;
-        
-        $MeteorWorldSave::CrystalCount++;
+        if(FindMeteorCrystalIndex(%crystal) != -1) //Make sure the object is registered
+        {
+            $MeteorWorldSave::Crystal[%idx,Pos] = Gamebase::getPosition(%crystal);
+            $MeteorWorldSave::Crystal[%idx,Rot] = Gamebase::getRotation(%crystal);
+            $MeteorWorldSave::Crystal[%idx,Hit] = %crystal.hp;
+            $MeteorWorldSave::Crystal[%idx,Ticks] = %crystal.ticks;
+            
+            $MeteorWorldSave::CrystalCount++;
+        }
     }
 }
 
 function MeteorData::LoadMeteorCrystalData(%idx)
 {
+    echo("MeteorData::LoadMeteorCrystalData("@%idx@")");
     %set = nameToId("MissionCleanup\\MeteorCrystals");
     if(%set == -1)
     {
@@ -284,7 +291,12 @@ function MeteorData::LoadMeteorCrystalData(%idx)
     Gamebase::setPosition(%crystal,$MeteorWorldSave::Crystal[%idx,Pos]);
     Gamebase::setRotation(%crystal,$MeteorWorldSave::Crystal[%idx,Rot]);
     %crystal.hp = $MeteorWorldSave::Crystal[%idx,Hit];
-    RegisterMeteorCrystal(%crystal,$MeteorWorldSave::Crystal[%idx,Pos],$MeteorWorldSave::Crystal[%idx,Ticks]);
+    %valid = RegisterMeteorCrystal(%crystal,$MeteorWorldSave::Crystal[%idx,Pos],$MeteorWorldSave::Crystal[%idx,Ticks]);
+    if(!%valid)
+    {
+        schedule("deleteObject("@%crystal@");",0.5);
+        return;
+    }
     addToSet(%set,%crystal);
 
 }
@@ -334,6 +346,7 @@ function ClearAllMeteorCrystals()
     {
         ClearMeteorCrystal(%i,true);
     }
+    $MeteorCrystalCount = 0;
 }
 
 function ClearMeteorCrystalsAndObjects()
@@ -390,6 +403,8 @@ function SelectInactiveCrystalIndex()
 function RegisterMeteorCrystal(%obj,%pos,%ticks)
 {
     %index = SelectInactiveCrystalIndex();
+    if(%index == -1)
+        return false;
     $MeteorCrystalCount++;
     $MeteorCrystal[%index,Active] = true;
     $MeteorCrystal[%index,Object] = %obj;
@@ -397,6 +412,7 @@ function RegisterMeteorCrystal(%obj,%pos,%ticks)
     %obj.ticks = %ticks;
     //$MeteorCrystal[%index,Tick] = %ticks;
     schedule("CrystalShootLight("@%index@",true);",5,%obj);
+    return true;
 }
 
 function ClearAllMeteorData()
@@ -525,7 +541,12 @@ function Meteor::onRemove(%this)
             //echo($los::position);
             Gamebase::setPosition(%crystal,$los::position);
             Gamebase::setRotation(%crystal,Vector::getRotation($los::normal));
-            RegisterMeteorCrystal(%crystal,$los::position,$MeteorCrystalData::MaxTicks);
+            %valid = RegisterMeteorCrystal(%crystal,$los::position,$MeteorCrystalData::MaxTicks);
+            if(!%valid)
+            {
+                schedule("deleteObject("@%crystal@");",0.5);
+                return;
+            }
         }
     
         addToSet(%set,%crystal);

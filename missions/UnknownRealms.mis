@@ -1307,7 +1307,7 @@ instant SimGroup "MissionGroup" {
                         position = "-1546.01 -279.973 352.109";
                         rotation = "0 0 0";
                     };
-                    instant Marker ".5 1 2 30 50 23" {
+                    instant Marker ".5 1 2 30 50 23 57" {
                         dataBlock = "PathMarker";
                         name = "Yolanda Orc Wizard spawn";
                         position = "-1565.75 -300.341 352.109";
@@ -4489,7 +4489,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
-                instant SimGroup "SHOP id62 id64 id66 id176 id68 id6 id7 id23 id24 id33 id34 id16 id102 id103 id120 id280";
+                instant SimGroup "SHOP id62 id64 id66 id176 id68 id6 id7 id23 id24 id33 id34 id16 id102 id103 id120";
             };
             instant SimGroup "porter1" {
                 instant Marker "Marker1" {

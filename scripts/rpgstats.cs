@@ -128,7 +128,7 @@ function fetchData(%clientId, %type)
         //    %extra = 15;
         //return 5*%lvl + 3*%rl + %eng + %eqp + %extra;
         
-		%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
+		%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) ) + floor(fetchData(%clientId,"LVL")*$ManaPerLevel);
 		//%b = AddPoints(%clientId, 5);
 		%c = AddBonusStatePoints(%clientId, "MaxMANA");
         %d = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMana);
@@ -446,7 +446,7 @@ function processMenusp(%clientId, %opt)
             if(%clientId.bulkNum > %limit)
                 %clientId.bulkNum = %limit;
             
-            if(AddSkillPoint(%clientId, %o, %clientId.bulkNum))
+            if(AddSkillPoint(%clientId, %o, %clientId.bulkNum,true))
                 storeData(%clientId, "SPcredits", %clientId.bulkNum, "dec");
             
             if(%echo)

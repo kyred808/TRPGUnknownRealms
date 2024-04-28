@@ -814,6 +814,23 @@ $Spell::effectType[42] = $SpellTypeCustom;
 $SkillType[haste] = $SkillNatureCasting;
 $SkillRestriction[haste] = $SkillNatureCasting @ " 15";
 
+$Spell::keyword[43] = "bothealbreeze";
+$Spell::index[healbreeze] = 43;
+$Spell::name[43] = "Healing Breeze";
+$Spell::description[43] = "Lightly heals caster and friendlies 40 meters around.";
+$Spell::delay[43] = 1.5;
+$Spell::recoveryTime[43] = 5;
+$Spell::radius[43] = 40;
+$Spell::damageValue[43] = -15;
+$Spell::manaCost[43] = 12;
+$Spell::startSound[43] = DeActivateWA;
+$Spell::endSound[43] = ActivateAR;
+$Spell::groupListCheck[43] = False;
+$Spell::refVal[43] = -30;
+$Spell::graceDistance[43] = 15;
+$Spell::effectType[43] = $SpellTypeCustom;
+$SkillType[healbreeze] = $SkillDefensiveCasting;
+$SkillRestriction[healbreeze] = $SkillDefensiveCasting @ " 45 B 1"; //Bot only spells
 //----------------------------------------------------------------------------------------------------------------
 
 function TranslateEffectVars(%effectVars)
@@ -1509,7 +1526,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 
             %returnFlag = True;
         }
-        if(%index == 23 || %index == 24 || %index == 31)
+        if(%index == 23 || %index == 24 || %index == 31 || %index == $Spell::index[healbreeze])
         {
             //23 = mass heal spell
             //24 = mass full heal spell
@@ -2541,6 +2558,25 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			playSound($Spell::endSound[%index], %castPos);
 		}
 	}
+    if(%index == 43)
+    {
+        if(GameBase::getTeam(%clientId) == GameBase::getTeam(%id))
+		{
+			Client::sendMessage(%clientId, $MsgBeige, "Healing Breeze" @ Client::getName(%id));
+			if(%clientId != %id)
+				Client::sendMessage(%id, $MsgBeige, "You are being Healing Breezed by " @ Client::getName(%clientId));
+			
+            %r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
+			refreshHP(%id, %r);
+
+			%castPos = GameBase::getPosition(%id);
+
+			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
+			playSound($Spell::endSound[%index], %castPos);
+		}
+        else
+			Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId)@" healed their allies for "@ $Spell::damageValue[%index] * -1@" HP");
+    }
 	if(%index == 24)
 	{
 		if(GameBase::getTeam(%clientId) == GameBase::getTeam(%id))

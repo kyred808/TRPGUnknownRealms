@@ -111,6 +111,9 @@ function Player::onKilled(%this)
 			%tmploot = %tmploot @ "COINS " @ floor(fetchData(%clientId, "COINS")) @ " ";
 		storeData(%clientId, "COINS", 0);
         
+        if(Player::isAiControlled(%clientId))
+            %tmploot = DropTable::GenerateLootDrops(%clientId,%tmploot);
+        
         %itemList = RPGItem::getFullItemList(%clientId,false);
         
         for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
@@ -183,7 +186,7 @@ function Player::onKilled(%this)
                 }
             }
         }
-        
+
         //Rework needed for virtual items
         //Needs optimization, but not critical yet
 		//%max = getNumItems();
@@ -491,7 +494,7 @@ function CalculateDamageReduction(%clientId)
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
 	//dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-    echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+    //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     
     %weapTag = %weapon;
     %weapon = RPGItem::ItemTagToLabel(%weapon);
