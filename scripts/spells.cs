@@ -815,7 +815,7 @@ $SkillType[haste] = $SkillNatureCasting;
 $SkillRestriction[haste] = $SkillNatureCasting @ " 15";
 
 $Spell::keyword[43] = "bothealbreeze";
-$Spell::index[healbreeze] = 43;
+$Spell::index[bothealbreeze] = 43;
 $Spell::name[43] = "Healing Breeze";
 $Spell::description[43] = "Lightly heals caster and friendlies 40 meters around.";
 $Spell::delay[43] = 1.5;
@@ -829,8 +829,8 @@ $Spell::groupListCheck[43] = False;
 $Spell::refVal[43] = -30;
 $Spell::graceDistance[43] = 15;
 $Spell::effectType[43] = $SpellTypeCustom;
-$SkillType[healbreeze] = $SkillDefensiveCasting;
-$SkillRestriction[healbreeze] = $SkillDefensiveCasting @ " 45 B 1"; //Bot only spells
+$SkillType[bothealbreeze] = $SkillDefensiveCasting;
+$SkillRestriction[bothealbreeze] = $SkillDefensiveCasting @ " 45 B 1"; //Bot only spells
 //----------------------------------------------------------------------------------------------------------------
 
 function TranslateEffectVars(%effectVars)

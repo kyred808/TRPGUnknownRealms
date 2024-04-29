@@ -160,9 +160,6 @@ instant SimGroup "MissionGroup" {
 		instant SimVolume "2caven" {
 			fileName = "2caven.vol";
 		};
-		instant SimVolume "newcrypt" {
-			fileName = "crypt0.vol";
-		};
         instant SimVolume "ctown" {
 			fileName = "CTown.vol";
 		};

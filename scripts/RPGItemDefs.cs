@@ -295,7 +295,7 @@ AddItemHelper("BoneDust","Bone Dust","Rares",158,0.2,9000,MiscLootShape);
 AddItemHelper("SkeletonBone","Skeleton Bone","Rares",159,1,1,MiscLootShape);
 AddItemHelper("EnchantedStone","Enchanted Stone","Rares",160,2,1,MiscLootShape);
 AddItemHelper("DragonScale","Dragon Scale","Rares",161,8,245310,MiscLootShape);
-AddItemHelper("Magicite","Magicite","Rares",162,0.2,550000,MiscLootShape);
+AddItemHelper("Magicite","Magicite","Rares",162,0.2,307570,MiscLootShape); //Price of materials * 2
 
 $AccessoryVar[blackstatue, $MiscInfo] = "A strange black statue.";
 $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";

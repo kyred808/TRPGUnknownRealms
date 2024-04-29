@@ -43,18 +43,55 @@ ParseDropTable("Hunter","Waraxe 1 10|Sling 1 10|Granite [1,3] 15");
 //Orcs-Yolanda
 ParseDropTable("Warlock","EnchantedStone 1 10");
 ParseDropTable("Berserker","BroadSword 1 10|Opal [1,2] 10");
-ParseDropTable("Ravager","BroadSword 1 10|BluePotion [1,3] 40|Opal [1,2] 20");
-ParseDropTable("Slayer","BroadSword 1 10|ShortBow 1 10|Opal [1,4] 15");
+ParseDropTable("Ravager","BroadSword 1 10|BluePotion [1,3] 40|Opal [1,3] 20");
+ParseDropTable("Slayer","BroadSword 1 10|ShortBow 1 10|Opal 1 15");
 ParseDropTable("Oracle","BoneClub 1 10|EnchantedStone 1 10|Turquoise 1 5");
+
+//Zombies-Crypt
+ParseDropTable("Mauler","SpikedClub 1 10");
+ParseDropTable("Thrasher","Longsword 1 10");
+
+//Undead-Crypt
+ParseDropTable("Skeleton","Waraxe 1 10");
+ParseDropTable("Necromancer","Darktome 1 1.5");
+
+//Undead-?
+ParseDropTable("Spawn","Gladius 1 10");
+
+//Elven
+ParseDropTable("Protector","Shortsword 1 5");
+ParseDropTable("Peacekeeper","Longsword 1 10|Shortbow 1 5");
+ParseDropTable("Lord","LightCrossbow 1 5|SpikedClub 1 5");
+ParseDropTable("Champion","Longsword 1 10|LightCrossbow 1 10");
+ParseDropTable("Conjurer","Topaz 1 5");
+
+//Travellers
+ParseDropTable("Brigand","Longsword 1 10");
+ParseDropTable("Marauder","Longsword 1 10");
+ParseDropTable("Knight","Longsword 1 10|ShortBow 1 5|Longbow 1 5");
+ParseDropTable("Paladin","Turquoise 1 5|Turquoise 1 12");
+
+//Mino
+ParseDropTable("Goliath","BattleAxe 1 2|warhammer 1 5|BroadSword 1 15");
+ParseDropTable("Reaper","quarterstaff 1 5");
+
+ParseDropTable("Ent","Strawberry [1,3] 5");
 
 //Race Tables
 ParseDropTable("Goblin","GoblinEar 1 5|GobbieBerry 1 8|Quartz [1,2] 25");
 ParseDropTable("Gnoll","traitorsamulet 1 0.25");
-ParseDropTable("Orc","Jade [1,2] 20|LongSword 1 2");
+ParseDropTable("Orc","Jade [1,2] 20|LongSword 1 0.5");
+ParseDropTable("Zombie","Jade [1,2] 25");
+ParseDropTable("Undead","Bonedust 1 15");
+ParseDropTable("Minotaur","MeteorChunk 1 5");
 
 //Zone Tables
 ParseDropTable("Keldrin Mine","COINS [5,20] 15|Quartz [1,2] 15");
-ParseDropTable("Stronghold Yolanda","COINS [15,30] 15|TitaniteShard 1 5|MorningStar 1 3");
+ParseDropTable("Stronghold Yolanda","COINS [15,30] 15|TitaniteShard 1 5|MorningStar 1 0.8");
+ParseDropTable("Ancient Crypt","COINS [45,60] 15|Bonedust [1,2] 5");
+ParseDropTable("Elven Outpost","COINS [45,60] 15|Jade [1,4] 10");
+ParseDropTable("Traveller's Den","COINS [50,75] 15|turquoise [1,3] 5");
+ParseDropTable("Minotaur's Lair","COINS [100,300] 25|gladius 1 5|Topaz [1,4] 10");
 
 function DropTable::AddTableToPlayer(%clientId,%tableKey)
 {
