@@ -32,11 +32,10 @@ $SpeicalVarHPRegen = 10;
 $SpecialVarManaRegen = 11;
 $SpecialVarManaThief = 12;
 $SpecialVarManaHarvest = 13;
-$SpecialVarMaxStam = 14;
+
 $SpecialVarArmorPiercing = 15;
-$SpecialVarStamRegen = 16;
-$SpecialVarRestStamRegen = 17;
-$SpecialVarIdleStamRegen = 18;
+
+$SpecialVarATKSpeed = 19;
 
 $SpecialVarDesc[1] = "AMR";
 $SpecialVarDesc[2] = "NONE";
@@ -51,11 +50,12 @@ $SpecialVarDesc[10] = "HP regen";
 $SpecialVarDesc[11] = "Mana regen";
 $SpecialVarDesc[12] = "Mana Thief";
 $SpecialVarDesc[13] = "Mana Harvest";
-$SpecialVarDesc[14] = "Max Stamina";
+//$SpecialVarDesc[14] = "Max Stamina";
 $SpecialVarDesc[15] = "AMR Pierce";
-$SpecialVarDesc[16] = "Stam Regen";
-$SpecialVarDesc[17] = "Rest Stam";
-$SpecialVarDesc[18] = "Idle Stam";
+//$SpecialVarDesc[16] = "Stam Regen";
+//$SpecialVarDesc[17] = "Rest Stam";
+//$SpecialVarDesc[18] = "Idle Stam";
+$SpecialVarDesc[19] = "ATK SPD";
 
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;

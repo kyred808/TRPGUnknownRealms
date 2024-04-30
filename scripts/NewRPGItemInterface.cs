@@ -568,6 +568,7 @@ function RPGItem::useItem(%clientId,%itemTag,%amnt)
     }
 }
 
+
 function RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,%specialVar,%mod)
 {
     for(%i = 0; (%s = getWord(%specialVar,%i)) != -1; %i+= 2)
@@ -607,19 +608,62 @@ function RPGItem::GetEquipmentStats(%itemTag,%itemLabel,%mult)
     if(%itemLabel == "")
         %itemLabel = RPGItem::ItemTagToLabel(%itemTag);
     
-    if(%mult == "" || %mult == 1)
-        return GetAccessoryVar(%itemLabel, $SpecialVar);
-    else
+    if(%mult == "")
+        %mult = 1;
+    
+    %nstats = "";
+    %stats = GetAccessoryVar(%itemLabel, $SpecialVar);
+    %hasAffixes = RPGItem::hasAffixes(%itemTag);
+    //echo("Has Affix: "@ %hasAffixes);
+    if(!%hasAffixes && %mult == 1)
     {
-        %stats = GetAccessoryVar(%itemLabel, $SpecialVar);
-        %nstats = "";
-        for(%i = 0; (%s = getWord(%stats,%i)) != -1; %i+=2)
-        {
-            %nstats = %nstats @ %s @" "@ getWord(%stats,%i+1)*%mult @" ";
-        }
-        return %nstats;
+        return %stats;
     }
-}
+    
+    for(%i = 0; (%s = getWord(%stats,%i)) != -1; %i+=2)
+    {
+        %bonus = 0;
+        %affixType = $RPGItem::SpecialVarToAffix[%s];
+        if(%hasAffixes && %affixType != "")
+            %bonus = RPGItem::getAffixValue(%itemTag,%affixType);
+            
+        %skipSpec[%s] = true;
+        //echo("Bonus: "@ %bonus);
+        //echo(%stats);
+        //echo("Mult: "@%mult);
+        %nstats = %nstats @ %s @" "@ (getWord(%stats,%i+1)+%bonus)*%mult@" ";
+    }
+    
+    for(%i = 0; %i < $RPGItem::AffixCount; %i++)
+    {
+        %type = $RPGItem::AffixType[%i];
+        %spec = $RPGItem::AffixSpecialVar[%i];
+        if(%spec != "" && %skipSpec[%spec] == "")
+        {
+            %val = RPGItem::getAffixValue(%itemTag,%type);
+            if(%val > 0)
+                %nstats = %nstats @ %spec @ " "@ RPGItem::getAffixValue(%itemTag,%type)*%mult@" ";
+        }
+    }
+    
+    return %nstats;
+    
+    //if(%mult == 1)
+    //{
+    //    %baseStats = GetAccessoryVar(%itemLabel, $SpecialVar);
+    //    return %baseStats;
+    //}
+    //else
+    //{
+    //    %nstats = 0;
+    //    %stats = GetAccessoryVar(%itemLabel, $SpecialVar);
+    //    for(%i = 0; (%s = getWord(%stats,%i)) != -1; %i+=2)
+    //    {
+    //        %nstats = %nstats @ %s @" "@ getWord(%stats,%i+1)*%mult@" ";
+    //    }
+    //    return %nstats;
+    //}
+} 
 
 //Handles equiping items and applying stats to the character
 function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
@@ -678,6 +722,7 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
                         RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%curWeapon,"",1),"dec");
                         %refreshEquip = true;
                     }
+                    echo(RPGItem::GetEquipmentStats(%itemTag,"",1));
                     RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,"",1),"inc");
                     RPGmountItem(Client::getOwnedObject(%clientId), %itemTag, $WeaponSlot);
                 }

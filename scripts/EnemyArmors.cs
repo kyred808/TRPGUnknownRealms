@@ -233,6 +233,9 @@ $BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 260/50 LCK 0 HideArmor
 $BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Diamond 1/-3000";
 $BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 590/50 LCK 2 Gladius/x 1 Diamond 1/-1000 Emerald 1/-700";
 
+$AIBehavior[Skeleton,IsSapper] = true;
+$AIBehavior[Skeleton,IsSapper,Spell] = "botstatdrain ATK";
+
 $BotEquipment[Protector] = 	"CLASS Ranger LVL 50/50 COINS 25/50 LCK 0 ScaleMail/x 1/-20 ShortSword/x 1 Ruby 2/-500";
 $BotEquipment[Peacekeeper] =	"CLASS Ranger LVL 54/50 COINS 28/50 LCK 0 LongSword/x 1 ShortBow/x 1 SheafArrow 40/50 Jade 5/-500";
 $BotEquipment[Lord] = 		"CLASS Ranger LVL 59/50 COINS 31/50 LCK 1 SpikedClub/x 1 LightCrossbow/x 1 LightQuarrel 25/75 Emerald 1/-2800";

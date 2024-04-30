@@ -68,17 +68,40 @@ function RPGmountItem(%player, %itemTag, %slot)
         {
             if(!Player::isAIControlled(%clientId))
             {
-                %bottomText = "<jc><f1>Weapon: <f0>" @RPGItem::getItemNameFromTag(%itemTag);
+                %bottomText = "<jc><f0>Weapon: <f1>" @RPGItem::getItemNameFromTag(%itemTag);
+                if(RPGItem::hasAffixes(%itemTag))
+                {
+                    %extra = GetAffixBonusText(%itemTag);
+                    if(%extra != "")
+                        %bottomText = %bottomText @" - "@ %extra;
+                }
                 %ammo = fetchData(%clientId, "LoadedProjectile " @ %itemTag);
                 if(%ammo != "")
-                    %bottomText = %bottomText @"\n<f1>Ammo: <f0>"@RPGItem::getItemNameFromTag(%ammo);
+                {
+                    %bottomText = %bottomText @"\n<f0>Ammo: <f1>"@RPGItem::getItemNameFromTag(%ammo);
+                    if(RPGItem::hasAffixes(%ammo))
+                    {
+                        %extra = GetAffixBonusText(%ammo);
+                        if(%extra != "")
+                            %bottomText = %bottomText @" - "@ %extra;
+                    }
+                }
                 if(fetchData(%clientId,"attunedWeapon") == %itemTag)
                 {
                     %weapMana = fetchData(%clientId,"attunedWeaponMana");
                     %maxMana = $MageStaff[%itemTag,MaxMana];
-                    %bottomText = %bottomText @"\n<f1>Mana: <f0>"@%weapMana @"<f1>/<f0>"@%maxMana;
+                    %bottomText = %bottomText @"\n<f0>Mana: <f1>"@%weapMana @"<f0>/<f1>"@%maxMana;
                 }
-                bottomprint(%clientId,%bottomText,String::len(%bottomText)/20);
+                %len = String::len(%bottomText);
+                if(%len > 255)
+                {
+                    %substr = String::getsubstr(%bottomText,0,255);
+                    remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%bottomText) / 20), 1);
+                    %substr = String::getSubstr(%bottomText,255,%len);
+                    remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+                }
+                else
+                    bottomprint(%clientId,%bottomText,String::len(%bottomText)/20);
             }
             //echo("Store Weapon! " @%itemTag);
             storeData(%clientId,"EquippedWeapon",%itemTag);
@@ -525,6 +548,17 @@ function OldGetBestWeapon(%clientId)
 	return %bestWeapon;
 }
 
+function CalcWeaponSpeed(%itemTag,%label)
+{
+    %x = GetDelay(%label);
+    %p = RPGItem::getAffixValue(%itemTag,"sp")/100;
+    if(%p > 0)
+        %mod = %x/(1+%p);
+    else
+        %mod = %x;
+    return %mod;
+}
+
 function BaseWeaponImage::onFire(%player,%slot)
 {
     %clientId = Player::getClient(%player);
@@ -547,7 +581,8 @@ function BaseWeaponImage::onFire(%player,%slot)
             refreshHPREGEN(%clientId);
         }
         %label = $RPGItem::ItemDef[%id,Label];
-        if(getSimTime() >= $lastAttackTime[%clientId] + GetDelay(%label))
+        
+        if(getSimTime() >= $lastAttackTime[%clientId] + CalcWeaponSpeed(%weapon,%label))//GetDelay(%label))
         {
             $lastAttackTime[%clientId] = getSimTime();
             if(%wtype == $RPGItem::WeaponTypeMelee)

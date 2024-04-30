@@ -601,7 +601,7 @@ function AI::Periodic(%aiName)
                                     %spell = $AIBehavior[%botType,IsHealer,Spells];
                                 else
                                 {
-                                    %i = getIntRandomMT(1,%numSpells);
+                                    %i = getIntRandomMT(0,%numSpells-1);
                                     %spell = getWord($AIBehavior[%botType,IsHealer,Spells],%i);
                                 }
                                 remoteSay(%aiId, 0, "#cast " @ %spell);
@@ -618,7 +618,10 @@ function AI::Periodic(%aiName)
                     %target = %closestId;
                     
                     %weap = RPGItem::ItemTagToLabel(fetchData(%aiId,"EquippedWeapon"));
-                    
+                    if($AIBehavior[%botType,IsSapper] && OddsAre(3))
+                    {
+                        remoteSay(%aiId, 0, "#cast " @ $AIBehavior[%botType,IsSapper,Spell]);
+                    }
                     if($AccessoryVar[%weap, $AccessoryType] == $RangedAccessoryType)
                     {
                         //echo(%closest);

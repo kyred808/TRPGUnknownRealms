@@ -83,6 +83,7 @@ function fetchData(%clientId, %type)
             if(%im != 0)
             {
                 %affixBonus = round(%baseAtk * 0.1 * %im);
+                //%affixBonus = %affixBonus + RPGItem::getAffixValue(%weapon,$RPGItem::SpecialVarToAffix[$SpecialVarATK]);
             }
             //%b = %baseAtk + %extra;
             //echo("AB: "@ %affixBonus);

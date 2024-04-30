@@ -2942,7 +2942,12 @@ function WhatIs(%item)
 	%s = $SkillDesc[$SkillType[%item]];
 
 	if(GetDelay(%item) != "" && GetDelay(%item) != 0)
-		%sd = GetDelay(%item);
+    {
+        if(%tag != "")
+            %sd = CalcWeaponSpeed(%tag,%item);//GetDelay(%item);
+        else
+            %sd = GetDelay(%item);
+    }
 	else
 		%sd = "";
 

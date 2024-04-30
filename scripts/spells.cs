@@ -831,6 +831,25 @@ $Spell::graceDistance[43] = 15;
 $Spell::effectType[43] = $SpellTypeCustom;
 $SkillType[bothealbreeze] = $SkillDefensiveCasting;
 $SkillRestriction[bothealbreeze] = $SkillDefensiveCasting @ " 45 B 1"; //Bot only spells
+
+$Spell::keyword[44] = "botstatdrain";
+$Spell::index[botstatdrain] = 44;
+$Spell::name[44] = "Stat Drain";
+$Spell::description[44] = "Steals stat points from targets.";
+$Spell::delay[44] = 1.5;
+$Spell::recoveryTime[44] = 45;
+$Spell::radius[44] = 40;
+$Spell::ticks[44] = 15;
+$Spell::damageValue[44] = -23; //stat damage
+$Spell::manaCost[44] = 12;
+$Spell::startSound[44] = DeActivateWA;
+$Spell::endSound[44] = UnravelAM;
+$Spell::groupListCheck[44] = False;
+$Spell::refVal[44] = -30;
+$Spell::graceDistance[44] = 15;
+$Spell::effectType[44] = $SpellTypeCustom;
+$SkillType[botstatdrain] = $SkillNatureCasting;
+$SkillRestriction[botstatdrain] = "B 1"; //Bot only spells
 //----------------------------------------------------------------------------------------------------------------
 
 function TranslateEffectVars(%effectVars)
@@ -1526,11 +1545,12 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 
             %returnFlag = True;
         }
-        if(%index == 23 || %index == 24 || %index == 31 || %index == $Spell::index[healbreeze])
+        if(%index == 23 || %index == 24 || %index == 31 || %index == $Spell::index[bothealbreeze] || %index == $Spell::index[botstatdrain])
         {
             //23 = mass heal spell
             //24 = mass full heal spell
             //31 = mass shield spell
+            //And mroe
 
             %b = $Spell::radius[%index] * 2;
             %set = newObject("set", SimSet);
@@ -2557,6 +2577,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
 			playSound($Spell::endSound[%index], %castPos);
 		}
+        return;
 	}
     if(%index == 43)
     {
@@ -2576,6 +2597,36 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 		}
         else
 			Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId)@" healed their allies for "@ $Spell::damageValue[%index] * -1@" HP");
+        return;
+    }
+    if(%index == $Spell::index[botstatdrain])
+    {
+        if(GameBase::getTeam(%clientId) != GameBase::getTeam(%id))
+		{
+            echo("Target: "@ %id);
+            if(%extra == "ATK")
+            {
+                %dlist = fetchData(%clientId,"DrainList");
+                %debuff = "ATK "@ $Spell::damageValue[%index];
+                %bonus = "ATK "@ -1*$Spell::damageValue[%index];
+                %listEntry = %id @" "@ %debuff;
+                if(!IsInCommaList(%dlist,%listEntry))
+                {
+                    UpdateBonusState(%id,%debuff,$Spell::ticks[%index]);
+                    UpdateBonusState(%clientId,%bonus,$Spell::ticks[%index]);
+                    storeData(%clientId,"DrainList",AddToCommaList(%dlist,%listEntry));
+                    
+                    schedule("storeData("@%clientId@",\"DrainList\",RemoveFromCommaList(fetchData("@%clientId@", \"DrainList\"), \""@%listEntry@"\"));",$Spell::ticks[%index]*2,Client::getOwnedObject(%clientId));
+                    Client::sendMessage(%id, $MsgRed, Client::getName(%clientId)@" is draining "@ $Spell::damageValue[%index] * -1@" "@ %extra);
+                    Projectile::spawnProjectile(DDBolt,Gamebase::getMuzzleTransform(%clientId),Client::getOwnedObject(%clientId),"0 0 0");
+                }
+                
+            }
+            %castPos = GameBase::getPosition(%id);
+            CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
+            playSound($Spell::endSound[%index], %castPos);
+        }
+        return;
     }
 	if(%index == 24)
 	{
@@ -2592,6 +2643,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
 			playSound($Spell::endSound[%index], %castPos);
 		}
+        return;
 	}
 	if(%index == 31)
 	{
@@ -2608,6 +2660,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
 			playSound($Spell::endSound[%index], %castPos);
 		}
+        return;
 	}
 	if(%index == 33)
 	{
@@ -2635,6 +2688,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			%extraDelay = 0.22;
 			schedule("playSound(" @ $Spell::endSound[%index] @ ", \"" @ %castPos @ "\");", %extraDelay);
 		}
+        return;
 	}
 }
 

@@ -390,8 +390,8 @@ AddRingItemHelper(healerring,"Healer Ring",220,MiscLootShape,0.2,15000,"SKILL"@$
 AddRingItemHelper(naturering,"Nature Ring",222,MiscLootShape,0.2,15000,"SKILL"@$SkillNatureCasting@" 25");
 AddRingItemHelper(harvestring,"Harvest Ring",224,MiscLootShape,0.2,15000,"SKILL"@$SkillFarming@" 20");
 AddRingItemHelper(archeryring,"Archery Ring",226,MiscLootShape,0.2,15000,"SKILL"@$SkillArchery@" 20");
-AddRingItemHelper(ringofrest,"Ring of Rest",228,MiscLootShape,0.2,8000,$SpecialVarRestStamRegen@" 0.8");
-AddRingItemHelper(ringofidle,"Ring of Idle",230,MiscLootShape,0.2,8000,$SpecialVarIdleStamRegen@" 0.2");
+AddRingItemHelper(ringofrest,"REMOVE id228",228,MiscLootShape,0.2,8000);//,$SpecialVarRestStamRegen@" 0.8");
+AddRingItemHelper(ringofidle,"REMOVE id230",230,MiscLootShape,0.2,8000);//,$SpecialVarIdleStamRegen@" 0.2");
 AddRingItemHelper(manaring,"Mana Ring",232,MiscLootShape,0.2,25000,$SpecialVarMana@" 50");
 
 $AccessoryVar[ringofharm, $MiscInfo] = "Ring that gives <f0>+10 ATK";

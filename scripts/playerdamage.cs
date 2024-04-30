@@ -77,6 +77,19 @@ function Player::onKilled(%this)
 
     Player::setJet(%this,false);
     
+    %dlist = fetchData(%clientId,"DrainList");
+    %dlistLen = countObjInCommaList(%dlist);
+    if(%dlistLen > 0)
+    {
+        for(%i = 0; %i < %dlistLen; %i++)
+        {
+            %entry = String::getWord(%dlist,",",%i);
+            %victim = getWord(%entry,0);
+            %debuff = Word::getSubWord(%entry,1,30); //I assume it won't go over 30 words for a debuff string
+            UpdateBonusState(%victim, %debuff, 0); //Clear the debuff
+        }
+    }
+    
 	if(IsStillArenaFighting(%clientId))
 	{
 		//player's dueling flag is still at ALIVE, make him DEAD
@@ -499,7 +512,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
     %weapTag = %weapon;
     %weapon = RPGItem::ItemTagToLabel(%weapon);
     %skilltype = $SkillType[%weapon];
-    
+
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
 	{
 		%damagedClient = Player::getClient(%this);
@@ -707,7 +720,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
         
             %reductionValue = %value * (%dmgRedPct);
             //echo("AMRP: "@ %amrp);
-            echo("DR: "@ %reductionValue);
+            //echo("DR: "@ %reductionValue);
             %value = %value - ((%reductionValue)*%amrAdj);
 
 			if(%value < 1)
