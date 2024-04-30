@@ -1,5 +1,4 @@
 $RPGItem::affixLen = 2;
-$RPGItem::AffixCount = 0;
 
 //$ParseAffix[] gets used as a variable length return and parameter without strings
 
@@ -12,62 +11,7 @@ function RPGItem::addAffixType(%tag,%desc,%spec)
     $RPGItem::AffixCount++;
 }
 
-RPGItem::addAffixType("im","Rank"); //Improvement
-RPGItem::addAffixType("sd","SpellDmg"); //Spell Damage
-RPGItem::addAffixType("we","Weight"); //Weight
-RPGItem::addAffixType("va","Value"); //Value
-RPGItem::addAffixType("pr"); //Prefix
-RPGItem::addAffixType("nn"); //Name
 
-//Special Var related affixes
-RPGItem::addAffixType("am","AMR",$SpecialVarAMR); //Armor (AMR)
-RPGItem::addAffixType("md","MDEF",$SpecialVarMDEF); //MDEF
-RPGItem::addAffixType("at","ATK",$SpecialVarATK); //Attack
-RPGItem::addAffixType("de","DEF",$SpecialVarDEF); //Defense
-RPGItem::addAffixType("sp","ATKSPD",$SpecialVarATKSpeed); //atk speed Debating this one as spec var
-RPGItem::addAffixType("hp","HP",$SpecialVarHP); //MaxHP
-RPGItem::addAffixType("mp","MP",$SpecialVarMana); //MaxMP
-RPGItem::addAffixType("hr","HPRegen",$SpeicalVarHPRegen); //HPRegen
-RPGItem::addAffixType("mr","MPRegen",$SpecialVarManaRegen); //MPRegen
-RPGItem::addAffixType("ap","AMRP",$SpecialVarArmorPiercing); //Armor Pierce
-
-$RPGItem::SpecialVarToAffix[$SpecialVarAMR] = "am";
-$RPGItem::SpecialVarToAffix[$SpecialVarMDEF] = "md";
-$RPGItem::SpecialVarToAffix[$SpecialVarHP] = "hp";
-$RPGItem::SpecialVarToAffix[$SpecialVarMana] = "mp";
-$RPGItem::SpecialVarToAffix[$SpecialVarATK] = "at";
-$RPGItem::SpecialVarToAffix[$SpecialVarDEF] = "de";
-$RPGItem::SpecialVarToAffix[$SpecialVarSPEED] = "";
-$RPGItem::SpecialVarToAffix[$SpecialVarMaxWeight] = "";
-$RPGItem::SpecialVarToAffix[$SpeicalVarHPRegen] = "hr";
-$RPGItem::SpecialVarToAffix[$SpecialVarManaRegen] = "mr";
-$RPGItem::SpecialVarToAffix[$SpecialVarManaThief] = "";
-$RPGItem::SpecialVarToAffix[$SpecialVarManaHarvest] = "";
-$RPGItem::SpecialVarToAffix[$SpecialVarArmorPiercing] = "ap";
-$RPGItem::SpecialVarToAffix[$SpecialVarATKSpeed] = "sp";
-
-function GetAffixBonusText(%itemTag)
-{
-    RPGItemAffix::ParseFromCache(%itemTag);
-    %txt = "";
-    for(%i = 0; %i < $RPGItem::AffixCount; %i++)
-    {
-        %type = $RPGItem::AffixType[%i];
-        if($ParseAffix[%type] != "" && $ParseAffix[%type] != 0 && !(%type == "pr" || %type == "nn" || %type == "im"))
-        {
-            %txt = %txt @"<f0>"@$RPGITem::AffixDesc[%i]@": ";
-            %val = $ParseAffix[%type];
-            %txtVal = %val;
-            if(%type == "sp")
-                %txtVal = %txtVal @"%";
-            if(%val > 0)
-                %txt  = %txt @"<f1>+"@%txtVal@" ";
-            else
-                %txt = %txt @"<f1>"@%txtVal@" ";
-        }
-    }
-    return %txt;
-}
 
 //Unzip an itemTag into $ParseAffix[] array
 function RPGItemAffix::ParseAffixes(%itemTag)
@@ -89,10 +33,13 @@ function RPGItemAffix::CreateTagFromParse()
     for(%i = 0; %i < $RPGItem::AffixCount; %i++)
     {
         %type = $RPGItem::AffixType[%i];
-        if($ParseAffix[%type] != "" && $ParseAffix[%type] != 0)
+        echo("T: "@ %type);
+        echo("V: "@ $ParseAffix[%type]);
+        if($ParseAffix[%type] != "" && String::ICompare($ParseAffix[%type],0) != 0) //Must use icompare, because $ParseAffix[%type] could be a string
         {
             %newTag = %newTag@"_"@%type@$ParseAffix[%type];
         }
+        echo(%newTag);
     }
     return %newTag;
 }

@@ -48,8 +48,8 @@ ParseDropTable("Slayer","BroadSword 1 10|ShortBow 1 10|Opal 1 15");
 ParseDropTable("Oracle","BoneClub 1 10|EnchantedStone 1 10|Turquoise 1 5");
 
 //Zombies-Crypt
-ParseDropTable("Mauler","SpikedClub 1 10");
-ParseDropTable("Thrasher","Longsword 1 10");
+ParseDropTable("Mauler","SpikedClub 1 100");
+ParseDropTable("Thrasher","Longsword 1 100");
 
 //Undead-Crypt
 ParseDropTable("Skeleton","Waraxe 1 10");
@@ -98,6 +98,7 @@ function DropTable::AddTableToPlayer(%clientId,%tableKey)
     storeData(%clientId,"DropTableList",%tableKey@",","strinc");
 }
 
+$AffixDropRate = 1;
 function DropTable::GenerateLootDrops(%clientId,%lootstr)
 {
     %keyList = fetchData(%clientId,"DropTableList");
@@ -107,7 +108,25 @@ function DropTable::GenerateLootDrops(%clientId,%lootstr)
         {
             %amt = DropTable::RollLoot(%key,%k);
             if(%amt != "")
-                %lootstr = SetStuffString(%lootstr,$DropTable[%key,%k,Item],%amt);
+            {
+                %item = $DropTable[%key,%k,Item];
+                %p = getRandomMT();
+                echo("AffixDrop: "@%p);
+                if(%p <= $AffixDropRate)
+                {
+                    if(!RPGItem::isItemTag(%item))
+                        %item = RPGItem::LabelToItemTag(%item);
+                    echo("ITEM: "@ %item);
+                    %class = RPGItem::getItemGroupFromTag(%item);
+                    echo("ITEM CL: "@ %class);
+                    %idx = getIntRandomMT(0,$RPGItemAffix::modifier[%class,Count]-1);
+                    echo("IDX: "@ %idx);
+                    %item = RPGItemAffix::ApplyEquipModifiersToItem(%item,$RPGItemAffix::modifier[%class,%idx,Name]);
+                    echo("ITEM Ret: "@ %item);
+                }
+                
+                %lootstr = SetStuffString(%lootstr,%item,%amt);
+            }
         }
         
     }

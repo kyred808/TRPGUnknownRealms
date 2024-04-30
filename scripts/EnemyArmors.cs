@@ -228,7 +228,7 @@ $BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 310/50 LCK 1 WarAxe
 $BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1";
 
 $BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 200/50 LCK 0 SpikedClub/x 1 Granite 10/-300";
-$BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 StuddedArmor0/x 1 LongSword/x 1 Opal 3/-300";
+$BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 StuddedLeather/x 1 LongSword/x 1 Opal 3/-300";
 $BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 260/50 LCK 0 HideArmor0/x 1/-80 WarAxe/x 1 Turquoise 4/-300";
 $BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Diamond 1/-3000";
 $BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 590/50 LCK 2 Gladius/x 1 Diamond 1/-1000 Emerald 1/-700";

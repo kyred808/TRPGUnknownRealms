@@ -131,6 +131,10 @@ function RPGItem::getItemNameFromTag(%itemTag)
 	else
 		%ret = RPGItem::getItemName(RPGItem::getItemIDFromTag(%itemTag));
 	
+    %prefix = RPGItem::getAffixValue(%itemTag,"pr");
+    if(String::ICompare(%prefix,0) != 0)
+        %ret = %prefix @" "@%ret;
+    
     %im = RPGItem::getAffixValue(%itemTag,"im");
     if(%im != 0)
     {
@@ -146,6 +150,7 @@ function RPGItem::getItemNameFromTag(%itemTag)
                 %ret = %im@" "@%ret;
         }
     }
+    
     //if(RPGItem::getItemGroupFromTag(%itemTag) == "Gems")
     //{
     //    %gidx = String::findSubStr(%itemTag,"_gm");
