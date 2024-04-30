@@ -48,8 +48,8 @@ ParseDropTable("Slayer","BroadSword 1 10|ShortBow 1 10|Opal 1 15");
 ParseDropTable("Oracle","BoneClub 1 10|EnchantedStone 1 10|Turquoise 1 5");
 
 //Zombies-Crypt
-ParseDropTable("Mauler","SpikedClub 1 100");
-ParseDropTable("Thrasher","Longsword 1 100");
+ParseDropTable("Mauler","SpikedClub 1 10");
+ParseDropTable("Thrasher","Longsword 1 10");
 
 //Undead-Crypt
 ParseDropTable("Skeleton","Waraxe 1 10");
