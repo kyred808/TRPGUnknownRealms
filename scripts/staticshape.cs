@@ -146,6 +146,35 @@ function FlagStand::onDamage()
 {
 }
 
+StaticShapeData MaleHumanNPCTownBot
+{
+    shapeFile = "rpgmalehuman";
+    damageSkinData = "objectDamageSkins"; //"armorDamageSkins";
+	maxDamage = 99999.0;
+	visibleToSensor = true;	//thanks Adger!!
+	mapFilter = 1;
+};
+
+StaticShapeData FemaleHumanNPCTownBot
+{
+    shapeFile = "lfemalehuman";
+	maxDamage = 99999.0;
+	visibleToSensor = true;	//thanks Adger!!
+	mapFilter = 1;
+};
+
+function SpawnNPCTest(%clientId)
+{
+    focusServer();
+    Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),50);
+    %obj = newObject("",StaticShape,"NPCHumanMale1",false);
+    Gamebase::setPosition(%obj,$los::position);
+    addToSet(nameToId("MissionCleanup"),%obj);
+    GameBase::playSequence(%obj, 0, "root");
+    $TestObj = %obj;
+}
+
+
 //------------------------------------------------------------------------
 // Generators
 //------------------------------------------------------------------------
@@ -185,7 +214,7 @@ function Generator::onDeactivate(%this)
 StaticShapeData TowerSwitch
 {
 	description = "Tower Control Switch";
-	className = "towerSwitch";
+	//className = "towerSwitch";
 	shapeFile = "tower";
 	showInventory = "false";
 	visibleToSensor = true;
@@ -932,18 +961,18 @@ StaticShapeData AuraCharge
     disableCollision = true;
 };
 
-StaticShapeData APOC
-{
-    shapeFile = "ha_apoc";
-	maxDamage = 999.0;
-	//isTranslucent = "false";
-};
-
-function SpawnHERC(%clientId)
-{
-    focusServer();
-    Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),50);
-    %obj = newObject("herc",StaticShape,"APOC",true);
-    Gamebase::setPosition(%obj,$los::position);
-    addToSet(nameToId("MissionCleanup"),%obj);
-}
+//StaticShapeData APOC
+//{
+//    shapeFile = "ha_apoc";
+//	maxDamage = 999.0;
+//	//isTranslucent = "false";
+//};
+//
+//function SpawnHERC(%clientId)
+//{
+//    focusServer();
+//    Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),50);
+//    %obj = newObject("herc",StaticShape,"APOC",true);
+//    Gamebase::setPosition(%obj,$los::position);
+//    addToSet(nameToId("MissionCleanup"),%obj);
+//}

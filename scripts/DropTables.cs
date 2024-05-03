@@ -98,7 +98,7 @@ function DropTable::AddTableToPlayer(%clientId,%tableKey)
     storeData(%clientId,"DropTableList",%tableKey@",","strinc");
 }
 
-$AffixDropRate = 1;
+$AffixDropRate = 0.25;
 function DropTable::GenerateLootDrops(%clientId,%lootstr)
 {
     %keyList = fetchData(%clientId,"DropTableList");
@@ -111,18 +111,18 @@ function DropTable::GenerateLootDrops(%clientId,%lootstr)
             {
                 %item = $DropTable[%key,%k,Item];
                 %p = getRandomMT();
-                echo("AffixDrop: "@%p);
+
                 if(%p <= $AffixDropRate)
                 {
                     if(!RPGItem::isItemTag(%item))
                         %item = RPGItem::LabelToItemTag(%item);
-                    echo("ITEM: "@ %item);
+
                     %class = RPGItem::getItemGroupFromTag(%item);
-                    echo("ITEM CL: "@ %class);
+
                     %idx = getIntRandomMT(0,$RPGItemAffix::modifier[%class,Count]-1);
-                    echo("IDX: "@ %idx);
+
                     %item = RPGItemAffix::ApplyEquipModifiersToItem(%item,$RPGItemAffix::modifier[%class,%idx,Name]);
-                    echo("ITEM Ret: "@ %item);
+
                 }
                 
                 %lootstr = SetStuffString(%lootstr,%item,%amt);

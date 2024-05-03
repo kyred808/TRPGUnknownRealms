@@ -1,5 +1,5 @@
 $Server::teamName[0] = "Citizen";
-$Server::teamSkin[0] = "rpgbase";
+$Server::teamSkin[0] = "h1t6b6";//"rpgbase";
 $Server::teamName[1] = "Enemy";
 $Server::teamSkin[1] = "rpgbase";
 $Server::teamName[2] = "Greenskins";

@@ -297,8 +297,9 @@ function Realms::InitializeTownBots(%groupPath,%realmLabel)
 			{
 				%marker = GatherBotInfo(%object);
 			}
-            //echo(%name);
-			%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
+            //echo($BotInfo[%name, RACE]);
+            %townbot = newObject("",StaticShape,$BotInfo[%name, RACE] @"NPCTownBot",false);
+			//%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
 
 			addToSet("MissionCleanup\\"@%realmLabel, %townbot);
 			GameBase::setMapName(%townbot, $BotInfo[%name, NAME]);

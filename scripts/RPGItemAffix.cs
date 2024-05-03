@@ -33,8 +33,6 @@ function RPGItemAffix::CreateTagFromParse()
     for(%i = 0; %i < $RPGItem::AffixCount; %i++)
     {
         %type = $RPGItem::AffixType[%i];
-        echo("T: "@ %type);
-        echo("V: "@ $ParseAffix[%type]);
         if($ParseAffix[%type] != "" && String::ICompare($ParseAffix[%type],0) != 0) //Must use icompare, because $ParseAffix[%type] could be a string
         {
             %newTag = %newTag@"_"@%type@$ParseAffix[%type];

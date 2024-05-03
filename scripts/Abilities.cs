@@ -451,9 +451,10 @@ function Ability::DoFadeAttack(%clientId)
                 schedule("storeData("@%clientId@",\"blockFade\",\"\");",$Ability::cooldownTime[$Ability::index[fade]]);
                 
                 %range = 2*$FadeAttackConfuseRange;
+                %set = newObject("set", SimSet);
                 containerBoxFillSet(%set, $SimPlayerObjectType, GameBase::getPosition(%clientId), %range, %range, %range, 0);
                 Group::iterateRecursive(%set, Ability::FadeConfusion, %clientId);
-                
+                deleteObject(%set);
                 Client::sendMessage(%clientId, $MsgWhite, "You fade away in the shadows. Your movement will not unhide you for "@ %delay @"s.");
             }
             else

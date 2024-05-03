@@ -49,6 +49,12 @@ function GetItemCost(%item,%itemTag)
     {
         %cost += %cost*%im*0.3;
     }
+    
+    %va = RPGItem::getAffixValue(%itemTag,"va");
+    if(%va != 0)
+    {
+        %cost += %va;
+    }
 	return round(%cost);		
 }
 

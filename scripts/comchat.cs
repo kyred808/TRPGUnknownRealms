@@ -2352,12 +2352,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			return;
         }
         
-        //if(%w1 == "#scrap")
-        //{
-        //    SetupItemScrapping(%TrueClientId);
-        //    return;
-        //}
-        
         if(%w1 == "#refine")
         {
             $los::object = "";
@@ -6054,7 +6048,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	if(%botTalk)
 	{
 		//process TownBot talk
-
+        
 		%initTalk = "";
 		for(%i = 0; (%w = GetWord("hail hello hi greetings yo hey sup salutations g'day howdy", %i)) != -1; %i++)
 			if(String::ICompare(%cropped, %w) == 0)
@@ -6081,14 +6075,15 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		
 		if(%closest <= ($maxAIdistVec + 20) && Client::getTeam(%TrueClientId) == GameBase::getTeam(%closestId))
 		{
-            //if(%initTalk) 
-			//{	
-			//	%rot = Vector::getRotation(Vector::normalize(Vector::sub(%clientPos, %closestPos)));
-			//	%rot = GetWord(%rot, 0)+1.57079632679489661923132169163975@" "@GetWord(%rot, 1)@" "@GetWord(%rot, 2);
-			//	
-			//	GameBase::setRotation(%closestId, %rot);
-			//	RemotePlayAnim(%closestId, 12);
-			//}
+            if(%initTalk && $state[%closestId, %TrueClientId] == "") 
+			{
+                TownBotGreetPlayer(%closestId,%TrueClientId,%closestPos,%clientPos);
+				//%rot = Vector::getRotation(Vector::normalize(Vector::sub(%clientPos, %closestPos)));
+				//%rot = GetWord(%rot, 0)+1.57079632679489661923132169163975@" "@GetWord(%rot, 1)@" "@GetWord(%rot, 2);
+				//
+				//GameBase::setRotation(%closestId, %rot);
+				//RemotePlayAnim(%closestId, 12);
+			}
 			if(clipTrailingNumbers(%aiName) == "merchant")
 			{
 				//process merchant code
@@ -6098,8 +6093,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				{
 					if(%initTalk)
 					{
-                        %aiGender = $BotInfo[%aiName, RACE];
-						playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
+                        //%aiGender = $BotInfo[%aiName, RACE];
+						//playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
 						AI::sayLater(%TrueClientId, %closestId, "Did you come to see what items you can BUY or BELT?", True);
 						$state[%closestId, %TrueClientId] = 1;
 					}
@@ -6227,7 +6222,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					if(%initTalk)
 					{
                         %aiGender = $BotInfo[%aiName, RACE];
-						playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
+						//playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
 						AI::sayLater(%TrueClientId, %closestId, "Would you like to RESPEC?", True);
 						$state[%closestId, %TrueClientId] = 1;
 					}
@@ -6238,11 +6233,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					{
 						SetupRespec(%TrueClientId, %closestId);
 
-						$state[%closestId, %TrueClientId] = "";
-					}
-                    else if(String::findSubStr(%message, %trigger[3]) != -1)
-					{
-						Belt::BuyOrSell(%TrueClientId,%closestId);
 						$state[%closestId, %TrueClientId] = "";
 					}
 				}
@@ -6911,6 +6901,26 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		}
 	}
 }
+
+function TownBotGreetPlayer(%townbot,%clientId,%townBotPos,%clientPos)
+{
+    if(%townBotPos == "")
+        %townBotPos = Gamebase::getPosition(%townbot);
+    if(%clientPos == "")
+        %clientPos = Gamebase::getPosition(%clientId);
+    
+    
+    %rot = Vector::getRotation(Vector::normalize(Vector::sub(%clientPos, %townBotPos)));
+    %rot = GetWord(%rot, 0)+1.57079632679489661923132169163975@" "@GetWord(%rot, 1)@" "@GetWord(%rot, 2);
+    
+    GameBase::setRotation(%townbot, %rot);
+    GameBase::playSequence(%townbot, 0, "wave");
+    echo(%townbot.name);
+    %aiGender = $BotInfo[%townbot.name, RACE];
+	playSound("Sound" @ %aiGender @ "Hey", %townBotPos);
+    //RemotePlayAnim(%townbot, 12);
+}
+
 function remoteIssueCommand(%commander, %cmdIcon, %command, %wayX, %wayY, %dest1, %dest2, %dest3, %dest4, %dest5, %dest6, %dest7, %dest8, %dest9, %dest10, %dest11, %dest12, %dest13, %dest14)
 {
 	// issueCommandI takes waypoint 0-1023 in x,y scaled mission area

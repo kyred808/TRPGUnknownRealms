@@ -1812,8 +1812,8 @@ function InitTownBots()
 			{
 				%marker = GatherBotInfo(%object);
 			}
-
-			%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
+            %townbot = newObject("",StaticShape,$BotInfo[%name, RACE] @"NPCTownBot",false);
+			//%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
 
 			addToSet("MissionCleanup", %townbot);
 			GameBase::setMapName(%townbot, $BotInfo[%name, NAME]);
@@ -1827,6 +1827,19 @@ function InitTownBots()
 		}
 	}
 }
+
+function RotateTownBotToObj(%id,%obj,%realmId)
+{
+    %botPos = Gamebase::getPosition(%id);
+    %objPos = Gamebase::getPosition(%obj);
+    
+    %dir = Vector::Normalize(Vector::Sub(%objPos,%botPos));
+    
+    %rot = Vector::getRotation(%dir);
+    
+    Gamebase::setRotation(%id,%rot);
+}
+
 function RotateTownBot(%id, %rot, %realmId)
 {
 	dbecho($dbechoMode, "RotateTownBot(" @ %id @ ", " @ %rot @ "," @ %realmId @ ")");
