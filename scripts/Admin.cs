@@ -398,17 +398,19 @@ function RPG::gameMenu(%clientId,%page)
             Client::addMenuItem(%clientId, %curItem++ @ "Skill points..." , "sp");
             Client::addMenuItem(%clientId, %curItem++ @ "Skill Book..." , "skillbook");
             Client::addMenuItem(%clientId, %curItem++ @ "Spell Book..." , "spellbook");
-            Client::addMenuItem(%clientId, %curItem++ @ "Belt...","viewbelt");
-            
+            if(fetchData(%clientId, "ignoreGlobal"))
+                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+            else
+                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
                 
             
             
             if(%curItem < 7)
             {
-                if(fetchData(%clientId, "ignoreGlobal"))
-                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-                else
-                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+                if(fetchData(%clientId, "LCKconsequence") == "miss")
+                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
+                else if(fetchData(%clientId, "LCKconsequence") == "death")
+                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
                 
             }
             
@@ -416,14 +418,12 @@ function RPG::gameMenu(%clientId,%page)
         }
         else if(%page == 2)
         {
-            if(fetchData(%clientId, "ignoreGlobal"))
-                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-            else
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
             if(fetchData(%clientId, "LCKconsequence") == "miss")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
             else if(fetchData(%clientId, "LCKconsequence") == "death")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
+                
+            
             Client::addMenuItem(%clientId, %curItem++ @ "Party options..." , "partyoptions");
             
             
@@ -533,11 +533,6 @@ function processMenuOptions(%clientId, %option)
 
 		bottomprint(%clientId, %f, floor(String::len(%f) / 20));
 
-		return;
-	}
-    else if(%opt == "viewbelt")
-	{
-		MenuViewBelt(%clientid, 1);
 		return;
 	}
 	else if(%opt == "defglobal")
