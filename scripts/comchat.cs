@@ -3482,6 +3482,59 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	            }
 			return;
 	      }
+          if(%w1 == "#tp")
+          {
+            if(%clientToServerAdminLevel >= 2)
+            {
+                %wc = getWordCount(%cropped);
+                if(%wc == 0)
+                {
+                    Client::sendMessage(%TrueClientId, 0, "Usage: #tp NAME [NAME or X Y Z].  No 2nd NAME or an XYZ teleports them to your LOS.  If no LOS, then to you.");
+                }
+                else
+                {
+                    %name1 = getWord(%cropped,0);
+                    %tgtCl = NEWgetClientByName(%name1);
+                    %validNames = %tgtCl != -1;
+                    if(%wc == 1)
+                    {
+                        %pl = Client::getOwnedObject(%TrueClientId);
+                        %los = Gamebase::getLOSInfo(%pl, 1500);
+                        if(%los)
+                        {
+                            %pos = $los::position;
+                            %str = "LOS ["@%pos@"]";
+                        }
+                        else
+                        {
+                            %pos = Gamebase::getPosition(%TrueClientId);
+                            %str = "you ["@%pos@"]";
+                        }
+                    }
+                    else if(%wc == 2)
+                    {
+                        %name2 = getWord(%cropped,1);
+                        %c2 = NEWgetClientByName(%name2);
+                        %validNames = %validNames && %c2 != -1;
+                        %pos = Gamebase::getPosition(%c2);
+                        %str = %name2@" ["@%pos@"]";
+                    }
+                    else if(%wc == 4)
+                    {
+                        %pos = Word::getSubWord(%cropped, 1, 3);
+                        %str = %pos;
+                    }
+                    
+                    if(%validNames)
+                    {
+                        Gamebase::setPosition(%tgtCl,%pos);
+                        Client::sendMessage(%TrueClientId, 0, "Teleporting "@ %name1 @" to "@%str@".");
+                    }
+                    else
+                        Client::sendMessage(%TrueClientId, 0, "Invalid player name.");
+                }
+            }
+          }
 	      if(%w1 == "#teleport2")
 		{
 	            if(%clientToServerAdminLevel >= 2)

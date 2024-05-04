@@ -189,7 +189,7 @@ function createServer(%mission, %dedicated)
     exec(NewRPGItemInterface);
     exec(RPGItemAffix);
     exec(RPGItemDefs);
-    exec(RPGItemAffixDefs);
+    exec(RPGItemAffixDefs); //Must come after item defs
     exec(Farming);
     exec(Abilities);
     exec(SkillBook);

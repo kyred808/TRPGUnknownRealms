@@ -257,6 +257,7 @@ instant SimGroup "MissionGroup" {
 		};
 	};
 	instant SimGroup "Landscape" {
+        //Middle //6144 x 6144
 		instant SimTerrain "Terrain" {
 			tedFileName = "rpgbutch5.dtf";
 			//visibleDistance = "1000";
@@ -273,7 +274,8 @@ instant SimGroup "MissionGroup" {
 			position = "-5120 -3072 0";
 			rotation = "0 0 0";
 			terrainType = "flat";
-		}; //6144 x 6144
+		};
+        //Top Left
         instant SimTerrain "Terrain" {
 			tedFileName = "rpgbutch5.dtf";
 			//visibleDistance = "1000";
@@ -287,10 +289,11 @@ instant SimGroup "MissionGroup" {
 			contGravity = "0 0 -20";
 			contDrag = "0";
 			contHeight = "12000";
-			position = "1024 -3072 0";
+			position = "-11264 3072 0";
 			rotation = "0 0 0";
 			terrainType = "flat";
 		};
+        //Top Mid
         instant SimTerrain "Terrain" {
 			tedFileName = "rpgbutch5.dtf";
 			//visibleDistance = "1000";
@@ -304,10 +307,11 @@ instant SimGroup "MissionGroup" {
 			contGravity = "0 0 -20";
 			contDrag = "0";
 			contHeight = "12000";
-			position = "7168 -3072 0";
+			position = "-5120 3072 0";
 			rotation = "0 0 0";
 			terrainType = "flat";
-		}; 
+		};
+        //Top Right
         instant SimTerrain "Terrain" {
 			tedFileName = "rpgbutch5.dtf";
 			//visibleDistance = "1000";
@@ -321,10 +325,11 @@ instant SimGroup "MissionGroup" {
 			contGravity = "0 0 -20";
 			contDrag = "0";
 			contHeight = "12000";
-			position = "13312 -3072 0";
+			position = "1024 3072 0";
 			rotation = "0 0 0";
 			terrainType = "flat";
-		}; 
+		};
+        //Mid Left
         instant SimTerrain "Terrain" {
 			tedFileName = "rpgbutch5.dtf";
 			//visibleDistance = "1000";
@@ -342,6 +347,78 @@ instant SimGroup "MissionGroup" {
 			rotation = "0 0 0";
 			terrainType = "flat";
 		};
+        //Mid Right
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "1024 -3072 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		};
+        //Bot Left
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "-11264 -9216 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		};
+        //Bot Mid
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "-5120 -9216 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		};
+        //Bot Right
+        instant SimTerrain "Terrain" {
+			tedFileName = "rpgbutch5.dtf";
+			//visibleDistance = "1000";
+			//hazeDistance = "700";
+            visibleDistance = "1100";
+			hazeDistance = "900";
+			hazeVerticalMin = "-NAN";
+			hazeVerticalMax = "1.4855e-38";
+			perspectiveDistance = "100";
+			screenSize = "30";
+			contGravity = "0 0 -20";
+			contDrag = "0";
+			contHeight = "12000";
+			position = "1024 -9216 0";
+			rotation = "0 0 0";
+			terrainType = "flat";
+		}; 
         instant SimTerrain "Terrain" {
 			tedFileName = "RPGbutch1.dtf";
 			//visibleDistance = "800";
