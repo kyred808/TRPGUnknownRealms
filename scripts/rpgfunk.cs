@@ -1166,7 +1166,7 @@ function UpdateAppearance(%clientId)
 		else
 			%skinbase = "rpgbase";
 		if(%armor != -1)
-			%skinbase = $ArmorSkin[%armor];
+			%skinbase = $ArmorSkin[%race,%armor];
 	}
 	else if(%race == "DeathKnight")
 	{
@@ -1179,12 +1179,22 @@ function UpdateAppearance(%clientId)
 	{
 		%skinbase = "rpgbase";
 		if(%armor != -1)
-			%skinbase = $ArmorSkin[%armor];
+			%skinbase = $ArmorSkin[MaleHuman,%armor];
 
 		%apm = "";
 		%cw = "Armor22";
 		%armor = 0;
 	}
+    else if(%race == "MaleKijin" || %race == "FemaleKijin")
+    {
+
+        if(%armor != -1)
+        {
+            %skinbase = $ArmorSkin[%race,%armor];
+        }
+        else
+            %p = $RaceToArmorType[%race];
+    }
 	else
 	{
 		%p = $RaceToArmorType[%race];
@@ -1283,6 +1293,7 @@ function ClearVariables(%clientId)
 	%clientId.currentShop = "";
 	%clientId.currentBank = "";
 	%clientId.currentSmith = "";
+    %clientId.currentAnvil = "";
 	%clientId.adminLevel = "";
 	%clientId.lastWaitActionTime = "";
 	%clientId.choosingGroup = "";
@@ -2170,6 +2181,7 @@ function HasThisStuff(%clientId, %list, %multiplier)
                 %itemTag = %w;
             else
                 %itemTag = RPGItem::LabelToItemTag(%w);
+            echo(%itemTag);
             //Curretnly only works with unmodified items (ie. has just the base tag).
             if(RPGItem::getItemCount(%clientId, %itemTag) >= %w2)
                 %flag = True;
@@ -2210,14 +2222,14 @@ function TakeThisStuff(%clientId, %list, %multiplier)
 			else
 				return False;
 		}
-        else if(isBeltItem(%w))
-		{
-			%amount = Belt::HasThisStuff(%clientid,%w);
-			if(%amount >= %w2)
-				Belt::TakeThisStuff(%clientid,%w,%w2);
-			else
-				return False;
-		}
+        //else if(isBeltItem(%w))
+		//{
+		//	%amount = Belt::HasThisStuff(%clientid,%w);
+		//	if(%amount >= %w2)
+		//		Belt::TakeThisStuff(%clientid,%w,%w2);
+		//	else
+		//		return False;
+		//}
 		else if(%w == "CNT" || %w == "CNTAFFECTS" || %w == "LVLG" || %w == "LVLS" || %w == "LVLE")
 		{
 			//ignore

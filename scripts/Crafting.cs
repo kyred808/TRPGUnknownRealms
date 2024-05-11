@@ -59,6 +59,19 @@ function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skil
     $Crafting::recipe[%craftedItem,Sound] = $Crafting::Type[%type,DefaultSound];
     $Crafting::recipe[%craftedItem,NoFailFlag] = %nofail;
     $SkillRestriction[Crafting::GetFullCraftCommand(%craftedItem)] = %requirements;
+    $Crafting::recipe[%craftedItem,HasComponents] = false;
+    
+    //for(%i = 0; %i < getWordCount(%stuff); %i+=2)
+    //{
+    //    %item = getWord(%stuff,%i);
+    //    %cnt = getWord(%stuff,%i+1);
+    //    
+    //    if(%item == "<METAL>")
+    //    {
+    //        $Crafting::recipe[%craftedItem,HasComponents] = true;
+    //        $Crafting::recipe[[%craftedItem,ComponentList] = %item
+    //    }
+    //}
 }
 
 function Crafting::getSkillReqs(%craftedItem)

@@ -38,7 +38,7 @@ ParseDropTable("Raider","Pickaxe 1 10|BlackStatue 15|Granite 1 15");
 ParseDropTable("Pup","CrystalBluePotion 1 5|BluePotion 1 20|Ruby 1 0.5");
 ParseDropTable("Shaman","EnergyShot 1 20|Club 1 10|Jade 1 20");
 ParseDropTable("Scavenger","Club 1 5|Sapphire 1 0.5");
-ParseDropTable("Hunter","Waraxe 1 10|Sling 1 10|Granite [1,3] 15");
+ParseDropTable("Hunter","Waraxe 1 10|Sling 1 10|Granite [1,3] 15|DeepMineKey 1 0.5");
 
 //Orcs-Yolanda
 ParseDropTable("Warlock","EnchantedStone 1 10");
@@ -46,6 +46,13 @@ ParseDropTable("Berserker","BroadSword 1 10|Opal [1,2] 10");
 ParseDropTable("Ravager","BroadSword 1 10|BluePotion [1,3] 40|Opal [1,3] 20");
 ParseDropTable("Slayer","BroadSword 1 10|ShortBow 1 10|Opal 1 15");
 ParseDropTable("Oracle","BoneClub 1 10|EnchantedStone 1 10|Turquoise 1 5");
+
+//Ogres-Mines
+ParseDropTable("Ruffian","BroadSword 1 15|WarAxe 1 15|DeepMineKey 1 2");
+ParseDropTable("Destroyer","SpikedClub 1 15|ShortSword 1 15|DeepMineKey 1 2");
+ParseDropTable("Halberdier","BroadSword 1 15|DeepMineKey 1 2");
+ParseDropTable("Dreadnought","WarAxe 1 15|ShortBow 1 15|DeepMineKey 1 2");
+ParseDropTable("Magi","EnergyPotion [1,2] 15");
 
 //Zombies-Crypt
 ParseDropTable("Mauler","SpikedClub 1 10");
@@ -81,6 +88,7 @@ ParseDropTable("Ent","Strawberry [1,3] 5");
 ParseDropTable("Goblin","GoblinEar 1 5|GobbieBerry 1 8|Quartz [1,2] 25");
 ParseDropTable("Gnoll","traitorsamulet 1 0.25");
 ParseDropTable("Orc","Jade [1,2] 20|LongSword 1 0.5");
+ParseDropTable("Ogre","Jade [1,2] 15|OgresBracelet 1 0.2");
 ParseDropTable("Zombie","Jade [1,2] 25");
 ParseDropTable("Undead","Bonedust 1 15");
 ParseDropTable("Minotaur","MeteorChunk 1 5");

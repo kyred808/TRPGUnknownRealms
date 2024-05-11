@@ -634,7 +634,7 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
         else
             playSound(SoundHitore2, GameBase::getPosition(%target));
     }
-    else if(%type == "OreCrystal")
+    else if(%type == "GemCrystal")
     {
         //%brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
         //echo(%brflag);
@@ -657,6 +657,37 @@ function DoMiningSwing(%clientId,%target,%weapon,%mom,%dmgMult)
                     %clientId.lastMinePos = GameBase::getPosition(%clientId);
             }
             UseSkill(%clientId, $SkillMining, True, True);
+            //Damage crystal
+            GameBase::virtual(%target, "onDamage", %clientId, 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+        }
+        //else
+        //    playSound(SoundHitore2, GameBase::getPosition(%target));
+    }
+    else if(%type == "OreCrystal")
+    {
+        //%brflag = String::findSubStr(fetchData(%clientId, "RACE"), "Human");	//must be human to mine
+        //echo(%brflag);
+        //if(Vector::getDistance(%clientId.lastMinePos, GameBase::getPosition(%clientId)) > 1.0 && %brflag != -1)
+        if(!Player::isAIControlled(%clientId))
+        {
+            playSound(SoundHitore, GameBase::getPosition(%target));	//vectrex, modified by JI
+
+            %ntag = %target.oreTag;
+            %label = RPGItem::ItemTagToLabel(%ntag);
+            %mlvl = CalculatePlayerSkill(%clientId, $SkillMining);
+            if(%mlvl <= $MiningDifficulty[%label])
+                %amt = 1;
+            else
+            {
+                %mfactor = floor((%mlvl - $MiningDifficulty[%label]) / 25);
+                %amt = Cap(getIntRandomMT(1,%mfactor),1,$MaxOrePerSwing);
+            }
+
+            RPGItem::incItemCount(%clientId,%ntag,%amt,true);
+            RefreshAll(%clientId,false);
+            //Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
+            %skillFactor = Cap((%mlvl - $MiningDifficulty[%label]),3,35);
+            UseSkill(%clientId, $SkillMining, True, True,%skillFactor);
             //Damage crystal
             GameBase::virtual(%target, "onDamage", %clientId, 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
         }

@@ -482,6 +482,19 @@ function AI::GuardPosition(%aiName,%marker)
     }
 }
 
+function AI::WithInFOVOrDistCheck(%playerPos,%eyetrans,%otherPos,%fov,%minDist)
+{
+    %dist = Vector::getDistance(%playerPos,%otherPos);
+    %dir = Vector::normalize(Vector::sub(%otherPos,%playerPos));
+    %eyeDir = Word::getSubWord(%eyetrans,3,3);
+    
+    //Dot = 1 if you are looing right at it
+    //0 if 90degs off (left or right)
+    //-1 if looking directly away
+    %dot = Vector::dot(%dir,%eyeDir);
+    return %dot >= %fov || %dist <= %minDist;
+} 
+
 function AI::Periodic(%aiName)
 {
 	dbecho($dbechoMode, "AI::Periodic(" @ %aiName @ ")");
@@ -618,9 +631,15 @@ function AI::Periodic(%aiName)
                     %target = %closestId;
                     
                     %weap = RPGItem::ItemTagToLabel(fetchData(%aiId,"EquippedWeapon"));
-                    if($AIBehavior[%botType,IsSapper] && OddsAre(3))
+                    if($AIBehavior[%botType,IsSapper] && OddsAre(3) && fetchData(%aiId, "SpellCastStep") == "")
                     {
-                        remoteSay(%aiId, 0, "#cast " @ $AIBehavior[%botType,IsSapper,Spell]);
+                        %isVisible = RaycastCheck(Client::getOwnedObject(%aiId),Gamebase::getEyeTransform(%aiId),Client::getOwnedObject(%target),$AImaxRange,"0 0 1");
+                        if(%isVisible) //Gamebase::getLOSInfo(Client::getOwnedObject(%aiId),$AImaxRange))
+                        {
+                            //echo("LOS OBJ: "@ $los::object);
+                            if($los::object == Client::getOwnedObject(%target))
+                                remoteSay(%aiId, 0, "#cast " @ $AIBehavior[%botType,IsSapper,Spell]);
+                        }
                     }
                     if($AccessoryVar[%weap, $AccessoryType] == $RangedAccessoryType)
                     {
@@ -1462,7 +1481,7 @@ function AI::onTargetLOSAcquired(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSAcquired(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    //echo("Target Found");
+    //echo("Target Found "@ %idNum @" - "@ fetchData(%idNum,"invisible"));
     if(fetchData(%aiId,"dragonBoss") && fetchData(%aiId,"flightSequence") == 2)
     {
         storeData(%aiId,"targetFound",%idNum);

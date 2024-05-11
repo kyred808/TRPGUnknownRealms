@@ -896,9 +896,37 @@ StaticShapeData WavyWater16
 	isTranslucent = "True";
 };
 
+StaticShapeData FireSmallShape
+{
+    shapeFile = "fire_small";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
 StaticShapeData FireMediumShape
 {
     shapeFile = "fire_medium";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData FireLargeShape
+{
+    shapeFile = "fire_large";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData FireXLShape
+{
+    shapeFile = "fire_xl";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData FireOMGShape
+{
+    shapeFile = "fire_omg";
 	maxDamage = 999.0;
 	isTranslucent = "True";
 };

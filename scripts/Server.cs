@@ -85,6 +85,7 @@ function createServer(%mission, %dedicated)
     deleteVariables("Crafting::*");
     deleteVariables("Farming::*");
     RPGItem::ClearVariables();
+    Realms::clean();
 	$PetList = "";
 	$DISlist = "";
 	$SpawnPackList = "";
@@ -184,12 +185,12 @@ function createServer(%mission, %dedicated)
     //exec(BeltEquipment);
     //exec(BeltItemDefs);
     exec(crafting);
-    exec(CraftingItemDefs);
     //exec(RPGItemInterface);
     exec(NewRPGItemInterface);
     exec(RPGItemAffix);
     exec(RPGItemDefs);
     exec(RPGItemAffixDefs); //Must come after item defs
+    exec(CraftingItemDefs); //Must be after RPGItemDefs
     exec(Farming);
     exec(Abilities);
     exec(SkillBook);

@@ -122,17 +122,22 @@ RPGItem::AddWeapon("aeoluswing","Aeolus Wing",36,$RPGItem::WeaponTypeRange,Compo
 RPGItem::AddWeapon("boneclub","Bone Club",37,$RPGItem::WeaponTypeMelee,MaceShape);
 RPGItem::AddWeapon("spikedboneclub","Spiked Bone Club",38,$RPGItem::WeaponTypeMelee,MaceShape);
 
-RPGItem::AddWeapon("rknife","Rusty Knife",39,$RPGItem::WeaponTypeMelee,DaggerShape);
-RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
-RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxeShape);
-RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
 RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpell,DaggerShape);
-RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
 RPGItem::AddWeapon("TreeAtk","TreeAtk",45,$RPGItem::WeaponTypeMelee,TreeShapeItem);
-RPGItem::AddWeapon("rshortbow","Cracked Short Bow",46,$RPGItem::WeaponTypeRange,LongBowShape);
-RPGItem::AddWeapon("rbroadsword","Rusty Broadsword",47,$RPGItem::WeaponTypeMelee,SwordShape);
-RPGItem::AddWeapon("rlongsword","Rusty Longsword",48,$RPGItem::WeaponTypeMelee,LongswordShape);
-RPGItem::AddWeapon("rspikedclub","Cracked Spiked Club",49,$RPGItem::WeaponTypeMelee,MaceShape);
+
+
+
+//RPGItem::AddWeapon("rknife","Rusty Knife",39,$RPGItem::WeaponTypeMelee,DaggerShape);
+//RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
+//RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxeShape);
+//RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
+
+//RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
+
+//RPGItem::AddWeapon("rshortbow","Cracked Short Bow",46,$RPGItem::WeaponTypeRange,LongBowShape);
+//RPGItem::AddWeapon("rbroadsword","Rusty Broadsword",47,$RPGItem::WeaponTypeMelee,SwordShape);
+//RPGItem::AddWeapon("rlongsword","Rusty Longsword",48,$RPGItem::WeaponTypeMelee,LongswordShape);
+//RPGItem::AddWeapon("rspikedclub","Cracked Spiked Club",49,$RPGItem::WeaponTypeMelee,MaceShape);
 
 $SkillType[TreeAtk] = $SkillPiercing;
 $AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;
@@ -274,16 +279,27 @@ $ItemList[Mining, 12] = "Diamond " @ round($HardcodedItemCost[Diamond] / %f)+2;
 $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %f)+2;
 
 
-AddItemHelper("copperore","Copper Ore","Ores",145,1,250,MiscLootShape);
-AddItemHelper("tinore","Tin Ore","Ores",146,1,250,MiscLootShape);
-AddItemHelper("galena","Galena","Ores",147,1,250,MiscLootShape);
-AddItemHelper("coal","Coal","Ores",148,1,3000,MiscLootShape);
-AddItemHelper("ironore","Iron Ore","Ores",149,1,3000,MiscLootShape);
-AddItemHelper("cobaltore","Cobalt Ore","Ores",150,1,3000,MiscLootShape);
-AddItemHelper("mithrite","Mithrite","Ores",151,1,3000,MiscLootShape);
-AddItemHelper("adamantite","Adamantite","Ores",152,1,3000,MiscLootShape);
+AddItemHelper("copperore","Copper Ore","Ores",145,3,250,MiscLootShape);
+AddItemHelper("tinore","Tin Ore","Ores",146,3,250,MiscLootShape);
+AddItemHelper("galena","Galena","Ores",147,3,350,MiscLootShape);
+AddItemHelper("coal","Coal","Ores",148,0.5,750,MiscLootShape);
+AddItemHelper("ironore","Iron Ore","Ores",149,5,1500,MiscLootShape);
+AddItemHelper("cobaltore","Cobalt Ore","Ores",150,5,3000,MiscLootShape);
+AddItemHelper("mithrite","Mithrite","Ores",151,5,3000,MiscLootShape);
+AddItemHelper("adamantite","Adamantite","Ores",152,8,3000,MiscLootShape);
 AddItemHelper("meteorchunk","Meteor Chunk","Ores",153,1,5000,MiscLootShape);
 AddItemHelper("meteorcore","Meteor Core","Ores",154,1,25042,MiscLootShape);
+
+$MiningDifficulty["copperore"] = 50;
+$MiningDifficulty["tinore"] = 50;
+$MiningDifficulty["galena"] = 150;
+$MiningDifficulty["coal"] = 200;
+$MiningDifficulty["ironore"] = 300;
+$MiningDifficulty["cobaltore"] = 400;
+$MiningDifficulty["mithrite"] = 550;
+$MiningDifficulty["adamantite"] = 750;
+
+$MaxOrePerSwing = 8;
 
 $RPGItem::ItemDef[153,Action] = "RestoreMana 10";
 $RPGItem::ItemDef[154,Action] = "RestoreMana 50";
@@ -469,7 +485,26 @@ $SkillRestriction[morningstar] = $SkillBludgeoning @ " 250";
 AddNeckAccessoryHelper(traitorsamulet,"Traitor's Amulet",281,MiscLootShape,0.2,150000,"SKILL"@$SkillHiding@" 100 SKILL"@$SkillBackstabbing@" 100");
 $AccessoryVar[traitorsamulet, $MiscInfo] = "A rare amulet that raises Hiding and Backstabbing by 100";
 
-//Next item starts at 283
+AddItemHelper(DeepMineKey,"Deep Mine Key","Rares",283,0.02,5000,MiscLootShape);
+$AccessoryVar[DeepMineKey, $MiscInfo] = "Key that grants access to the Deep Keldrin Mines. Consumed on use.";
+
+AddArmAccessoryHelper(OgresBracelet,"Ogre's Bracelet",284,MiscLootShape,0.2,195000,"SKILL"@$SkillSlashing@" 100 SKILL"@$SkillEndurance@" 100");
+$AccessoryVar[OgresBracelet, $MiscInfo] = "A bracelet that enhances the user's health and strength.";
+
+
+
+//Hard coded costs are overwritten in CratingItemDefs
+AddItemHelper("Copper","Copper","Ores",300,3,1500,MiscLootShape);
+AddItemHelper("Tin","Tin","Ores",301,3,1500,MiscLootShape);
+AddItemHelper("Bronze","Bronze","Ores",302,3,1500,MiscLootShape);
+AddItemHelper("Lead","Lead","Ores",303,5,2100,MiscLootShape);
+AddItemHelper("Iron","Iron","Ores",304,8,9000,MiscLootShape);
+AddItemHelper("Steel","Steel","Ores",305,10,108000,MiscLootShape);
+AddItemHelper("Cobalt","Cobalt","Ores",306,15,7500,MiscLootShape);
+AddItemHelper("Mythril","Mythril","Ores",307,25,11250,MiscLootShape);
+AddItemHelper("Adamantium","Adamantium","Ores",308,30,15750,MiscLootShape);
+
+//Next item starts at 309
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {

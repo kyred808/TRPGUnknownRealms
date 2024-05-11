@@ -10,6 +10,8 @@ Crafting::AddCraftingType("smithing","Smithing","#smith","smith","smithed",Sound
 //Crafting::AddCraftingType("smelting","Smelting","#smelt","smelt","smelted",SoundCanSmith2,"",2);
 //Crafting::AddCraftingType("cooking","Cooking","#cook","cook","cooked",SoundCanSmith2,"",3);
 
+
+
 //===================
 // Smithing recipes
 //===================
@@ -63,12 +65,21 @@ Crafting::Addrecipe("craft","Magicite","","diamond 1 meteorcore 5",1,1,true);
 // Smelting recipes
 //===================
 
-Crafting::Addrecipe("smithing","Copper","","copperore 5",1,$BaseCraftingDifficulty);
-Crafting::Addrecipe("smithing","Tin","","tinore 5",1,$BaseCraftingDifficulty);
-Crafting::Addrecipe("smithing","Bronze","","tin 1 copper 3",4);
-Crafting::Addrecipe("smithing","Lead","","galena 5",1,$BaseCraftingDifficulty);
-Crafting::Addrecipe("smithing","Iron","","ironore 5",1,$BaseCraftingDifficulty/1.2);
-Crafting::Addrecipe("smithing","Steel","","iron 1 coal 5",1,$BaseCraftingDifficulty/1.5);
+Crafting::Addrecipe("smithing","Copper","","copperore 5 coal 1",1,$BaseCraftingDifficulty);
+Crafting::Addrecipe("smithing","Tin","","tinore 5 coal 1",1,$BaseCraftingDifficulty);
+Crafting::Addrecipe("smithing","Bronze","","tin 2 copper 2 coal 1",4);
+Crafting::Addrecipe("smithing","Lead","","galena 5 coal 5",1,$BaseCraftingDifficulty);
+Crafting::Addrecipe("smithing","Iron","","ironore 5 coal 10",1,$BaseCraftingDifficulty/1.2);
+Crafting::Addrecipe("smithing","Steel","","iron 10 coal 15",1,$BaseCraftingDifficulty/1.5);
 Crafting::Addrecipe("smithing","Cobalt","","cobaltore 15 coal 10",2,$BaseCraftingDifficulty/3); // Smaller number means harder to craft
 Crafting::Addrecipe("smithing","Mythril","","iron 5 cobalt 2 coal 20 mythrite 1",1,$BaseCraftingDifficulty/10); // Harder to craft
 Crafting::Addrecipe("smithing","Adamantium","",1,$BaseCraftingDifficulty/10); // Harder to craft
+
+$HardcodedItemCost["Copper"] = round($HardcodedItemCost["CopperOre"]*5*1.2);
+$HardcodedItemCost["Tin"] = round($HardcodedItemCost["TinOre"]*5*1.2);
+$HardcodedItemCost["Bronze"] = round(($HardcodedItemCost["Copper"]+$HardcodedItemCost["Tin"])*1.2);
+$HardcodedItemCost["Lead"] = round($HardcodedItemCost["galena"]*5*1.2);
+$HardcodedItemCost["Iron"] = round($HardcodedItemCost["IronOre"]*5*1.2);
+$HardcodedItemCost["Steel"] = round(($HardcodedItemCost["Iron"]*10+$HardcodedItemCost["Coal"]*5)*1.2);
+$HardcodedItemCost["Cobalt"] = round($HardcodedItemCost["CobaltOre"]*15*1.2);
+$HardcodedItemCost["Mythril"] = round(($HardcodedItemCost["iron"]*5+$HardcodedItemCost["cobalt"]*2+$HardcodedItemCost["mythrite"])*1.2);

@@ -1236,6 +1236,75 @@ instant SimGroup "MissionGroup" {
                     };
                 };
             };
+            instant SimGroup "DUNGEON Deep Mines" {
+                instant SimGroup "MUSIC minemusic.wav 24";
+                instant SimGroup "MUSIC minemusic2.wav 24";
+                instant SimGroup "AMBIENTSOUND ambient_cleardrop.wav 10";
+                instant SimGroup "DropPoints" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1786 -878.5 186.285";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1786.5 -874.675 186.285";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1783 -875.549 186.285";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1785.75 -871.804 186.285";
+                        rotation = "0 0 0";
+                    };
+                };
+                instant SimGroup "SpawnPoints" {
+                    instant Marker "2 1 2 20 50 58 59 60" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1814.82 -1087.78 71.1356";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "1 1 2 20 50 59" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1770.8 -1087.18 72";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "1 1 2 20 50 58 60" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1795.92 -1091.47 78.1357";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "1 1 2 20 50 61" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1774.52 -1076.04 88";
+                        rotation = "0 0 0";
+                    };
+                    instant Marker "2 1 2 20 30 61 59" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1811.07 -1103.31 88";
+                        rotation = "0 0 0";
+                    };
+                };
+                instant Marker "100 200 100 0" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1797.14 -1098.4 87.6354";
+                    rotation = "0 0 0";
+                };
+            };
             instant SimGroup "PROTECTED New Player Camp" {
                 instant SimGroup "MUSIC AmbDay2.wav 6";
                 instant SimGroup "DropPoints" {
@@ -2047,6 +2116,191 @@ instant SimGroup "MissionGroup" {
                 deleteOnDestroy = "False";
                 locked = "0";
             };
+            instant InteriorShape "stove1" {
+                fileName = "stove.dis";
+                isContainer = "0";
+                position = "-2399 -282.298 65.0936";
+                rotation = "0 0 -2.426";
+                lightParams = "0 ";
+                locked = "1";
+            };
+            instant StaticShape "Fire" {
+                dataBlock = "FireXLShape";
+                name = "";
+                position = "-2399 -282.287 65.0925";
+                rotation = "0 -0 -1.2482";
+                destroyable = "False";
+                deleteOnDestroy = "False";
+                locked = "1";
+            };
+        };
+        instant SimGroup "CrystalGroups" {
+            instant SimGroup "KeldrinMineOreCrystals" {
+                instant SimGroup "4 45 80";
+                instant Marker "mk1" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1733.83 -1136.39 269.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 100";
+                    mhp = 6; //Mean hp
+                    hpVar = 3;
+                };
+                instant Marker "mk2" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1739.57 -1241.24 283.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id146 100";
+                    mhp = 8; //Mean hp
+                    hpVar = 3;
+                };
+                instant Marker "mk3" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1717.52 -1121.09 269.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 75 id146 25";
+                    mhp = 6; //Mean hp
+                    hpVar = 3;
+                };
+                instant Marker "mk4" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1691.74 -1138.43 243.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id147 100";
+                    mhp = 8; //Mean hp
+                    hpVar = 4;
+                };
+                instant Marker "mk5" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1682.66 -1188.96 243.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 25 id146 75";
+                    mhp = 8; //Mean hp
+                    hpVar = 4;
+                };
+                instant Marker "mk6" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1627.32 -1186.41 252.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id147 100";
+                    mhp = 8; //Mean hp
+                    hpVar = 3;
+                };
+                instant Marker "mk7" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1735.99 -1122.92 245.125";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id147 25 id148 25 id146 25 id145 25";
+                    mhp = 8; //Mean hp
+                    hpVar = 3;
+                };
+            };
+            instant SimGroup "DeepMineCrystals" {
+                instant SimGroup "4 45 80";
+                instant Marker "MazeSwirlMkr" { 
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1772 -1104.75 71.135";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 50 id146 50";
+                    mhp = 6; //Mean hp
+                    hpVar = 3;
+                };
+                instant Marker "MazeMkr2" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1819.38 -1059.25 71.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 25 id146 25 id149 25 id147 25";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMarker3Stairs" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1765.23 -1060.59 71.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 25 id146 25 id148 25 id149 25";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMarker4Hallway" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1768.56 -1074.83 71.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 50 id146 50";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMkr5BehindHallway" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1764.84 -1074.6 71.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id149 50 id148 50";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMkr6Upstairs" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1764.88 -1078.54 78.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id149 100";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMkr7Upstairs" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1824.42 -1079.23 78.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id149 50 id148 50";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMkrBattleRm1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1766.15 -1083.39 71.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id145 50 id146 50";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+                instant Marker "MazeMkrBattleRm2" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-1766.34 -1090.5 71.1357";
+                    rotation = "0 0 0";
+                    crystalType = "OreCrystal";
+                    oreType = "id149 50 id148 50";
+                    mhp = 6;
+                    hpVar = 3;
+                };
+            };
         };
         instant SimGroup "Crystals" {
             instant Marker "1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 200 12 0 13 0" {
@@ -2659,6 +2913,29 @@ instant SimGroup "MissionGroup" {
                 lightParams = "2 1.000000 1 1.000000 1 ";
                 locked = "1";
             };
+        };
+        instant SimGroup "DeepMines" {
+            instant InteriorShape "rmrtemplep11" {
+                fileName = "rmrtemplep1.dis";
+                isContainer = "1";
+                position = "-1778.37 -1100.75 86.1358";
+                rotation = "0 0 0";
+                lightParams = "2 1.000000 1 1.000000 1 ";
+            };
+            instant InteriorShape "rmrtemplep21" {
+                fileName = "rmrtemplep2.dis";
+                isContainer = "1";
+                position = "-1804 -1133.77 75.1485";
+                rotation = "0 0 0";
+                lightParams = "1 1.000000 1 ";
+            };
+            //instant InteriorShape "DMCrystalDoor" {
+            //    fileName = "CDoorC.dis";
+            //    isContainer = "0";
+            //    position = "0 0 0";
+            //    rotation = "0 0 0";
+            //    lightParams = "0 ";
+            //};
         };
         instant SimGroup "Jaten" {
             instant SimGroup "Scenery" {
@@ -3324,6 +3601,52 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NEED AI false";
                 instant SimGroup "GSAY You have been teleported outside the Traveller's Den.~wPortal6.wav";
+            };
+            instant SimGroup "deepmines teleport in" {
+                instant SimGroup "Input" {
+                    instant Trigger "GroupTrigger1" {
+                        dataBlock = "GroupTrigger";
+                        name = "";
+                        position = "-1555.3 -1117.25 222.123";
+                        rotation = "0 -0 0.819833";
+                        boundingBox = "-1 -1 -1 1 1 1";
+                        isSphere = "True";
+                    };
+                };
+                instant SimGroup "Output" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1794.4 -1106.08 72";
+                        rotation = "0 0 0";
+                    };
+                };
+                instant SimGroup "NEED DeepMineKey 1 AI false";
+                instant SimGroup "TAKE DeepMineKey 1";
+                instant SimGroup "GSAY You have been teleported deeper in to the mines.~wPortal6.wav";
+                instant SimGroup "NSAY You need a Deep Mine Key to enter this gate.~wDeActivateDG.wav";
+            };
+            instant SimGroup "deepmines teleport out" {
+                instant SimGroup "Input" {
+                    instant Trigger "GroupTrigger1" {
+                        dataBlock = "GroupTrigger";
+                        name = "";
+                        position = "-1794.3 -1111.46 72.6357";
+                        rotation = "0 0 0";
+                        boundingBox = "-1 -1 -1 1 1 1";
+                        isSphere = "True";
+                    };
+                };
+                instant SimGroup "Output" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-1569.15 -1115.72 216";
+                        rotation = "0 0 0";
+                    };
+                };
+                instant SimGroup "NEED AI false";
+                instant SimGroup "GSAY You have been teleported back to Keldrin Mines.~wPortal6.wav";
             };
         };
         instant SimGroup "StrangeOrchard" {
@@ -4386,7 +4709,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id27 id28 id29 id16 id120 id121 id122 id123 id99 id238"; //134 135 136 137";
+                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id28 id29 id16 id120 id121 id122 id123 id99 id238"; //134 135 136 137";
             };
             instant SimGroup "respec0" {
                 instant Marker "keldrin respec" {
@@ -4719,6 +5042,7 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NAME blacksmith";
                 instant SimGroup "RACE MaleHuman";
+                instant SimGroup "SHOP id27 id148 id300 id301";
             };
             instant SimGroup "quest6" {
                 instant Marker "Marker1" {
@@ -5102,6 +5426,32 @@ instant SimGroup "MissionGroup" {
                 rotation = "0 0 0";
                 destroyable = "True";
                 deleteOnDestroy = "False";
+            };
+            instant InteriorShape "ffort1" {
+                fileName = "DOORD.dis";
+                isContainer = "0";
+                position = "-1554 -1115.7 221.136";
+                rotation = "0 0 0";
+                lightParams = "0 ";
+                locked = "1";
+            };
+            //instant StaticShape "FireTele" {
+            //    dataBlock = "FireMediumShape";
+            //    name = "";
+            //    position = "-1555.3 -1117.25 221.123";
+            //    rotation = "0 -0 -0.759833";
+            //    destroyable = "false";
+            //    deleteOnDestroy = "False";
+            //    locked = "0";
+            //};
+            instant StaticShape "BigElectroBeam1" {
+                dataBlock = "ElectricalBeamBig";
+                name = "";
+                position = "-1794.3 -1111.46 71.6357";
+                rotation = "0 -0 -0.759833";
+                destroyable = "false";
+                deleteOnDestroy = "False";
+                locked = "0";
             };
         };
         instant InteriorShape "ffort1" {

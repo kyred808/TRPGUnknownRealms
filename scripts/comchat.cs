@@ -2424,6 +2424,23 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			return;
 		}
         
+        if(%w1 == "#smith")
+        //{
+        //    %los = Gamebase::getLOSInfo(Client::getControlObject(%TrueClientId),5);
+        //    
+        //    if(%los)
+        //    {
+        //        if(String::ICompare(clipTrailingNumbers(Object::getName($los::object)),"anvil") == 0)
+        //        {
+        //            SetupSmithing(%clientId,$los::object,"");
+        //        }
+        //        else
+        //            Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smith that.");
+        //    }
+        //    else
+        //        Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smith that.");
+        //}
+        
         if(%w1 == "#smith" || %w1 == "#craft") //|| %w1 == "#smelt" || %w1 == "#cook")
         {
             %item = getWord(%cropped,0);
@@ -6780,12 +6797,12 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			{
 				//process botmaker code
 				%trigger[2] = "buy";
-				%trigger[3] = "smith";
+				%trigger[3] = "furnace";
 				if($state[%closestId, %TrueClientId] == "")
 				{
 					if(%initTalk)
 					{
-						AI::sayLater(%TrueClientId, %closestId, "Hail friend, are you here to have me SMITH an old weapon?", True);
+						AI::sayLater(%TrueClientId, %closestId, "Hail friend, looking to BUY? Feel free to use my \"FURNACE\".", True);
 						$state[%closestId, %TrueClientId] = 1;
 					}
 				}
@@ -6805,8 +6822,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 					if(String::findSubStr(%message, %trigger[3]) != -1)
 					{
-						AI::sayLater(%TrueClientId, %closestId, "Click Sell on items to make a smithing list. I will tell you when the combination is smithable.", True);
-						SetupBlacksmith(%TrueClientId, %closestId);
+						AI::sayLater(%TrueClientId, %closestId, "We couldn't find a proper furnace, so I turned the stove up really high...", True);
+						//SetupBlacksmith(%TrueClientId, %closestId);
 
 						$state[%closestId, %TrueClientId] = "";
 					}

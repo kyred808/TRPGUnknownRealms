@@ -742,6 +742,13 @@ function sellItem(%clientId,%itemTag, %amnt)
                     return 0;
                 }
             }
+            else if(%menuType == "CraftEquip")
+            {
+                if(%clientId.selectedRecipeTag == "")
+                {
+                    
+                }
+            }
             return 0;
         }
     }

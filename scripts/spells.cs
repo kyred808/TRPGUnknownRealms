@@ -850,6 +850,25 @@ $Spell::graceDistance[44] = 15;
 $Spell::effectType[44] = $SpellTypeCustom;
 $SkillType[botstatdrain] = $SkillNatureCasting;
 $SkillRestriction[botstatdrain] = "B 1"; //Bot only spells
+
+$Spell::keyword[45] = "botstatdrain2";
+$Spell::index[botstatdrain2] = 45;
+$Spell::name[45] = "Stat Drain";
+$Spell::description[45] = "Steals stat points from targets.";
+$Spell::delay[45] = 1.5;
+$Spell::recoveryTime[45] = 45;
+$Spell::radius[45] = 40;
+$Spell::ticks[45] = 15;
+$Spell::damageValue[45] = -300; //stat damage
+$Spell::manaCost[45] = 12;
+$Spell::startSound[45] = DeActivateWA;
+$Spell::endSound[45] = UnravelAM;
+$Spell::groupListCheck[45] = False;
+$Spell::refVal[45] = -30;
+$Spell::graceDistance[45] = 15;
+$Spell::effectType[45] = $SpellTypeCustom;
+$SkillType[botstatdrain2] = $SkillNatureCasting;
+$SkillRestriction[botstatdrain2] = "B 1"; //Bot only spells
 //----------------------------------------------------------------------------------------------------------------
 
 function TranslateEffectVars(%effectVars)
@@ -1545,7 +1564,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 
             %returnFlag = True;
         }
-        if(%index == 23 || %index == 24 || %index == 31 || %index == $Spell::index[bothealbreeze] || %index == $Spell::index[botstatdrain])
+        if(%index == 23 || %index == 24 || %index == 31 || %index == $Spell::index[bothealbreeze] || %index == $Spell::index[botstatdrain] || %index == $Spell::index[botstatdrain2])
         {
             //23 = mass heal spell
             //24 = mass full heal spell
@@ -2599,16 +2618,16 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId)@" healed their allies for "@ $Spell::damageValue[%index] * -1@" HP");
         return;
     }
-    if(%index == $Spell::index[botstatdrain])
+    if(%index == $Spell::index[botstatdrain] || $Spell::index[botstatdrain2])
     {
         if(GameBase::getTeam(%clientId) != GameBase::getTeam(%id))
 		{
             echo("Target: "@ %id);
-            if(%extra == "ATK")
+            if(%extra == "ATK" || %extra == "DEF")
             {
                 %dlist = fetchData(%clientId,"DrainList");
-                %debuff = "ATK "@ $Spell::damageValue[%index];
-                %bonus = "ATK "@ -1*$Spell::damageValue[%index];
+                %debuff = %extra@" "@ $Spell::damageValue[%index];
+                %bonus = %extra@" "@ -1*$Spell::damageValue[%index];
                 %listEntry = %id @" "@ %debuff;
                 if(!IsInCommaList(%dlist,%listEntry))
                 {
@@ -2618,7 +2637,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
                     
                     schedule("storeData("@%clientId@",\"DrainList\",RemoveFromCommaList(fetchData("@%clientId@", \"DrainList\"), \""@%listEntry@"\"));",$Spell::ticks[%index]*2,Client::getOwnedObject(%clientId));
                     Client::sendMessage(%id, $MsgRed, Client::getName(%clientId)@" is draining "@ $Spell::damageValue[%index] * -1@" "@ %extra);
-                    Projectile::spawnProjectile(DDBolt,Gamebase::getMuzzleTransform(%clientId),Client::getOwnedObject(%clientId),"0 0 0");
+                    //Projectile::spawnProjectile(DDBolt,Gamebase::getMuzzleTransform(%clientId),Client::getOwnedObject(%clientId),"0 0 0");
                 }
                 
             }

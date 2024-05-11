@@ -15,7 +15,7 @@ function SetupShop(%clientId, %id)
 	%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
 	Client::setInventoryText(%clientId, %txt);
 
-	%info = $BotInfo[%id.name, SHOP];	
+	%info = $BotInfo[%id.name, SHOP];
     %buyList = "";
     // Speed improved over 100x
 	for(%i = 0; (%item = GetWord(%info, %i)) != -1; %i++)
@@ -183,6 +183,24 @@ function SetupBank(%clientId, %id)
     //{
     //    remoteEval(%clientId,"SetItemCount","COINS","COINS",%coins,"Money");
     //}
+}
+
+function SetupSmithing(%clientId,%id,%txt)
+{
+    remoteEval(%clientId,"ClearBuyList");
+    remoteEval(%clientId,"SetInventoryFitler","Ores");
+    %clientId.currentAnvil = "CraftEquip "@%anvilObj;
+    if(Client::getGuiMode(%clientId) != 4)
+		Client::setGuiMode(%clientId, 4);
+    
+    if(%txt == "")
+    {
+        %coins =  fetchData(%clientId, "COINS");
+        %txt = "<f1><jc>COINS: " @ %coins;
+    }
+	Client::setInventoryText(%clientId, %txt);
+    
+    Client::SendMessage(%clientId,$MsgWhite,"Select a item recipe to being crafting");
 }
 
 function SetupBlacksmith(%clientId, %id)

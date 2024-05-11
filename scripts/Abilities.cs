@@ -155,7 +155,7 @@ $HeavyStrikeUpForce = 20;
 $FadeAttackJumpImpulse = 275;
 $FadeAttackJumpForce = 75;
 $FadeAttackTargetImpulseScale = -1.5;
-$FadeAttackConfuseRange = 35;
+$FadeAttackConfuseRange = 40;
 
 $FadeNoUnhideTime = 10; // Seconds
 
@@ -476,13 +476,12 @@ function Ability::FadeConfusion(%player,%clientId)
     if(RPG::isAIControlled(%tgtClient) && !fetchData(%tgtClient,"customAiFlag"))
     {
         %aiTag = fetchData(%tgtClient,"BotInfoAiName");
-        
-        if(AI::GetTarget(%aiTag) == %clientId)
-        {
-            echo("CONFUSE!");
-            AI::SetScriptedTargets(%aiTag);
-            schedule("AI::SetAutomaticTargets("@%aiTag@");",1);
-        }
+            
+        echo("CONFUSE! "@ %aiTag);
+        AI::SetScriptedTargets(%aiTag);
+        AI::setVar(%aiTag, SpotDist, 0);
+        schedule("AI::SetAutomaticTargets("@%aiTag@");",1,%player);
+        schedule("AI::SetSpotDist("@AI::getID(%aiTag)@");",$FadeNoUnhideTime,%player);
     }
 }
 
