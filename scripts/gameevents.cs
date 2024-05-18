@@ -738,52 +738,52 @@ function RecursiveWorld(%seconds)
 			$ticker[4] = 0;
 		}
 	}
-
-	if($ticker[5] >= ($RecalcEconomyDelay) / %seconds)
-	{
-		//re-evaluate economy
-
-		%list = GetBotIdList();
-		for(%i = 0; GetWord(%list, %i) != -1; %i++)
-		{
-			%id = GetWord(%list, %i);
-			%aiName = fetchData(%id, "BotInfoAiName");
-
-			if($BotInfo[%aiName, SHOP] != "")
-			{
-				%max = getNumItems();
-				for(%z = 0; %z < %max; %z++)
-				{
-					%checkItem = getItemData(%z);
-
-					%p = GetItemCost(%checkItem);
-					%q = GetItemCost(%checkItem) * ($resalePercentage/100);
-
-					%b = $MerchantCounterB[%aiName, %checkItem];
-					%s = $MerchantCounterS[%aiName, %checkItem];
-
-					%constantB = 100;
-					%constantS = 75;
-
-					%x = round( %p - (%p * (%b/%constantB)) );
-					%y = round( %q - (%q * (%s/%constantS)) );
-
-					if(%x < 1) %x = 1;
-					if(%y >= %p) %y = %p-1;
-
-					$NewItemBuyCost[%aiName, %checkItem] = %x;
-					$NewItemSellCost[%aiName, %checkItem] = %y;
-
-					//reset counter
-					$MerchantCounterB[%aiName, %checkItem] = "";
-					$MerchantCounterS[%aiName, %checkItem] = "";
-				}
-			}
-		}
-		//messageAll($MsgBeige, "The merchants have revised their prices.");
-
-		$ticker[5] = 0;
-	}
+    //No longer working code
+	//if($ticker[5] >= ($RecalcEconomyDelay) / %seconds)
+	//{
+	//	//re-evaluate economy
+    //
+	//	%list = GetBotIdList();
+	//	for(%i = 0; GetWord(%list, %i) != -1; %i++)
+	//	{
+	//		%id = GetWord(%list, %i);
+	//		%aiName = fetchData(%id, "BotInfoAiName");
+    //
+	//		if($BotInfo[%aiName, SHOP] != "")
+	//		{
+	//			%max = getNumItems();
+	//			for(%z = 0; %z < %max; %z++)
+	//			{
+	//				%checkItem = getItemData(%z);
+    //
+	//				%p = GetItemCost(%checkItem);
+	//				%q = GetItemCost(%checkItem) * ($resalePercentage/100);
+    //
+	//				%b = $MerchantCounterB[%aiName, %checkItem];
+	//				%s = $MerchantCounterS[%aiName, %checkItem];
+    //
+	//				%constantB = 100;
+	//				%constantS = 75;
+    //
+	//				%x = round( %p - (%p * (%b/%constantB)) );
+	//				%y = round( %q - (%q * (%s/%constantS)) );
+    //
+	//				if(%x < 1) %x = 1;
+	//				if(%y >= %p) %y = %p-1;
+    //
+	//				$NewItemBuyCost[%aiName, %checkItem] = %x;
+	//				$NewItemSellCost[%aiName, %checkItem] = %y;
+    //
+	//				//reset counter
+	//				$MerchantCounterB[%aiName, %checkItem] = "";
+	//				$MerchantCounterS[%aiName, %checkItem] = "";
+	//			}
+	//		}
+	//	}
+	//	//messageAll($MsgBeige, "The merchants have revised their prices.");
+    //
+	//	$ticker[5] = 0;
+	//}
 	if($ticker[6] >= (300 / %seconds))
 	{
 		$ConsoleWorld::DefaultSearchPath = $ConsoleWorld::DefaultSearchPath;	//thanks Presto

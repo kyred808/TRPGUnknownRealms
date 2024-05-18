@@ -562,13 +562,16 @@ function CalcWeaponSpeed(%itemTag,%label)
 function BaseWeaponImage::onFire(%player,%slot)
 {
     %clientId = Player::getClient(%player);
+    //$WeaponSlot is now 1, $BaseWeaponSlot is 0
     %mm = Player::getMountedItem(%player,$WeaponSlot);
     if(%mm == -1)
     {
+        //Catch all.  Could use for a punching action later
         storeData(%clientId,"EquippedWeapon","");
         return;
     }
     
+    //Load player's equipped weapon's tag
     %weapon = fetchData(%clientId,"EquippedWeapon");
     %id = RPGItem::getItemIDFromTag(%weapon);
     %wtype = $RPGItem::ItemDef[%id,WeaponType];
@@ -577,29 +580,34 @@ function BaseWeaponImage::onFire(%player,%slot)
         %clientId.isAtRestCounter = 0;
         if(%clientId.isAtRest)
         {
+            //Stop HP Regen
             %clientId.isAtRest = 0;
             refreshHPREGEN(%clientId);
         }
         %label = $RPGItem::ItemDef[%id,Label];
-        
-        if(getSimTime() >= $lastAttackTime[%clientId] + CalcWeaponSpeed(%weapon,%label))//GetDelay(%label))
+        if(getSimTime() >= $lastAttackTime[%clientId] + CalcWeaponSpeed(%weapon,%label)) //GetDelay(%label))
         {
             $lastAttackTime[%clientId] = getSimTime();
+            
+            //Swing Melee Weapon
             if(%wtype == $RPGItem::WeaponTypeMelee)
             {
                 MeleeAttack(%player, GetRange(%label), %weapon);
             }
+            //Fire Projectile Weapon
             else if(%wtype == $RPGItem::WeaponTypeRange)
             {
                
-                //Need to fix for other weapons
+                //Need to fix to allow for modifying projectile speed
                 %vel = $RangeWeaponFireVel[%label];
                 ProjectileAttack(%clientId, %weapon, %vel);
             }
+            //Swing pickaxe
             else if(%wtype == $RPGItem::WeaponTypePick)
             {
                 PickAxeSwing(%player, GetRange(%label), %weapon);
             }
+            //Default AI Casting
             else if(%wtype == $RPGItem::WeaponTypeBotSpell)
             {
                 if(%clientId == "")
@@ -635,45 +643,6 @@ function BaseWeaponImage::onFire(%player,%slot)
             schedule("Player::trigger("@%player@","@$WeaponSlot@",false);",0.1,%player);
         }
     }
-    //New to adapt a new weapon type
-    //else
-    //{
-    //    %spell = fetchData(%clientId,"EquippedSpell");
-    //    if(%spell != "")
-    //    {
-    //        if(Player::isTriggered(%player,%slot))
-    //        {
-    //            if(getSimTime() >= $lastAttackTime[%clientId] + 0.2) //Spell update rate
-    //            {
-    //                %time = getSimTime();
-    //                if(%player.startChargeTime == "")
-    //                    %player.startChargeTime = %time;
-    //                $lastAttackTime[%clientId] = %time;
-    //                %timeDiff = %time - %player.startChargeTime;
-    //                if(%timeDiff < $Spell::chargeTime[%spell])
-    //                {
-    //                    %msg = ChargeMagic::CreateBottomPrintMsg(%clientId,%spell,%timeDiff);
-    //                }
-    //                else
-    //                {
-    //                    %msg = "<jc>Charge:\n<f1>[====================]\n<f0>You are ready to cast!";
-    //                }
-    //                
-    //                bottomprint(%clientId,%msg,0.4);
-    //            }
-    //        }
-    //        else
-    //        {
-    //            %time = getSimTime();
-    //            %timeDiff = %time - %player.startChargeTime;
-    //            if(%timeDiff >= $Spell::chargeTime[%spell])
-    //            {
-    //            
-    //            }
-    //            %player.startChargeTime = "";
-    //        }
-    //    }
-    //}
 }
 
 function ChargeMagicImage::onActivate(%player,%slot)

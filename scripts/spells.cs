@@ -869,6 +869,7 @@ $Spell::graceDistance[45] = 15;
 $Spell::effectType[45] = $SpellTypeCustom;
 $SkillType[botstatdrain2] = $SkillNatureCasting;
 $SkillRestriction[botstatdrain2] = "B 1"; //Bot only spells
+
 //----------------------------------------------------------------------------------------------------------------
 
 function TranslateEffectVars(%effectVars)

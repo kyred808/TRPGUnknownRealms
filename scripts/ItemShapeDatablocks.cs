@@ -738,6 +738,26 @@ ItemData InvisShape
 	showWeaponBar = true;
 };
 
+ItemImageData PotionShapeImage
+{
+	shapeFile  = "Potion";
+	mountPoint = 0;
+
+	weaponType = 1; 
+	reloadTime = 0;
+	fireTime = 0.01; //GetDelay(Club);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing5;
+	sfxActivate = AxeSlash2;
+};
+
 ItemData PotionShape
 {
 	heading = "bWeapons";

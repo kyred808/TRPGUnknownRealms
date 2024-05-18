@@ -6,58 +6,6 @@ function delayedban(%id)
 	BanList::add(%hisip, 9999);
 }
 
-function CopyWater()
-{
-    %cnt = 0;
-    %set = nameToID("MissionGroup\\Realm0\\water");
-    for(%i = 0; %i < Group::objectCount(%set); %i++)
-    {
-        echo("Found Set" @%i);
-        %nset = Group::getObject(%set,%i);
-        %newSet = newObject("WaterGroup"@%i,SimSet);
-        addToSet(%set,%newSet);
-        for(%k = 0; %k < Group::objectCount(%nset); %k++)
-        {
-            %water = Group::getObject(%nset,%k);
-            //%pos = Gamebase::getPosition(%water);
-            //%rot = Gamebase::getRotation(%water);
-            echo("Water Obj: "@%water);
-            for(%f = 0; %f < 8; %f++)
-            {
-                echo("Beep"@%f);
-                %cnt++;
-                schedule("DoTheCopy("@%water@","@%f@","@%newSet@");",0.5*%cnt);
-                //%obj = newObject("WaterCopy"@%f@"_"@%k,"InteriorShape","water1.dis");
-                //%newPos = Vector::add(%pos,%vv[%f]);
-                //Gamebase::setPosition(%obj,%newPos);
-                //Gamebase::setRotation(%obj,%rot);
-                //addToSet(%newSet,%obj);
-            }
-        }
-    }
-}
-
-function DoTheCopy(%water,%offIdx,%set)
-{
-    %vv[0] = "-6144 6144 0";
-    %vv[1] = "0 6144 0";
-    %vv[2] = "6144 6144 0";
-    %vv[3] = "-6144 0 0";
-    %vv[4] = "6144 0 0";
-    %vv[5] = "-6144 -6144 0";
-    %vv[6] = "0 -6144 0";
-    %vv[7] = "6144 -6144 0";
-    
-    %pos = Gamebase::getPosition(%water);
-    %rot = Gamebase::getRotation(%water);
-    
-    %obj = newObject("WaterCopy","InteriorShape","water1.dis");
-    %newPos = Vector::add(%pos,%vv[%offIdx]);
-    Gamebase::setPosition(%obj,%newPos);
-    Gamebase::setRotation(%obj,%rot);
-    echo("Water Done!");
-}
-
 //Replaced by mem plugin
 //rewrote String::len from scratch, which is now approximately 6.5 times faster than the previous one i had from PSS.
 //function String::len(%string)
@@ -2386,10 +2334,6 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 			storeData(%clientId, "RankPoints", %w2, "inc");
 			if(%echo) Client::sendMessage(%clientId, 0, "You received " @ %w2 @ " Rank Points.");
 		}
-        //else if(isBeltItem(%w))
-		//{
-		//	Belt::GiveThisStuff(%clientId, %w, %w2, %echo);
-		//}
 		else if(%w == "CNT")
 		{
 			%cntindex++;

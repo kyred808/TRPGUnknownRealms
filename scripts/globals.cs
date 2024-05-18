@@ -69,14 +69,14 @@ $MeteorGroupOdds = 3; //1 in 3 chance for a meteor group to spawn
 $MeteorGroupMaxSize = 8;
 $MeteorGroupMinSize = 3;
 
-$FallDamageScale = 0.5;
+$FallDamageScale = 0.5; //1.0 is full damage from falling
 
 $HealBurstCntPerKill = 120;
 
 $RespecCostPerSP = 100;
 
 $SkillBoostMax = 5;
-$SkillBoostNumPrimary = 3; //Rest are secondary
+$SkillBoostNumPrimary = 3; //Num secondary is $SkillBoostMax - $SkillBoostNumPrimary
 $SkillPrimaryBonus = 40;
 $SkillSecondaryBonus = 20;
 
@@ -86,13 +86,13 @@ $BaseTPLimit = 100;
 $UnknownZoneAmbientSoundMinHeight = 300;
 
 //Toggle if you can craft anywhere or need to look at or have certain objects.
-$ExtraCraftingRequirements = true;
+$ExtraCraftingRequirements = true; //Crafting system needs reassessing
 $BaseCraftingDifficulty = 10;
 $MaxCraftingBatch = 100;
 
 $NewPlayerSpawnZone = "DUNGEON New Player Cave";
 
-$ManaEnergyFactor = 1/25;
+$ManaEnergyFactor = 1/25; //Need to reassess if this is used
 
 // Once exceeded, the oldest gets deleted
 $MaxLootbagsPerPlayer = 15;
@@ -157,62 +157,3 @@ $WorldSaveList = "|DepPlatSmallHorz|DepPlatMediumHorz|DepPlatSmallVert|DepPlatMe
 $SlashingDamageType	= 1;
 $PiercingDamageType	= 2;
 $BludgeoningDamageType	= 4;
-
-
-
-function NewIsInFOV(%client,%obj)
-{
-    RaycastCheck(Client::getOwnedObject(%client),Gamebase::getEyeTransform(%client),%obj,5,"0 0 1.5");
-    
-    echo($RayCast::Rotation);
-    
-    if($RayCast::Rotation < $AIFOV && $RayCast::Rotation >= -1*$AIFOV)
-    {
-        echo("Is in FOV!");
-    }
-}
-
-function LosOb(%client)
-{
-    $los::object = "";
-    %los = Gamebase::getLOSInfo(Client::getControlObject(%client),500);
-    if(%los)
-    {
-        return $los::object;
-    }
-    return "";
-}
-
-function TossLaser(%client)
-{
-    $los::position = "";
-    %los = Gamebase::getLOSInfo(Client::getControlObject(%client),30);
-    
-    if(%los)
-    {
-        %obj = newObject("",StaticShape,"LaserObj",true);//newObject("","Item","LaserRifle",1,false);
-        addToSet("MissionCleanup", %obj);
-        Gamebase::setPosition(%obj,$los::position);
-        $AIMarker = %obj;
-        return %obj;
-    }
-    return "";
-}
-
-
-StaticShapeData LaserObj
-{
-	description = "Tower Control Switch";
-	shapeFile = "dirArrows";
-	showInventory = "false";
-	visibleToSensor = true;
-	mapFilter = 4;
-	mapIcon = "M_generator";
-};
-
-function abs(%num)
-{
-    if(%num > 0)
-        %num = -1*%num;
-    return %num;
-}

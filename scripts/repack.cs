@@ -77,6 +77,155 @@ function remoteRepackKeyOverride(%server, %val)
 //	return %length;
 //}
 
+function SetString(%chars, %num) {
+
+	for(%i = 0; %i < %num; %i++)
+	%string = %string @ %chars;
+
+	return %string;
+}
+
+for(%i = 0; %i <= 100; %i++)
+	$spacer[%i] = SetString(" ", %i);
+
+function remoteZONEText(%manager, %text) { //side-scrolling text
+	if(%manager == 2048) {
+		if($ZoneTextInUse == true)
+			return;
+		$ZoneTextInUse = true;
+		$Zonechar = %text; //Array
+
+		%cnt = 0;
+		%len = String::len($Zonechar);
+		if(%len > 100) {
+			echo("Error: Zone text is higher than 100 chars! ("@%len@") This is for users \'protection\'");
+			return;
+		}
+		%delay = Cap(%len / 6, 3, 8);
+		%len2 = String::len($Zonechar);
+		%kk = %len;
+		for(%i = %len; %i >= 0; %i--) { //Moves text on the screen (from the left)
+			if((%w = String::GetSubStr($Zonechar, %i, 1)) == "_")
+				%txt = " "@%txt;
+			else
+				%txt = %w @ %txt;
+			Schedule("Control::setValue(\"ZONEText\", \"<jc>"@%txt @ $spacer[%kk--]@"\");", (%cnt++ / 50));
+
+		}
+		%txt = "";
+		for(%kk = 0; %kk <= %len; %kk++) { //Moves text off the screen (to the right)
+			for(%ii = 0; (%w = String::GetSubStr($Zonechar, %ii, 1)) != ""; %ii++) {
+				if(%w == "_")
+					%txt = %txt@" ";
+				else
+					%txt = %txt @ %w;
+			}
+
+			%txt = $spacer[%kk] @ %txt;
+
+			Schedule("Control::setValue(\"ZONEText\", \"<jc>"@%txt@"\");", (%kk / 50) + %delay);
+			%txt = "";
+			for(%iii = %len2--; %iii >= 0; %iii--) { //Remove one letter from the end
+				if((%w = String::GetSubStr($Zonechar, %iii, 1)) == "_")
+					%txt = " "@%txt;
+				else
+					%txt = %w @ %txt;
+			}
+			$ZoneChar = %txt;
+			%txt = "";
+		}
+		Schedule("PopZoneText();", ((%kk / 50) + %delay + 0.1));
+	}
+}
+
+
+function PopZoneText() {
+
+	$ZoneTextInUse = "";
+	Control::setValue("ZONEText", "");
+}
+
+//remoteEval(%clientId,"ATKText", %text);
+function remoteATKText(%manager,%text, %hit) { //bounce up and down text
+	if(%manager == 2048) {
+		for(%num = 1; %num < 6; %num++) { //Protection from getting too many ATKText pop-ups (only put 5 in GUI for that)
+			if($TextInUse[%num] == "") {
+				$TextInUse[%num] = true;
+				break;
+			}
+		}
+
+		if($TextInUse[%num] == "") //Flooded, return
+			return;
+
+		Control::setValue("ATKText"@%num, %text);
+
+        %xf = 75*getRandomMT()+25;
+        
+		if(%hit) { //Attacked
+
+			Control::setPosition("ATKText"@%num, 0, 107);
+			%x = 0;
+            %dx = %xf / 20;
+			%y = 130;
+            %newX = 0;
+			for(%i = 1; %i <= 10; %i++) {//%i <= 5
+				%newY = %y + (5 * -%i);
+				schedule("Control::setPosition(\"ATKText"@%num@"\", "@%newX@", "@%newY@");", %i / 30); //%i / 15
+                %newX = %newX + %dx;
+			}
+			%cnt = 0;
+			for(%i = 9; %i >= 1; %i--) {//%i = 4
+				%newY = %y + (5 * -%i);
+				schedule("Control::setPosition(\"ATKText"@%num@"\", "@%newX@", "@%newY@");", (%cnt++ / 20) + "0.5");
+                %newX = %newX + %dx;
+			}
+
+			schedule("Control::setPosition(\"ATKText"@%num@"\", "@%newX@", 130);", (%cnt++ / 20) + "0.5"); //"0.8");
+			Schedule("PopATKText("@%num@");", 2.5);
+		}
+
+		else if(!%hit) { //Took Damage
+
+			Control::setValue("ATKText"@%num, "<f1>"@%text);
+            %xf = -1*%xf;
+			Control::setPosition("ATKText"@%num, 0, 107);
+			%x = 0;
+            %dx = %xf / 20;
+			%y = 130;
+            %newX = 0;
+			for(%i = 1; %i <= 10; %i++) {//%i <= 5
+				%newY = %y + (5 * -%i);
+				schedule("Control::setPosition(\"ATKText"@%num@"\", "@%newX@", "@%newY@");", %i / 30);// %i / 15
+                %newX = %newX + %dx;
+			}
+			%cnt = 0;
+			for(%i = 9; %i >= 1; %i--) {//%i = 4
+				%newY = %y + (5 * -%i);
+				schedule("Control::setPosition(\"ATKText"@%num@"\", "@%newX@", "@%newY@");", (%cnt++ / 20) + "0.5");
+                %newX = %newX + %dx;
+			}
+			schedule("Control::setPosition(\"ATKText"@%num@"\", "@%newX@", 130);", (%cnt++ / 20) + "0.5");
+
+			Schedule("PopATKText("@%num@");", 2.5);
+		}
+
+		else if(%hit == wait) { //Intro ;]
+			Control::setPosition("ATKText"@%num, 0, 90);
+			Schedule("PopATKText("@%num@");", 8);
+		}
+		else
+			Schedule("PopATKText("@%num@");", 2.5);
+	}
+}
+
+function PopATKText(%num) {
+
+	$TextInUse[%num] = "";
+	Control::setValue("ATKText"@%num, "");
+	Control::setPosition("ATKText"@%num, 0, 107);
+}
+
 //=====================================================
 //Buffered Center Print
 //Written by Bovidi

@@ -57,15 +57,15 @@ function GenerateGemAffix(%itemTag)
 
 $RangeWeaponFireVel[sling] = 60;
 $RangeWeaponFireVel[shortbow] = 100;
+$RangeWeaponFireVel[rshortbow] = $RangeWeaponFireVel[shortbow];
 $RangeWeaponFireVel[longbow] = 100;
 $RangeWeaponFireVel[elvenbow] = 100;
 $RangeWeaponFireVel[compositebow] = 100;
 $RangeWeaponFireVel[lightcrossbow] = 100;
+$RangeWeaponFireVel[rlightcrossbow] = $RangeWeaponFireVel[lightcrossbow];
 $RangeWeaponFireVel[heavycrossbow] = 100;
 $RangeWeaponFireVel[repeatingcrossbow] = 100;
 $RangeWeaponFireVel[aeoluswing] = 100;
-
-$RangeWeaponFireVel[rshortbow] = 100;
 
 RPGItem::AddItemClass("Weapon","Weapons","WeaponItemInv","WeaponItemStorage");
 RPGItem::AddItemClass("Equipped","Equipped","EquippedItemInv","");
@@ -125,19 +125,35 @@ RPGItem::AddWeapon("spikedboneclub","Spiked Bone Club",38,$RPGItem::WeaponTypeMe
 RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpell,DaggerShape);
 RPGItem::AddWeapon("TreeAtk","TreeAtk",45,$RPGItem::WeaponTypeMelee,TreeShapeItem);
 
+RPGItem::AddWeapon("rknife","Rusty Knife",39,$RPGItem::WeaponTypeMelee,DaggerShape);
+RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
+RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxeShape);
+RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
+RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
+RPGItem::AddWeapon("rshortbow","Cracked Short Bow",46,$RPGItem::WeaponTypeRange,LongBowShape);
+RPGItem::AddWeapon("rbroadsword","Rusty Broadsword",47,$RPGItem::WeaponTypeMelee,SwordShape);
+RPGItem::AddWeapon("rlongsword","Rusty Longsword",48,$RPGItem::WeaponTypeMelee,LongswordShape);
+RPGItem::AddWeapon("rspikedclub","Cracked Spiked Club",49,$RPGItem::WeaponTypeMelee,MaceShape);
 
+$ExcludeAffix["rknife"] = true;
+$ExcludeAffix["RClub"] = true;
+$ExcludeAffix["rwaraxe"] = true;
+$ExcludeAffix["RPickAxe"] = true;
+$ExcludeAffix["rlightcrossbow"] = true;
+$ExcludeAffix["rshortbow"] = true;
+$ExcludeAffix["rbroadsword"] = true;
+$ExcludeAffix["rlongsword"] = true;
+$ExcludeAffix["rspikedclub"] = true;
 
-//RPGItem::AddWeapon("rknife","Rusty Knife",39,$RPGItem::WeaponTypeMelee,DaggerShape);
-//RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
-//RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxeShape);
-//RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
-
-//RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
-
-//RPGItem::AddWeapon("rshortbow","Cracked Short Bow",46,$RPGItem::WeaponTypeRange,LongBowShape);
-//RPGItem::AddWeapon("rbroadsword","Rusty Broadsword",47,$RPGItem::WeaponTypeMelee,SwordShape);
-//RPGItem::AddWeapon("rlongsword","Rusty Longsword",48,$RPGItem::WeaponTypeMelee,LongswordShape);
-//RPGItem::AddWeapon("rspikedclub","Cracked Spiked Club",49,$RPGItem::WeaponTypeMelee,MaceShape);
+$UnrustedItem["rknife"] = "knife";
+$UnrustedItem["RClub"] = "club";
+$UnrustedItem["rwaraxe"] = "waraxe";
+$UnrustedItem["RPickAxe"] = "pickaxe";
+$UnrustedItem["rlightcrossbow"] = "lightcrossbow";
+$UnrustedItem["rshortbow"] = "shortbow";
+$UnrustedItem["rbroadsword"] = "broadsword";
+$UnrustedItem["rlongsword"] = "longsword";
+$UnrustedItem["rspikedclub"] = "spikedclub";
 
 $SkillType[TreeAtk] = $SkillPiercing;
 $AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;

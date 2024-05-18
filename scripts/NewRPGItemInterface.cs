@@ -110,10 +110,8 @@ function RPGItem::GetBaseTag(%itemTag)
     return $RPGItem::ItemDef[RPGItem::getItemIDFromTag(%itemTag),BaseItemTag];
 }
 
-//Careful when using this, as it will ignore item affixes
 function RPGItem::LabelToItemTag(%itemLabel)
 {
-    //echo("Label: "@ %itemLabel);
     %id = RPGItem::LabelToItemID(%itemLabel);
     return RPGItem::transferAffixesToItem(%itemLabel,%id);
 }
@@ -639,6 +637,7 @@ function RPGItem::GetEquipmentStats(%itemTag,%itemLabel,%mult)
         %nstats = %nstats @ %s @" "@ (getWord(%stats,%i+1)+%bonus)*%mult@" ";
     }
     
+    //Add affixes for values we don't already have on the weapon.
     for(%i = 0; %i < $RPGItem::AffixCount; %i++)
     {
         %type = $RPGItem::AffixType[%i];

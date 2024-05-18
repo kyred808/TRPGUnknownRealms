@@ -1694,11 +1694,13 @@ function remoteSay(%clientId, %team, %message, %senderName)
                 %hp = fetchData(%TrueClientId,"HP");
                 if(%hp < fetchData(%TrueClientId,"MaxHP"))
                 {
-                    %healAmt = Cap(25 + round(CalculatePlayerSkill(%TrueClientId,$SkillHealing) / 5),25,"inf");
+                    %healAmt = Cap(25 + round( CalculatePlayerSkill(%TrueClientId,$SkillHealing)/ 5),25,"inf");
                     setHP(%TrueClientId,%hp + %healAmt);
-                    UseSkill(%TrueClientId, $SkillHealing, True, True, 2);
+                    %mx = fetchData(%TrueClientId,"HealBurstMax");
+                    UseSkill(%TrueClientId, $SkillHealing, True, True, (%mx*3)); //More healbursts you have, the harder it is to level
                     Client::sendMessage(%clientId, $MsgWhite, "You recovered "@ %healAmt @"HP~wActivateAR.wav");
                     storeData(%TrueClientId,"HealBurst",1,"dec");
+                    storeData(%TrueClientId,"HealBurstCounter",0);
                 }
                 else
                 {
@@ -2706,17 +2708,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			else 
 				Client::sendMessage(%client,0,"Deploy position out of range");
 			
-			return;
-		}
-		if(%w1 == "#gm")
-		{
-			Client::sendMessage(%TrueClientId, $MsgWhite, "THIS COMMAND HAS BEEN DISCONTINUED, PLEASE USE #ANON");
-			return;
-			if(%clientToServerAdminLevel >= 4)
-			{
-				for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
-					Client::sendMessage(%cl, $MsgRed, %cropped);
-			}
 			return;
 		}
 		if(%w1 == "#anon")

@@ -937,7 +937,6 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 			%hitby = Client::getName(%shooterClient);
 			%msgcolor = "";
-
 			if(%isMiss)
 			{
 				%msgcolor = $MsgRed;
@@ -963,7 +962,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				else
 				{
 					Client::sendMessage(%shooterClient, %msgcolor, Client::getName(%damagedClient) @ " resists your spell!");
+                    if(!Player::isAIControlled(%shooterClient))
+                        remoteEval(%shooterClient,"ATKText", "<jc>RESISTED!", true);
 					Client::sendMessage(%damagedClient, %msgcolor, "You resist " @ %hitby @ "'s spell!");
+                    if(!Player::isAIControlled(%damagedClient))
+                        remoteEval(%damagedClient,"ATKText", "<jc>You RESISTED "@%hitby@"'s spell!", false);
 				}
 			}
 
@@ -1135,21 +1138,28 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 						else
 							%hitby = Client::getName(%shooterClient);
 					}
-
+                    %dtxt = %convValue@" DMG!";
+                    %stxt = %convValue@" DMG!";
 					if(%Backstab)
 					{
 						%daction = "backstabbed";
 						%saction = "backstabbed";
+                        %dtxt = "Backstabbed! "@ %dtxt;
+                        %stxt = "Backstabbed! "@ %stxt;
 					}
 					else if(%Bash)
 					{
 						%daction = "bashed";
 						%saction = "bashed";
+                        %dtxt = "Bashed! "@ %dtxt;
+                        %stxt = "Bashed! "@ %stxt;
 					}
                     else if(%heavyStrike)
                     {
                         %daction = "heavily struck";
                         %saction = "heavily struck";
+                        %dtxt = "HEAVY STRIKE! "@ %dtxt;
+                        %stxt = "HEAVY STRIKE! "@ %stxt;
                     }
 					else
 					{
@@ -1167,10 +1177,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                             %mm = %mm @ "~wUnravelAM.wav";
 						Client::sendMessage(%shooterClient, $MsgRed, %mm);
                         storeData(%shooterClient,"EmpowerFlag","");
+                        remoteEval(%shooterClient,"ATKText", "<jc>"@%stxt, true);
                     }
 
 					Client::sendMessage(%damagedClient, $MsgRed, "You were " @ %daction @ " by " @ %hitby @ " for " @ %convValue @ " points of damage!");
-
+                    remoteEval(%damagedClient,"ATKText", "<jc>"@%dtxt, false);
 					//--------------------
 					//display to radius
 					//--------------------
@@ -1209,6 +1220,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 					Client::sendMessage(%shooterClient, $MsgRed, "You try to hit " @ Client::getName(%damagedClient) @ ", but miss! (LCK)");
 					Client::sendMessage(%damagedClient, $MsgRed, %hitby @ " tries to hit you, but misses! (LCK)");
+                    if(!Player::isAiControlled(%shooterClient))
+                        remoteEval(%shooterClient,"ATKText", "<jc>MISS! (LCK)", true);
+                    if(!Player::isAiControlled(%damagedClient))
+                        remoteEval(%damagedClient,"ATKText", "<jc>"@%hitby@" MISSED! (LCK)", false);
 				}
 
 				//-------------------------------------------

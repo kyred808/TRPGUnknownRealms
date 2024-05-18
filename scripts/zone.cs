@@ -939,13 +939,16 @@ function Zone::DoEnter(%z, %clientId)
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".";
 		%color = $MsgRed;
 	}
-
+    %txtMsg = %msg;
 	if($Zone::EnterSound[%z] != "")
 		%msg = %msg @ "~w" @ $Zone::EnterSound[%z];
     
     //echo(%z @" "@ %msg);
 	if(%msg != "")
+    {
 		Client::sendMessage(%clientId, %color, %msg);
+        remoteEval(%clientId,"ZONEText",%txtMsg);
+    }
 
 	if(!Player::isAiControlled(%clientId))
     {

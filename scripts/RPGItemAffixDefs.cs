@@ -108,10 +108,13 @@ $RPGItem::SpecialVarToAffix[$SpecialVarArmorPiercing] = "ap";
 $RPGItem::SpecialVarToAffix[$SpecialVarATKSpeed] = "sp";
 
 RPGItemAffix::defineEquipModifier("Fast","sp 40,at -15%,va 10%",$RPGItem::WeaponClass);
-RPGItemAffix::defineEquipModifier("Hard","de 50",$RPGItem::WeaponClass);
+RPGItemAffix::defineEquipModifier("Hard","de 50,va 5%",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Broken","at -40%,va -80%",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Vengeful","at 20%,va 25%,de -100,sp 25",$RPGItem::WeaponClass);
-RPGItemAffix::defineEquipModifier("Warding","md 100",$RPGItem::WeaponClass);
+RPGItemAffix::defineEquipModifier("Warding","md 100,va 12%",$RPGItem::WeaponClass);
+RPGItemAffix::defineEquipModifier("Sharp","at 10,va 10%",$RPGItem::WeaponClass);
+RPGItemAffix::defineEquipModifier("Gilded","va 25%",$RPGItem::WeaponClass);
+//RPGItemAffix::defineEquipModifier("Old","va -70%,at -30%,we 50%,sp -50",$RPGItem::WeaponClass);
 
 function GetAffixBonusText(%itemTag)
 {

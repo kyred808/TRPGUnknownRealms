@@ -37,7 +37,7 @@ function RPGItemAffix::CreateTagFromParse()
         {
             %newTag = %newTag@"_"@%type@$ParseAffix[%type];
         }
-        echo(%newTag);
+        //echo(%newTag);
     }
     return %newTag;
 }
