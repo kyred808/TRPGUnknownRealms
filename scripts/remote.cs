@@ -331,7 +331,7 @@ function remoteThrowItem(%clientId,%type,%strength)
 function remoteDropItem(%clientId,%type,%amnt)
 {
 	dbecho($dbechoMode, "remoteDropItem(" @ %clientId @ ", " @ %item @ ")");
-    if(%amnt == "")
+    if(%amnt < 1 && Math::isInteger(%amnt))
         %amnt = 1;
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
@@ -341,7 +341,7 @@ function remoteDropItem(%clientId,%type,%amnt)
 		if($droppingAllowed == 1)
 		{
 			if((Client::getOwnedObject(%clientId)).driver != 1) {
-				echo("Drop item: "@%type);
+				echo("Drop item: "@%type @" "@%amnt);
 				%clientId.throwStrength = 1;
                 if(RPGItem::isItemTag(%type))
                 {
@@ -451,6 +451,42 @@ function remoteConsider(%clientId)
                 DisplayTargetStats(%clientId,%cl,%object);
 			%sawsomething = True;
 		}
+        else if(%obj == "StaticShape")
+        {
+            %realmId = $RealmData[fetchData(%clientId,"Realm"), ID];
+            if(Word::FindWord($TownBotList[%realmId],%object) != -1)
+            {
+                if(%clientId.adminLevel >= 1)
+                {
+                    Client::sendMessage(%clientId, $MsgWhite, %object @ "'s Bot Info: Name " @ %object.name @" - ID: "@ %object);
+                }
+                if(Vector::getDistance($los::position,%clientpos) <= ($maxAIdistVec + 20))
+                {
+                    %botType = clipTrailingNumbers(%object.name);
+                    if($state[%object, %clientId] == "")
+                    {
+                        if(%botType == "merchant") //Shortcut to buy screen
+                        {
+                            $state[%object, %clientId] = 1;
+                            remoteSay(%clientId, Client::getTeam(%clientId), "#s buy",Client::getName(%clientId));
+                            $state[%object, %clientId] = "";
+                            TownBotGreetPlayer(%object,%clientId);
+                        }
+                        else
+                        {
+                            remoteSay(%clientId, Client::getTeam(%clientId), "#s hi",Client::getName(%clientId));
+                        }
+                        
+                        %sawsomething = True;
+                    }
+                }
+                else
+                {
+                    Client::sendMessage(%clientId, $MsgWhite, "You are out of speaking range.");
+                    %sawsomething = True;
+                }
+            }
+        }
 		else if(%obj == "InteriorShape" && %object.tag != "" && %clientId.adminLevel >= 1)
 		{
 			Client::sendMessage(%clientId, $MsgWhite, %object @ "'s tag name: " @ %object.tag);

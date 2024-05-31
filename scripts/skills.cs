@@ -530,46 +530,6 @@ $SkillRestriction["#shove"] = $SkillBashing @ " 5";
 $SkillRestriction["#zonelist"] = $SkillSenseHeading @ " 45";
 $SkillRestriction["#advcompass"] = $SkillSenseHeading @ " 20";
 
-// Spells
-//$SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
-//$SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20";
-//$SkillRestriction[firebomb] = $SkillOffensiveCasting @ " 35";
-//$SkillRestriction[icespike] = $SkillOffensiveCasting @ " 45";
-//$SkillRestriction[icestorm] = $SkillOffensiveCasting @ " 85";
-//$SkillRestriction[ironfist] = $SkillOffensiveCasting @ " 110";
-//$SkillRestriction[cloud] = $SkillOffensiveCasting @ " 145";
-//$SkillRestriction[melt] = $SkillOffensiveCasting @ " 220";
-//$SkillRestriction[powercloud] = $SkillOffensiveCasting @ " 340";
-//$SkillRestriction[hellstorm] = $SkillOffensiveCasting @ " 420";
-//$SkillRestriction[beam] = $SkillOffensiveCasting @ " 520";
-//$SkillRestriction[dimensionrift] = $SkillOffensiveCasting @ " 750";
-
-//$SkillRestriction[teleport] = $SkillNatureCasting @ " 60";
-//$SkillRestriction[transport] = $SkillNatureCasting @ " 200";
-//$SkillRestriction[advtransport] = $SkillNatureCasting @ " 350";
-//$SkillRestriction[remort] = $SkillNatureCasting @ " 0 " @ $MinLevel @ " 101";
-//$SkillRestriction[mimic] = $SkillNatureCasting @ " 145 " @ $MinRemort @ " 2";
-//$SkillRestriction[masstransport] = $SkillNeutralCasting @ " 650 " @ $MinRemort @ " 1";
-
-//$SkillRestriction[heal] = $SkillDefensiveCasting @ " 10";
-//$SkillRestriction[advheal1] = $SkillDefensiveCasting @ " 80";
-//$SkillRestriction[advheal2] = $SkillDefensiveCasting @ " 110";
-//$SkillRestriction[advheal3] = $SkillDefensiveCasting @ " 200";
-//$SkillRestriction[advheal4] = $SkillDefensiveCasting @ " 320";
-//$SkillRestriction[advheal5] = $SkillDefensiveCasting @ " 400";
-//$SkillRestriction[advheal6] = $SkillDefensiveCasting @ " 500";
-//$SkillRestriction[godlyheal] = $SkillDefensiveCasting @ " 600";
-//$SkillRestriction[fullheal] = $SkillDefensiveCasting @ " 750";
-//$SkillRestriction[massheal] = $SkillDefensiveCasting @ " 850 " @ $MinRemort @ " 2";
-//$SkillRestriction[massfullheal] = $SkillDefensiveCasting @ " 950 " @ $MinRemort @ " 3";
-//$SkillRestriction[shield] = $SkillDefensiveCasting @ " 20";
-//$SkillRestriction[advshield1] = $SkillDefensiveCasting @ " 60";
-//$SkillRestriction[advshield2] = $SkillDefensiveCasting @ " 140";
-//$SkillRestriction[advshield3] = $SkillDefensiveCasting @ " 290";
-//$SkillRestriction[advshield4] = $SkillDefensiveCasting @ " 420";
-//$SkillRestriction[advshield5] = $SkillDefensiveCasting @ " 635";
-//$SkillRestriction[massshield] = $SkillDefensiveCasting @ " 680";
-
 //######################################################################################
 // Skill functions
 //######################################################################################
@@ -597,13 +557,14 @@ function CalculateSPToCurrentUpperBound(%clientId,%skill)
     return floor((%ub - %curSkill)/%mult)+1;
 }
 
-function AddSkillPoint(%clientId, %skill, %delta)
+function AddSkillPoint(%clientId, %skill, %delta, %spflag)
 {
 	dbecho($dbechoMode, "AddSkillPoint(" @ %clientId @ ", " @ %skill @ ", " @ %delta @ ")");
 
 	if(%delta == "")
 		%delta = 1;
-
+    if(%spflag == "")
+        %spflag = false;
 	////////temporary/////////////////////////
 	//if(%skill == 16)	//weapon handling
 	//	return False;
@@ -625,8 +586,30 @@ function AddSkillPoint(%clientId, %skill, %delta)
 	%e = (%d / 10) * 1.000001;
 
 	$PlayerSkill[%clientId, %skill] = %e;
+    if(%spflag)
+        storeData(%clientId,"SPSpent_"@%skill,%delta,"inc");
 
 	return True;
+}
+
+//Flawed.  Does not account for natural skill increases
+function SumUpSkillPoints(%clientId)
+{
+    %total = 0;
+    for(%i = 1; %i <= $NumberOfSkills; %i++)
+    {
+        %mult = GetSkillMultiplier(%clientId,%i);
+        %amt = GetPlayerSkill(%clientId, %i);
+        
+        if(%amt % %mult != 0)
+        {
+            echo("ERROR: Skill Level ("@ %amt @") is not multiple of Mult ("@ %mult@")");
+        }
+        
+        %total = %total + (%amt / %mult);
+    }
+    
+    return %total;
 }
 
 function GetPlayerSkill(%clientId, %skill)
@@ -635,7 +618,7 @@ function GetPlayerSkill(%clientId, %skill)
 }
 function CalculatePlayerSkill(%clientId, %skill)
 {
-    return $PlayerSkill[%clientId, %skill]; //+ BeltEquip::AddBonusStats(%clientId,"SKILL"@%skill);
+    return $PlayerSkill[%clientId, %skill] + RPGItem::GetPlayerEquipStats(%clientId,"SKILL"@%skill); //+ BeltEquip::AddBonusStats(%clientId,"SKILL"@%skill);
 }
 function GetSkillMultiplier(%clientId, %skill)
 {
@@ -666,6 +649,45 @@ function SetAllSkills(%clientId, %n)
 
 	for(%i = 1; $SkillDesc[%i] != ""; %i++)
 		$PlayerSkill[%clientId, %i] = %n;
+}
+
+function ResetSPSpent(%clientId)
+{
+    for(%i = 1; %i <= GetNumSkills(); %i++)
+    {
+        storeData(%clientId,"SPSpent_"@%i,0);
+    }
+}
+
+function RespecPlayer(%clientId)
+{
+    %total = 0;
+    for(%i = 1; %i <= GetNumSkills(); %i++)
+    {
+        %sp = fetchData(%clientId,"SPSpent_"@%i);
+        if(%sp > 0)
+        {
+            %total += %sp;
+            %mult = GetSkillMultiplier(%clientId, %i);
+            %n = $PlayerSkill[%clientId, %i] - %mult*%sp;
+            %d = round(%n * 10);
+            %e = (%d / 10) * 1.000001;
+            $PlayerSkill[%clientId, %i] = %e;
+        }
+        storeData(%clientId,"SPSpent_"@%i,0);
+    }
+    
+    storeData(%clientId,"SPcredits",%total,"inc");
+}
+
+function CalcTotalSpentSP(%clientId)
+{
+    %total = 0;
+    for(%i = 1; %i <= GetNumSkills(); %i++)
+    {
+        %total += fetchData(%clientId,"SPSpent_"@%i);
+    }
+    return %total;
 }
 
 function NewSkillCanUse(%clientId, %thing)
@@ -776,6 +798,11 @@ function SkillCanUse(%clientId, %thing)
 			if(%clientId.adminLevel < %n)
 				%flag = 1;
 		}
+        else if(%s == "B")
+        {
+            if(%n == 1 && !Player::isAiControlled(%clientId))
+                %flag = 1;
+        }
 		else if(%s == "G")
 		{
 			%gcflag++;

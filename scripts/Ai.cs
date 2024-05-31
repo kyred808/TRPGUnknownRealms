@@ -32,6 +32,9 @@ exec(DragonAi);
 exec(AiTest);
 exec(UberBoss);
 
+$AIBehavior[Default,RunOnLowHP] = false; //Bot will back the fuck up if low on hp and gets hit
+$AIBehavior[Default,UseBash] = true;
+$AIBehavior[Default,UseBackstab] = false;
 //---------------------------------
 //createAI()
 //---------------------------------
@@ -82,14 +85,12 @@ function createAI(%aiName, %markerGroup, %name)
 		storeData(%AiId, "tmpbotdata", "");
 
 		storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
-        storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
 
 		refreshHPREGEN(%AiId);
-		refreshStaminaREGEN(%AiId);
+		refreshMANAREGEN(%AiId);
 
 		storeData(%AiId, "LCK", $BotInfo[%aiName, LCK]);
-
 		if(%group != -1)
 		{
 			// The order number is used for sorting waypoints, and other directives.  
@@ -144,13 +145,12 @@ function AI::otherCreate(%aiName,%name,%armor,%pos,%rot)
 		storeData(%AiId, "tmpbotdata", "");
         
         storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
-        storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
 		storeData(%AiId, "MANA", 1000);
         //prevents AI::setupAI being called after death
         storeData(%aiId, "SpawnBotInfo","dummyInfo");
         
         refreshHPREGEN(%AiId);
-		refreshStaminaREGEN(%AiId);
+		refreshMANAREGEN(%AiId);
 
 		storeData(%AiId, "LCK", 0);
         
@@ -237,7 +237,7 @@ function AI::setWeapons(%aiName, %loadout, %callback)
         else
             GiveThisStuff(%aiId, %loadout, False);
     }
-
+    storeData(%aiId,"BotLoadoutTag",clipTrailingNumbers(%aiName));
 	HardcodeAIskills(%aiId);
 
 	Game::refreshClientScore(%aiId);
@@ -246,7 +246,7 @@ function AI::setWeapons(%aiName, %loadout, %callback)
 	AI::setVar(%aiName, iq, 100 );
 	AI::setVar(%aiName, attackMode, $AIattackMode);
 	AI::setAutomaticTargets( %aiName );
-
+    RPGItem::RefreshPlayerEquipStats(%AiId);
     if(%callback == "")
         ai::callbackPeriodic(%aiName, 5, AI::Periodic);
     else
@@ -281,7 +281,7 @@ function RaycastCheck(%player,%eyeTrans,%otherObj,%range,%offset)
     $RayCast::Rotation = "";
     if(%eyeTrans == "")
         %eyeTrans = Gamebase::getEyeTransform(%player);
-    echo(%player @" Eye: "@ %eyeTrans);
+    //echo(%player @" Eye: "@ %eyeTrans);
     %eyePos = Word::getSubWord(%eyeTrans,9,3);
     %eyeDir = Word::getSubWord(%eyeTrans,3,3);
     %eyeRot = Vector::getRotation(%eyeDir);
@@ -307,6 +307,194 @@ function fixVecRotation(%rot)
     return %rot;
 }
 
+//Similar to AI::Periodic, but priortizes a position to guard
+function AI::GuardPositionPeriodic(%aiName)
+{
+    dbecho($dbechoMode, "AI::GuardPositionPeriodic(" @ %aiName @ ")");
+    %aiId = AI::getId(%aiName);
+    
+    if(fetchData(%aiId, "dumbAIflag") || fetchData(%aiId, "frozen"))
+		return;
+
+	%aiTeam = GameBase::getTeam(%aiId);
+	%aiPos = GameBase::getPosition(%aiId);
+    
+    if(fetchData(%aiId, "SpawnBotInfo") != "")
+	{
+        //==============================================================
+        // I'm making it so bots can "smell" their target. Basically,
+        // if you're close enough to them, they will lock onto you.
+        //==============================================================
+        
+        if(fetchData(%aiId, "SpellCastStep") != 1 && !fetchData(%aiId, "noBotSniff"))
+        {
+            %noTargetFlag = false;
+            if(fetchData(%aiId,"AiIgnoreTargets") == "")
+            {
+                %closest = 500000;
+
+                %b = $AImaxRange * 2;
+                %set = newObject("set", SimSet);
+                %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
+                for(%i = 0; %i < Group::objectCount(%set); %i++)
+                {
+                    %id = Player::getClient(Group::getObject(%set, %i));
+                    if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
+                    {
+                        %dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
+                        if(%dist < %closest)
+                        {
+                            %closest = %dist;
+                            %closestId = %id;
+                        }
+                    }
+                }
+                deleteObject(%set);
+
+                if(%closest <= $AImaxRange)
+                {
+                    if(%closest <= 10)
+                        AI::newDirectiveWaypoint(%aiName, GameBase::getPosition(%closestId), 99);
+                    else
+                        AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
+
+                    PlaySound(RandomRaceSound(fetchData(%aiId, "RACE"), Acquired), GameBase::getPosition(%aiId));
+                }
+                else
+                    %noTargetFlag = true;
+                
+                %mkr = fetchData(%aiId,"aiGuardMarker");
+                if(Vector::getDistance(%aiPos,Gamebase::getPosition(%mkr)) > $AI::GuardMaxDist)
+                {
+                    %noTargetFlag = true;
+                    %xx = getRandomMT()*$AI::GuardRadius;
+                    %yy = getRandomMT()*$AI::GuardRadius;
+                    
+                    %pos = Gamebase::getPosition(%mkr);
+                    %npos = Vector::add(%pos,%xx@" "@%yy@" 0");
+                    
+                    storeData(%aiId,"AiIgnoreTargets",true);
+                    AI::newDirectiveWaypoint(%aiName, %npos, 99);
+                }
+            }
+            else
+                %noTargetFlag = true;
+            if(%noTargetFlag || fetchData(%aiId, "noBotSniff"))
+            {
+                AI::GuardPosition(%aiName,fetchData(%aiId,"aiGuardMarker"));
+            }
+        }
+    }
+    
+    //=================================================================
+	// Event stuff
+	//=================================================================
+	%i = GetEventCommandIndex(%aiId, "onPosCloseEnough");
+	if(%i != -1)
+	{
+		%x = GetWord($EventCommand[%aiId, %i], 2);
+		%y = GetWord($EventCommand[%aiId, %i], 3);
+		%z = GetWord($EventCommand[%aiId, %i], 4);
+		%dpos = %x @ " " @ %y @ " " @ %z;
+
+		if(Vector::getDistance(%dpos, GameBase::getPosition(%aiId)) <= 5)
+		{
+			%name = GetWord($EventCommand[%aiId, %i], 0);
+			%type = GetWord($EventCommand[%aiId, %i], 1);
+			%cl = NEWgetClientByName(%name);
+			if(%cl == -1)
+				%cl = 2048;
+
+			%cmd = String::NEWgetSubStr($EventCommand[%aiId, %i], String::findSubStr($EventCommand[%aiId, %i], ">")+1, 99999);
+			%pcmd = ParseBlockData(%cmd, %aiId, "");
+			$EventCommand[%aiId, %i] = "";
+			schedule("remoteSay(" @ %cl @ ", 0, \"" @ %pcmd @ "\", \"" @ %name @ "\");", 1);
+		}
+	}
+	%i = GetEventCommandIndex(%aiId, "onIdCloseEnough");
+	if(%i != -1)
+	{
+		%id = GetWord($EventCommand[%aiId, %i], 2);
+		%dpos = GameBase::getPosition(%id);
+
+		if(Vector::getDistance(%dpos, %aiPos) <= 10)
+		{
+			%name = GetWord($EventCommand[%aiId, %i], 0);
+			%type = GetWord($EventCommand[%aiId, %i], 1);
+			%cl = NEWgetClientByName(%name);
+			if(%cl == -1)
+				%cl = 2048;
+
+			%cmd = String::NEWgetSubStr($EventCommand[%aiId, %i], String::findSubStr($EventCommand[%aiId, %i], ">")+1, 99999);
+			%pcmd = ParseBlockData(%cmd, %aiId, "");
+			$EventCommand[%aiId, %i] = "";
+			schedule("remoteSay(" @ %cl @ ", 0, \"" @ %pcmd @ "\", \"" @ %name @ "\");", 1);
+		}
+	}
+
+	//=================================================================
+	//1 thru 4 = animation 10, 5 thru 10 = animation 11, else do nothing
+	//=================================================================
+	if(Item::getVelocity(%aiId) == "0 0 0")
+	{
+		%r = floor(getRandom() * 200)+1;
+		if(%r >= 1 && %r <= 4)
+			RemotePlayAnim(%aiId, 10);
+		else if(%r >= 5 && %r <= 10)
+			RemotePlayAnim(%aiId, 11);
+
+		if(GameBase::getTeam(%aiId) > 1)
+		{
+			if(OddsAre(5))
+				RemotePlayAnim(%aiId, 2);
+		}
+	}
+	
+	//=============================================
+	//do other stuff...
+	//=============================================
+	//%curTarget = ai::getTarget( %aiName );
+
+	if(OddsAre(4))
+		AI::SelectBestWeapon(%aiId);
+}
+$AI::GuardRadius = 25;
+$AI::GuardMaxDist = 80;
+function AI::GuardPosition(%aiName,%marker)
+{
+    %aiId = AI::getId(%aiName);
+    %ignore = fetchData(%aiId,"AiIgnoreTargets");
+    if(%ignore)
+    {
+        if(Vector::getDistance(Gamebase::getPosition(%aiId),Gamebase::getPosition(%marker)) < $AI::GuardRadius + 5)
+            storeData(%aiId,"AiIgnoreTargets","");
+    }
+    
+    if(OddsAre(3))
+    {
+        %xx = 2*getRandomMT()*$AI::GuardRadius - $AI::GuardRadius;
+        %yy = 2*getRandomMT()*$AI::GuardRadius - $AI::GuardRadius;
+        
+        %pos = Gamebase::getPosition(%marker);
+        %npos = Vector::add(%pos,%xx@" "@%yy@" 0");
+        
+        AI::newDirectiveWaypoint(%aiName, %npos, 99);
+    }
+}
+
+function AI::WithInFOVOrDistCheck(%playerPos,%eyetrans,%otherPos,%fov,%minDist)
+{
+    %dist = Vector::getDistance(%playerPos,%otherPos);
+    %dir = Vector::normalize(Vector::sub(%otherPos,%playerPos));
+    %eyeDir = Word::getSubWord(%eyetrans,3,3);
+    
+    //Dot = 1 if you are looing right at it
+    //0 if 90degs off (left or right)
+    //-1 if looking directly away
+    %dot = Vector::dot(%dir,%eyeDir);
+    return %dot >= %fov || %dist <= %minDist;
+} 
+
 function AI::Periodic(%aiName)
 {
 	dbecho($dbechoMode, "AI::Periodic(" @ %aiName @ ")");
@@ -318,7 +506,6 @@ function AI::Periodic(%aiName)
 
 	%aiTeam = GameBase::getTeam(%aiId);
 	%aiPos = GameBase::getPosition(%aiId);
-
 	//=================================================================
 	//Everytime this function is called, the bot looks at all clients
 	//(including bots) and sets a waypoint to the nearest one that is
@@ -353,42 +540,6 @@ function AI::Periodic(%aiName)
 			}
 		}
         
-        if($AIsmartFOVBotsNEW)
-        {
-            //find all clients that COULD be in the bot's FOV and that are not on the same team.
-			%flag = "";
-            %b = $AImaxRange * 2;
-            %set = newObject("set", SimSet);
-            %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
-            for(%i = 0; %i < Group::objectCount(%set); %i++)
-            {
-                %otherPlayer = Group::getObject(%set, %i);
-                echo("Target: "@%otherPlayer);
-                %id = Player::getClient(%otherPlayer);
-                if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
-                {
-                    //%vec = Vector::sub(GameBase::getPosition(%id), %aiPos);
-					//%vecRot = GetWord(Vector::getRotation(%vec), 2);
-                    $los::object = "";
-                    %cast = RaycastCheck(Client::getOwnedObject(%aiId),"",%otherPlayer,$AImaxRange,"0 0 1.5"); //Offset by 1.5 so we aren't checking feet
-                    %vecRot = $RayCast::Rotation;
-                    //echo("Cast Check: "@ %cast);
-					if(%vecRot < $AIFOV && %vecRot >= -1*$AIFOV)
-					{
-                        if($AIMarker)
-                            Gamebase::setPosition($AIMarker,$los::position);
-                        echo("LOS Obj: "@$los::object @" vs "@ Client::getOwnedObject(%aiId));
-                        if(%cast && $los::object == %otherPlayer)
-                        {
-                            echo("Target Found: "@ $los::object);
-                            %idList[%c++] = %id;
-                        }
-					}
-                }
-            }
-            deleteObject(%set);
-        }
-        
         if(%idList[1] == "")
             %flag = true;
         
@@ -408,7 +559,7 @@ function AI::Periodic(%aiName)
 	
 			if(%closest <= $AImaxRange)
 			{
-				echo(%aiId @ ": targeting (moving towards) " @ %closestId @ ", " @ %closest @ " meters away");
+				//echo(%aiId @ ": targeting (moving towards) " @ %closestId @ ", " @ %closest @ " meters away");
 				if(%closest <= 10)
 					AI::newDirectiveWaypoint(%aiName, GameBase::getPosition(%closestId), 99);
 				else
@@ -429,18 +580,20 @@ function AI::Periodic(%aiName)
 
 			if(fetchData(%aiId, "SpellCastStep") != 1 && !fetchData(%aiId, "noBotSniff"))
 			{
-                if(!$AIsmartFOVBotsNEW)
-                {
-                    %closest = 500000;
+                %closest = 500000;
 
-                    %flag = "";
-                    %b = $AImaxRange * 2;
-                    %set = newObject("set", SimSet);
-                    %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
-                    for(%i = 0; %i < Group::objectCount(%set); %i++)
+                %flag = "";
+                %b = $AImaxRange * 2;
+                %set = newObject("set", SimSet);
+                %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
+                %botType = clipTrailingNumbers(%aiName);
+                %isCasting = false;
+                for(%i = 0; %i < Group::objectCount(%set); %i++)
+                {
+                    %id = Player::getClient(Group::getObject(%set, %i));
+                    if(GameBase::getTeam(%id) != %aiTeam)
                     {
-                        %id = Player::getClient(Group::getObject(%set, %i));
-                        if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
+                        if(!fetchData(%id, "invisible"))
                         {
                             %dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
                             if(%dist < %closest)
@@ -450,26 +603,88 @@ function AI::Periodic(%aiName)
                             }
                         }
                     }
-                    deleteObject(%set);
+                    else
+                    {
+                        if($AIBehavior[%botType,IsHealer] && !%isCasting)
+                        {
+                            if(fetchData(%id,"HP") < fetchData(%id,"MaxHP")*0.75)
+                            {
+                                %numSpells = getWordCount($AIBehavior[%botType,IsHealer,Spells]);
+                                if(%numSpells == 1)
+                                    %spell = $AIBehavior[%botType,IsHealer,Spells];
+                                else
+                                {
+                                    %i = getIntRandomMT(0,%numSpells-1);
+                                    %spell = getWord($AIBehavior[%botType,IsHealer,Spells],%i);
+                                }
+                                remoteSay(%aiId, 0, "#cast " @ %spell);
+                                %isCasting = true;
+                            }
+                        }
+                    }
+                }
+                deleteObject(%set);
 
-                    if(%closest <= $AImaxRange)
+                if(%closest <= $AImaxRange)
+                {
+                    storeData(%aiId,"target",%closestId);
+                    %target = %closestId;
+                    
+                    %weap = RPGItem::ItemTagToLabel(fetchData(%aiId,"EquippedWeapon"));
+                    if($AIBehavior[%botType,IsSapper] && OddsAre(3) && fetchData(%aiId, "SpellCastStep") == "")
+                    {
+                        %isVisible = RaycastCheck(Client::getOwnedObject(%aiId),Gamebase::getEyeTransform(%aiId),Client::getOwnedObject(%target),$AImaxRange,"0 0 1");
+                        if(%isVisible) //Gamebase::getLOSInfo(Client::getOwnedObject(%aiId),$AImaxRange))
+                        {
+                            //echo("LOS OBJ: "@ $los::object);
+                            if($los::object == Client::getOwnedObject(%target))
+                                remoteSay(%aiId, 0, "#cast " @ $AIBehavior[%botType,IsSapper,Spell]);
+                        }
+                    }
+                    if($AccessoryVar[%weap, $AccessoryType] == $RangedAccessoryType)
+                    {
+                        //echo(%closest);
+                        AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
+                        if(%closest <= 10)
+                        {
+                            %offPos = ScaleVector(Vector::Normalize(Vector::sub(%aiPos,Gamebase::getPosition(%closestId))),15);
+                            AI::SetVar( %aiName,  seekOff, %offPos);
+                        }
+                    }
+                    else
                     {
                         if(%closest <= 10)
                             AI::newDirectiveWaypoint(%aiName, GameBase::getPosition(%closestId), 99);
                         else
                             AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
-
-                        PlaySound(RandomRaceSound(fetchData(%aiId, "RACE"), Acquired), GameBase::getPosition(%aiId));
                     }
-                    else
-                        %flag = True;
+                    PlaySound(RandomRaceSound(fetchData(%aiId, "RACE"), Acquired), GameBase::getPosition(%aiId));
                 }
+                else
+                    %flag = True;
 			}
 			
 			if(%flag || fetchData(%aiId, "noBotSniff"))
 			{
 				AI::SelectMovement(%aiName);
 			}
+            else if(!%flag)
+            {
+                %loadout = fetchData(%aiId,"BotLoadoutTag");
+                if(%loadout == "")
+                    %loadout = "Default";
+                if($AIBehavior[%loadout,UseBash] && fetchData(%aiId, "blockBash") == "")
+                {
+                    storeData(%aiId, "NextHitBash", True);
+					storeData(%aiId, "blockBash", True);
+                }
+                
+                //WIP
+                if($AIBehavior[%loadout,UseBackstab])
+                {
+                    AI::SetVar( %aiName,  seekOff, "-1 0 0");
+                }
+            }
 		}
 	}
 
@@ -600,8 +815,9 @@ function AI::SelectBestWeapon(%aiId)
 
 		if(%x != -1)
 		{
-            //echo(%weapon);
-            Player::equipWeapon(%aiId,%weapon);
+            //Player::equipWeapon(%aiId,%weapon);
+            if(fetchData(%aiId,"EquippedWeapon") != %weapon)
+                RPGItem::EquipItem(%aiId,%weapon);
 			//Player::useItem(%aiId, %weapon);
 			AI::SetSpotDist(%aiId);
 		}
@@ -728,6 +944,14 @@ function AI::moveSomewhere(%aiName)
 	}
 }
 
+function AI::RunAway(%aiName)
+{
+    %aiId = AI::getId(%aiName);
+    %aiPlayer = Client::getOwnedObject(%aiId);
+    if(GameBase::getLOSinfo(%aiPlayer, 1000, "0 0 "@ $pi))
+        AI::newDirectiveWaypoint(%aiName, $los::position, 99);
+}
+
 //experimental function, which makes bot look around himself at preset angles and, whichever is the furthest, go there.
 //i'm hoping this will simulate a smarter bot.
 
@@ -851,11 +1075,10 @@ function AI::setupMobDefaults(%AiId,%aiName,%race,%lck)
     storeData(%AiId, "tmpbotdata", "");
 
     storeData(%AiId, "HP", fetchData(%AiId, "MaxHP"));
-    storeData(%AiId, "Stamina", fetchData(%AiId, "MaxStam"));
     storeData(%AiId, "MANA", 1000);
     
     refreshHPREGEN(%AiId);
-    refreshStaminaREGEN(%AiId);
+    refreshMANAREGEN(%AiId);
     
     if(%lck == "")
         %lck = -1;
@@ -1000,7 +1223,15 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
 		AI::setVar( %newName,  pathType, $AI::defaultPathType);
 		//AI::SetVar( %newName,  seekOff, 1);
 		AI::setAutomaticTargets( %newName );
-
+        
+        %lootTblKey = clipTrailingNumbers(%newName);
+        if($DropTable[%lootTblKey,0,Item] != "")
+            DropTable::AddTableToPlayer(%aiId,%lootTblKey);
+        
+        %race = fetchData(%aiId,"RACE");
+        if($DropTable[%race,0,Item] != "")
+            DropTable::AddTableToPlayer(%aiId,%race);
+        
 		if(%w0 == "TempSpawn")
 		{
 			//the %commandIssuer is a data string
@@ -1027,7 +1258,10 @@ function SpawnAI(%newName, %displayName, %aiSpawnPos, %commandIssuer, %loadout)
             %spawnIdx = getWord(fetchData(%aiId, "SpawnBotInfo"), 2);
             $Zone::SpawnPoint[%zid,%spawnIdx,SpawnCount]++;
             UpdateTeam(%aiId);
-
+            
+            if($DropTable[$Zone::Desc[%zid],0,Item] != "")
+                DropTable::AddTableToPlayer(%aiId,$Zone::Desc[%zid]);
+                
 			AI::SetVar(%newName, spotDist, $AIspotDist);
         }
 		else if(%w0 == "SpawnPoint")
@@ -1247,7 +1481,7 @@ function AI::onTargetLOSAcquired(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSAcquired(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("Target Found");
+    //echo("Target Found "@ %idNum @" - "@ fetchData(%idNum,"invisible"));
     if(fetchData(%aiId,"dragonBoss") && fetchData(%aiId,"flightSequence") == 2)
     {
         storeData(%aiId,"targetFound",%idNum);
@@ -1261,7 +1495,7 @@ function AI::onTargetLOSLost(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSLost(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("Target Lost");
+    //echo("Target Lost");
     if(fetchData(%aiId,"dragonBoss"))
     {
         storeData(%aiId,"targetFound","");
@@ -1276,7 +1510,7 @@ function AI::onTargetLOSRegained(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetLOSRegained(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("Target Reacquired: "@%idNum);
+    //echo("Target Reacquired: "@%idNum);
 	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag") && !fetchData(%idNum,"invisible"))
 		AI::newDirectiveFollow(%aiName, %idNum, 0, 99);
 }
@@ -1286,7 +1520,7 @@ function AI::onTargetDied(%aiName, %idNum)
 	dbecho($dbechoMode, "AI::onTargetDied(" @ %aiName @ ", " @ %idNum @ ")");
 
 	%aiId = AI::getId(%aiName);
-    echo("TARGET DIED");
+    //echo("TARGET DIED");
 	if(fetchData(%aiId, "SpawnBotInfo") != "" && !fetchData(%aiId, "dumbAIflag") && !fetchData(%aiId,"customAiFlag"))
 		AI::newDirectiveRemove(%aiName, 99);
 }                                 
@@ -1597,8 +1831,8 @@ function InitTownBots()
 			{
 				%marker = GatherBotInfo(%object);
 			}
-
-			%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
+            %townbot = newObject("",StaticShape,$BotInfo[%name, RACE] @"NPCTownBot",false);
+			//%townbot = newObject("", "Item", $BotInfo[%name, RACE] @ "TownBot", 1, false);
 
 			addToSet("MissionCleanup", %townbot);
 			GameBase::setMapName(%townbot, $BotInfo[%name, NAME]);
@@ -1612,6 +1846,19 @@ function InitTownBots()
 		}
 	}
 }
+
+function RotateTownBotToObj(%id,%obj,%realmId)
+{
+    %botPos = Gamebase::getPosition(%id);
+    %objPos = Gamebase::getPosition(%obj);
+    
+    %dir = Vector::Normalize(Vector::Sub(%objPos,%botPos));
+    
+    %rot = Vector::getRotation(%dir);
+    
+    Gamebase::setRotation(%id,%rot);
+}
+
 function RotateTownBot(%id, %rot, %realmId)
 {
 	dbecho($dbechoMode, "RotateTownBot(" @ %id @ ", " @ %rot @ "," @ %realmId @ ")");
@@ -1639,7 +1886,7 @@ function RotateTownBot(%id, %rot, %realmId)
 
 function GatherBeltShopInfo(%aiName,%info)
 {
-    echo("AI Name: "@ %aiName);
+    //echo("AI Name: "@ %aiName);
     for(%i = 0; GetWord(%info, %i) != -1; %i++)
     {
         %itemIdx = GetWord(%info, %i);
@@ -1697,6 +1944,8 @@ function GatherBotInfo(%group)
 				$BotInfo[%aiName, LCK] = %info;
 			else if(%type == "SIMGROUP")
 				$BotInfo[%aiName, SIMGROUP] = %info;
+            else if(%type == "ZONE")
+                $BotInfo[%aiName, ZONE] = %info;
 
 			if(%type2 == "SAY")
 				$BotInfo[%aiName, SAY, %n] = %info;

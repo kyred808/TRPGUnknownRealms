@@ -706,7 +706,57 @@ ItemData KnightShield0
 	heading = "aArmor";
 };
 
+ItemImageData InvisShapeImage
+{
+	shapeFile  = "OneWayWallInvis_8x8";
+	mountPoint = 0;
 
+	weaponType = 1; 
+	reloadTime = 0;
+	fireTime = 0.01; //GetDelay(Club);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing5;
+	sfxActivate = AxeSlash2;
+};
+ItemData InvisShape
+{
+	heading = "bWeapons";
+	description = "Club";
+	className = "Weapon";
+	shapeFile  = "mace";
+	hudIcon = "club";
+	shadowDetailMask = 4;
+	imageType = InvisShapeImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+ItemImageData PotionShapeImage
+{
+	shapeFile  = "Potion";
+	mountPoint = 0;
+
+	weaponType = 1; 
+	reloadTime = 0;
+	fireTime = 0.01; //GetDelay(Club);
+
+	spinUpTime = 0;
+	spinDownTime = 0;
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing5;
+	sfxActivate = AxeSlash2;
+};
 
 ItemData PotionShape
 {

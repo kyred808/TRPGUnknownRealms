@@ -41,7 +41,7 @@ function DecreaseBonusStateTicks(%clientId, %b)
 			$BonusState[%clientId, %b] = "";
 			playSound(BonusStateExpire, GameBase::getPosition(%clientId));
             refreshHPREGEN(%clientId);
-            refreshStaminaREGEN(%clientId);
+            refreshMANAREGEN(%clientId);
             refreshAll(%clientId,false);
 		}
 	}
@@ -70,7 +70,7 @@ function DecreaseBonusStateTicks(%clientId, %b)
 					$BonusState[%clientId, %i] = "";
 					playSound(BonusStateExpire, GameBase::getPosition(%clientId));
                     refreshHPREGEN(%clientId);
-                    refreshStaminaREGEN(%clientId);
+                    refreshMANAREGEN(%clientId);
                     refreshAll(%clientId,false);
 				}
 				else
@@ -187,7 +187,7 @@ function AddBonusStatePoints(%clientId, %filter)
 
 function UpdateBonusState(%clientId, %type, %ticks)
 {
-    echo("Bonus: "@%type@" "@ %ticks);
+    //echo("Bonus: "@%type@" "@ %ticks);
 	//look thru the current bonus states and attempt to update
 	%flag = False;
 	for(%i = 1; %i <= $maxBonusStates; %i++)

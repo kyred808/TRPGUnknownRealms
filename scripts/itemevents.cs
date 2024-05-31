@@ -225,6 +225,8 @@ function Item::onCollision(%this,%object)
             %damagedClient = %clientId;
             %shooterClient = %this.owner;
             %item = %this.itemProj;
+            if(%item == "")
+                %item = %this.itemTag; //If the item was dropped instead of shot
             %label = RPGItem::ItemTagToLabel(%item);
             
             if(%shooterClient != "")
@@ -294,7 +296,7 @@ function Item::onCollision(%this,%object)
                 deleteObject(%this);
             }
 		}
-        else if(%item == "MeteorBits" || %item == "MeteorBitsRed")
+        else if(%item == "MeteorBits" || %item == "MeteorBitsRed" || %item == "OreShape")
         {
             %itemType = %this.itemObj;
             if(%itemType != "")
@@ -401,7 +403,6 @@ function Item::onUse(%player,%item)
 
 		refreshHP(%clientId, 0);
 		refreshMANA(%clientId, 0);
-        refreshStamina(%clientId, 0);
 		RefreshAll(%clientId,false);
 	}
 }

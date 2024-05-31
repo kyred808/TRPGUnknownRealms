@@ -14,7 +14,7 @@ function Client::onKilled(%clientId, %killerId, %damageType)
         refreshMANA(%killerId,-1*%mh);
         Client::sendMessage(%killerId,$MsgWhite,"You restored "@%mh@" mana.");
     }
-    
+
 	//The player with the killshot gets the official "kill"
 	if(!IsInCommaList(fetchData(%killerId, "TempKillList"), Client::getName(%clientId)))
 		storeData(%killerId, "TempKillList", AddToCommaList(fetchData(%killerId, "TempKillList"), Client::getName(%clientId)));
@@ -25,7 +25,7 @@ function Client::onKilled(%clientId, %killerId, %damageType)
 		%n = Client::getName(%killerId);
 
 		Client::sendMessage(%clientId, 0, "You were killed by " @ %n @ "!");
-
+        storeData(%killerId,"HealBurstCounter",$HealBurstCntPerKill,"inc");
 		//if(fetchData(%killerId, "bounty") == Client::getName(%clientId))
 		//	storeData(%killerId, "bounty", fetchData(%clientId, "LVL") @ " !Q@W#E$R%T^Y&U*I(O)P");
 	}
@@ -77,6 +77,19 @@ function Player::onKilled(%this)
 
     Player::setJet(%this,false);
     
+    %dlist = fetchData(%clientId,"DrainList");
+    %dlistLen = countObjInCommaList(%dlist);
+    if(%dlistLen > 0)
+    {
+        for(%i = 0; %i < %dlistLen; %i++)
+        {
+            %entry = String::getWord(%dlist,",",%i);
+            %victim = getWord(%entry,0);
+            %debuff = Word::getSubWord(%entry,1,30); //I assume it won't go over 30 words for a debuff string
+            UpdateBonusState(%victim, %debuff, 0); //Clear the debuff
+        }
+    }
+    
 	if(IsStillArenaFighting(%clientId))
 	{
 		//player's dueling flag is still at ALIVE, make him DEAD
@@ -104,13 +117,15 @@ function Player::onKilled(%this)
 	else
 	{
 		//player died when not dueling
-
 		//drop lootbag
 		%tmploot = "";
 
 		if(fetchData(%clientId, "COINS") > 0)
 			%tmploot = %tmploot @ "COINS " @ floor(fetchData(%clientId, "COINS")) @ " ";
 		storeData(%clientId, "COINS", 0);
+        
+        if(Player::isAiControlled(%clientId))
+            %tmploot = DropTable::GenerateLootDrops(%clientId,%tmploot);
         
         %itemList = RPGItem::getFullItemList(%clientId,false);
         
@@ -130,7 +145,7 @@ function Player::onKilled(%this)
                     %eq = fetchData(%clientId,"EquippedWeapon");
                     %class = RPGItem::getItemGroupFromTag(%itemTag);
                     
-                    if(%eq == %itemTag || %class == $RPGItem::EquipppedClass || $LoreItem[%label] == true)
+                    if(%eq == %itemTag || %class == $RPGItem::EquippedClass || $LoreItem[%label] == true)
                     {
                         %bInclude = true;
                     }
@@ -140,7 +155,7 @@ function Player::onKilled(%this)
                 
                 if(%a == CastingBlade)
 					%bInclude = false;
-                else if(%a == Treeatk)
+                else if(String::icompare(%a,"TreeAtk") == 0)
                     %bInclude = false;
                 
                 if($StealProtectedItem[%a])
@@ -149,12 +164,13 @@ function Player::onKilled(%this)
             
             if(%bInclude)
             {
-                %b = %a;
                 %class = RPGItem::getItemGroupFromTag(%itemTag);
+                %newTag = %itemTag;
                 %eq = fetchData(%clientId,"EquippedWeapon");
-                if(%class == $RPGItem::EquipppedClass)
-                    %b = String::getSubStr(%b, 0, String::len(%b)-1);
-
+                if(%class == $RPGItem::EquippedClass)
+                    %newTag = RPGItem::getAlternateTag(%itemTag);
+                
+                //echo("Tag: "@ %itemTag @" NewTag: "@%newTag);
                 if(%eq == %itemTag)
                 {
                     //special handling for currently held weapon
@@ -163,8 +179,9 @@ function Player::onKilled(%this)
                 }
                 else
                 {
-                    %tmploot = %tmploot @ %itemTag @ " " @ getWord(%itemList,%i+1) @ " ";
-                    RPGItem::setItemCount(%clientId, %itemTag, 0);
+                    %tmploot = %tmploot @ %newTag @ " " @ getWord(%itemList,%i+1) @ " ";
+                    RPGItem::setItemCount(%clientId, %itemTag, 0); //Don't worry about equip stats.  Will be refreshed on spawn.
+                    
                 }
                 if(String::len(%tmploot) > 200)
                 {
@@ -182,7 +199,7 @@ function Player::onKilled(%this)
                 }
             }
         }
-        
+
         //Rework needed for virtual items
         //Needs optimization, but not critical yet
 		//%max = getNumItems();
@@ -379,7 +396,7 @@ function Player::onKilled(%this)
     storeData(%clientId, "EquippedWeapon", "");
 	%clientId.sleepMode = "";
 	refreshHPREGEN(%clientId);
-	refreshStaminaREGEN(%clientId);
+    refreshMANAREGEN(%clientId);
 
 	Client::setControlObject(%clientId, %clientId);
 	storeData(%clientId, "dumbAIflag", "");
@@ -489,13 +506,13 @@ function CalculateDamageReduction(%clientId)
 
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
-	dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
-    echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+	//dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
+    //echo("Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
     
     %weapTag = %weapon;
     %weapon = RPGItem::ItemTagToLabel(%weapon);
     %skilltype = $SkillType[%weapon];
-    
+
 	if(Player::isExposed(%this) && %object != -1 && %type != $NullDamageType && !Player::IsDead(%this))
 	{
 		%damagedClient = Player::getClient(%this);
@@ -525,6 +542,13 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
         }
         
+        
+        if(Player::isAIControlled(%damagedClient) && fetchData(%damagedClient,"AiIgnoreTargets") != "")
+        {
+            storeData(%damagedClient,"AiIgnoreTargets","");
+            AI::newDirectiveFollow(fetchData(%damagedClient, "BotInfoAiName"), %shooterClient, 0, 99);
+        }
+        
         //if(%shooterClient == 0 && fetchData(%damagedClient,"dragonAttack") != "")
         //{
         //    %shooterClient = fetchData(%damagedClient,"dragonAttack");
@@ -532,6 +556,13 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		%damagedClientPos = GameBase::getPosition(%damagedClient);
 		%shooterClientPos = GameBase::getPosition(%shooterClient);
 
+        %damagedClient.isAtRestCounter = 0;
+        if(%damagedClient.isAtRest)
+        {
+            %damagedClient.isAtRest = 0;
+            refreshHPREGEN(%damagedClient);
+        }
+        
 		%damagedCurrentArmor = GetCurrentlyWearingArmor(%damagedClient);
         if(%dmgMult == "")
         {
@@ -549,6 +580,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
         if(fetchData(%shooterClient,"HeavyStrikeFlag") && %weapon != "")
             %heavyStrike = true;
 
+        %empower = fetchData(%shooterClient,"EmpowerFlag");
+            
         if(fetchData(%shooterClient,"NextHitFlurry"))
         {
             if($AccessoryVar[%weapon, $AccessoryType] == $SwordAccessoryType)
@@ -578,21 +611,26 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
             else
             {
-                if($Spell::index[%weapon] != "")
+                echo($Spell::index[%weapTag]);
+                if($Spell::index[%weapTag] != "")
                 {
-                    %skilltype = $SkillType[%weapon];
+                    %skilltype = $SkillType[%weapTag];
                 }
                 else
                     %skilltype = $skilloffensivecasting;
             }
-                
+            echo("Spell Type: "@ %skilltype);
 			%sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
 			%dmg = %value + %sdm;
+            if(%empower)
+                %dmg += 15;
 			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
 
 			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10));
 			%value = Cap(%value - %ab, 0, "inf");
 
+            if(%empower)
+                %value += 2;
 			%value = (%value / $TribesDamageToNumericDamage);
             echo("Spell Damage: "@%value);
 		}
@@ -661,6 +699,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 %weapondamage = %weapondamage*0.75;
             }
             
+            if(%empower)
+                %weapondamage += 15;
 			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
             %a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
@@ -680,7 +720,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
         
             %reductionValue = %value * (%dmgRedPct);
             //echo("AMRP: "@ %amrp);
-            echo("DR: "@ %reductionValue);
+            //echo("DR: "@ %reductionValue);
             %value = %value - ((%reductionValue)*%amrAdj);
 
 			if(%value < 1)
@@ -700,6 +740,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             //if(%stam <= 25)
             //    %value = %value * %stam/25;
 
+            if(%empower)
+                %value += 2;
 			%value = (%value / $TribesDamageToNumericDamage);
             
 		}
@@ -895,7 +937,6 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 			%hitby = Client::getName(%shooterClient);
 			%msgcolor = "";
-
 			if(%isMiss)
 			{
 				%msgcolor = $MsgRed;
@@ -921,7 +962,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				else
 				{
 					Client::sendMessage(%shooterClient, %msgcolor, Client::getName(%damagedClient) @ " resists your spell!");
+                    if(!Player::isAIControlled(%shooterClient))
+                        remoteEval(%shooterClient,"ATKText", "<jc>RESISTED!", true);
 					Client::sendMessage(%damagedClient, %msgcolor, "You resist " @ %hitby @ "'s spell!");
+                    if(!Player::isAIControlled(%damagedClient))
+                        remoteEval(%damagedClient,"ATKText", "<jc>You RESISTED "@%hitby@"'s spell!", false);
 				}
 			}
 
@@ -957,7 +1002,15 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					if(%type == $SpellDamageType)
 						UseSkill(%damagedClient, $SkillManaManipulation, True, True, %base2);
 				}
-
+                
+                //Award TP
+                if(%shooterClient.blockTP == "")
+                {
+                    addTP(%shooterClient,1);
+                    %shooterClient.blockTP = true;
+                    schedule("resetTPBlock("@%shooterClient@");",0.3);
+                }
+                
 				if(%Backstab)
 					UseSkill(%shooterClient, $SkillBackstabbing, True, True);
 				if(%Bash)
@@ -1030,8 +1083,27 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					{
                         if(fetchData(%damagedClient,"customAIFlag") == "")
                         {
-                            if(AI::getTarget(fetchData(%damagedClient, "BotInfoAiName")) != %shooterClient)
-                                AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                            %loadOutTag = fetchData(%damagedClient,"BotLoadoutTag");
+                            if(%loadOutTag == "")
+                                %loadOutTag = "Default";
+                            if($AIBehavior[%loadOutTag,RunOnLowHP])
+                            {
+                                %perc = fetchData(%damagedClient,"HP") / fetchData(%damagedClient,"MaxHP");
+                                echo(%perc);
+                                if(%perc <= 0.15)
+                                {
+                                    AI::RunAway(fetchData(%damagedClient, "BotInfoAiName"));
+                                }
+                            }
+                            %tgt = AI::getTarget(fetchData(%damagedClient, "BotInfoAiName"));
+                            if(%tgt != %shooterClient)
+                            {
+                                if(fetchData(%damagedClient,"aiAutoRetaliate") && %tgt == -1)
+                                    AI::newDirectiveFollow(fetchData(%damagedClient, "BotInfoAiName"), %shooterClient, 0, 99);
+                                else
+                                    AI::SelectMovement(fetchData(%damagedClient, "BotInfoAiName"));
+                                
+                            }
                         }
 					}
 
@@ -1066,21 +1138,28 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 						else
 							%hitby = Client::getName(%shooterClient);
 					}
-
+                    %dtxt = %convValue@" DMG!";
+                    %stxt = %convValue@" DMG!";
 					if(%Backstab)
 					{
 						%daction = "backstabbed";
 						%saction = "backstabbed";
+                        %dtxt = "Backstabbed! "@ %dtxt;
+                        %stxt = "Backstabbed! "@ %stxt;
 					}
 					else if(%Bash)
 					{
 						%daction = "bashed";
 						%saction = "bashed";
+                        %dtxt = "Bashed! "@ %dtxt;
+                        %stxt = "Bashed! "@ %stxt;
 					}
                     else if(%heavyStrike)
                     {
                         %daction = "heavily struck";
                         %saction = "heavily struck";
+                        %dtxt = "HEAVY STRIKE! "@ %dtxt;
+                        %stxt = "HEAVY STRIKE! "@ %stxt;
                     }
 					else
 					{
@@ -1092,9 +1171,17 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 					//display to involved
 					//--------------------
 					if(%shooterClient != %damagedClient)
-						Client::sendMessage(%shooterClient, $MsgRed, "You " @ %saction @ " " @ Client::getName(%damagedClient) @ " for " @ %convValue @ " points of damage!");
-					Client::sendMessage(%damagedClient, $MsgRed, "You were " @ %daction @ " by " @ %hitby @ " for " @ %convValue @ " points of damage!");
+                    {
+                        %mm = "You " @ %saction @ " " @ Client::getName(%damagedClient) @ " for " @ %convValue @ " points of damage!";
+                        if(%empower)
+                            %mm = %mm @ "~wUnravelAM.wav";
+						Client::sendMessage(%shooterClient, $MsgRed, %mm);
+                        storeData(%shooterClient,"EmpowerFlag","");
+                        remoteEval(%shooterClient,"ATKText", "<jc>"@%stxt, true);
+                    }
 
+					Client::sendMessage(%damagedClient, $MsgRed, "You were " @ %daction @ " by " @ %hitby @ " for " @ %convValue @ " points of damage!");
+                    remoteEval(%damagedClient,"ATKText", "<jc>"@%dtxt, false);
 					//--------------------
 					//display to radius
 					//--------------------
@@ -1133,6 +1220,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 					Client::sendMessage(%shooterClient, $MsgRed, "You try to hit " @ Client::getName(%damagedClient) @ ", but miss! (LCK)");
 					Client::sendMessage(%damagedClient, $MsgRed, %hitby @ " tries to hit you, but misses! (LCK)");
+                    if(!Player::isAiControlled(%shooterClient))
+                        remoteEval(%shooterClient,"ATKText", "<jc>MISS! (LCK)", true);
+                    if(!Player::isAiControlled(%damagedClient))
+                        remoteEval(%damagedClient,"ATKText", "<jc>"@%hitby@" MISSED! (LCK)", false);
 				}
 
 				//-------------------------------------------
@@ -1230,7 +1321,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 function remoteKill(%clientId)
 {
 	dbecho($dbechoMode2, "remoteKill(" @ %clientId @ ")");
-
+    echo("kill");
 	if(!$matchStarted)
 		return;
 	if(IsJailed(%clientId))

@@ -146,7 +146,11 @@ MissionRegObject( Phantom, "PhantomTree3", MissionCreateObject, PhantomStrangerT
 
 //PLaSM's stuff
 missionRegDis(PLaSM, towerf);
+MissionRegObject(PLaSM, "FireSmallSize", MissionCreateObject, FireSmallShape, StaticShape, FireSmallShape);
 MissionRegObject(PLaSM, "FireMediumSize", MissionCreateObject, FireMediumShape, StaticShape, FireMediumShape);
+MissionRegObject(PLaSM, "FireLargeSize", MissionCreateObject, FireLargeShape, StaticShape, FireLargeShape);
+MissionRegObject(PLaSM, "FireXLSize", MissionCreateObject, FireXLShape, StaticShape, FireXLShape);
+MissionRegObject(PLaSM, "FireOMGSize", MissionCreateObject, FireOMGShape, StaticShape, FireOMGShape);
 
 //Robert's stuff
 missionRegDis(Robert, yol2);

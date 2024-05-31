@@ -85,6 +85,7 @@ function createServer(%mission, %dedicated)
     deleteVariables("Crafting::*");
     deleteVariables("Farming::*");
     RPGItem::ClearVariables();
+    Realms::clean();
 	$PetList = "";
 	$DISlist = "";
 	$SpawnPackList = "";
@@ -128,8 +129,8 @@ function createServer(%mission, %dedicated)
 	exec(Trigger);
     exec(Realms);
 	exec(zone);
-	//exec(spells);
-    exec(NewSpells);
+	exec(spells);
+    //exec(NewSpells);
     exec(SpellBook);
 	exec(classes);
 	exec(party);
@@ -155,6 +156,7 @@ function createServer(%mission, %dedicated)
 	//exec(hp);
     exec(HpMpSt);
 	exec(rpgstats);
+    exec(DropTables);
 	exec(playerdamage);
 	exec(playerspawn);
 	exec(itemevents);
@@ -165,7 +167,7 @@ function createServer(%mission, %dedicated)
 	//exec(depbase);
 	exec(ferry);
 	exec(Player);
-	exec(Vehicle);
+	//exec(Vehicle);
 	exec(Turret);
 	exec(Beacon);
 	exec(StaticShape);
@@ -183,11 +185,12 @@ function createServer(%mission, %dedicated)
     //exec(BeltEquipment);
     //exec(BeltItemDefs);
     exec(crafting);
-    exec(CraftingItemDefs);
     //exec(RPGItemInterface);
     exec(NewRPGItemInterface);
     exec(RPGItemAffix);
     exec(RPGItemDefs);
+    exec(RPGItemAffixDefs); //Must come after item defs
+    exec(CraftingItemDefs); //Must be after RPGItemDefs
     exec(Farming);
     exec(Abilities);
     exec(SkillBook);
@@ -197,7 +200,7 @@ function createServer(%mission, %dedicated)
     
     
     
-	$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
+	//$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
 
 	Server::storeData();
 
@@ -229,7 +232,8 @@ function createServer(%mission, %dedicated)
 	LoadWorld();
     if($Realms::MapUsesRealms)
         InitRealms();
-	InitCrystals();
+	//InitCrystals();
+    Realms::InitCrystals();
     Realms::InitZones();
     Realms::InitFerry();
     Realms::InitTownBots();

@@ -146,6 +146,35 @@ function FlagStand::onDamage()
 {
 }
 
+StaticShapeData MaleHumanNPCTownBot
+{
+    shapeFile = "rpgmalehuman";
+    damageSkinData = "objectDamageSkins"; //"armorDamageSkins";
+	maxDamage = 99999.0;
+	visibleToSensor = true;	//thanks Adger!!
+	mapFilter = 1;
+};
+
+StaticShapeData FemaleHumanNPCTownBot
+{
+    shapeFile = "lfemalehuman";
+	maxDamage = 99999.0;
+	visibleToSensor = true;	//thanks Adger!!
+	mapFilter = 1;
+};
+
+function SpawnNPCTest(%clientId)
+{
+    focusServer();
+    Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),50);
+    %obj = newObject("",StaticShape,"NPCHumanMale1",false);
+    Gamebase::setPosition(%obj,$los::position);
+    addToSet(nameToId("MissionCleanup"),%obj);
+    GameBase::playSequence(%obj, 0, "root");
+    $TestObj = %obj;
+}
+
+
 //------------------------------------------------------------------------
 // Generators
 //------------------------------------------------------------------------
@@ -185,7 +214,7 @@ function Generator::onDeactivate(%this)
 StaticShapeData TowerSwitch
 {
 	description = "Tower Control Switch";
-	className = "towerSwitch";
+	//className = "towerSwitch";
 	shapeFile = "tower";
 	showInventory = "false";
 	visibleToSensor = true;
@@ -867,9 +896,37 @@ StaticShapeData WavyWater16
 	isTranslucent = "True";
 };
 
+StaticShapeData FireSmallShape
+{
+    shapeFile = "fire_small";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
 StaticShapeData FireMediumShape
 {
     shapeFile = "fire_medium";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData FireLargeShape
+{
+    shapeFile = "fire_large";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData FireXLShape
+{
+    shapeFile = "fire_xl";
+	maxDamage = 999.0;
+	isTranslucent = "True";
+};
+
+StaticShapeData FireOMGShape
+{
+    shapeFile = "fire_omg";
 	maxDamage = 999.0;
 	isTranslucent = "True";
 };
@@ -931,3 +988,19 @@ StaticShapeData AuraCharge
 	isTranslucent = "True";
     disableCollision = true;
 };
+
+//StaticShapeData APOC
+//{
+//    shapeFile = "ha_apoc";
+//	maxDamage = 999.0;
+//	//isTranslucent = "false";
+//};
+//
+//function SpawnHERC(%clientId)
+//{
+//    focusServer();
+//    Gamebase::getLOSInfo(Client::getOwnedObject(%clientId),50);
+//    %obj = newObject("herc",StaticShape,"APOC",true);
+//    Gamebase::setPosition(%obj,$los::position);
+//    addToSet(nameToId("MissionCleanup"),%obj);
+//}

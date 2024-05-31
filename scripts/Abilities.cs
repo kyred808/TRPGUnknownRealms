@@ -10,11 +10,13 @@ $SkillRestriction["brace"] = $MinLevel @" 10 C Paladin";
 $SkillRestriction["rage"] = $MinLevel @" 5 C Fighter";
 $SkillRestriction["bladebolt"] = $MinLevel @" 15 G Warrior";
 $SkillRestriction["secondwind"] = $MinLevel @" 30 C Fighter";
-$SkillRestriction["heavystrike"] = $MinLevel @" 5";
 $SkillRestriction["catsfeet"] = $MinLevel @" 5 G Rogue";
 $SkillRestriction["doublestrike"] = $MinLevel @" 10 G Rogue";
 $SkillRestriction["fade"] = $MinLevel @" 15 G Rogue";
 $SkillRestriction["trueshot"] = $MinLevel @" 5 C Ranger";
+
+$SkillRestriction["heavystrike"] = $MinLevel @" 5";
+$SkillRestriction["empower"] = $MinLevel @" 1";
 
 $Ability::keyword[0] = "magebolt";
 $Ability::name[0] = "Mage Bolt";
@@ -23,7 +25,7 @@ $Ability::index[magebolt] = 0;
 $Ability::cooldownTime[0] = 3;
 $Ability::SoundId[0] = UnravelAM;
 $Ability::cost[0,Mana] = 20;
-$Ability::cost[0,Stam] = 5;
+$Ability::cost[0,TP] = 15;
 $Ability::cost[0,Item] = "";
 $SkillType[magebolt] = $SkillOffensiveCasting;
 
@@ -33,18 +35,18 @@ $Ability::name[1] = "Blade Bolt";
 $Ability::description[1] = "Fires a bolt of energy from your weapon that does 75% ATK of your equipped weapon.";
 $Ability::cooldownTime[1] = 3;
 $Ability::SoundId[1] = LaunchFB;
-$Ability::cost[1,Mana] = 15;
-$Ability::cost[1,Stam] = 0;
+$Ability::cost[1,Mana] = 0;
+$Ability::cost[1,TP] = 20;
 $Ability::cost[1,Item] = "";
 
 $Ability::keyword[2] = "secondwind";
 $Ability::index[secondwind] = 2;
 $Ability::name[2] = "Second Wind";
-$Ability::description[2] = "Gather up a surge of energy, restoring 100 stamina.";
+$Ability::description[2] = "Gather up a surge of energy, restoring 50% health.";
 $Ability::cooldownTicks[2] = 250;
 $Ability::SoundId[2] = ActivateTD;
-$Ability::cost[2,Mana] = 30;
-$Ability::cost[2,Stam] = -100;
+$Ability::cost[2,Mana] = 5;
+$Ability::cost[2,TP] = 75;
 $Ability::cost[2,Item] = "";
 
 $Ability::keyword[3] = "rage";
@@ -54,19 +56,19 @@ $Ability::description[3] = "Let out a burst of rage, knocking your enemies back.
 $Ability::cooldownTicks[3] = 250;
 $Ability::ticks[3] = 100;
 $Ability::SoundId[3] = debrisSmallExplosion;
-$Ability::cost[3,Mana] = 90;
-$Ability::cost[3,Stam] = 20;
+$Ability::cost[3,Mana] = 15;
+$Ability::cost[3,TP] = 90;
 $Ability::cost[3,Item] = "";
 
 $Ability::keyword[4] = "manaflare";
 $Ability::index[manaflare] = 4;
 $Ability::name[4] = "Mana Flare";
-$Ability::description[4] = "Burst forth with arcane energy, knocking your enemies back.  Raises all your spell damage by 20 ATK and lowers teh MDEF of enemies hit by 150.  Restores 20 Mana.";
+$Ability::description[4] = "Burst forth with arcane energy, knocking your enemies back.  Raises all your spell damage by 20 ATK and lowers teh MDEF of enemies hit by 150.  Restores 100 Mana.";
 $Ability::cooldownTicks[4] = 300;
 $Ability::ticks[4] = 60;
 $Ability::SoundId[4] = ActivateTD;
-$Ability::cost[4,Mana] = -20;
-$Ability::cost[4,Stam] = 40;
+$Ability::cost[4,Mana] = -100;
+$Ability::cost[4,TP] = 60;
 $Ability::cost[4,Item] = "";
 $SkillType[manaflare] = $SkillOffensiveCasting;
 
@@ -78,7 +80,7 @@ $Ability::cooldownTicks[5] = 300;
 $Ability::ticks[5] = 60; // 2 mins
 $Ability::SoundId[5] = ActivateTD;
 $Ability::cost[5,Mana] = 15;
-$Ability::cost[5,Stam] = 5;
+$Ability::cost[5,TP] = 30;
 $Ability::cost[5,Item] = "";
 
 $Ability::keyword[6] = "fade";
@@ -89,7 +91,7 @@ $Ability::cooldownTime[6] = 120;
 $Ability::ticks[6] = 60; // 2 mins
 $Ability::SoundId[6] = ActivateTD;
 $Ability::cost[6,Mana] = 30;
-$Ability::cost[6,Stam] = 10;
+$Ability::cost[6,TP] = 30;
 $Ability::cost[6,Item] = "";
 
 $Ability::keyword[7] = "brace";
@@ -100,7 +102,7 @@ $Ability::cooldownTicks[7] = 300;
 $Ability::ticks[7] = 60; // 2 mins
 $Ability::SoundId[7] = ActivateTD;
 $Ability::cost[7,Mana] = 30;
-$Ability::cost[7,Stam] = 10;
+$Ability::cost[7,TP] = 30;
 $Ability::cost[7,Item] = "";
 
 $Ability::keyword[8] = "doublestrike";
@@ -110,8 +112,8 @@ $Ability::description[8] = "Hit twice for 30s. Stamina cost of attacks is also d
 $Ability::cooldownTicks[8] = 60;
 $Ability::ticks[8] = 15; // 30s
 $Ability::SoundId[8] = ActivateTD;
-$Ability::cost[8,Mana] = 30;
-$Ability::cost[8,Stam] = 5;
+$Ability::cost[8,Mana] = 5;
+$Ability::cost[8,TP] = 45;
 $Ability::cost[8,Item] = "";
 
 $Ability::keyword[9] = "catsfeet";
@@ -122,26 +124,38 @@ $Ability::cooldownTicks[9] = 300;
 $Ability::ticks[9] = 30; // 60s
 $Ability::SoundId[9] = ActivateTD;
 $Ability::cost[9,Mana] = 25;
-$Ability::cost[9,Stam] = 20;
+$Ability::cost[9,TP] = 0;
 $Ability::cost[9,Item] = "";
 
 $Ability::keyword[10] = "heavystrike";
 $Ability::index[heavystrike] = 10;
 $Ability::name[10] = "Heavy Strike";
-$Ability::description[10] = "Your next swing with a melee attack swings hard. Hit 33% harder and reduce the target's AMR by 5 for 20 seconds.";
+$Ability::description[10] = "Your next swing with a melee attack swings hard. Hit 50% harder and reduce the target's AMR by 5 for 20 seconds.";
 $Ability::cooldownTicks[10] = 30;
 $Ability::ticks[10] = 10; // 20s
 $Ability::SoundId[10] = ActivateTD;
-$Ability::cost[10,Mana] = 15;
-$Ability::cost[10,Stam] = 1;
+$Ability::cost[10,Mana] = 0;
+$Ability::cost[10,TP] = 20;
 $Ability::cost[10,Item] = "";
 
-$Ability::heavyStrikeForce = 125;
+$Ability::keyword[11] = "empower";
+$Ability::index[empower] = 11;
+$Ability::name[11] = "Empower";
+$Ability::description[11] = "Your next time dealing damage will hit with +15 ATK and +2 Min Damage";
+$Ability::cooldownTicks[11] = 1;
+$Ability::ticks[11] = 10; // 20s
+$Ability::SoundId[11] = ActivateTD;
+$Ability::cost[11,Mana] = 0;
+$Ability::cost[11,TP] = 15;
+$Ability::cost[11,Item] = "";
 
-$FadeAttackJumpImpulse = -275;
-$FadeAttackJumpForce = 100;
+$Ability::heavyStrikeForce = 150;
+$HeavyStrikeUpForce = 20;
+
+$FadeAttackJumpImpulse = 275;
+$FadeAttackJumpForce = 75;
 $FadeAttackTargetImpulseScale = -1.5;
-$FadeAttackConfuseRange = 20;
+$FadeAttackConfuseRange = 40;
 
 $FadeNoUnhideTime = 10; // Seconds
 
@@ -180,8 +194,11 @@ function Player::useAbility(%clientId,%ability)
                         Client::sendMessage(%clientId, $MsgBeige,"Using "@ $Ability::name[$Ability::index[secondwind]]);
                         UpdateBonusState(%clientId,"SecondWindCD 1",250);
                         playSound($Ability::SoundId[$Ability::index[secondwind]],Gamebase::getPosition(%clientId));
-                        Client::sendMessage(%clientId, $MsgWhite, "You regain your energy!");
+                        Client::sendMessage(%clientId, $MsgWhite, "You regain your health!");
                         Ability::DoAbilityCost(%clientId,$Ability::index[secondwind]);
+                        %max = fetchData(%clientId, "MaxHP");
+                        %amt = floor(%max / 2);
+                        setHP(%clientId,fetchData(%clientId,"HP")+%amt);
                     }
                     else
                     {
@@ -315,6 +332,19 @@ function Player::useAbility(%clientId,%ability)
                     else
                         Client::sendMessage(%clientId, $MsgWhite, "You are already prepared to Heavy Strike.");
                 }
+                else if(%idx == 11)
+                {
+                    if(fetchData(%clientId,"EmpowerFlag") == "")
+                    {
+                        Client::sendMessage(%clientId, $MsgBeige,"Next attack is Empowered!");
+                        storeData(%clientId,"EmpowerFlag",true);
+                        playSound($Ability::SoundId[%idx],Gamebase::getPosition(%clientId));
+                        Ability::DoAbilityCost(%clientId,%idx);
+                    }
+                    else
+                        Client::sendMessage(%clientId, $MsgWhite, "You are already Empowered.");
+                }
+                
             }
             else
                 Client::sendMessage(%clientId, $MsgWhite, $AbilityFailReason);
@@ -331,9 +361,12 @@ function Ability::DoAbilityCost(%clientId,%idx)
     if($Ability::cost[%idx,Mana])
         refreshMANA(%clientId,$Ability::cost[%idx,Mana]);
 
-    if($Ability::cost[%idx,Stam])
-        refreshStamina(%clientId,$Ability::cost[%idx,Stam]);
-        
+    //if($Ability::cost[%idx,Stam])
+    //    refreshStamina(%clientId,$Ability::cost[%idx,Stam]);
+    
+    if($Ability::cost[%idx,TP])
+        useTP(%clientId,$Ability::cost[%idx,TP]);
+    
     if($Ability::cost[%idx,Item])
         TakeThisStuff(%clientId,$Ability::cost[%idx,Item]);
 }
@@ -355,16 +388,16 @@ function Ability::CheckCost(%clientId,%idx)
         return false;
     }
     
-    if($Ability::cost[%idx,Stam])
+    if($Ability::cost[%idx,TP])
     {
-        %stam = fetchData(%clientId,"Stamina");
-        if(%stam < $Ability::cost[%idx,Stam])
+        %stam = fetchData(%clientId,"TP");
+        if(%stam < $Ability::cost[%idx,TP])
             %flag = false;
     }
     
     if(!%flag)
     {
-        $AbilityFailReason = "You do not have enough stamina ("@$Ability::cost[%idx,Stam]@")";
+        $AbilityFailReason = "You do not have enough TP ("@$Ability::cost[%idx,TP]@")";
         return false;
     }
     
@@ -404,8 +437,9 @@ function Ability::DoFadeAttack(%clientId)
                 Client::sendMessage(%clientId, $MsgBeige,"Using "@ $Ability::name[$Ability::index[fade]]);
                 GameBase::virtual($los::object, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
                 %imp = Vector::getFromRot(Gamebase::getRotation(%clientId),$FadeAttackJumpImpulse,$FadeAttackJumpForce);
-                Player::applyImpulse(%player,%imp);
-                Player::applyImpulse($los::object,ScaleVector(%imp,$FadeAttackTargetImpulseScale));
+                //Player::applyImpulse(%player,%imp);
+                //Player::applyImpulse($los::object,ScaleVector(%imp,$FadeAttackTargetImpulseScale));
+                Player::applyImpulse($los::object,%imp);
                 GameBase::startFadeOut(%clientId);
                 Ability::DoAbilityCost(%clientId,$Ability::index[fade]);
 				storeData(%clientId, "invisible", True);
@@ -417,9 +451,10 @@ function Ability::DoFadeAttack(%clientId)
                 schedule("storeData("@%clientId@",\"blockFade\",\"\");",$Ability::cooldownTime[$Ability::index[fade]]);
                 
                 %range = 2*$FadeAttackConfuseRange;
+                %set = newObject("set", SimSet);
                 containerBoxFillSet(%set, $SimPlayerObjectType, GameBase::getPosition(%clientId), %range, %range, %range, 0);
                 Group::iterateRecursive(%set, Ability::FadeConfusion, %clientId);
-                
+                deleteObject(%set);
                 Client::sendMessage(%clientId, $MsgWhite, "You fade away in the shadows. Your movement will not unhide you for "@ %delay @"s.");
             }
             else
@@ -441,12 +476,12 @@ function Ability::FadeConfusion(%player,%clientId)
     if(RPG::isAIControlled(%tgtClient) && !fetchData(%tgtClient,"customAiFlag"))
     {
         %aiTag = fetchData(%tgtClient,"BotInfoAiName");
-        
-        if(AI::GetTarget(%aiTag) == %clientId)
-        {
-            AI::SetScriptedTargets(%aiTag);
-            schedule("AI::SetAutomaticTargets("@%aiTag@");",1);
-        }
+            
+        echo("CONFUSE! "@ %aiTag);
+        AI::SetScriptedTargets(%aiTag);
+        AI::setVar(%aiTag, SpotDist, 0);
+        schedule("AI::SetAutomaticTargets("@%aiTag@");",1,%player);
+        schedule("AI::SetSpotDist("@AI::getID(%aiTag)@");",$FadeNoUnhideTime,%player);
     }
 }
 

@@ -398,17 +398,19 @@ function RPG::gameMenu(%clientId,%page)
             Client::addMenuItem(%clientId, %curItem++ @ "Skill points..." , "sp");
             Client::addMenuItem(%clientId, %curItem++ @ "Skill Book..." , "skillbook");
             Client::addMenuItem(%clientId, %curItem++ @ "Spell Book..." , "spellbook");
-            Client::addMenuItem(%clientId, %curItem++ @ "Belt...","viewbelt");
-            
+            if(fetchData(%clientId, "ignoreGlobal"))
+                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+            else
+                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
                 
             
             
             if(%curItem < 7)
             {
-                if(fetchData(%clientId, "ignoreGlobal"))
-                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-                else
-                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+                if(fetchData(%clientId, "LCKconsequence") == "miss")
+                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
+                else if(fetchData(%clientId, "LCKconsequence") == "death")
+                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
                 
             }
             
@@ -416,14 +418,12 @@ function RPG::gameMenu(%clientId,%page)
         }
         else if(%page == 2)
         {
-            if(fetchData(%clientId, "ignoreGlobal"))
-                    Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-            else
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
             if(fetchData(%clientId, "LCKconsequence") == "miss")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
             else if(fetchData(%clientId, "LCKconsequence") == "death")
                 Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
+                
+            
             Client::addMenuItem(%clientId, %curItem++ @ "Party options..." , "partyoptions");
             
             
@@ -499,17 +499,18 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "MDEF: " @ Number::Beautify(fetchData(%clientId, "MDEF"),0,2) @ "\n";
 		%a[%tmp++] = "Hit Pts: " @ fetchData(%clientId, "HP") @ " / " @ fetchData(%clientId, "MaxHP") @ "\n";
         
-        %recharge = calcRechargeRate(%clientId);
-        %stam = fetchData(%clientId, "Stamina");
-        %maxStam = fetchData(%clientId, "MaxStam");
-        if(%stam == %maxStam)
-            %recharge = 0;
-        if(%recharge >= 0)
-            %recharge = "+"@Number::Beautify(%recharge, 0, 2);
-        else
-            %recharge = Number::Beautify(%recharge, 0, 2);
+        //%recharge = calcRechargeRate(%clientId);
+        //%stam = fetchData(%clientId, "Stamina");
+        //%maxStam = fetchData(%clientId, "MaxStam");
+        //if(%stam == %maxStam)
+        //    %recharge = 0;
+        //if(%recharge >= 0)
+        //    %recharge = "+"@Number::Beautify(%recharge, 0, 2);
+        //else
+        //    %recharge = Number::Beautify(%recharge, 0, 2);
             
-		%a[%tmp++] = "Stamina: " @ Number::Beautify(%stam,0,2) @ " / " @ %maxStam @ " ("@%recharge@")\n";
+		//%a[%tmp++] = "Stamina: " @ Number::Beautify(%stam,0,2) @ " / " @ %maxStam @ " ("@%recharge@")\n";
+        %a[%tmp++] = "TP: " @ fetchData(%clientId,"TP") @"\n";
         %a[%tmp++] = "LCK: " @ fetchData(%clientId, "LCK") @ "\n";
 
 		if(fetchData(%clientId, "MyHouse") != "")
@@ -532,11 +533,6 @@ function processMenuOptions(%clientId, %option)
 
 		bottomprint(%clientId, %f, floor(String::len(%f) / 20));
 
-		return;
-	}
-    else if(%opt == "viewbelt")
-	{
-		MenuViewBelt(%clientid, 1);
 		return;
 	}
 	else if(%opt == "defglobal")

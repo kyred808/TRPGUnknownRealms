@@ -23,6 +23,46 @@ $SpellTypeCustom = 3;
 $SpellEndSoundLocationPlayer = 0;
 $SpellEndSoundLocationCastPoint = 1;
 
+// Spells
+$SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
+$SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20";
+$SkillRestriction[firebomb] = $SkillOffensiveCasting @ " 35";
+$SkillRestriction[icespike] = $SkillOffensiveCasting @ " 45";
+$SkillRestriction[icestorm] = $SkillOffensiveCasting @ " 85";
+$SkillRestriction[ironfist] = $SkillOffensiveCasting @ " 110";
+$SkillRestriction[cloud] = $SkillOffensiveCasting @ " 145";
+$SkillRestriction[melt] = $SkillOffensiveCasting @ " 220";
+$SkillRestriction[powercloud] = $SkillOffensiveCasting @ " 340";
+$SkillRestriction[hellstorm] = $SkillOffensiveCasting @ " 420";
+$SkillRestriction[beam] = $SkillOffensiveCasting @ " 520";
+$SkillRestriction[dimensionrift] = $SkillOffensiveCasting @ " 750";
+
+$SkillRestriction[teleport] = $SkillNatureCasting @ " 60";
+$SkillRestriction[transport] = $SkillNatureCasting @ " 200";
+$SkillRestriction[advtransport] = $SkillNatureCasting @ " 350";
+$SkillRestriction[remort] = $SkillNatureCasting @ " 0 " @ $MinLevel @ " 101";
+$SkillRestriction[mimic] = $SkillNatureCasting @ " 145 " @ $MinRemort @ " 2";
+$SkillRestriction[masstransport] = $SkillNeutralCasting @ " 650 " @ $MinRemort @ " 1";
+
+$SkillRestriction[heal] = $SkillDefensiveCasting @ " 10";
+$SkillRestriction[advheal1] = $SkillDefensiveCasting @ " 80";
+$SkillRestriction[advheal2] = $SkillDefensiveCasting @ " 110";
+$SkillRestriction[advheal3] = $SkillDefensiveCasting @ " 200";
+$SkillRestriction[advheal4] = $SkillDefensiveCasting @ " 320";
+$SkillRestriction[advheal5] = $SkillDefensiveCasting @ " 400";
+$SkillRestriction[advheal6] = $SkillDefensiveCasting @ " 500";
+$SkillRestriction[godlyheal] = $SkillDefensiveCasting @ " 600";
+$SkillRestriction[fullheal] = $SkillDefensiveCasting @ " 750";
+$SkillRestriction[massheal] = $SkillDefensiveCasting @ " 850 " @ $MinRemort @ " 2";
+$SkillRestriction[massfullheal] = $SkillDefensiveCasting @ " 950 " @ $MinRemort @ " 3";
+$SkillRestriction[shield] = $SkillDefensiveCasting @ " 20";
+$SkillRestriction[advshield1] = $SkillDefensiveCasting @ " 60";
+$SkillRestriction[advshield2] = $SkillDefensiveCasting @ " 140";
+$SkillRestriction[advshield3] = $SkillDefensiveCasting @ " 290";
+$SkillRestriction[advshield4] = $SkillDefensiveCasting @ " 420";
+$SkillRestriction[advshield5] = $SkillDefensiveCasting @ " 635";
+$SkillRestriction[massshield] = $SkillDefensiveCasting @ " 680";
+
 $Spell::keyword[1] = "firebomb";
 $Spell::index[firebomb] = 1;
 $Spell::name[1] = "Fire Bomb From Hell";
@@ -774,7 +814,147 @@ $Spell::effectType[42] = $SpellTypeCustom;
 $SkillType[haste] = $SkillNatureCasting;
 $SkillRestriction[haste] = $SkillNatureCasting @ " 15";
 
+$Spell::keyword[43] = "bothealbreeze";
+$Spell::index[bothealbreeze] = 43;
+$Spell::name[43] = "Healing Breeze";
+$Spell::description[43] = "Lightly heals caster and friendlies 40 meters around.";
+$Spell::delay[43] = 1.5;
+$Spell::recoveryTime[43] = 5;
+$Spell::radius[43] = 40;
+$Spell::damageValue[43] = -15;
+$Spell::manaCost[43] = 12;
+$Spell::startSound[43] = DeActivateWA;
+$Spell::endSound[43] = ActivateAR;
+$Spell::groupListCheck[43] = False;
+$Spell::refVal[43] = -30;
+$Spell::graceDistance[43] = 15;
+$Spell::effectType[43] = $SpellTypeCustom;
+$SkillType[bothealbreeze] = $SkillDefensiveCasting;
+$SkillRestriction[bothealbreeze] = $SkillDefensiveCasting @ " 45 B 1"; //Bot only spells
+
+$Spell::keyword[44] = "botstatdrain";
+$Spell::index[botstatdrain] = 44;
+$Spell::name[44] = "Stat Drain";
+$Spell::description[44] = "Steals stat points from targets.";
+$Spell::delay[44] = 1.5;
+$Spell::recoveryTime[44] = 45;
+$Spell::radius[44] = 40;
+$Spell::ticks[44] = 15;
+$Spell::damageValue[44] = -23; //stat damage
+$Spell::manaCost[44] = 12;
+$Spell::startSound[44] = DeActivateWA;
+$Spell::endSound[44] = UnravelAM;
+$Spell::groupListCheck[44] = False;
+$Spell::refVal[44] = -30;
+$Spell::graceDistance[44] = 15;
+$Spell::effectType[44] = $SpellTypeCustom;
+$SkillType[botstatdrain] = $SkillNatureCasting;
+$SkillRestriction[botstatdrain] = "B 1"; //Bot only spells
+
+$Spell::keyword[45] = "botstatdrain2";
+$Spell::index[botstatdrain2] = 45;
+$Spell::name[45] = "Stat Drain";
+$Spell::description[45] = "Steals stat points from targets.";
+$Spell::delay[45] = 1.5;
+$Spell::recoveryTime[45] = 45;
+$Spell::radius[45] = 40;
+$Spell::ticks[45] = 15;
+$Spell::damageValue[45] = -300; //stat damage
+$Spell::manaCost[45] = 12;
+$Spell::startSound[45] = DeActivateWA;
+$Spell::endSound[45] = UnravelAM;
+$Spell::groupListCheck[45] = False;
+$Spell::refVal[45] = -30;
+$Spell::graceDistance[45] = 15;
+$Spell::effectType[45] = $SpellTypeCustom;
+$SkillType[botstatdrain2] = $SkillNatureCasting;
+$SkillRestriction[botstatdrain2] = "B 1"; //Bot only spells
+
 //----------------------------------------------------------------------------------------------------------------
+
+function TranslateEffectVars(%effectVars)
+{
+    %str = "";
+    for(%i = 0; (%w = String::getWord(%effectVars,",",%i) ) != ","; %i++)
+    {
+        %effect = getWord(%w,0);
+        if(%effect == "HP")
+        {
+            %amnt = getWord(%w,1);
+            if(%amnt > 0)
+                %amnt = "+"@%amnt;
+            %str = %str @"HP "@ %amnt @",";
+        }
+        else if(%effect == "Stam")
+        {
+            %amnt = getWord(%w,1);
+            if(%amnt > 0)
+                %amnt = "+"@%amnt;
+            %str = %str @"STAM "@ %amnt @",";
+        }
+        else if(%effect == "BONUS")
+        {
+            %type = getWord(%w,1);
+            if($BonusStateNegative[%type])
+                continue;
+            //%type = getWord(%w,1) @" "@getWord(%w,2);//Word::getSubWord(%w,1,2); //BonusName Amnt
+            %ticks = getWord(%w,3);
+            
+            %str = %str @getWord(%w,1)@": "@ getWord(%w,2) @" ("@2*%ticks@"s),";
+        }
+    }
+    return %str;
+}
+
+function Spell::WhatIsSpell(%clientId,%keyword)
+{
+    %si = $Spell::index[%keyword];
+	if(%si != "")
+	{
+		%desc = $Spell::name[%si];
+        %reqs = WhatSkills(%keyword);
+		%nfo = $Spell::description[%si];
+        //%type = $Spell::type[%si];
+		%atkinfo = $Spell::damageValue[%si];
+		%sd = $Spell::delay[%si];
+		%sr = $Spell::recoveryTime[%si];
+        %sm = $Spell::manaCost[%si];
+        //if(%type == $SpellTypeCantrip)
+        //{
+        //    %stam = Cap(Spell::CalculateCantripStamina(%clientId,%si),0,$Spell::baseStamina[%si]);
+        //    %minStam = $Spell::minStamina[%si];
+        //    %sm = $Spell::manaCost[%si];
+        //}
+        //else
+        //{
+        //    %stam = $Spell::baseStamina[%si];
+        //    %sm = $Spell::manaCost[%si];
+        //}
+        %effects = TranslateEffectVars($Spell::effectVars[%si]);
+	}
+    %typeStr = "";
+    //if(%type == $SpellTypeCantrip)
+    //    %typeStr = "Cantrip";
+    //else if(%type == $SpellTypeMagic)
+    //    %typeStr = "Magic";
+    %msg = "";
+	%msg = %msg @ "<f1>" @ %desc @" - <f0>\n"; //@%typeStr@"<f1>\n";
+    %msg = %msg @ "\nSkill Type: " @ $SkillDesc[$SkillType[%keyword]];
+    if(%atkinfo != "")
+        %msg = %msg @ "\nATK: " @ %atkinfo;
+    %msg = %msg @ "\nRestrictions: " @ %reqs;
+    if(%effects != "")
+        %msg = %msg @ "\nBonuses: "@ %effects;
+    %msg = %msg @ "\nDelay: " @ %sd @ " sec";
+    %msg = %msg @ "\nRecovery: " @ %sr @ " sec";
+    //%msg = %msg @ "\nStamina: "@ %stam;
+    //if(%minStam && (%stam > %minStam))
+    //    %msg = %msg @ "\nMinStam: "@ %minStam;
+    if(%sm)
+        %msg = %msg @ "\nMana: " @ %sm;
+	%msg = %msg @ "\n\n<f0>" @ %nfo;
+    return %msg;
+}
 
 function BeginCastSpell(%clientId, %keyword)
 {
@@ -793,7 +973,7 @@ function BeginCastSpell(%clientId, %keyword)
 			if(SkillCanUse(%clientId, $Spell::keyword[%i]))
 			{
                 //Need to change later
-				if(fetchData(%clientId, "Stamina") >= $Spell::manaCost[%i])
+				if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "Casting " @ $Spell::name[%i] @ ".");
 
@@ -812,7 +992,8 @@ function BeginCastSpell(%clientId, %keyword)
 					storeData(%clientId, "SpellCastStep", 1);
 	
 					%tempManaCost = floor($Spell::manaCost[%i] / 2);
-					refreshStamina(%clientId, %tempManaCost);
+                    refreshMANA(%clientId, %tempManaCost);
+					//refreshStamina(%clientId, %tempManaCost);
 					playSound($Spell::startSound[%i], GameBase::getPosition(%clientId));
 
 					%skt = $SkillType[$Spell::keyword[%i]];
@@ -830,9 +1011,9 @@ function BeginCastSpell(%clientId, %keyword)
                         Player::mountItem(%player,$Spell::auraEffect[%i],$SpellAuraSlot);
                     
                     //if(Player::isAiControlled(%clientId))
-                    //    schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                    //    schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
 					//else
-                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
                     schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
 		
 					return True;
@@ -1384,11 +1565,12 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 
             %returnFlag = True;
         }
-        if(%index == 23 || %index == 24 || %index == 31)
+        if(%index == 23 || %index == 24 || %index == 31 || %index == $Spell::index[bothealbreeze] || %index == $Spell::index[botstatdrain] || %index == $Spell::index[botstatdrain2])
         {
             //23 = mass heal spell
             //24 = mass full heal spell
             //31 = mass shield spell
+            //And mroe
 
             %b = $Spell::radius[%index] * 2;
             %set = newObject("set", SimSet);
@@ -2415,7 +2597,57 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
 			playSound($Spell::endSound[%index], %castPos);
 		}
+        return;
 	}
+    if(%index == 43)
+    {
+        if(GameBase::getTeam(%clientId) == GameBase::getTeam(%id))
+		{
+			Client::sendMessage(%clientId, $MsgBeige, "Healing Breeze" @ Client::getName(%id));
+			if(%clientId != %id)
+				Client::sendMessage(%id, $MsgBeige, "You are being Healing Breezed by " @ Client::getName(%clientId));
+			
+            %r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
+			refreshHP(%id, %r);
+
+			%castPos = GameBase::getPosition(%id);
+
+			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
+			playSound($Spell::endSound[%index], %castPos);
+		}
+        else
+			Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId)@" healed their allies for "@ $Spell::damageValue[%index] * -1@" HP");
+        return;
+    }
+    if(%index == $Spell::index[botstatdrain] || $Spell::index[botstatdrain2])
+    {
+        if(GameBase::getTeam(%clientId) != GameBase::getTeam(%id))
+		{
+            echo("Target: "@ %id);
+            if(%extra == "ATK" || %extra == "DEF")
+            {
+                %dlist = fetchData(%clientId,"DrainList");
+                %debuff = %extra@" "@ $Spell::damageValue[%index];
+                %bonus = %extra@" "@ -1*$Spell::damageValue[%index];
+                %listEntry = %id @" "@ %debuff;
+                if(!IsInCommaList(%dlist,%listEntry))
+                {
+                    UpdateBonusState(%id,%debuff,$Spell::ticks[%index]);
+                    UpdateBonusState(%clientId,%bonus,$Spell::ticks[%index]);
+                    storeData(%clientId,"DrainList",AddToCommaList(%dlist,%listEntry));
+                    
+                    schedule("storeData("@%clientId@",\"DrainList\",RemoveFromCommaList(fetchData("@%clientId@", \"DrainList\"), \""@%listEntry@"\"));",$Spell::ticks[%index]*2,Client::getOwnedObject(%clientId));
+                    Client::sendMessage(%id, $MsgRed, Client::getName(%clientId)@" is draining "@ $Spell::damageValue[%index] * -1@" "@ %extra);
+                    //Projectile::spawnProjectile(DDBolt,Gamebase::getMuzzleTransform(%clientId),Client::getOwnedObject(%clientId),"0 0 0");
+                }
+                
+            }
+            %castPos = GameBase::getPosition(%id);
+            CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
+            playSound($Spell::endSound[%index], %castPos);
+        }
+        return;
+    }
 	if(%index == 24)
 	{
 		if(GameBase::getTeam(%clientId) == GameBase::getTeam(%id))
@@ -2431,6 +2663,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
 			playSound($Spell::endSound[%index], %castPos);
 		}
+        return;
 	}
 	if(%index == 31)
 	{
@@ -2447,6 +2680,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			CreateAndDetBomb(%clientId, "Bomb10", %castPos, False, %index);
 			playSound($Spell::endSound[%index], %castPos);
 		}
+        return;
 	}
 	if(%index == 33)
 	{
@@ -2474,6 +2708,7 @@ function DoBoxFunction(%object, %clientId, %index, %extra)
 			%extraDelay = 0.22;
 			schedule("playSound(" @ $Spell::endSound[%index] @ ", \"" @ %castPos @ "\");", %extraDelay);
 		}
+        return;
 	}
 }
 

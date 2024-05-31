@@ -425,8 +425,11 @@ function Zone::DoQuantumUpdate(%zid)
                                     deleteObject(%obj);
                                     %aiName = AI::helper($spawnIndex[%mob],$spawnIndex[%mob],"ZoneSpawn "@ %zid @" "@ %ptIdx);
                                     %aiCl = AI::getId(%aiName);
-                                    Gamebase::setPosition(%aiCl);
+                                    Gamebase::setPosition(%aiCl,%pos);
                                     storeData(%aiCl,"QTObjIndex",%zid@" "@%g@" "@%i);
+                                    storeData(%aiCl,"aiGuardMarker",$Zone::QuantumObjs[%zid,%g,Points,%ptIdx]);
+                                    storeData(%aiCl,"aiAutoRetaliate",true);
+                                    Ai::callbackPeriodic(%aiName, 3, AI::GuardPositionPeriodic);
                                     AI::CallbackDied(%aiName,QTObjMob::onDeath);
                                 }
                             }
@@ -683,7 +686,8 @@ function UpdateZone(%object)
         {
             if(%zpos > $RealmData[%currentRealm,MaxHeight] || %zpos < $RealmData[%currentRealm,MinHeight])
             {
-                Realm::KickPlayerBackInRealm(%clientId,%currentRealm);
+                if(fetchData(%clientId,"noRealmCheck") == "")
+                    Realm::KickPlayerBackInRealm(%clientId,%currentRealm);
             }
         }
 
@@ -713,6 +717,17 @@ function UpdateZone(%object)
 	//-----------------------------------------------------------
 	DecreaseBonusStateTicks(%clientId);
 
+    //Heal burst stuff
+    if(fetchData(%clientId,"HealBurst") < fetchData(%clientId,"HealBurstMax"))
+    {
+        %rate = fetchData(%clientId,"HealBurstRate");
+        if(%rate == "")
+            %rate = 5;
+            
+        storeData(%clientId,"HealBurstCounter",2*%rate,"inc");
+        
+    }
+    
     if(%clientId.currentShop != "")
     {
         %pos = Gamebase::getPosition(%clientId);
@@ -733,15 +748,26 @@ function UpdateZone(%object)
         }
     }
     
+    if(%clientId.currentAnvil != "")
+    {
+        %obj = getWord(%clientId.currentAnvil,1);
+        %pos = Gamebase::getPosition(%clientId);
+        if(Vector::getDistance(Gamebase::getPosition(%obj),%pos) > $maxSAYdistVec)
+        {
+            ClearCurrentShopVars(%clientId);
+            Client::setGuiMode(%clientId, $GuiModePlay);
+        }
+    }
+    
     //-----------------------------------------------------------
 	// Do passive mana regen ticks
 	//-----------------------------------------------------------
-    ManaRegenTick(%clientId);
+    //ManaRegenTick(%clientId);
     
-    if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
-    {
-        UseSkill(%clientId, $SkillEnergy, True, True);
-    }
+    //if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
+    //{
+    //    UseSkill(%clientId, $SkillEnergy, True, True);
+    //}
     
 	//-----------------------------------------------------------
 	// Check if the player has moved since last ZoneCheck
@@ -755,7 +781,8 @@ function UpdateZone(%object)
             %clientId.isMoving = 1;
             %clientId.isAtRestCounter = 0;
             %clientId.isAtRest = 0;
-            refreshStaminaREGEN(%clientId);
+            refreshHPREGEN(%clientId,%zoneflag);
+            //refreshStaminaREGEN(%clientId);
         }
 		//train Weight Capacity
 		if(OddsAre(8))
@@ -819,12 +846,19 @@ function UpdateZone(%object)
         if(%clientId.isMoving == 1)
         {
             %clientId.isMoving = 0;
-            refreshStaminaREGEN(%clientId);
+            refreshHPREGEN(%clientId,fetchData(%clientId, "zone"));
+            
+            //refreshStaminaREGEN(%clientId);
         }
-        if(%clientId.isAtRestCounter > 1)
+        if(%clientId.isAtRestCounter > 2)
         {
             %clientId.isAtRest = 1;
-            refreshStaminaREGEN(%clientId);
+            refreshHPREGEN(%clientId,fetchData(%clientId, "zone"));
+            if(fetchData(%clientId,"HP") < fetchData(%clientId,"MaxHP"))
+            {
+                UseSkill(%clientId, $SkillHealing, True, True,12);
+            }
+            //refreshStaminaREGEN(%clientId);
         }
         else
             %clientId.isAtRestCounter++;
@@ -875,62 +909,6 @@ function gravWorkaround(%clientId, %method)
 	}
 }
 
-function DoSpookyZoneCalc(%object)
-{
-    $Zone::SpookyWellPlayerCount++;
-    
-    if(!$Zone::SomeoneIsLookingAtWell)
-    {
-        $los::object = "";
-        %fov = deg2rad(90);
-        %cast = RaycastCheck(%object,"",$Zone::SpookyWell["WellMarker"],100,"0 0 0"); //Offset by 1.5 so we aren't checking feet
-        %vecRot = $RayCast::Rotation;
-        //echo("Cast Check: "@ %cast);
-        if(%vecRot < %fov && %vecRot >= -1*%fov)
-        {
-            $Zone::SomeoneIsLookingAtWell = true;
-        }
-    }
-}
-
-function DebugSpookyWell()
-{
-    echo("Spooky Well Object: "@ $Zone::SpookyWell[0,Objects]);
-    echo("Spooky Well Object: "@ $Zone::SpookyWell[1,Objects]);
-    echo("Spooky Well Marker: "@ $Zone::SpookyWell["WellMarker"]);
-    echo("Spooky Well Marker: "@ $Zone::SpookyWell["RockMarker"]);
-}
-
-function Zone::setupSpookyWell(%zoneGrp)
-{
-
-    $Zone::SpookyWellZone[%zoneGrp] = true;
-    for(%i = 0; %i < Group::objectCount(%zoneGrp); %i++)
-    {
-        %obj = Group::getObject(%zoneGrp,%i);
-        
-        %name = Object::getName(%obj);
-        
-        if(%name == "Objs")
-        {
-            
-            for(%k = 0; %k < Group::objectCount(%obj); %k++)
-            {
-                %wellObjs = Group::getObject(%obj,%k);
-                $Zone::SpookyWell[%k,Objects] = %wellObjs;
-            }
-        }
-        else if(%name == "Markers")
-        {
-            for(%k = 0; %k < Group::objectCount(%obj); %k++)
-            {
-                %wellMkrs = Group::getObject(%obj,%k);
-                $Zone::SpookyWell[Object::getName(%wellMkrs)] = %wellMkrs;
-            }
-        }
-    }
-}
-
 function Zone::DoEnter(%z, %clientId)
 {
 	dbecho($dbechoMode, "Zone::DoEnter(" @ %z @ ", " @ %clientId @ ")");
@@ -942,11 +920,13 @@ function Zone::DoEnter(%z, %clientId)
 	if($Zone::Type[%z] == "PROTECTED")
 	{
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".  This is protected territory.";
+        storeData(%clientId,"HealBurstRate",100);
 		%color = $MsgBeige;
 	}
 	else if($Zone::Type[%z] == "DUNGEON")
 	{
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".  Beware of enemies!";
+        storeData(%clientId,"HealBurstRate",1);
 		%color = $MsgRed;
 	}
 	else if($Zone::Type[%z] == "WATER")
@@ -955,16 +935,20 @@ function Zone::DoEnter(%z, %clientId)
 	}
 	else if($Zone::Type[%z] == "FREEFORALL")
 	{
+        storeData(%clientId,"HealBurstRate",1);
 		%msg = "You have entered " @ $Zone::Desc[%z] @ ".";
 		%color = $MsgRed;
 	}
-
+    %txtMsg = %msg;
 	if($Zone::EnterSound[%z] != "")
 		%msg = %msg @ "~w" @ $Zone::EnterSound[%z];
     
     //echo(%z @" "@ %msg);
 	if(%msg != "")
+    {
 		Client::sendMessage(%clientId, %color, %msg);
+        remoteEval(%clientId,"ZONEText",%txtMsg);
+    }
 
 	if(!Player::isAiControlled(%clientId))
     {
@@ -1006,6 +990,7 @@ function Zone::DoExit(%z, %clientId)
 		%msg = "You have left " @ $Zone::Desc[%z] @ ".";
 		%color = $MsgBeige;
 	}
+    storeData(%clientId,"HealBurstRate",5);
 
 	//Repack zone exit
 	if(%clientId.repack){
@@ -1216,7 +1201,9 @@ function Zone::onExit(%clientId, %zoneLeft)
         $Zone::Active[Zone::getIndex(%zoneLeft)] = false;
     }
     
-    if($CleanUpBotsOnZoneEmpty && Zone::getType(%zoneLeft) == "DUNGEON")
+    %type = Zone::getType(%zoneLeft);
+    
+    if($CleanUpBotsOnZoneEmpty &&  (%type == "DUNGEON" || %type == "FREEFORALL"))
     {
         %isAi = Player::isAiControlled(%clientId);
         if(%isAi && !$ZoneCleanupProtected[%clientId])

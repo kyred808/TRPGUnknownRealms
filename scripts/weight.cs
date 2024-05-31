@@ -139,10 +139,6 @@ function RefreshWeight(%clientId)
 
 		%num = floor(%spill / %changeweightstep);
         
-        // Too many ways for this check not to happen
-        //if(fetchData(%clientId,"Stamina") < 10)
-        //    %num = Cap(%num,"inf",-5);
-        
 		if(%num > 0)
 		{
 			//overweight, select appropriate armor

@@ -670,17 +670,21 @@ function remoteSay(%clientId, %team, %message, %senderName)
         {
             if(%cropped != "")
             {
-                %count = RPGItem::getItemCount(%TrueClientId,%cropped);
+                %tag = %cropped;
+                if(!RPGItem::isItemTag(%tag))
+                    %tag = RPGItem::LabelToItemTag(%cropped);
+                %count = RPGItem::getItemCount(%TrueClientId,%tag);
+                
                 if(%count != "")
                 {
-                    if(!RPGItem::useItem(%TrueClientId,%cropped))
+                    if(!RPGItem::useItem(%TrueClientId,%tag))
                     {
-                        Client::sendMessage(%TrueClientId, $MsgRed, "Unable to use "@ %cropped);
+                        Client::sendMessage(%TrueClientId, $MsgRed, "Unable to use "@ %tag);
                     }
                 }
                 else
                 {
-                    Client::sendMessage(%TrueClientId, 0, %cropped @" is not a valid item");
+                    Client::sendMessage(%TrueClientId, 0, %tag @" is not a valid item");
                 }
             }
             return;
@@ -706,15 +710,15 @@ function remoteSay(%clientId, %team, %message, %senderName)
                         addToSet("MissionCleanup", %obj);
                         GameBase::throw(%obj, %player, 15, false);
                     }
-                    else if(%type == $RPGItem::BeltItemType)
-                    {
-                        %obj = newObject("", "Item", "BeltLoot", 1, false);
-                        %obj.itemType = %item;
-                        %obj.delta = %amnt;
-                        playSound(SoundPickupHealth,Gamebase::getPosition(%player));
-                        addToSet("MissionCleanup", %obj);
-                        GameBase::throw(%obj, %player, 15, false);
-                    }
+                    //else if(%type == $RPGItem::BeltItemType)
+                    //{
+                    //    %obj = newObject("", "Item", "BeltLoot", 1, false);
+                    //    %obj.itemType = %item;
+                    //    %obj.delta = %amnt;
+                    //    playSound(SoundPickupHealth,Gamebase::getPosition(%player));
+                    //    addToSet("MissionCleanup", %obj);
+                    //    GameBase::throw(%obj, %player, 15, false);
+                    //}
                     schedule("Item::Pop(" @ %obj @ ");", 120, %obj);
                     
                     TakeThisStuff(%TrueClientId,%item @" "@ %amnt);
@@ -731,7 +735,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
         if(%w1 == "#createpack")
 		{
             %invList = "";
-            %beltList = "";
             %newList = "";
             //%flag = true;
             // Filter for only items
@@ -746,17 +749,17 @@ function remoteSay(%clientId, %team, %message, %senderName)
                     {
                         %invList = %invList @ %item @" "@%amnt@" ";
                     }
-                    else if(%type == $RPGItem::BeltItemType)
-                    {
-                        %beltList = %beltList @ %item @" "@%amnt@" ";
-                    }
+                    //else if(%type == $RPGItem::BeltItemType)
+                    //{
+                    //    %beltList = %beltList @ %item @" "@%amnt@" ";
+                    //}
                 }
                 else if(%item == "COINS" && HasThisStuff(%clientId,%item @" "@ %amnt))
                 {
                     %invList = %invList @ %item @" "@%amnt@" ";
                 }
             }
-            %newList = %invList @ %beltList;
+            %newList = %invList; //@ %beltList;
             if(%newList != "")
             {
                 
@@ -1016,8 +1019,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					Client::sendMessage(%TrueClientId, 0, "Specify a spell.");
 		            else
 		            {
-                        Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
-					//BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        //Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        BeginCastSpell(%TrueClientId, escapestring(%cropped));
 					if(String::findSubStr(%cropped, "\"") != -1){
 						%ip = Client::getTransportAddress(%ClientId);
 						echo("Exploit attempt detected and blocked: " @ %trueClientId @ ", aka " @ %nameomg @ ", at " @ %ip @ ".");
@@ -1364,63 +1367,63 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			}
 			return;
 		}
-        if(%w1 == "#sharebelt")
-		{
-			%time = getIntegerTime(true) >> 5;
-			if(%time - %TrueClientId.lastSharePackTime > 5)
-			{
-				%TrueClientId.lastSharePackTime = %time;
-	
-				%c1 = GetWord(%cropped, 0);
-				%c2 = GetWord(%cropped, 1);
-	
-				if(%c1 != -1 && %c2 != -1)
-				{
-					%id = NEWgetClientByName(%c1);
-		
-					if(%id != -1 && Client::getName(%id) != %senderName)
-					{
-						%c1 = Client::getName(%id);	//properly capitalize name
-						if(floor(%c2) != 0 || %c2 == "*")
-						{
-							%flag = "";
-							%cnt = 0;
-							%list = fetchData(%TrueClientId, "beltlist");
-							for(%i = String::findSubStr(%list, ","); String::findSubStr(%list, ",") != -1; %list = String::NEWgetSubStr(%list, %i+1, 99999))
-							{
-								%cnt++;
-								%bid = String::NEWgetSubStr(%list, 0, %i);
-		
-								if(%cnt == %c2 || %c2 == "*")
-								{
-									%flag++;
-		
-									%nl = GetWord($loot[%bid], 1);
-									if(%nl != "*")
-									{
-										$loot[%bid] = String::Replace($loot[%bid], %nl, AddToCommaList(%nl, %c1));
-										Client::sendMessage(%TrueClientId, $MsgBeige, "Adding " @ %c1 @ " to belt #" @ %cnt @ " (" @ %bid @ ")'s share list.");
-										Client::sendMessage(%id, $MsgBeige, %TCsenderName @ " is sharing his/her belt #" @ %cnt @ " with you.");
-									}
-									else
-										Client::sendMessage(%TrueClientId, 0, "belt #" @ %cnt @ " is already publicly available.");
-								}
-							}
-							
-							if(%flag == "")
-								Client::sendMessage(%TrueClientId, 0, "Invalid belt number.");
-						}
-						else
-							Client::sendMessage(%TrueClientId, 0, "Please specify a belt number (1, 2, 3, etc, or * for all)");
-					}
-					else
-						Client::sendMessage(%TrueClientId, 0, "Invalid player name or same player name.");
-				}
-				else
-					Client::sendMessage(%TrueClientId, 0, "Please specify player name & data.");
-			}
-			return;
-		}
+        //if(%w1 == "#sharebelt")
+		//{
+		//	%time = getIntegerTime(true) >> 5;
+		//	if(%time - %TrueClientId.lastSharePackTime > 5)
+		//	{
+		//		%TrueClientId.lastSharePackTime = %time;
+	    //
+		//		%c1 = GetWord(%cropped, 0);
+		//		%c2 = GetWord(%cropped, 1);
+	    //
+		//		if(%c1 != -1 && %c2 != -1)
+		//		{
+		//			%id = NEWgetClientByName(%c1);
+		//
+		//			if(%id != -1 && Client::getName(%id) != %senderName)
+		//			{
+		//				%c1 = Client::getName(%id);	//properly capitalize name
+		//				if(floor(%c2) != 0 || %c2 == "*")
+		//				{
+		//					%flag = "";
+		//					%cnt = 0;
+		//					%list = fetchData(%TrueClientId, "beltlist");
+		//					for(%i = String::findSubStr(%list, ","); String::findSubStr(%list, ",") != -1; %list = String::NEWgetSubStr(%list, %i+1, 99999))
+		//					{
+		//						%cnt++;
+		//						%bid = String::NEWgetSubStr(%list, 0, %i);
+		//
+		//						if(%cnt == %c2 || %c2 == "*")
+		//						{
+		//							%flag++;
+		//
+		//							%nl = GetWord($loot[%bid], 1);
+		//							if(%nl != "*")
+		//							{
+		//								$loot[%bid] = String::Replace($loot[%bid], %nl, AddToCommaList(%nl, %c1));
+		//								Client::sendMessage(%TrueClientId, $MsgBeige, "Adding " @ %c1 @ " to belt #" @ %cnt @ " (" @ %bid @ ")'s share list.");
+		//								Client::sendMessage(%id, $MsgBeige, %TCsenderName @ " is sharing his/her belt #" @ %cnt @ " with you.");
+		//							}
+		//							else
+		//								Client::sendMessage(%TrueClientId, 0, "belt #" @ %cnt @ " is already publicly available.");
+		//						}
+		//					}
+		//					
+		//					if(%flag == "")
+		//						Client::sendMessage(%TrueClientId, 0, "Invalid belt number.");
+		//				}
+		//				else
+		//					Client::sendMessage(%TrueClientId, 0, "Please specify a belt number (1, 2, 3, etc, or * for all)");
+		//			}
+		//			else
+		//				Client::sendMessage(%TrueClientId, 0, "Invalid player name or same player name.");
+		//		}
+		//		else
+		//			Client::sendMessage(%TrueClientId, 0, "Please specify player name & data.");
+		//	}
+		//	return;
+		//}
 		if(%w1 == "#unsharepack")
 		{
 			%c1 = GetWord(%cropped, 0);
@@ -1473,58 +1476,58 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
-        if(%w1 == "#unsharebelt")
-		{
-			%c1 = GetWord(%cropped, 0);
-			%c2 = GetWord(%cropped, 1);
-	
-			if(%c1 != -1 && %c2 != -1)
-			{
-				%id = NEWgetClientByName(%c1);
-	
-				if(%id != -1 && Client::getName(%id) != %senderName)
-				{
-					%c1 = Client::getName(%id);	//properly capitalize name
-					if(floor(%c2) != 0 || %c2 == "*")
-					{
-						%flag = "";
-						%cnt = 0;
-						%list = fetchData(%TrueClientId, "beltlist");
-						for(%i = String::findSubStr(%list, ","); String::findSubStr(%list, ",") != -1; %list = String::NEWgetSubStr(%list, %i+1, 99999))
-						{
-							%cnt++;
-							%bid = String::NEWgetSubStr(%list, 0, %i);
-	
-							if(%cnt == %c2 || %c2 == "*")
-							{
-								%flag++;
-	
-								%nl = GetWord($loot[%bid], 1);
-								if(%nl != "*")
-								{
-									$loot[%bid] = String::Replace($loot[%bid], %nl, RemoveFromCommaList(%nl, %c1));
-									Client::sendMessage(%TrueClientId, $MsgBeige, "Removing " @ %c1 @ " from backpack #" @ %cnt @ " (" @ %bid @ ")'s share list.");
-									Client::sendMessage(%id, $MsgBeige, %TCsenderName @ " has removed you from his/her backpack #" @ %cnt @ " share list.");
-								}
-								else
-									Client::sendMessage(%TrueClientId, 0, "Backpack #" @ %cnt @ " is already publicly available.  Its share list can not be changed.");
-							}
-						}
-						
-						if(%flag == "")
-							Client::sendMessage(%TrueClientId, 0, "Invalid backpack number.");
-					}
-					else
-						Client::sendMessage(%TrueClientId, 0, "Please specify a backpack number (1, 2, 3, etc, or * for all)");
-				}
-				else
-					Client::sendMessage(%TrueClientId, 0, "Invalid player name or same player name.");
-			}
-			else
-				Client::sendMessage(%TrueClientId, 0, "Please specify player name & data.");
-	
-			return;
-		}
+        //if(%w1 == "#unsharebelt")
+		//{
+		//	%c1 = GetWord(%cropped, 0);
+		//	%c2 = GetWord(%cropped, 1);
+	    //
+		//	if(%c1 != -1 && %c2 != -1)
+		//	{
+		//		%id = NEWgetClientByName(%c1);
+	    //
+		//		if(%id != -1 && Client::getName(%id) != %senderName)
+		//		{
+		//			%c1 = Client::getName(%id);	//properly capitalize name
+		//			if(floor(%c2) != 0 || %c2 == "*")
+		//			{
+		//				%flag = "";
+		//				%cnt = 0;
+		//				%list = fetchData(%TrueClientId, "beltlist");
+		//				for(%i = String::findSubStr(%list, ","); String::findSubStr(%list, ",") != -1; %list = String::NEWgetSubStr(%list, %i+1, 99999))
+		//				{
+		//					%cnt++;
+		//					%bid = String::NEWgetSubStr(%list, 0, %i);
+	    //
+		//					if(%cnt == %c2 || %c2 == "*")
+		//					{
+		//						%flag++;
+	    //
+		//						%nl = GetWord($loot[%bid], 1);
+		//						if(%nl != "*")
+		//						{
+		//							$loot[%bid] = String::Replace($loot[%bid], %nl, RemoveFromCommaList(%nl, %c1));
+		//							Client::sendMessage(%TrueClientId, $MsgBeige, "Removing " @ %c1 @ " from backpack #" @ %cnt @ " (" @ %bid @ ")'s share list.");
+		//							Client::sendMessage(%id, $MsgBeige, %TCsenderName @ " has removed you from his/her backpack #" @ %cnt @ " share list.");
+		//						}
+		//						else
+		//							Client::sendMessage(%TrueClientId, 0, "Backpack #" @ %cnt @ " is already publicly available.  Its share list can not be changed.");
+		//					}
+		//				}
+		//				
+		//				if(%flag == "")
+		//					Client::sendMessage(%TrueClientId, 0, "Invalid backpack number.");
+		//			}
+		//			else
+		//				Client::sendMessage(%TrueClientId, 0, "Please specify a backpack number (1, 2, 3, etc, or * for all)");
+		//		}
+		//		else
+		//			Client::sendMessage(%TrueClientId, 0, "Invalid player name or same player name.");
+		//	}
+		//	else
+		//		Client::sendMessage(%TrueClientId, 0, "Please specify player name & data.");
+	    //
+		//	return;
+		//}
 		if(%w1 == "#packsummary")
 		{
 			if(%clientToServerAdminLevel >= 1)
@@ -1593,7 +1596,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
 				Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
 				refreshHPREGEN(%TrueClientId);
-				refreshStaminaREGEN(%TrueClientId);
+				//refreshStaminaREGEN(%TrueClientId);
 	
 				Client::sendMessage(%TrueClientId, $MsgWhite, "You fall asleep...  Use #wake to wake up.");
 			}
@@ -1602,34 +1605,53 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
-        else if(%w1 == "#heal")
+        else if(%w1 == "#healold")
         {
-            if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
-			{
-                if(fetchData(%TrueClientId,"HP") < fetchData(%TrueClientId,"MaxHP"))
-                {
-                    if(fetchData(%TrueClientId,"Stamina") >= 10)
-                    {
-                        %TrueClientId.sleepMode = 3;
-                        Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
-                        Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
-                        refreshHPREGEN(%TrueClientId);
-                        refreshStaminaREGEN(%TrueClientId);
-                        HealHPCheck(%TrueClientId);
-                        Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
-                    }
-                    else
-                        Client::sendMessage(%TrueClientId, $MsgRed, "Your stamina is too low to do that.");
-                }
-                else
-                    Client::sendMessage(%TrueClientId, $MsgWhite, "Your health is already full.");
-            }
-            else
-                Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to heal.");
+            Client::sendMessage(%TrueClientId, $MsgRed, "Command Disabled");
+            //if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
+			//{
+            //    if(fetchData(%TrueClientId,"HP") < fetchData(%TrueClientId,"MaxHP"))
+            //    {
+            //        if(fetchData(%TrueClientId,"Stamina") >= 10)
+            //        {
+            //            %TrueClientId.sleepMode = 3;
+            //            Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
+            //            Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
+            //            refreshHPREGEN(%TrueClientId);
+            //            //refreshStaminaREGEN(%TrueClientId);
+            //            HealHPCheck(%TrueClientId);
+            //            Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to heal.  Use #wake to stop healing.");
+            //        }
+            //        else
+            //            Client::sendMessage(%TrueClientId, $MsgRed, "Your stamina is too low to do that.");
+            //    }
+            //    else
+            //        Client::sendMessage(%TrueClientId, $MsgWhite, "Your health is already full.");
+            //}
+            //else
+            //    Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to heal.");
             
             return;
         }
 		else if(%w1 == "#rest")
+		{
+            Client::sendMessage(%TrueClientId, $MsgRed, "Command Disabled");
+			//if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
+			//{
+			//	%TrueClientId.sleepMode = 2;
+			//	Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
+			//	Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
+			//	refreshHPREGEN(%TrueClientId);
+			//	//refreshStaminaREGEN(%TrueClientId);
+	        //
+			//	Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to rest.  Use #wake to stop resting.");
+			//}
+			//else
+			//	Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to rest.");
+	
+			return;
+		}
+        else if(%w1 == "#meditate")
 		{
 			if(%TrueClientId.sleepMode == "" && !IsDead(%TrueClientId) && $possessedBy[%TrueClientId].possessId != %TrueClientId)
 			{
@@ -1637,12 +1659,12 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				Client::setControlObject(%TrueClientId, Client::getObserverCamera(%TrueClientId));
 				Observer::setOrbitObject(%TrueClientId, Client::getOwnedObject(%TrueClientId), 30, 30, 30);
 				refreshHPREGEN(%TrueClientId);
-				refreshStaminaREGEN(%TrueClientId);
+				refreshMANAREGEN(%TrueClientId);
 	
-				Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to rest.  Use #wake to stop resting.");
+				Client::sendMessage(%TrueClientId, $MsgWhite, "You begin to meditate.  Use #wake to stop meditating.");
 			}
 			else
-				Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to rest.");
+				Client::sendMessage(%TrueClientId, $MsgRed, "You can't seem to meditate.");
 	
 			return;
 		}
@@ -1653,7 +1675,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				%TrueClientId.sleepMode = "";
 				Client::setControlObject(%TrueClientId, %TrueClientId);
 				refreshHPREGEN(%TrueClientId);
-				refreshStaminaREGEN(%TrueClientId);
+                refreshMANAREGEN(%TrueClientId);
 	
 				Client::sendMessage(%TrueClientId, $MsgWhite, "You awake.");
 			}
@@ -1662,26 +1684,38 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	
 			return;
 		}
-//		if(%w1 == "#roll")
-//		{
-//	//		%c1 = GetWord(%cropped, 0);
-//	//
-//	//		if(%c1 != -1)
-//	//			Client::sendMessage(%TrueClientId, 0, %c1 @ ": " @ GetRoll(%c1));
-//	//		else
-//	//			Client::sendMessage(%TrueClientId, 0, "Please specify a roll (example: 1d6)");
-//	//
-//			Client::sendMessage(%TrueClientId, 0, "Do not use this command again.");
-//			if(%TrueClientId.roll == "")
-//				%TrueClientId.roll = 1;
-//			else
-//			{
-//				Jail(%TrueClientId, 300, 1);
-//				messageall(0,%nameomg @ " has been jailed for 300 seconds for using #roll.");
-//			}
-//
-//			return;
-//		}
+        
+        if(%w1 == "#heal")
+        {
+            %amt = fetchData(%TrueClientId,"HealBurst");
+            
+            if(%amt > 0)
+            {
+                %hp = fetchData(%TrueClientId,"HP");
+                if(%hp < fetchData(%TrueClientId,"MaxHP"))
+                {
+                    %healAmt = Cap(25 + round( CalculatePlayerSkill(%TrueClientId,$SkillHealing)/ 5),25,"inf");
+                    setHP(%TrueClientId,%hp + %healAmt);
+                    %mx = fetchData(%TrueClientId,"HealBurstMax");
+                    UseSkill(%TrueClientId, $SkillHealing, True, True, (%mx*3)); //More healbursts you have, the harder it is to level
+                    Client::sendMessage(%clientId, $MsgWhite, "You recovered "@ %healAmt @"HP~wActivateAR.wav");
+                    storeData(%TrueClientId,"HealBurst",1,"dec");
+                    storeData(%TrueClientId,"HealBurstCounter",0);
+                }
+                else
+                {
+                    Client::sendMessage(%TrueClientId, $MsgWhite, "You are already at full health.");
+                    return;
+                }
+            }
+            else
+            {
+                Client::sendMessage(%TrueClientId, $MsgRed, "You are out of heal bursts.");
+                return;
+            }
+            return;
+        }
+        
 		if(%w1 == "#hide")
 		{
 			if(SkillCanUse(%TrueClientId, "#hide"))
@@ -1875,37 +1909,37 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			}
 			return;
 		}
-        if(%w1 == "#mugbelt")
-		{
-			%time = getIntegerTime(true) >> 5;
-			if(%time - %TrueClientId.lastStealTime > $stealDelay)
-			{
-				%TrueClientId.lastStealTime = %time;
-	
-				if((%reason = AllowedToSteal(%TrueClientId)) == "True")
-				{
-					if(SkillCanUse(%TrueClientId, "#mugbelt"))
-					{
-						if(GameBase::getLOSinfo(Client::getOwnedObject(%TrueClientId), 1))
-						{
-							%id = Player::getClient($los::object);
-							if(getObjectType($los::object) == "Player" && !Player::isAiControlled(%id))
-							{
-								Belt::Mug(%TrueClientId, %id);
-							}
-						}
-					}
-					else
-					{
-						Client::sendMessage(%TrueClientId, $MsgWhite, "You can't mug because you lack the necessary skills.");
-						UseSkill(%TrueClientId, $SkillStealing, False, True);
-					}
-				}
-				else
-					Client::sendMessage(%TrueClientId, $MsgRed, %reason);
-			}
-			return;
-		}
+        //if(%w1 == "#mugbelt")
+		//{
+		//	%time = getIntegerTime(true) >> 5;
+		//	if(%time - %TrueClientId.lastStealTime > $stealDelay)
+		//	{
+		//		%TrueClientId.lastStealTime = %time;
+	    //
+		//		if((%reason = AllowedToSteal(%TrueClientId)) == "True")
+		//		{
+		//			if(SkillCanUse(%TrueClientId, "#mugbelt"))
+		//			{
+		//				if(GameBase::getLOSinfo(Client::getOwnedObject(%TrueClientId), 1))
+		//				{
+		//					%id = Player::getClient($los::object);
+		//					if(getObjectType($los::object) == "Player" && !Player::isAiControlled(%id))
+		//					{
+		//						Belt::Mug(%TrueClientId, %id);
+		//					}
+		//				}
+		//			}
+		//			else
+		//			{
+		//				Client::sendMessage(%TrueClientId, $MsgWhite, "You can't mug because you lack the necessary skills.");
+		//				UseSkill(%TrueClientId, $SkillStealing, False, True);
+		//			}
+		//		}
+		//		else
+		//			Client::sendMessage(%TrueClientId, $MsgRed, %reason);
+		//	}
+		//	return;
+		//}
 		if(%w1 == "#mug")
 		{
 			%time = getIntegerTime(true) >> 5;
@@ -2318,6 +2352,97 @@ function remoteSay(%clientId, %team, %message, %senderName)
             }
 			return;
         }
+        
+        if(%w1 == "#refine")
+        {
+            $los::object = "";
+            %los = Gamebase::getLOSInfo(Client::getControlObject(%TrueClientId),5);
+            %flag = false;
+            if(%los)
+            {
+                %obj = $los::object;
+                if(String::ICompare(clipTrailingNumbers(Object::getName(%obj)),"anvil") == 0)
+                {
+                    %flag = true;
+                }
+            }
+            
+            if(!%flag)
+            {
+                Client::SendMessage(%TrueClientId,$MsgWhite,"You must be looking at an anvil to refine items.");
+                return;
+            }
+            
+            SetupItemRefinement(%TrueClientId,%obj);
+            
+            //%weap = fetchData(%TrueClientId,"EquippedWeapon");
+            //if(%weap != "")
+            //{
+            //    %curLevel = RPGItem::getImprovementLevel(%weap);
+            //    if(%curLevel < 5)
+            //    {
+            //        %cnt = RPGItem::getItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"));
+            //        //%money = GetItemCost(%item,%tag);
+            //        if(%curLevel <= 0)
+            //            %reqAmt = 5;
+            //        else
+            //        {
+            //            %reqAmt = 5*(%curLevel+1);
+            //        }
+            //        
+            //        if(%cnt >= %reqAmt)
+            //        {
+            //            RPGItem::decItemCount(%TrueClientId,RPGItem::LabelToItemTag("TitaniteShard"),%reqAmt,true);
+            //            %newItem = RPGItem::setItemAffix(%weap,"im",1,"inc");
+            //            RPGItem::decItemCount(%TrueClientId,%weap,1);
+            //            RPGItem::incItemCount(%TrueClientId,%newItem,1);
+            //            RPGItem::EquipItem(%TrueClientId,%newItem);
+            //            Client::SendMessage(%TrueClientId,$MsgWhite,"You upgraded "@ RPGItem::getItemNameFromTag(%weap) @" to "@ RPGItem::getItemNameFromTag(%newItem) @".");
+            //            playSound(SoundSmith, GameBase::getPosition(%TrueClientId));
+            //        }
+            //        else
+            //        {
+            //            Client::SendMessage(%TrueClientId,$MsgWhite,"You need "@ %reqAmt @" Titanite Shards to refine "@ RPGItem::getItemNameFromTag(%weap) @".");
+            //        }
+            //        
+            //    }
+            //    return;
+            //}
+            return;
+        }
+		
+		if(%w1 == "#rename")
+		{
+			%itemTag = fetchData(%TrueClientId,"EquippedWeapon");
+			%name = %cropped; //Needs string input protection
+			
+			%newItemTag = RPGItem::setItemAffix(%itemTag,"nn",%name);
+			echo(%newItemTag);
+			RPGItem::decItemCount(%TrueClientId,%itemTag,1,false);
+			RPGItem::incItemCount(%TrueClientId,%newItemTag,1,false);
+			RPGItem::EquipItem(%TrueClientId,%newItemTag);
+			
+			Client::sendMessage(%TrueClientId,$MsgWhite,"You renamed "@ RPGItem::getItemNameFromTag(%itemTag) @" to "@ RPGItem::getItemNameFromTag(%newItemTag) );
+			return;
+		}
+        
+        if(%w1 == "#smith")
+        //{
+        //    %los = Gamebase::getLOSInfo(Client::getControlObject(%TrueClientId),5);
+        //    
+        //    if(%los)
+        //    {
+        //        if(String::ICompare(clipTrailingNumbers(Object::getName($los::object)),"anvil") == 0)
+        //        {
+        //            SetupSmithing(%clientId,$los::object,"");
+        //        }
+        //        else
+        //            Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smith that.");
+        //    }
+        //    else
+        //        Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smith that.");
+        //}
+        
         if(%w1 == "#smith" || %w1 == "#craft") //|| %w1 == "#smelt" || %w1 == "#cook")
         {
             %item = getWord(%cropped,0);
@@ -2583,17 +2708,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			else 
 				Client::sendMessage(%client,0,"Deploy position out of range");
 			
-			return;
-		}
-		if(%w1 == "#gm")
-		{
-			Client::sendMessage(%TrueClientId, $MsgWhite, "THIS COMMAND HAS BEEN DISCONTINUED, PLEASE USE #ANON");
-			return;
-			if(%clientToServerAdminLevel >= 4)
-			{
-				for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
-					Client::sendMessage(%cl, $MsgRed, %cropped);
-			}
 			return;
 		}
 		if(%w1 == "#anon")
@@ -3329,25 +3443,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	            }
 			return;
 	      }
-        if(%w1 == "#beltitemcount")
-		{
-		      if(%clientToServerAdminLevel >= 4)
-		      {
-				%id = NEWgetClientByName(GetWord(%cropped, 0));
-	
-				if(floor(%id.adminLevel) >= floor(%clientToServerAdminLevel) && Client::getName(%id) != %senderName)
-					Client::sendMessage(%TrueClientId, 0, "Could not process command: Target admin clearance level too high.");
-				else if(%id != -1)
-				{
-						
-				      %c = Belt::HasThisStuff(%id,GetWord(%cropped, 1));
-					Client::sendMessage(%TrueClientId, 0, "Belt Item count for (" @ %id @ ") " @ GetWord(%cropped, 1) @ " is " @ %c);
-				}
-				else
-				      Client::sendMessage(%TrueClientId, 0, "Invalid player name.");
-		      }
-			return;
-		}
 	      if(%w1 == "#myitem")
 		{
 	            if(%clientToServerAdminLevel >= 2)
@@ -3395,6 +3490,59 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	            }
 			return;
 	      }
+          if(%w1 == "#tp")
+          {
+            if(%clientToServerAdminLevel >= 2)
+            {
+                %wc = getWordCount(%cropped);
+                if(%wc == 0)
+                {
+                    Client::sendMessage(%TrueClientId, 0, "Usage: #tp NAME [NAME or X Y Z].  No 2nd NAME or an XYZ teleports them to your LOS.  If no LOS, then to you.");
+                }
+                else
+                {
+                    %name1 = getWord(%cropped,0);
+                    %tgtCl = NEWgetClientByName(%name1);
+                    %validNames = %tgtCl != -1;
+                    if(%wc == 1)
+                    {
+                        %pl = Client::getOwnedObject(%TrueClientId);
+                        %los = Gamebase::getLOSInfo(%pl, 1500);
+                        if(%los)
+                        {
+                            %pos = $los::position;
+                            %str = "LOS ["@%pos@"]";
+                        }
+                        else
+                        {
+                            %pos = Gamebase::getPosition(%TrueClientId);
+                            %str = "you ["@%pos@"]";
+                        }
+                    }
+                    else if(%wc == 2)
+                    {
+                        %name2 = getWord(%cropped,1);
+                        %c2 = NEWgetClientByName(%name2);
+                        %validNames = %validNames && %c2 != -1;
+                        %pos = Gamebase::getPosition(%c2);
+                        %str = %name2@" ["@%pos@"]";
+                    }
+                    else if(%wc == 4)
+                    {
+                        %pos = Word::getSubWord(%cropped, 1, 3);
+                        %str = %pos;
+                    }
+                    
+                    if(%validNames)
+                    {
+                        Gamebase::setPosition(%tgtCl,%pos);
+                        Client::sendMessage(%TrueClientId, 0, "Teleporting "@ %name1 @" to "@%str@".");
+                    }
+                    else
+                        Client::sendMessage(%TrueClientId, 0, "Invalid player name.");
+                }
+            }
+          }
 	      if(%w1 == "#teleport2")
 		{
 	            if(%clientToServerAdminLevel >= 2)
@@ -5941,7 +6089,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	if(%botTalk)
 	{
 		//process TownBot talk
-
+        
 		%initTalk = "";
 		for(%i = 0; (%w = GetWord("hail hello hi greetings yo hey sup salutations g'day howdy", %i)) != -1; %i++)
 			if(String::ICompare(%cropped, %w) == 0)
@@ -5968,26 +6116,26 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		
 		if(%closest <= ($maxAIdistVec + 20) && Client::getTeam(%TrueClientId) == GameBase::getTeam(%closestId))
 		{
-            //if(%initTalk) 
-			//{	
-			//	%rot = Vector::getRotation(Vector::normalize(Vector::sub(%clientPos, %closestPos)));
-			//	%rot = GetWord(%rot, 0)+1.57079632679489661923132169163975@" "@GetWord(%rot, 1)@" "@GetWord(%rot, 2);
-			//	
-			//	GameBase::setRotation(%closestId, %rot);
-			//	RemotePlayAnim(%closestId, 12);
-			//}
+            if(%initTalk && $state[%closestId, %TrueClientId] == "") 
+			{
+                TownBotGreetPlayer(%closestId,%TrueClientId,%closestPos,%clientPos);
+				//%rot = Vector::getRotation(Vector::normalize(Vector::sub(%clientPos, %closestPos)));
+				//%rot = GetWord(%rot, 0)+1.57079632679489661923132169163975@" "@GetWord(%rot, 1)@" "@GetWord(%rot, 2);
+				//
+				//GameBase::setRotation(%closestId, %rot);
+				//RemotePlayAnim(%closestId, 12);
+			}
 			if(clipTrailingNumbers(%aiName) == "merchant")
 			{
 				//process merchant code
 				%trigger[2] = "buy";
-                %trigger[3] = "belt";
 				if($state[%closestId, %TrueClientId] == "")
 				{
 					if(%initTalk)
 					{
-                        %aiGender = $BotInfo[%aiName, RACE];
-						playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
-						AI::sayLater(%TrueClientId, %closestId, "Did you come to see what items you can BUY or BELT?", True);
+                        //%aiGender = $BotInfo[%aiName, RACE];
+						//playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
+						AI::sayLater(%TrueClientId, %closestId, "Did you come to see what items you can BUY?", True);
 						$state[%closestId, %TrueClientId] = 1;
 					}
 				}
@@ -6000,11 +6148,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 						AI::sayLater(%TrueClientId, %closestId, "Take a look at what I have.", True);
 						$state[%closestId, %TrueClientId] = "";
 					}
-                    else if(String::findSubStr(%message, %trigger[3]) != -1)
-					{
-						Belt::BuyOrSell(%TrueClientId,%closestId);
-						$state[%closestId, %TrueClientId] = "";
-					}
 				}
 			}
 			else if(clipTrailingNumbers(%aiName) == "banker")
@@ -6013,12 +6156,12 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				%trigger[2] = "deposit";
 				%trigger[3] = "withdraw";
 				%trigger[4] = "storage";
-                %trigger[5] = "belt";
+
 				if($state[%closestId, %TrueClientId] == "")
 				{
 					if(%initTalk)
 					{
-						AI::sayLater(%TrueClientId, %closestId, "I can keep your money from being stolen by thieves.  DEPOSIT, WITHDRAW, BELT or look at your STORAGE?  You are carrying " @ fetchData(%TrueClientId, "COINS") @ " coins and I have " @ fetchData(%TrueClientId, "BANK") @ " of yours.", True);
+						AI::sayLater(%TrueClientId, %closestId, "I can keep your money from being stolen by thieves.  DEPOSIT, WITHDRAW, or look at your STORAGE?  You are carrying " @ fetchData(%TrueClientId, "COINS") @ " coins and I have " @ fetchData(%TrueClientId, "BANK") @ " of yours.", True);
 						$state[%closestId, %TrueClientId] = 1;
 					}
 				}
@@ -6043,12 +6186,6 @@ function remoteSay(%clientId, %team, %message, %senderName)
 
 						SetupBank(%TrueClientId, %closestId);
 
-						$state[%closestId, %TrueClientId] = "";
-					}
-                    if(String::findSubStr(%message, %trigger[5]) != -1)
-					{
-						//Store belt items
-						Belt::Store(%TrueClientId,%closestId);
 						$state[%closestId, %TrueClientId] = "";
 					}
 				}
@@ -6105,6 +6242,30 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					$state[%closestId, %TrueClientId] = "";
 				}
 			}
+            else if(clipTrailingNumbers(%aiName) == "respec")
+			{
+                //process merchant code
+				%trigger[2] = "respec";
+				if($state[%closestId, %TrueClientId] == "")
+				{
+					if(%initTalk)
+					{
+                        %aiGender = $BotInfo[%aiName, RACE];
+						//playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
+						AI::sayLater(%TrueClientId, %closestId, "Would you like to RESPEC?", True);
+						$state[%closestId, %TrueClientId] = 1;
+					}
+				}
+				else if($state[%closestId, %TrueClientId] == 1)
+				{
+					if(String::findSubStr(%message, %trigger[2]) != -1)
+					{
+						SetupRespec(%TrueClientId, %closestId);
+
+						$state[%closestId, %TrueClientId] = "";
+					}
+				}
+            }
 			else if(clipTrailingNumbers(%aiName) == "assassin")
 			{
 				//process assassin code
@@ -6627,12 +6788,12 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			{
 				//process botmaker code
 				%trigger[2] = "buy";
-				%trigger[3] = "smith";
+				%trigger[3] = "furnace";
 				if($state[%closestId, %TrueClientId] == "")
 				{
 					if(%initTalk)
 					{
-						AI::sayLater(%TrueClientId, %closestId, "Hail friend, are you here to have me SMITH an old weapon?", True);
+						AI::sayLater(%TrueClientId, %closestId, "Hail friend, looking to BUY? Feel free to use my \"FURNACE\".", True);
 						$state[%closestId, %TrueClientId] = 1;
 					}
 				}
@@ -6652,8 +6813,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 					if(String::findSubStr(%message, %trigger[3]) != -1)
 					{
-						AI::sayLater(%TrueClientId, %closestId, "Click Sell on items to make a smithing list. I will tell you when the combination is smithable.", True);
-						SetupBlacksmith(%TrueClientId, %closestId);
+						AI::sayLater(%TrueClientId, %closestId, "We couldn't find a proper furnace, so I turned the stove up really high...", True);
+						//SetupBlacksmith(%TrueClientId, %closestId);
 
 						$state[%closestId, %TrueClientId] = "";
 					}
@@ -6769,6 +6930,26 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		}
 	}
 }
+
+function TownBotGreetPlayer(%townbot,%clientId,%townBotPos,%clientPos)
+{
+    if(%townBotPos == "")
+        %townBotPos = Gamebase::getPosition(%townbot);
+    if(%clientPos == "")
+        %clientPos = Gamebase::getPosition(%clientId);
+    
+    
+    %rot = Vector::getRotation(Vector::normalize(Vector::sub(%clientPos, %townBotPos)));
+    %rot = GetWord(%rot, 0)+1.57079632679489661923132169163975@" "@GetWord(%rot, 1)@" "@GetWord(%rot, 2);
+    
+    GameBase::setRotation(%townbot, %rot);
+    GameBase::playSequence(%townbot, 0, "wave");
+    echo(%townbot.name);
+    %aiGender = $BotInfo[%townbot.name, RACE];
+	playSound("Sound" @ %aiGender @ "Hey", %townBotPos);
+    //RemotePlayAnim(%townbot, 12);
+}
+
 function remoteIssueCommand(%commander, %cmdIcon, %command, %wayX, %wayY, %dest1, %dest2, %dest3, %dest4, %dest5, %dest6, %dest7, %dest8, %dest9, %dest10, %dest11, %dest12, %dest13, %dest14)
 {
 	// issueCommandI takes waypoint 0-1023 in x,y scaled mission area

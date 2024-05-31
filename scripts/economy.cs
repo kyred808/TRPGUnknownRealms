@@ -49,6 +49,12 @@ function GetItemCost(%item,%itemTag)
     {
         %cost += %cost*%im*0.3;
     }
+    
+    %va = RPGItem::getAffixValue(%itemTag,"va");
+    if(%va != 0)
+    {
+        %cost += %va;
+    }
 	return round(%cost);		
 }
 
@@ -78,7 +84,6 @@ function BuySell(%player, %item, %delta, %buyORsell)
 			%cost = getSellCost(%clientId, %item) * %delta;
 		}
 		UseSkill(%clientId, $SkillHaggling, True, True);
-        echo(%cost);
 		storeData(%clientId, "COINS", %cost, "inc");
 	}
 
@@ -92,7 +97,8 @@ function IsClientShopping(%clientId)
     ( %clientId.currentBank != "" || 
       %clientId.currentShop != "" || 
       %clientId.currentInvSteal != "" ||
-      %clientId.currentSmith != ""));
+      %clientId.currentSmith != "" ||
+      %clientId.currentAnvil != ""));
     
 }
 
@@ -282,7 +288,10 @@ function buyItem(%clientId, %itemTag, %amnt)
 			SetupCreatePack(%clientId);
 		}
     }
-    
+    else
+    {
+        
+    }
     return 0;
 }
 
@@ -574,8 +583,13 @@ function sellItem(%clientId,%itemTag, %amnt)
                 //}
                 //else
                 //{
-                    if(RPGItem::getItemGroupFromTag(%itemTag) != "Equipped")
+                    %class = RPGItem::getItemGroupFromTag(%itemTag);
+                    if(%class != $RPGItem::EquippedClass)
                     {
+                        if(%itemTag == fetchData(%clientId,"EquippedWeapon"))
+                        {
+                            RPGItem::UnequipItem(%clientId,%itemTag,false);
+                        }
                         RPGItem::decItemCount(%clientId, %itemTag, %n);
                         RPGItem::incStorageItemCount(%clientId,%itemTag,%n,true);
                         //storeData(%clientId, "BankStorage", SetStuffString(fetchData(%clientId, "BankStorage"), %item, %n));
@@ -623,7 +637,7 @@ function sellItem(%clientId,%itemTag, %amnt)
 			else
 			{
 				%itemCnt = RPGItem::getItemCount(%clientId, %itemTag,true);
-				if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquipppedClass)
+				if(RPGItem::getItemGroupFromTag(%itemTag) == $RPGItem::EquippedClass)
 				{
 					Client::sendMessage(%clientId, $MsgRed, "You cannot sell an equipped item.~wC_BuySell.wav");
 				}
@@ -637,7 +651,10 @@ function sellItem(%clientId,%itemTag, %amnt)
 	
 					//%count = RPGItem::getItemCount(%clientId, %item);
 					%numsell = %clientId.bulkNum;
-	
+                    if(%itemTag == fetchData(%clientId,"EquippedWeapon"))
+                    {
+                        RPGItem::UnequipItem(%clientId,%itemTag,false);
+                    }
 					BuySell(%player, %itemTag, %clientId.bulkNum, SELL);
 					RPGItem::decItemCount(%clientId,%itemTag,%numsell); //setItemCount(%player, %item, (%count-%numsell));
 					Client::SendMessage(%clientId, $MsgWhite, "~wbuysellsound.wav");
@@ -656,10 +673,91 @@ function sellItem(%clientId,%itemTag, %amnt)
 			//=========================================
 			BlackSmithClick(%clientId, %item, 1);
 		}
+        else if(%clientId.currentAnvil != "")
+        {
+            %menuType = getWord(%clientId.currentAnvil,0);
+            if(%menuType == "RefineEquip")
+            {
+                %itemCnt = RPGItem::getItemCount(%clientId,%itemTag,true);
+                %itemType = RPGItem::getItemGroupFromTag(%itemTag);
+                if(%itemType == $RPGItem::WeaponClass)
+                {
+                    if(%itemCnt > 0)
+                    {
+                        %curLevel = RPGItem::getImprovementLevel(%itemTag);
+                        if(%curLevel < 5)
+                        {
+                            if(%curLevel <= 0)
+                                %reqAmt = 5;
+                            else
+                            {
+                                %reqAmt = 5*(%curLevel+1);
+                            }
+                            
+                            %cost = round(GetItemCost(RPGItem::ItemTagToLabel(%itemTag),%itemTag)/4);
+                            
+                            if($LastClickItemS[%clientId, %itemTag] != %itemTag)
+                            {
+                                Client::SendMessage(%clientId,$MsgWhite,"Upgrading "@RPGItem::getItemNameFromTag(%itemTag)@" will cost "@%reqAmt@" Titanite Shards and "@%cost@" COINS");
+                                $LastClickItemS[%clientId, %itemTag] = %itemTag;
+                                schedule("$LastClickItemS[" @ %clientId @ ", " @ %itemTag @ "] = \"\";", 5);
+                            }
+                            else
+                            {
+                                %shardCnt = RPGItem::getItemCount(%clientId,RPGItem::LabelToItemTag("TitaniteShard"));
+                                %money = fetchData(%clientId, "COINS");
+
+                                if(%shardCnt >= %reqAmt && %money >= %cost)
+                                {
+                                    RPGItem::decItemCount(%clientId,RPGItem::LabelToItemTag("TitaniteShard"),%reqAmt,true);
+                                    %newItem = RPGItem::setItemAffix(%itemTag,"im",1,"inc");
+                                    %equipped = fetchData(%clientId,"EquippedWeapon") == %itemTag;
+                                    RPGItem::decItemCount(%clientId,%itemTag,1);
+                                    RPGItem::incItemCount(%clientId,%newItem,1);
+                                    if(%equipped)
+                                        RPGItem::EquipItem(%clientId,%newItem);
+                                    Client::SendMessage(%clientId,$MsgWhite,"You upgraded "@ RPGItem::getItemNameFromTag(%itemTag) @" to "@ RPGItem::getItemNameFromTag(%newItem) @".~wbuysellsound.wav");
+                                    playSound(SoundSmith, GameBase::getPosition(%clientId));
+                                    
+                                    storeData(%clientId, "COINS", %cost, "dec");
+                                    %txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
+                                    Client::setInventoryText(%clientId, %txt);
+                                }
+                                else
+                                {
+                                    Client::SendMessage(%clientId,$MsgWhite,"You do not have the resources required to upgrade "@ RPGItem::getItemNameFromTag(%itemTag)@".~wC_BuySell.wav");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Client::sendMessage(%clientId, $MsgRed, "You do not have "@RPGItem::getItemNameFromTag(%itemTag)@".");
+                        return 0;
+                    }
+                }
+                else
+                {
+                    Client::sendMessage(%clientId, $MsgRed, "You cannot improve this item (Currently only weapon improvement is supported).");
+                    return 0;
+                }
+            }
+            else if(%menuType == "CraftEquip")
+            {
+                if(%clientId.selectedRecipeTag == "")
+                {
+                    
+                }
+            }
+            return 0;
+        }
     }
     else
 	{
-        //echo(%item);
+        
+        //SetupItemOptions(%clientId,%itemTag);
+        
+        
         %msg = WhatIs(%itemTag);
         %len = String::len(%msg);
         if(%len > 255)
@@ -671,6 +769,9 @@ function sellItem(%clientId,%itemTag, %amnt)
         }
         else 
             bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+        
+        
+        
         
         return 0;
 		//if(RPGItem::getItemGroup(%item) != "Equipped" && !$LoreItem[%item])
@@ -804,6 +905,8 @@ function remoteSellItem(%clientId, %type, %amnt)
 	%time = getIntegerTime(true) >> 5;
 	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
 	{
+        if(%amnt <= 0 && %amnt != "ALL")
+            return 0;
 		%clientId.lastWaitActionTime = %time;
         //echo("Type: "@%type);
 		//%item = RPGItem::ItemIDToLabel(%type);//getItemData(%type);

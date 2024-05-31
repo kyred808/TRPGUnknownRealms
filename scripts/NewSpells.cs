@@ -10,7 +10,7 @@ $SpellCastTypeSelf = 2; //Spells that effect just the caster. Heal or buffs.
 $SpellCastTypeTarget = 3; //Spell that effect the target.
 $SpellCastTypeSelfOrLOS = 4; //Spells that effect yourself or your target.
 $SpellCastTypeScripted = 5; //Spells with custom scripted effects. "Other"
-
+$SpellCastTypePlayerCharge = 6;
 //Example: Samples of what fields each spell type needs.  Not an exhaustive list.
 //Base types
 //$Spell::keyword[0] = "spellkeyword";
@@ -716,7 +716,7 @@ $Spell::recoveryTime[28] = 4.65;
 $Spell::castType[28] = $SpellCastTypeBomb;
 $Spell::bombData[28] = Bomb2;
 $Spell::radius[28] = 15;
-$Spell::damageValue[28] = 50;
+$Spell::damageValue[28] = 100;
 $Spell::trackTarget[28] = true;
 $Spell::LOSrange[28] = 80;
 $Spell::startSound[28] = DeActivateWA;
@@ -741,7 +741,7 @@ $Spell::recoveryTime[29] = 10;
 $Spell::castType[29] = $SpellCastTypeBomb;
 $Spell::bombData[29] = Bomb1;
 $Spell::radius[29] = 25;
-$Spell::damageValue[29] = 175;
+$Spell::damageValue[29] = 275;
 $Spell::LOSrange[29] = 80;
 $Spell::startSound[29] = SpellCastSnd;
 $Spell::endSound[29] = holysmite;
@@ -927,6 +927,49 @@ $SkillRestriction[beam] = $SkillOffensiveCasting @ " 520";
 //$Spell::projectileData[1] = Firebomb;
 //$SkillType[firebomb] = $SkillOffensiveCasting;
 
+$Spell::keyword[37] = "fireball";
+$Spell::index[fireball] = 37;
+$Spell::name[37] = "Fireball";
+$Spell::type[37] = $SpellTypeCantrip;
+$Spell::spellImage[37,0] = InvisShape;
+$Spell::delay[37] = 1;
+$Spell::baseStamina[37] = 15;
+$Spell::minStamina[37] = 5;
+$Spell::staminaFalloffFactor[37] = 1.5;
+$Spell::chargeTime[37] = 1.5;
+$Spell::castType[37] = $SpellCastTypePlayerCharge;
+$Spell::projectileData[37] = fireball;
+$Spell::startSound[37] = ActivateTR;
+$Spell::chargeSound[37] = ActivateBF;
+$Spell::castSound[37] = LaunchFB;
+$Spell::aiRefVal[37] = 0;
+$SkillType[fireball] = $SkillOffensiveCasting;
+$SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20";
+
+function NewSpell::BeginCastSpell(%clientId, %keyword)
+{
+    dbecho($dbechoMode, "BeginCastSpell(" @ %clientId @ ", " @ %keyword @ ")");
+
+	%w1 = GetWord(%keyword, 0);
+	%w2 = String::getSubStr(%keyword, String::len(%w1)+1, 99999);
+    
+    %i = $Spell::index[%w1];
+    
+    if(%i != "")
+    {
+        if(Spell::CheckSpellRequirements(%clientId,%i))
+        {
+            %type = $Spell::type[%i];
+            
+            
+        }
+        else
+            Client::sendMessage(%clientId, $MsgWhite, $Spell::FailCastReason);
+    }
+    else
+        Client::sendMessage(%clientId, $MsgWhite, "This spell seems unfamiliar to you.");
+}
+
 function Spell::BeginCastSpell(%clientId, %keyword)
 {
 	dbecho($dbechoMode, "BeginCastSpell(" @ %clientId @ ", " @ %keyword @ ")");
@@ -1022,7 +1065,7 @@ function Spell::BeginCastSpell(%clientId, %keyword)
                     storeData(%clientId, "SpellCastStep", 1);
                     
                     %tempStamCost = floor(%stamina / 2);
-                    refreshStamina(%clientId, %tempStamCost);
+                    //refreshStamina(%clientId, %tempStamCost);
                     if(%mcost > 0)
                     {
                         if(%mcost % 2 == 0)
@@ -1053,12 +1096,16 @@ function Spell::BeginCastSpell(%clientId, %keyword)
                     }
                     %clientId.isAtRestCounter = 0;
 
-                    //if(Player::isAiControlled(%clientId))
-                    //        schedule("%retval=Spell::DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
-                    //else
-                    //echo("Stam Cost: ",%stamina);
+                    
+                    if($Spell::castType[%i] == $SpellCastTypePlayerCharge)
+                    {
+                        Spell::StartPlayerChargeCast(%clientId,%i);
+                    }
+                    else
+                    {
                         schedule("%retval=Spell::DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\", \"" @%norm@ "\"); if(%retval){refreshStamina(" @ %clientId @ ", " @ %tempStamCost @ ");}", $Spell::delay[%i]);
-                    schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
+                        schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
+                    }
                     return true;
                 }
                 else
@@ -1074,6 +1121,62 @@ function Spell::BeginCastSpell(%clientId, %keyword)
         Client::sendMessage(%clientId, $MsgWhite, "This spell seems unfamiliar to you.");
         
     return false;
+}
+
+function Spell::StartPlayerChargeCast(%clientId,%i)
+{
+    %weap = fetchData(%clientId,"EquippedWeapon");
+    if(%weap != "")
+    {
+        RPGItem::unequipItem(%clientId,%weap,false);
+    }
+    storeData(%clientId,"SpellCastStep","");
+    Player::unmountItem(%clientId,$BaseWeaponSlot);
+    Player::mountItem(%clientId,ChargeMagicItem,$BaseWeaponSlot);
+    storeData(%clientId,"EquippedSpell",%i);
+}
+
+function Spell::CastChargedMagic(%clientId,%index,%timeDiff)
+{
+    
+    %chargeTime = $Spell::chargeTime[%index];
+    if(%timeDiff >= %chargeTime)
+    {
+        %casterPos = Gamebase::getPosition(%clientId);
+        
+        if($Spell::manaCost[%index] > 0)
+        {
+            %mcost = $Spell::manaCost[%index];
+            if(fetchData(%clientId,"MANA") >= %mcost)
+                refreshMANA(%clientId, %mcost);
+            else
+            {
+                Client::sendMessage(%clientId, $MsgRed, "You lost too much mana before you could finish the spell.~wUnravelAM.wav");
+                return false;
+            }
+        }
+        %stamina = Spell::CalculateCantripStamina(%clientId,%index,1);
+        echo(%stamina);
+        if(fetchData(%clientId, "Stamina") >= %stamina)
+        {
+            //refreshStamina(%clientId,%stamina);
+        }
+        else
+        {
+            Client::sendMessage(%clientId, $MsgRed, "You lost too much stamina before you could finish the spell.~wUnravelAM.wav");
+            return false;
+        }
+        %player = Client::getOwnedObject(%clientId);
+        if(%index == 37)
+        {
+            %trans = Gamebase::getMuzzleTransform(%player);
+            %vel = Item::getVelocity(%player);
+            Projectile::spawnProjectile(Fireball,%trans,%player,%vel);
+        }
+        
+        if($Spell::castSound[%index] != "")
+            playSound($Spell::castSound[%index],%casterPos);
+    }
 }
 
 function Spell::CalculateCantripStamina(%clientId,%i,%mult)
@@ -1245,11 +1348,13 @@ function Spell::DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,
     }
     else if(%castType == $SpellCastTypeSelfOrLOS)
     {
-        if(%castObj == 0)
+        %objtype = getObjectType(%castObj);
+        if(%castObj == 0 || %objtype != "Player")
         {
             Spell::ApplyEffectVars(%clientId,%clientId,%index);
             %castPos = GameBase::getPosition(%clientId);
             %overrideEndSound = $Spell::overrideEndSound[%index];
+            Client::sendMessage(%clientId, $MsgBeige, "Received "@ $Spell::name[%index]);
             %returnFlag = true;
         }
         else if(getObjectType(%castObj) == "Player")

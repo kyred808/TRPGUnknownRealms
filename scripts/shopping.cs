@@ -15,7 +15,7 @@ function SetupShop(%clientId, %id)
 	%txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
 	Client::setInventoryText(%clientId, %txt);
 
-	%info = $BotInfo[%id.name, SHOP];	
+	%info = $BotInfo[%id.name, SHOP];
     %buyList = "";
     // Speed improved over 100x
 	for(%i = 0; (%item = GetWord(%info, %i)) != -1; %i++)
@@ -57,6 +57,77 @@ function SetupShop(%clientId, %id)
     remoteEval(%clientId,"BufferedBuyList",%buyList,true,true);
 }
 
+function SetupRespec(%clientId,%id)
+{
+    %totalSP = CalcTotalSpentSP(%clientId);
+    Client::buildMenu(%clientId, "Respec: "@ %totalSP @" SP - COINS: "@ fetchData(%clientId, "COINS"), "RespecPage", true);
+    Client::addMenuItem(%clientId, "rCost: $" @ $RespecCostPerSP * %totalSP, "respec "@ %totalSP @" "@ %id);
+    Client::addMenuItem(%clientId, "xCancel", "cancel");
+}
+
+function processMenuRespecPage(%clientId,%opt)
+{
+    %select = getWord(%opt,0);
+    if(%select == "respec")
+    {
+        %totalSP = getWord(%opt,1);
+        %npc = getWord(%opt,2);
+        
+        %check = CalcTotalSpentSP(%clientId);
+        
+        //Prevent players from trying to get free sp by spending SP while in the menu somehow
+        if(%totalSP == %check)
+        {
+            %coins = fetchData(%clientId, "COINS");
+            %cost = $RespecCostPerSP * %totalSP;
+            if(%coins >= %cost)
+            {
+                Client::SendMessage(%clientId, $MsgWhite, "Your skills have been reset! "@ %totalSP @" SP refunded.~wmoney.wav");
+                storeData(%clientId,"COINS",%cost,"dec");
+                //Reset skills
+                RespecPlayer(%clientId);
+                RefreshAll(%clientId,true);
+                return;
+            }
+            else
+            {
+                Client::SendMessage(%clientId, $MsgRed,"You don't have enough COINS~wC_BuySell.wav");
+                return;
+            }
+        }
+        else
+        {
+            SetupRespec(%clientId,%npc);
+        }
+    }
+    else if(%select == "cancel")
+    {
+    
+    }
+}
+
+function SetupItemRefinement(%clientId,%anvilObj)
+{
+    %clientId.currentAnvil = "RefineEquip "@%anvilObj;
+    remoteEval(%clientId,"ClearBuyList");
+    remoteEval(%clientId,"SetMenuOptions",false);
+	Client::setGuiMode(%clientId, 4);
+    %clientId.bulkNum = "";
+    
+    %txt = "<f1><jc>COINS: " @ fetchData(%clientId, "COINS");
+	Client::setInventoryText(%clientId, %txt);
+    
+}
+
+//WIP
+//function SetupItemOptions(%clientId,%itemTag)
+//{
+//    remoteEval(%clientId,"ClearBuyList");
+//    
+//    %itemStr = %itemTag @"|What is?|0|Options";
+//    remoteEval(%clientId,"BufferedBuyList",%itemStr,true,true);
+//}
+
 function SetupBank(%clientId, %id)
 {
 	dbecho($dbechoMode, "SetupBank(" @ %clientId @ ", " @ %id @ ")");
@@ -77,7 +148,7 @@ function SetupBank(%clientId, %id)
 	Client::setInventoryText(%clientId, %txt);
 
 	%info = RPGItem::getFullItemList(%clientId,true);
-    echo(%info);
+    //echo(%info);
     %buyList = ""; //"COINS|COINS|"@fetchData(%clientId,"BANK")@"|Money,";
 	for(%i = 0; GetWord(%info, %i) != -1; %i+=2)
 	{
@@ -112,6 +183,24 @@ function SetupBank(%clientId, %id)
     //{
     //    remoteEval(%clientId,"SetItemCount","COINS","COINS",%coins,"Money");
     //}
+}
+
+function SetupSmithing(%clientId,%id,%txt)
+{
+    remoteEval(%clientId,"ClearBuyList");
+    remoteEval(%clientId,"SetInventoryFitler","Ores");
+    %clientId.currentAnvil = "CraftEquip "@%anvilObj;
+    if(Client::getGuiMode(%clientId) != 4)
+		Client::setGuiMode(%clientId, 4);
+    
+    if(%txt == "")
+    {
+        %coins =  fetchData(%clientId, "COINS");
+        %txt = "<f1><jc>COINS: " @ %coins;
+    }
+	Client::setInventoryText(%clientId, %txt);
+    
+    Client::SendMessage(%clientId,$MsgWhite,"Select a item recipe to being crafting");
 }
 
 function SetupBlacksmith(%clientId, %id)
@@ -197,10 +286,13 @@ function ClearCurrentShopVars(%clientId)
 {
 	dbecho($dbechoMode, "ClearCurrentShopVars(" @ %clientId @ ")");
 
-      %clientId.currentShop = "";
-      %clientId.currentBank = "";
-      %clientId.currentSmith = "";
+    %clientId.currentShop = "";
+    %clientId.currentBank = "";
+    %clientId.currentSmith = "";
 	%clientId.currentInvSteal = "";
+    remoteEval(%clientId,"SetMenuOptions",true); //Restore to default
+    %clientId.currentAnvil = "";
+    
     //remoteEval(%clientId,"SetItemCount","COINS","COINS",0,"Money");
 	storeData(%clientId, "TempPack", "");
 	storeData(%clientId, "TempSmith", "");
