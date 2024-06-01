@@ -244,7 +244,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 	if(String::getSubStr(%message, 0, 1) != "#")
 	{
 		if(%team)
-			%message = "#zone " @ %message;
+			%message = "#global " @ %message;
 		else
 			%message = fetchData(%TrueClientId, "defaultTalk") @ " " @ %message;
 

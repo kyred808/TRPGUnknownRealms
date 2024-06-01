@@ -386,49 +386,23 @@ function RPG::gameMenu(%clientId,%page)
         if(%page == 1)
         {
             Client::addMenuItem(%clientId, %curItem++ @ "View your stats" , "viewstats");
-            
-            if(fetchData(%clientId, "defaultTalk") == "#say")
-                Client::addMenuItem(%clientId, %curItem++ @ "Set default talk: #global" , "defglobal");
-            else
-                Client::addMenuItem(%clientId, %curItem++ @ "Set default talk: #say" , "defsay");
-                
-            if(GetAccessoryList(%clientId, 9, -1) != "")
-                Client::addMenuItem(%clientId, %curItem++ @ "Ranged weapons..." , "rweapons");
-                
+            Client::addMenuItem(%clientId, %curItem++ @ "Attributes..." , "viewattributes");
+            Client::addMenuItem(%clientId, %curItem++ @ "Weapon Options..." , "weaponopts");
             Client::addMenuItem(%clientId, %curItem++ @ "Skill points..." , "sp");
-            Client::addMenuItem(%clientId, %curItem++ @ "Skill Book..." , "skillbook");
-            Client::addMenuItem(%clientId, %curItem++ @ "Spell Book..." , "spellbook");
-            if(fetchData(%clientId, "ignoreGlobal"))
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
-            else
-                Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
-                
+            Client::addMenuItem(%clientId, %curItem++ @ "Info..." , "info");
+            Client::addMenuItem(%clientId, %curItem++ @ "RPG Options..." , "rpgopt");
             
-            
-            if(%curItem < 7)
-            {
-                if(fetchData(%clientId, "LCKconsequence") == "miss")
-                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
-                else if(fetchData(%clientId, "LCKconsequence") == "death")
-                    Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
-                
-            }
-            
-            Client::addMenuItem(%clientId, "nNext >>" , "page "@ %page+1);
-        }
-        else if(%page == 2)
-        {
-            if(fetchData(%clientId, "LCKconsequence") == "miss")
-                Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
-            else if(fetchData(%clientId, "LCKconsequence") == "death")
-                Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
+            //Client::addMenuItem(%clientId, "nNext >>" , "page "@ %page+1);
+        //}
+        //else if(%page == 2)
+        //{
                 
             
             Client::addMenuItem(%clientId, %curItem++ @ "Party options..." , "partyoptions");
             
             
             
-            Client::addMenuItem(%clientId, "pPrev <<" , "page "@ %page-1);
+        //    Client::addMenuItem(%clientId, "pPrev <<" , "page "@ %page-1);
         }
     }
 }
@@ -439,38 +413,7 @@ function processMenuOptions(%clientId, %option)
 
 	%opt = getWord(%option, 0);
 	%cl = floor(getWord(%option, 1));
-	
-//	if(%opt == "Other")
-//	{
-//		%sel = %clientId.selClient;
-//		if(%sel == "") %sel = %clientId;
-//		%name = Client::getName(%sel);
-//
-//		Client::buildMenu(%clientId, "Other options", "Otheropt", true);
-//
-//
-//		if($curVoteTopic == "" && %clientId.adminLevel < 4)
-//		{
-//			//Client::addMenuItem(%clientId, %curItem++ @ "Vote to admin " @ %name, "vadmin " @ %sel);
-//			//Client::addMenuItem(%clientId, %curItem++ @ "Vote to kick " @ %name, "vkick " @ %sel);
-//		}
-//		if(%clientId.adminLevel >= 4)
-//		{
-//			Client::addMenuItem(%clientId, %curItem++ @ "Kick " @ %name, "kick " @ %sel);
-//			if(%clientId.adminLevel >= 5)
-//			{
-//				Client::addMenuItem(%clientId, %curItem++ @ "Ban " @ %name, "ban " @ %sel);
-//				Client::addMenuItem(%clientId, %curItem++ @ "Admin " @ %name, "admin " @ %sel);
-//			}
-//			Client::addMenuItem(%clientId, %curItem++ @ "Change " @ %name @ "'s team", "fteamchange " @ %sel);
-//		}
-//		if(%clientId.muted[%sel])
-//			Client::addMenuItem(%clientId, %curItem++ @ "Unmute " @ %name, "unmute " @ %sel);
-//		else
-//			Client::addMenuItem(%clientId, %curItem++ @ "Mute " @ %name, "mute " @ %sel);
-//
-//		return;
-//	}
+
 	//**RPG
 	if(%opt == "selspell")
 	{
@@ -489,6 +432,23 @@ function processMenuOptions(%clientId, %option)
 
 		return;
 	}
+    if(%opt == "weaponopts")
+    {
+        RPGWeaponOptionMenu(%clientId,1);
+        return;
+    }
+    else if(%opt == "info")
+    {
+        RPGInfoMenu(%clientId,1);
+    }
+    else if(%opt == "rpgopt")
+    {
+        RPGOptionsMenu(%clientId,1);
+    }
+    else if(%opt == "viewattributes")
+    {
+        RPGAttributeMenu(%clientId,1);
+    }
 	else if(%opt == "viewstats")
 	{
 		%a[%tmp++] = "<f1>" @ Client::getName(%clientId) @ ", LEVEL " @ fetchData(%clientId, "LVL") @ " " @ fetchData(%clientId, "RACE") @ " " @ fetchData(%clientId, "CLASS") @ "<f0>\n\n";
@@ -535,24 +495,6 @@ function processMenuOptions(%clientId, %option)
 
 		return;
 	}
-	else if(%opt == "defglobal")
-	{
-		storeData(%clientId, "defaultTalk", "#global");
-	}
-	else if(%opt == "defsay")
-	{
-		storeData(%clientId, "defaultTalk", "#say");
-	}
-    else if(%opt == "spellbook")
-    {
-        MenuViewSpellBook(%clientid, 1);
-        return;
-    }
-    else if(%opt == "skillbook")
-    {
-        MenuViewSkillBook(%clientId,"root",1);
-        return;
-    }
     else if(%opt == "page")
     {
         Game::menuRequest(%clientid,getWord(%option,1));
@@ -622,39 +564,9 @@ function processMenuOptions(%clientId, %option)
 	      %clientId.muted[%cl] = True;
 	else if(%opt == "unmute")
 		%clientId.muted[%cl] = "";
-	else if(%opt == "gignoreon")
-	{
-		storeData(%clientId, "ignoreGlobal", True);
-	}
-	else if(%opt == "gignoreoff")
-	{
-		storeData(%clientId, "ignoreGlobal", "");
-	}
-	else if(%opt == "lckmiss")
-	{
-		storeData(%clientId, "LCKconsequence", "miss");
-	}
-	else if(%opt == "lckdeath")
-	{
-		storeData(%clientId, "LCKconsequence", "death");
-	}
 	else if(%opt == "sp")
 	{
 		MenuSP(%clientId, 1);
-		return;
-	}
-	else if(%opt == "rweapons")
-	{
-		%list = GetAccessoryList(%clientId, 9, -1);
-
-		Client::buildMenu(%clientId, "Ranged weapons:", "selectrweapon", true);
-		for(%i = 0; GetWord(%list, %i) != -1; %i++)
-		{
-			%item = GetWord(%list, %i);
-            %name = RPGItem::getItemNameFromTag(%item);
-            
-			Client::addMenuItem(%clientId, %curitem++ @ %name, %item);
-		}
 		return;
 	}
 	else if(%opt == "partyoptions")
@@ -691,6 +603,160 @@ function processMenuOptions(%clientId, %option)
 		}
 	}
 	//**
+}
+
+function RPGAttributeMenu(%clientId,%page)
+{
+    Client::buildMenu(%clientId, "Attributes", "attributemenu", true);
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        //%desc = $RPGStats::Attributes[%i,Name];
+        
+        %base = RPGStats::getBaseAttributeValue(%clientId,%attr);
+        %extra = RPGStats::getExtraAttributeValue(%clientId,%attr);
+        
+        %valStr = "[" @ %base;
+        if(%extra > 0)
+            %valStr = %valStr @ "+"@ %extra;
+        %valStr = %valStr @ "]";
+        Client::addMenuItem(%clientId, %i+1 @ %attr @ ": " @ %valStr, "selAttr "@ %i);
+    }
+    
+    Client::addMenuItem(%clientId, "bBack <<" , "back");
+}
+
+function processMenuattributemenu(%clientId,%option)
+{
+    %opt = getWord(%option,0);
+    %attrId = getWord(%option,1);
+    
+    if(%opt == "selAttr")
+    {
+        RPGStats::DisplayAttributeInfo(%clientId,%attrId);
+    }
+    else if(%opt == "back")
+    {
+        Game::menuRequest(%clientId,1);
+        return;
+    }
+}
+
+//Can be added to
+function RPGWeaponOptionMenu(%clientId,%page)
+{
+    Client::buildMenu(%clientId, "Weapon Options", "weaponoptions", true);
+    Client::addMenuItem(%clientId, %curItem++ @ "Ranged weapons..." , "rweapons");
+    Client::addMenuItem(%clientId, "bBack <<" , "back");
+}
+
+function processMenuweaponoptions(%clientId, %option)
+{
+    %opt = getWord(%option, 0);
+	
+    if(%opt == "rweapons")
+	{
+		%list = GetAccessoryList(%clientId, 9, -1);
+
+		Client::buildMenu(%clientId, "Ranged weapons:", "selectrweapon", true);
+		for(%i = 0; GetWord(%list, %i) != -1; %i++)
+		{
+			%item = GetWord(%list, %i);
+            %name = RPGItem::getItemNameFromTag(%item);
+            
+			Client::addMenuItem(%clientId, %curitem++ @ %name, %item);
+		}
+		return;
+	}
+    else if(%opt == "back")
+    {
+        Game::menuRequest(%clientId,1);
+        return;
+    }
+}
+
+function RPGOptionsMenu(%clientId,%page)
+{
+    Client::buildMenu(%clientId, "RPG Options", "rpgoptionsmenu", true);
+    
+    if(fetchData(%clientId, "ignoreGlobal"))
+        Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global OFF" , "gignoreoff");
+    else
+        Client::addMenuItem(%clientId, %curItem++ @ "Turn ignore global ON" , "gignoreon");
+        
+    if(fetchData(%clientId, "LCKconsequence") == "miss")
+        Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = death" , "lckdeath");
+    else if(fetchData(%clientId, "LCKconsequence") == "death")
+        Client::addMenuItem(%clientId, %curItem++ @ "Set LCK mode = miss" , "lckmiss");
+        
+    if(fetchData(%clientId, "defaultTalk") == "#say")
+        Client::addMenuItem(%clientId, %curItem++ @ "Set default talk: #global" , "defglobal");
+    else
+        Client::addMenuItem(%clientId, %curItem++ @ "Set default talk: #say" , "defsay");
+        
+    Client::addMenuItem(%clientId, "bBack <<" , "back");
+}
+
+function processMenurpgoptionsmenu(%clientId,%option)
+{
+    %opt = getWord(%option, 0);
+    if(%opt == "gignoreon")
+	{
+		storeData(%clientId, "ignoreGlobal", True);
+	}
+	else if(%opt == "gignoreoff")
+	{
+		storeData(%clientId, "ignoreGlobal", "");
+	}
+	else if(%opt == "lckmiss")
+	{
+		storeData(%clientId, "LCKconsequence", "miss");
+	}
+	else if(%opt == "lckdeath")
+	{
+		storeData(%clientId, "LCKconsequence", "death");
+	}
+    else if(%opt == "defglobal")
+	{
+		storeData(%clientId, "defaultTalk", "#global");
+	}
+	else if(%opt == "defsay")
+	{
+		storeData(%clientId, "defaultTalk", "#say");
+	}
+    else if(%opt == "back")
+    {
+        Game::menuRequest(%clientId,1);
+        return;
+    }
+}
+
+function RPGInfoMenu(%clientId,%page)
+{
+    Client::buildMenu(%clientId, "Information", "infomenu", true);
+    Client::addMenuItem(%clientId, %curItem++ @ "Skill Book..." , "skillbook");
+    Client::addMenuItem(%clientId, %curItem++ @ "Spell Book..." , "spellbook");
+    Client::addMenuItem(%clientId, "bBack <<" , "back");
+}
+
+function processMenuinfomenu(%clientId, %option)
+{
+    %opt = getWord(%option, 0);
+    if(%opt == "spellbook")
+    {
+        MenuViewSpellBook(%clientid, 1);
+        return;
+    }
+    else if(%opt == "skillbook")
+    {
+        MenuViewSkillBook(%clientId,"root",1);
+        return;
+    }
+    else if(%opt == "back")
+    {
+        Game::menuRequest(%clientId,1);
+        return;
+    }
 }
 
 function processMenupartyopt(%clientId, %option)

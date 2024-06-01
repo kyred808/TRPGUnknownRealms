@@ -1,3 +1,80 @@
+$RPGStats::Attributes[0] = "VIT";
+$RPGStats::Attributes[1] = "END";
+$RPGStats::Attributes[2] = "STR";
+$RPGStats::Attributes[3] = "DEX";
+$RPGStats::Attributes[4] = "INT";
+$RPGStats::Attributes[5] = "FAI";
+
+$RPGStats::Attributes[0,Name] = "Vitality";
+$RPGStats::Attributes[1,Name] = "Endurance";
+$RPGStats::Attributes[2,Name] = "Strength";
+$RPGStats::Attributes[3,Name] = "Dexterity";
+$RPGStats::Attributes[4,Name] = "Intelligence";
+$RPGStats::Attributes[5,Name] = "Faith";
+
+$RPGStats::Attributes[0,Desc] = "Determines the player's base HP";
+$RPGStats::Attributes[1,Desc] = "Determines the player's defense and armor capabilities";
+$RPGStats::Attributes[2,Desc] = "Your overall physical strength";
+$RPGStats::Attributes[3,Desc] = "Determines damage with dex based weapons";
+$RPGStats::Attributes[4,Desc] = "Governs magic damage";
+$RPGStats::Attributes[5,Desc] = "Governs divine damage";
+
+$RPGStats::AttributeId["VIT"] = 0;
+$RPGStats::AttributeId["END"] = 1;
+$RPGStats::AttributeId["STR"] = 2;
+$RPGStats::AttributeId["DEX"] = 3;
+$RPGStats::AttributeId["INT"] = 4;
+$RPGStats::AttributeId["FAI"] = 5;
+
+$RPGStats::AttributeCount = 6;
+
+function RPGStats::getBaseAttributeValue(%clientId,%attr)
+{
+    return $ClientData[%clientId, %attr];
+}
+
+function RPGStats::getExtraAttributeValue(%clientId,%attr)
+{
+    return AddBonusStatePoints(%clientId, %attr) + RPGItem::GetPlayerEquipStats(%clientId,%type);
+}
+
+function RPGStats::DisplayAttributeInfo(%clientId,%attrId)
+{
+    %attr = $RPGStats::Attributes[%attrId];
+    %base = RPGStats::getBaseAttributeValue(%clientId,%attr);
+    %bonus = AddBonusStatePoints(%clientId, %attr);
+    %equip = RPGItem::GetPlayerEquipStats(%clientId,%type);
+    
+    %a[%tmp++] = "<f0>" @ %attr @ " - "@ $RPGStats::Attributes[%attrId,Name] @"\n";// <f0>Base<f1>: "@@" - Total:\n\n";
+    %a[%tmp++] = "<f0>Value: <f1>" @ fetchData(%clientId, %attr);
+    if(%bonus != 0 || %equip != 0)
+    {
+        %a[%tmp] = %a[%tmp] @ " <f1>[Base: "@ %base;
+        if(%equip != 0)
+            %a[%tmp] = %a[%tmp] @ " Equipment: "@ %equip;
+        if(%bonus != 0)
+            %a[%tmp] = %a[%tmp] @ " Bonus: "@ %bonus;
+        %a[%tmp] = %a[%tmp] @ "]";
+    }
+    %a[%tmp] = %a[%tmp] @ "\n\n";
+    
+    %a[%tmp++] = "<f0>Desc: <f2>"@ $RPGStats::Attributes[%attrId,Desc];
+    
+    for(%i = 1; %a[%i] != ""; %i++)
+        %msg = %msg @ %a[%i];
+        
+    %len = String::len(%msg);
+    if(%len > 255)
+    {
+        %substr = String::getsubstr(%msg,0,255);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(%len / 10), 1);
+        %substr = String::getSubstr(%msg,255,%len);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+    }
+    else 
+        bottomprint(%clientId, %msg, floor(%len / 10));
+}
+
 function fetchData(%clientId, %type)
 {
 	dbecho($dbechoMode, "fetchData(" @ %clientId @ ", " @ %type @ ")");
@@ -7,6 +84,14 @@ function fetchData(%clientId, %type)
 		%a = GetLevel(fetchData(%clientId, "EXP"), %clientId);
 		return %a;
 	}
+    //Core Stats
+    else if(%type == "VIT" || %type == "END" || %type == "STR" || %type == "DEX" || %type == "INT" || %type == "FAI")
+    {
+        %retVal = $ClientData[%clientId, %type];
+        %retVal += AddBonusStatePoints(%clientId, %type);
+        %retVal += RPGItem::GetPlayerEquipStats(%clientId,%type);
+        return %retVal;
+    }
     else if(%type == "HealBurstMax")
     {
         return Cap(1 + floor(CalculatePlayerSkill(%clientId, $SkillHealing) / 125),1,5);
