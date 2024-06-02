@@ -23,6 +23,8 @@ if($maxSAYdistVec == "") $maxSAYdistVec = 20;
 if($maxSHOUTdistVec == "") $maxSHOUTdistVec = 60;
 if($maxWHISPERdistVec == "") $maxSHOUTdistVec = 5;
 
+if($APgainedPerLevel == "") $APgainedPerLevel = 3;
+
 if($joinHouseCost == "") $joinHouseCost = 2500;
 if($changeHouseCost == "") $changeHouseCost = 2500;
 if($joinHouseRankPoints == "") $joinHouseRankPoints = 4;
@@ -38,6 +40,8 @@ if($SlowdownHitDelay == "") $SlowdownHitDelay = 1.0;
 $initHaze = 900;
 $currentHaze = $initHaze;
 $currentSky = "lushdayclear.dml";
+
+$AttributeIncreaseSound = "AbsorbABS.wav";
 
 $dayCycleSky[1] = "lushdayclear.dml";
 $dayCycleSky[2] = "litesky.dml";

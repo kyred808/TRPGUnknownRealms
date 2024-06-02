@@ -1,8 +1,9 @@
+$CampFireFlameOffset = "0.566 1.639 0.417";
 function GroupTrigger::onTrigEnter(%object, %this)
 {
 	dbecho($dbechoMode, "GroupTrigger::onTrigEnter(" @ %object @ ", " @ %this @ ")");
 
-      %clientId = Player::getClient(%this);
+    %clientId = Player::getClient(%this);
 
 	%flag = "";
 	%g = Object::getName(getGroup(%object));
@@ -131,7 +132,7 @@ function DoCampSetup(%clientId, %step, %pos)
 		%old = nameToId("MissionCleanup\\Camp" @ %clientId @ "\\wood");
 		deleteObject(%old);
 
-		%object = newObject("woodfire", InteriorShape, "woodfire.dis");
+		%object = newObject("bonfire", InteriorShape, "woodfire.dis");
 		addToSet("MissionCleanup\\Camp" @ %clientId, %object);
 
 		%x = GetWord(%pos, 0);
@@ -161,14 +162,20 @@ function DoCampSetup(%clientId, %step, %pos)
 		%z = GetWord(%pos, 2);
 		%npos = (%x + 8) @ " " @ (%y + 0) @ " " @ (%z + 2);
 		GameBase::setPosition(%object, %npos);
+        
+        %wood = nameToId("MissionCleanup\\Camp" @ %clientId @"\\bonfire");
+        echo("Bonfire: "@ %wood);
+        %flame = newObject("bfflame",StaticShape,FireLargeShape,false);
+        %p = Vector::Add(Gamebase::getPosition(%wood),$CampFireFlameOffset);
+        Gamebase::setPosition(%flame,%p);
+        addToSet("MissionCleanup\\Camp" @ %clientId, %flame);
 
 		Client::sendMessage(%clientId, $MsgBeige, "Finished setting up camp. Use #uncamp to pack up.");
 	}
 	else if(%step == 5)
 	{
 		%g = "MissionCleanup/Camp" @ %clientId;
-
-		RPGItem::incItemCount(%clientId, Tent);
+		RPGItem::incItemCount(%clientId, RPGItem::LabelToItemTag("Tent"));
 		RefreshAll(%clientId,false);
 
 		//so the players in the grouptrigger get kicked out first.

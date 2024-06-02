@@ -1363,6 +1363,9 @@ ItemData OreShape
 	shapeFile = "Emerald";
 	heading = "eMiscellany";
 	shadowDetailMask = 4;
+    lightType = 1;
+	lightRadius = 13;
+    lightColor = { 0.1, 0.85, 0.1 };
 	price = 5;
 };
 
@@ -1374,6 +1377,9 @@ ItemData MeteorBits
 	shadowDetailMask = 4;
 	price = 5;
 	className = "HandAmmo";
+    lightType = 1;
+	lightRadius = 13;
+    lightColor = { 0.1, 0.1, 0.85 };
 };
 ItemData MeteorBitsRed
 {
@@ -1383,6 +1389,9 @@ ItemData MeteorBitsRed
 	shadowDetailMask = 4;
 	price = 5;
 	className = "HandAmmo";
+    lightType = 1;
+	lightRadius = 13;
+    lightColor = { 0.85, 0.1, 0.1 };
 };
 
 ItemData Grenade

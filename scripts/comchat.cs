@@ -2084,7 +2084,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
         }
 		else if(%w1 == "#camp")
 		{
-			if(Player::getItemCount(%TrueClientId, Tent))
+            %tentTag = RPGItem::LabelToItemTag("Tent");
+			if(RPGItem::getItemCount(%TrueClientId,%tentTag))
 			{
 				%camp = nameToId("MissionCleanup\\Camp" @ %TrueClientId);
 				if(%camp == -1)
@@ -2095,7 +2096,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			
 						%pos = GameBase::getPosition(%TrueClientId);
 			
-						RPGItem::decItemCount(%TrueClientId, Tent);
+						RPGItem::decItemCount(%TrueClientId, %tentTag);
 						RefreshAll(%TrueClientId,false);
 						%group = newObject("Camp" @ %TrueClientId, SimGroup);
 						addToSet("MissionCleanup", %group);
@@ -2121,7 +2122,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 			%camp = nameToId("MissionCleanup\\Camp" @ %TrueClientId);
 			if(%camp != -1)
 			{
-				%obj = nameToId("MissionCleanup\\Camp" @ %TrueClientId @ "\\woodfire");
+				%obj = nameToId("MissionCleanup\\Camp" @ %TrueClientId @ "\\bonfire");
 				if(Vector::getDistance(GameBase::getPosition(%TrueClientId), GameBase::getPosition(%obj)) <= 10)
 				{
 					DoCampSetup(%TrueClientId, 5);

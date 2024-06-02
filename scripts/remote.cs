@@ -487,11 +487,22 @@ function remoteConsider(%clientId)
                 }
             }
         }
-		else if(%obj == "InteriorShape" && %object.tag != "" && %clientId.adminLevel >= 1)
-		{
-			Client::sendMessage(%clientId, $MsgWhite, %object @ "'s tag name: " @ %object.tag);
-			%sawsomething = True;
-		}
+        else if(%obj == "InteriorShape")
+        {
+            if(%object.tag != "" && %clientId.adminLevel >= 1)
+            {
+                Client::sendMessage(%clientId, $MsgWhite, %object @ "'s tag name: " @ %object.tag);
+                %sawsomething = True;
+            }
+            %groupName = Object::getName(getGroup(%object));
+
+            if(Object::getName(%object) == "bonfire" && String::findSubStr(%groupName, "Camp") != -1)
+            {
+                //RPGLevelUpMenu(%clientId,1);
+                BonfireMenu(%clientId,1);
+                %sawsomething = True;
+            }
+        }
 		else if(%clientId.adminLevel >= 3)
 		{
             %type = Gamebase::getDataName(%object);

@@ -726,7 +726,7 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
                         RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%curWeapon,"",1),"dec");
                         %refreshEquip = true;
                     }
-                    echo(RPGItem::GetEquipmentStats(%itemTag,"",1));
+                    //echo(RPGItem::GetEquipmentStats(%itemTag,"",1));
                     RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,"",1),"inc");
                     RPGmountItem(Client::getOwnedObject(%clientId), %itemTag, $WeaponSlot);
                 }

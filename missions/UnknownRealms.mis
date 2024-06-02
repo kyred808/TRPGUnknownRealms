@@ -4709,7 +4709,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME merchant";
                 instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
                 instant SimGroup "RACE MaleHuman";
-                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id28 id29 id16 id120 id121 id122 id123 id99 id238"; //134 135 136 137";
+                instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id28 id29 id165 id16 id120 id121 id122 id123 id99 id238"; //134 135 136 137";
             };
             instant SimGroup "respec0" {
                 instant Marker "keldrin respec" {

@@ -480,7 +480,7 @@ function processMenuOptions(%clientId, %option)
 		}
 
 		%a[%tmp++] = "Experience: " @ fetchData(%clientId, "EXP") @ "\n";
-            %a[%tmp++] = "Exp needed: " @ (GetExp(GetLevel(fetchData(%clientId, "EXP"), %clientId)+1, %clientId) - fetchData(%clientId, "EXP") @ "\n\n");
+            %a[%tmp++] = "Exp needed: " @ (GetExpToLevel(GetLevel(fetchData(%clientId, "EXP"), %clientId)+1, %clientId) - fetchData(%clientId, "EXP") @ "\n\n");
 
 		%a[%tmp++] = "Coins: " @ fetchData(%clientId, "COINS") @ " - Bank: " @ fetchData(%clientId, "BANK") @ "\n";
 		%a[%tmp++] = "TOTAL $: " @ fetchData(%clientId, "COINS") + fetchData(%clientId, "BANK") @ "\n\n";
@@ -613,7 +613,7 @@ function RPGAttributeMenu(%clientId,%page)
         %attr = $RPGStats::Attributes[%i];
         //%desc = $RPGStats::Attributes[%i,Name];
         
-        %base = RPGStats::getBaseAttributeValue(%clientId,%attr);
+        %base = fetchData(%clientId,%attr);
         %extra = RPGStats::getExtraAttributeValue(%clientId,%attr);
         
         %valStr = "[" @ %base;
@@ -756,6 +756,170 @@ function processMenuinfomenu(%clientId, %option)
     {
         Game::menuRequest(%clientId,1);
         return;
+    }
+}
+
+function BonfireMenu(%clientId,%page)
+{
+    Client::buildMenu(%clientId, "What do you want to do?", "bonfiremenu", true);
+    Client::addMenuItem(%clientId, %cnt++ @ "Rest","dorest");
+    Client::addMenuItem(%clientId, %cnt++ @ "Level Up","dolevel");
+    Client::addMenuItem(%clientId, %cnt++ @ "Spend Attribute Points","doattr");
+    Client::addMenuItem(%clientId, "xDone", "done");
+}
+
+function processMenubonfiremenu(%clientId,%option)
+{
+    if(%option == "rest")
+    {
+        return;
+    }
+    else if(%option == "dolevel")
+    {
+        RPGLevelUpMenu(%clientId,1);
+    }
+    else if(%option == "doattr")
+    {
+        %clientId.attrSpentAmt = 0;
+        %clientId.attrSpent = "";
+        %clientId.attrSeq = "";
+        RPGIncreaseAttributesMenu(%clientId,1);
+    }
+}
+
+function RPGLevelUpMenu(%clientId,%page)
+{
+    %exp = fetchData(%clientId,"EXP");
+    %lvl = fetchData(%clientId,"LVL");
+    %need = GetExpToLevel(%lvl, %clientId);
+    Client::buildMenu(%clientId, "EXP: "@ %exp @ " Need: "@ %need, "levelmenu", true);
+    
+    if(%exp >= %need)
+        Client::addMenuItem(%clientId, %cnt++ @ "Level Up","level,1");
+    else
+        Client::addMenuItem(%clientId, %cnt++ @ "EXP too low to level","nope");
+        
+    Client::addMenuItem(%clientId, "xDone <<" , "done");
+}
+
+function processMenulevelmenu(%clientId,%option)
+{
+    //Using get word risks you losing a level if something messes up, because no word found results in -1
+    %opt = String::getWord(%option,",",0);
+    if(%opt == "level")
+    {
+        %amt = String::getWord(%option,",",1);
+        if(%amt != ",")
+        {
+            %lvl = fetchData(%clientId,"LVL");
+            %need = GetExpToLevel(%lvl, %clientId);
+            RPG::DoLevelUp(%clientId,%amt);
+            storeData(%clientId,"EXP",%need,"dec");
+            RPGLevelUpMenu(%clientId,1);
+        }
+    }
+    else if(%opt == "nope")
+    {
+        RPGLevelUpMenu(%clientId,1);
+    }
+    else if(%opt == "done")
+    {
+        return;
+    }
+}
+
+function RPGIncreaseAttributesMenu(%clientId,%page)
+{
+    %ap = fetchData(%clientId,"APcredits");
+    //if(%clientId.attrSpentAmt > 0)
+    //    %txt = "You have " @ %ap - %clientId.attrSpentAmt @ " AP";
+    //else
+    //    %txt = "You have " @ %ap @ " AP";
+    Client::buildMenu(%clientId, "You have " @ %ap - %clientId.attrSpentAmt @ " AP", "LevelAttr", true);
+
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        //%desc = $RPGStats::Attributes[%i,Name];
+        
+        %base = fetchData(%clientId,%attr);
+        %extra = GetStuffStringCount(%clientId.attrSpent,%attr);
+        echo(%extra);
+        %valStr = "[" @ %base;
+        if(%extra > 0)
+            %valStr = %valStr @ "+"@ %extra;
+        %valStr = %valStr @ "]";
+        Client::addMenuItem(%clientId, %i+1 @ %attr @ ": " @ %valStr, "selAttr "@ %attr);
+    }
+    if(%clientId.attrSpentAmt > 0)
+    {
+        Client::addMenuItem(%clientId, "cConfirm to Apply","confirm");
+        Client::addMenuItem(%clientId, "uUndo","undo");
+    }
+    else
+        Client::addMenuItem(%clientId, "xBack","back");
+}
+
+function processMenuLevelAttr(%clientId,%option)
+{
+    %opt = getWord(%option,0);
+    
+    if(%opt == "selAttr")
+    {
+        if(%clientId.attrSpentAmt < fetchData(%clientId,"APcredits"))
+        {
+            %attr = getWord(%option,1);
+            %clientId.attrSpent = SetStuffString(%clientId.attrSpent,%attr,1,"inc");
+            %clientId.attrSpentAmt++;
+            %clientId.attrSeq = %attr @ " " @ %clientId.attrSeq;
+        }
+        RPGIncreaseAttributesMenu(%clientId,1);
+    }
+    else if(%opt == "undo")
+    {
+        %attr = getWord(%clientId.attrSeq,0);
+        %clientId.attrSpent = SetStuffString(%clientId.attrSpent,%attr,1,"dec");
+        %clientId.attrSpentAmt--;
+        %clientId.attrSeq = Word::getSubWord(%clientId.attrSeq,1,99999);
+        RPGIncreaseAttributesMenu(%clientId,1);
+    }
+    else if(%opt == "confirm")
+    {
+        RPGApplyAttributes(%clientId,%clientId.attrSpent);
+        storeData(%clientId,"APcredits",%clientId.attrSpentAmt,"dec");
+        %clientId.attrSpentAmt = 0;
+        %clientId.attrSpent = "";
+        %clientId.attrSeq = "";
+        RPGIncreaseAttributesMenu(%clientId,1);
+    }
+    else if(%opt == "back")
+    {
+        %clientId.attrSpentAmt = 0;
+        %clientId.attrSpent = "";
+        %clientId.attrSeq = "";
+        BonfireMenu(%clientId,1);
+    }
+        
+}
+
+function RPGApplyAttributes(%clientId,%attrUpdateStr)
+{
+    %playedSound = false;
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %amt = GetStuffStringCount(%attrUpdateStr,%attr);
+        if(%amt > 0)
+        {
+            storeData(%clientId,%attr,%amt,"inc");
+            %txt = "Your "@ $RPGStats::Attributes[%i,Name] @" increased by "@ %amt @".";
+            if(!%playedSound && $AttributeIncreaseSound != "")
+            {
+                %txt = %txt @ "~w" @ $AttributeIncreaseSound;
+                %playedSound = true;
+            }
+            Client::sendMessage(%clientId,$MsgWhite,%txt);
+        }
     }
 }
 

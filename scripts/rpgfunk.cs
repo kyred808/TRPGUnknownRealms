@@ -402,7 +402,7 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 12]"] = fetchData(%clientId, "inArena");
 	$funk::var["[\"" @ %name @ "\", 0, 13]"] = fetchData(%clientId, "PlayerInfo");
 	$funk::var["[\"" @ %name @ "\", 0, 14]"] = fetchData(%clientId, "deathmsg");
-	//15 is done lower
+	$funk::var["[\"" @ %name @ "\", 0, 15]"] = fetchData(%clientId, "LVL");
 	//$funk::var["[\"" @ %name @ "\", 0, 16]"] = fetchData(%clientId, "BankStorage");
 	$funk::var["[\"" @ %name @ "\", 0, 17]"] = fetchData(%clientId, "campRot");
 	$funk::var["[\"" @ %name @ "\", 0, 18]"] = fetchData(%clientId, "HP");
@@ -421,6 +421,7 @@ function SaveCharacter(%clientId)
     $funk::var["[\"" @ %name @ "\", 0, 33]"] = IsDead(%clientId);
     $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "attunedWeapon");
     $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "attunedWeaponMana");
+    $funk::var["[\"" @ %name @ "\", 0, 36]"] = fetchData(%clientId, "APcredits");
     
     for(%i = 0; (%inv = $RPGItem::InvItemLists[%i]) != ""; %i++)
     {
@@ -494,11 +495,12 @@ function SaveCharacter(%clientId)
         $funk::var["[\"" @ %name @ "\", 8, " @ %i @ "]"] = fetchData(%clientId,"SPSpent_"@%i);
 	}
     
-    //for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
-    //{
-    //    %slotName = $BeltEquip::Slot[%i,Name];
-    //    $funk::var["[\"" @ %name @ "\", 8, "@%i@"]"] = $ClientData::BeltEquip[%clientId,%slotName];
-    //}
+    //Attributes
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        $funk::var["[\"" @ %name @ "\", 12, " @ %i @ "]"] = fetchData(%clientId,$RPGStats::Attributes[%i]);
+    }
+
 
 	//IP dump, for server admin look-up purposes
 	$funk::var["[\"" @ %name @ "\", 0, 666]"] = Client::getTransportAddress(%clientId);
@@ -595,7 +597,7 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "inArena", $funk::var[%name, 0, 12]);
 		storeData(%clientId, "PlayerInfo", $funk::var[%name, 0, 13]);
 		storeData(%clientId, "deathmsg", $funk::var[%name, 0, 14]);
-		//storeData(%clientId, "spawnStuff", $funk::var[%name, 0, 15]);
+		storeData(%clientId, "LVL", $funk::var[%name,0,15]);
 		//storeData(%clientId, "BankStorage", $funk::var[%name, 0, 16]);
 		storeData(%clientId, "campRot", $funk::var[%name, 0, 17]);
 		storeData(%clientId, "tmphp", $funk::var[%name, 0, 18]);
@@ -619,14 +621,7 @@ function LoadCharacter(%clientId)
         storeData(%clientId,"attunedWeapon",$funk::var[%name, 0, 34]);
         storeData(%clientId,"attunedWeaponMana",$funk::var[%name, 0, 35]);
         
-        //for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
-        //{
-        //    storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 9, %i]);
-        //    //echo(getWordCount($funk::var[%name, 9, %i]));
-        //    if(getWordCount($funk::var[%name, 9, %i]) > 0)
-        //        RPGItem::forceUpdateBeltItems(%clientId,$Belt::ItemGroup[%i]);
-        //    storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 10, %i]);
-        //}
+        storeData(%clientId,"APcredits",$funk::var[%name, 0, 36]);
         
         //A buffered method might be better, but this seems to work well enough.
         %invStr = "";
@@ -656,14 +651,6 @@ function LoadCharacter(%clientId)
         else
             storeData(%clientId,"Realm",$RealmData::RealmIdToLabel[0]);
         
-        //storeData(%clientId, "GemItems", $funk::var[%name, 0, 32]);
-        //storeData(%clientId, "RareItems", $funk::var[%name, 0, 33]);
-        //storeData(%clientId, "LoreItems", $funk::var[%name, 0, 34]);
-        //storeData(%clientId, "EquipItems", $funk::var[%name, 0, 35]);
-        //storeData(%clientId, "StoredGemItems", $funk::var[%name, 0, 36]);
-        //storeData(%clientId, "StoredRareItems", $funk::var[%name, 0, 37]);
-        //storeData(%clientId, "StoredLoreItems", $funk::var[%name, 0, 38]);
-        //storeData(%clientId, "StoredEquipItems", $funk::var[%name, 0, 39]);
         
 		$numMessage[%clientId, 1] = $funk::var[%name, 7, 1];
 		$numMessage[%clientId, 2] = $funk::var[%name, 7, 2];
@@ -696,13 +683,6 @@ function LoadCharacter(%clientId)
 		$numMessage[%clientId, "numpad-"] = $funk::var[%name, 7, "numpad-"];
 		$numMessage[%clientId, "numpad+"] = $funk::var[%name, 7, "numpad+"];
 
-        //Belt Equip
-        //for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
-        //{
-        //    %slotName = $BeltEquip::Slot[%i,Name];
-        //    $ClientData::BeltEquip[%clientId,%slotName] = $funk::var[%name,8,%i];
-        //}
-
 		//skill variables
 		%cnt = 0;
 		for(%i = 1; %i <= GetNumSkills(); %i++)
@@ -716,6 +696,14 @@ function LoadCharacter(%clientId)
 		{
 			$QuestCounter[%name, $funk::var[%name, 2, %i]] = $funk::var[%name, 3, %i];
 		}
+        
+        //Attributes
+        for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+        {
+            storeData(%clientId,$RPGStats::Attributes[%i],$funk::var[%name,12,%i]);
+        }
+        
+        
 
 		//bonus state variables
 		for(%i = 1; %i <= $maxBonusStates; %i++)
@@ -768,6 +756,8 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "MyHouse", "");
 		storeData(%clientId, "RankPoints", 0);
         storeData(%clientId, "TP", 0);
+        storeData(%clientId,"APcredits",0);
+        storeData(%clientId,"LVL",1);
 		%clientId.choosingGroup = True;
         %clientId.loadCharacterFlag = false;
 		SetAllSkills(%clientId, 0);
@@ -1913,8 +1903,8 @@ function RefreshEquipment(%clientId)
     %sound = true;
     if(%weapon != "")
     {
-        echo(%weapon);
-        echo("Can Use? "@ SkillCanUse(%clientId,%weapon));
+        //echo(%weapon);
+        //echo("Can Use? "@ SkillCanUse(%clientId,%weapon));
         %label = RPGItem::ItemTagToLabel(%weapon);
         if(!SkillCanUse(%clientId,%label))
         {
@@ -1927,13 +1917,13 @@ function RefreshEquipment(%clientId)
     }
     //Equip
     %list = GetAccessoryList(%clientId,2,-1);
-    echo("LIST: "@%list);
+    //echo("LIST: "@%list);
     for(%i = 0; %i < getWordCount(%list); %i++)
     {
         %item = getWord(%list,%i);
         
         %label = RPGItem::ItemTagToLabel(RPGItem::getAlternateTag(%item));
-        echo(%item @" -> "@ %label);
+        //echo(%item @" -> "@ %label);
         
         if(!SkillCanUse(%clientId,%label))
         {
@@ -2322,7 +2312,8 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		else if(%w == "LVL")
 		{
 			//note: the class MUST be specified in %stuff prior to this call
-			storeData(%clientId, "EXP", GetExp(%w2, %clientId) + 100);
+			storeData(%clientId, "EXP", GetExpToLevel(%w2, %clientId) + 100);
+            storeData(%clientId, "LVL", %w2);
 		}
 		else if(%w == "TEAM")
 		{

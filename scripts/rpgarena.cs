@@ -153,7 +153,7 @@ function CreateArenaDueler(%num)
 			%id = GetWord($ArenaDueler[%i], 0);
 			if(Player::isAiControlled(%id))
 			{
-				storeData(%id, "EXP", GetExp(%avg, %id));
+				storeData(%id, "EXP", GetExpToLevel(%avg, %id));
 				Game::refreshClientScore(%id);
 				HardcodeAIskills(%id);
 

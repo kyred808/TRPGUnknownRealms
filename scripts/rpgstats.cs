@@ -13,11 +13,11 @@ $RPGStats::Attributes[4,Name] = "Intelligence";
 $RPGStats::Attributes[5,Name] = "Faith";
 
 $RPGStats::Attributes[0,Desc] = "Determines the player's base HP";
-$RPGStats::Attributes[1,Desc] = "Determines the player's defense and armor capabilities";
+$RPGStats::Attributes[1,Desc] = "Determines the player's defense, armor capabilities, and weight carrying";
 $RPGStats::Attributes[2,Desc] = "Your overall physical strength";
 $RPGStats::Attributes[3,Desc] = "Determines damage with dex based weapons";
-$RPGStats::Attributes[4,Desc] = "Governs magic damage";
-$RPGStats::Attributes[5,Desc] = "Governs divine damage";
+$RPGStats::Attributes[4,Desc] = "Governs spell magic damage";
+$RPGStats::Attributes[5,Desc] = "Governs divine magic";
 
 $RPGStats::AttributeId["VIT"] = 0;
 $RPGStats::AttributeId["END"] = 1;
@@ -27,6 +27,72 @@ $RPGStats::AttributeId["INT"] = 4;
 $RPGStats::AttributeId["FAI"] = 5;
 
 $RPGStats::AttributeCount = 6;
+
+$ClassName[1, 0] = "Cleric";
+$ClassName[2, 0] = "Druid";
+$ClassName[3, 0] = "Thief";
+$ClassName[4, 0] = "Bard";
+$ClassName[5, 0] = "Fighter";
+$ClassName[6, 0] = "Paladin";
+$ClassName[7, 0] = "Ranger";
+$ClassName[8, 0] = "Mage";
+
+
+$ClassInitAttributes[Cleric,"VIT"] = 5;
+$ClassInitAttributes[Cleric,"END"] = 5;
+$ClassInitAttributes[Cleric,"STR"] = 5;
+$ClassInitAttributes[Cleric,"DEX"] = 5;
+$ClassInitAttributes[Cleric,"INT"] = 5;
+$ClassInitAttributes[Cleric,"FAI"] = 5;
+
+$ClassInitAttributes[Druid,"VIT"] = 5;
+$ClassInitAttributes[Druid,"END"] = 5;
+$ClassInitAttributes[Druid,"STR"] = 5;
+$ClassInitAttributes[Druid,"DEX"] = 5;
+$ClassInitAttributes[Druid,"INT"] = 5;
+$ClassInitAttributes[Druid,"FAI"] = 5;
+
+$ClassInitAttributes[Thief,"VIT"] = 5;
+$ClassInitAttributes[Thief,"END"] = 5;
+$ClassInitAttributes[Thief,"STR"] = 5;
+$ClassInitAttributes[Thief,"DEX"] = 5;
+$ClassInitAttributes[Thief,"INT"] = 5;
+$ClassInitAttributes[Thief,"FAI"] = 5;
+
+$ClassInitAttributes[Bard,"VIT"] = 5;
+$ClassInitAttributes[Bard,"END"] = 5;
+$ClassInitAttributes[Bard,"STR"] = 5;
+$ClassInitAttributes[Bard,"DEX"] = 5;
+$ClassInitAttributes[Bard,"INT"] = 5;
+$ClassInitAttributes[Bard,"FAI"] = 5;
+
+$ClassInitAttributes[Fighter,"VIT"] = 5;
+$ClassInitAttributes[Fighter,"END"] = 5;
+$ClassInitAttributes[Fighter,"STR"] = 5;
+$ClassInitAttributes[Fighter,"DEX"] = 5;
+$ClassInitAttributes[Fighter,"INT"] = 5;
+$ClassInitAttributes[Fighter,"FAI"] = 5;
+
+$ClassInitAttributes[Paladin,"VIT"] = 5;
+$ClassInitAttributes[Paladin,"END"] = 5;
+$ClassInitAttributes[Paladin,"STR"] = 5;
+$ClassInitAttributes[Paladin,"DEX"] = 5;
+$ClassInitAttributes[Paladin,"INT"] = 5;
+$ClassInitAttributes[Paladin,"FAI"] = 5;
+
+$ClassInitAttributes[Ranger,"VIT"] = 5;
+$ClassInitAttributes[Ranger,"END"] = 5;
+$ClassInitAttributes[Ranger,"STR"] = 5;
+$ClassInitAttributes[Ranger,"DEX"] = 5;
+$ClassInitAttributes[Ranger,"INT"] = 5;
+$ClassInitAttributes[Ranger,"FAI"] = 5;
+
+$ClassInitAttributes[Mage,"VIT"] = 5;
+$ClassInitAttributes[Mage,"END"] = 5;
+$ClassInitAttributes[Mage,"STR"] = 5;
+$ClassInitAttributes[Mage,"DEX"] = 5;
+$ClassInitAttributes[Mage,"INT"] = 5;
+$ClassInitAttributes[Mage,"FAI"] = 5;
 
 function RPGStats::getBaseAttributeValue(%clientId,%attr)
 {
@@ -41,12 +107,12 @@ function RPGStats::getExtraAttributeValue(%clientId,%attr)
 function RPGStats::DisplayAttributeInfo(%clientId,%attrId)
 {
     %attr = $RPGStats::Attributes[%attrId];
-    %base = RPGStats::getBaseAttributeValue(%clientId,%attr);
+    %base = fetchData(%clientId,%attr);
     %bonus = AddBonusStatePoints(%clientId, %attr);
     %equip = RPGItem::GetPlayerEquipStats(%clientId,%type);
     
     %a[%tmp++] = "<f0>" @ %attr @ " - "@ $RPGStats::Attributes[%attrId,Name] @"\n";// <f0>Base<f1>: "@@" - Total:\n\n";
-    %a[%tmp++] = "<f0>Value: <f1>" @ fetchData(%clientId, %attr);
+    %a[%tmp++] = "<f0>Value: <f1>" @ CalcPlayerAttribute(%clientId, %attr);
     if(%bonus != 0 || %equip != 0)
     {
         %a[%tmp] = %a[%tmp] @ " <f1>[Base: "@ %base;
@@ -75,24 +141,21 @@ function RPGStats::DisplayAttributeInfo(%clientId,%attrId)
         bottomprint(%clientId, %msg, floor(%len / 10));
 }
 
+function CalcPlayerAttribute(%clientId,%type)
+{
+    return fetchData(%clientId,%type) + AddBonusStatePoints(%clientId, %type) + RPGItem::GetPlayerEquipStats(%clientId,%type);
+}
+
 function fetchData(%clientId, %type)
 {
 	dbecho($dbechoMode, "fetchData(" @ %clientId @ ", " @ %type @ ")");
 
-	if(%type == "LVL")
-	{
-		%a = GetLevel(fetchData(%clientId, "EXP"), %clientId);
-		return %a;
-	}
-    //Core Stats
-    else if(%type == "VIT" || %type == "END" || %type == "STR" || %type == "DEX" || %type == "INT" || %type == "FAI")
-    {
-        %retVal = $ClientData[%clientId, %type];
-        %retVal += AddBonusStatePoints(%clientId, %type);
-        %retVal += RPGItem::GetPlayerEquipStats(%clientId,%type);
-        return %retVal;
-    }
-    else if(%type == "HealBurstMax")
+	//if(%type == "LVL")
+	//{
+	//	%a = GetLevel(fetchData(%clientId, "EXP"), %clientId);
+	//	return %a;
+	//}
+    if(%type == "HealBurstMax")
     {
         return Cap(1 + floor(CalculatePlayerSkill(%clientId, $SkillHealing) / 125),1,5);
     }
@@ -787,6 +850,7 @@ function CreateNewPlayer(%clientId)
     echo("New Player Dropping in Realm: "@fetchData(%clientId,"Realm"));
     %class = fetchData(%clientId,"CLASS");
     storeData(%clientId, "spawnStuff", $ClassSpawnStuff[%class],"strinc");
+    storeData(%clientId, "LVL", 1);
 	Game::playerSpawn(%clientId, false);
 
 	//######### set a few start-up variables ########
@@ -795,6 +859,11 @@ function CreateNewPlayer(%clientId)
 	
 	//###############################################
     
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %stat = $RPGStats::Attributes[%i];
+        storeData(%clientId,%stat,$ClassInitAttributes[%class,%stat]);
+    }
     
     %prim = fetchData(%clientId,"tempPrimarySkills");
     %sec = fetchData(%clientId,"tempSecondarySkills");
@@ -859,15 +928,29 @@ function GetLevel(%ex, %clientId)
 
 	return %b;
 }
-function GetExp(%level, %clientId)
+function GetExpToLevel(%level, %clientId)
 {
-	dbecho($dbechoMode, "GetExp(" @ %level @ ", " @ %clientId @ ")");
+	dbecho($dbechoMode, "GetExpToLevel(" @ %level @ ", " @ %clientId @ ")");
 
 	%n = 1000;
-	%b = (%level - 1) * %n;
+	//%b = (%level - 1) * %n;
 
-	return %b;
+	//return %b;
+    return %n;
 }
+
+//$LevelUpObjectDistCheck = 5;
+//function LevelUpCheck(%clientId)
+//{
+//    %set = newObject("set", SimSet);
+//    %range = $LevelUpObjectDistCheck*2;
+//    %count = containerBoxFillSet(%set, $SimInteriorObjectType, Gamebase::getPosition(%clientId), %range, %range, %range, 0);
+//    
+//    for(%i = 0; %i < %count; %i++)
+//    {
+//        
+//    }
+//}
 
 function DistributeExpForKilling(%damagedClient)
 {
@@ -1028,65 +1111,103 @@ function StartStatSelection(%clientId)
 	MenuGroup(%clientId);
 }
 
+function RPG::DoLevelUp(%clientId,%amt)
+{
+    if(fetchData(%clientId, "HasLoadedAndSpawned") && %amt != 0)
+	{
+        storeData(%clientId, "SPcredits", (%amt * $SPgainedPerLevel), "inc");
+        storeData(%clientId, "APcredits", (%amt * $APgainedPerLevel), "inc");
+        storeData(%clientId,"LVL",%amt,"inc");
+        if(%amt > 0)
+        {
+            if(%amt == 1)
+                Client::sendMessage(%clientId,0,"You have gained a level!");		
+            else
+                Client::sendMessage(%clientId,0,"You have gained " @ %amt @ " levels!");
+            
+            Client::sendMessage(%clientId,0,"Welcome to level " @ fetchData(%clientId, "LVL"));
+            PlaySound(SoundLevelUp, GameBase::getPosition(%clientId));
+            
+            //Refresh health and mana!
+            setHP(%clientId);
+            setMana(%clientId);
+            //setStamina(%clientId);
+            
+        }
+        else if(%amt < 0)
+        {
+            if(%amt == -1)
+                Client::sendMessage(%clientId,0,"You have lost a level...");		
+            else
+                Client::sendMessage(%clientId,0,"You have lost " @ -%amt @ " levels...");
+            Client::sendMessage(%clientId,0,"You are now level " @ fetchData(%clientId, "LVL"));
+        }
+        
+        RefreshEquipment(%clientId);
+        Game::refreshClientScore(%clientId);
+    }
+}
+
+
 function Game::refreshClientScore(%clientId)
 {
 	dbecho($dbechoMode2, "Game::refreshClientScore(" @ %clientId @ ")");
 
-	if(fetchData(%clientId, "HasLoadedAndSpawned"))
-	{
-		if(GetLevel(fetchData(%clientId, "EXP"), %clientId) != fetchData(%clientId, "templvl") && fetchData(%clientId, "HasLoadedAndSpawned") && fetchData(%clientId, "templvl") != "")
-		{
-			//client has leveled up
-			%lvls = (GetLevel(fetchData(%clientId, "EXP"), %clientId) - fetchData(%clientId, "templvl"));
-            
-			storeData(%clientId, "SPcredits", (%lvls * $SPgainedPerLevel), "inc");
-
-			if(%lvls > 0)
-			{
-				if(%lvls == 1)
-					Client::sendMessage(%clientId,0,"You have gained a level!");		
-				else
-					Client::sendMessage(%clientId,0,"You have gained " @ %lvls @ " levels!");
-				Client::sendMessage(%clientId,0,"Welcome to level " @ fetchData(%clientId, "LVL"));
-				PlaySound(SoundLevelUp, GameBase::getPosition(%clientId));
-                
-                //Refresh health and mana!
-                setHP(%clientId);
-                setMana(%clientId);
-                //setStamina(%clientId);
-                
-			}
-			else if(%lvls < 0)
-			{
-				if(%lvls == -1)
-					Client::sendMessage(%clientId,0,"You have lost a level...");		
-				else
-					Client::sendMessage(%clientId,0,"You have lost " @ -%lvls @ " levels...");
-				Client::sendMessage(%clientId,0,"You are now level " @ fetchData(%clientId, "LVL"));
-			}
-            
-            RefreshEquipment(%clientId);
-		}
-		storeData(%clientId, "templvl", GetLevel(fetchData(%clientId, "EXP"), %clientId));
-
-		%lvl = GetLevel(fetchData(%clientId, "EXP"), %clientId);
-		%rcheck = $ClassName[1, fetchData(%clientId, "RemortStep")+1];
-		%cr = fetchData(%clientId, "currentlyRemorting");
-		%maxlvl = 125 + fetchData(%clientId, "RemortStep");
-		if(%lvl >= %maxlvl && %rcheck != "" && !%cr && !Player::isAiControlled(%clientId))
-		{
-			//FORCE REMORT!!!
-
-			storeData(%clientId, "currentlyRemorting", True);
-
-			for(%i = 1; %i <= 20; %i++)
-			{
-				schedule("CreateAndDetBomb(" @ %clientId @ ", \"Bomb7\", GameBase::getPosition(" @ %clientId @ "), False, 19);", %i * 3, %clientId);
-			}
-
-			schedule("DoRemort(" @ %clientId @ ");", 60, %clientId);
-		}
-	}
+	//if(fetchData(%clientId, "HasLoadedAndSpawned"))
+	//{
+	//	if(GetLevel(fetchData(%clientId, "EXP"), %clientId) != fetchData(%clientId, "templvl") && fetchData(%clientId, "HasLoadedAndSpawned") && fetchData(%clientId, "templvl") != "")
+	//	{
+	//		//client has leveled up
+	//		%lvls = (GetLevel(fetchData(%clientId, "EXP"), %clientId) - fetchData(%clientId, "templvl"));
+    //        
+	//		storeData(%clientId, "SPcredits", (%lvls * $SPgainedPerLevel), "inc");
+    //
+	//		if(%lvls > 0)
+	//		{
+	//			if(%lvls == 1)
+	//				Client::sendMessage(%clientId,0,"You have gained a level!");		
+	//			else
+	//				Client::sendMessage(%clientId,0,"You have gained " @ %lvls @ " levels!");
+	//			Client::sendMessage(%clientId,0,"Welcome to level " @ fetchData(%clientId, "LVL"));
+	//			PlaySound(SoundLevelUp, GameBase::getPosition(%clientId));
+    //            
+    //            //Refresh health and mana!
+    //            setHP(%clientId);
+    //            setMana(%clientId);
+    //            //setStamina(%clientId);
+    //            
+	//		}
+	//		else if(%lvls < 0)
+	//		{
+	//			if(%lvls == -1)
+	//				Client::sendMessage(%clientId,0,"You have lost a level...");		
+	//			else
+	//				Client::sendMessage(%clientId,0,"You have lost " @ -%lvls @ " levels...");
+	//			Client::sendMessage(%clientId,0,"You are now level " @ fetchData(%clientId, "LVL"));
+	//		}
+    //        
+    //        RefreshEquipment(%clientId);
+	//	}
+	//	storeData(%clientId, "templvl", GetLevel(fetchData(%clientId, "EXP"), %clientId));
+    //
+	//	%lvl = GetLevel(fetchData(%clientId, "EXP"), %clientId);
+	//	%rcheck = $ClassName[1, fetchData(%clientId, "RemortStep")+1];
+	//	%cr = fetchData(%clientId, "currentlyRemorting");
+	//	%maxlvl = 125 + fetchData(%clientId, "RemortStep");
+	//	if(%lvl >= %maxlvl && %rcheck != "" && !%cr && !Player::isAiControlled(%clientId))
+	//	{
+	//		//FORCE REMORT!!!
+    //
+	//		storeData(%clientId, "currentlyRemorting", True);
+    //
+	//		for(%i = 1; %i <= 20; %i++)
+	//		{
+	//			schedule("CreateAndDetBomb(" @ %clientId @ ", \"Bomb7\", GameBase::getPosition(" @ %clientId @ "), False, 19);", %i * 3, %clientId);
+	//		}
+    //
+	//		schedule("DoRemort(" @ %clientId @ ");", 60, %clientId);
+	//	}
+	//}
     
     %clZone = "";
     if(fetchData(%clientId, "invisible"))
