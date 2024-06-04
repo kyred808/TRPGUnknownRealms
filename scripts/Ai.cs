@@ -238,6 +238,8 @@ function AI::setWeapons(%aiName, %loadout, %callback)
             GiveThisStuff(%aiId, %loadout, False);
     }
     storeData(%aiId,"BotLoadoutTag",clipTrailingNumbers(%aiName));
+    if($EnemyStatDistribFlag[clipTrailingNumbers(%aiName)])
+        ScaleEnemyAttributesToLevel(%aiId);
 	HardcodeAIskills(%aiId);
 
 	Game::refreshClientScore(%aiId);

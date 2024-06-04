@@ -1,26 +1,26 @@
 $RPGStats::Attributes[0] = "VIT";
-$RPGStats::Attributes[1] = "END";
+$RPGStats::Attributes[1] = "MND";
 $RPGStats::Attributes[2] = "STR";
 $RPGStats::Attributes[3] = "DEX";
 $RPGStats::Attributes[4] = "INT";
 $RPGStats::Attributes[5] = "FAI";
 
 $RPGStats::Attributes[0,Name] = "Vitality";
-$RPGStats::Attributes[1,Name] = "Endurance";
+$RPGStats::Attributes[1,Name] = "Mind";
 $RPGStats::Attributes[2,Name] = "Strength";
 $RPGStats::Attributes[3,Name] = "Dexterity";
 $RPGStats::Attributes[4,Name] = "Intelligence";
 $RPGStats::Attributes[5,Name] = "Faith";
 
-$RPGStats::Attributes[0,Desc] = "Determines the player's base HP";
-$RPGStats::Attributes[1,Desc] = "Determines the player's defense, armor capabilities, and weight carrying";
-$RPGStats::Attributes[2,Desc] = "Your overall physical strength";
+$RPGStats::Attributes[0,Desc] = "Determines the player's base Max HP. Contributes slightly to weight capacity.";
+$RPGStats::Attributes[1,Desc] = "Determines the player's base Max MP";
+$RPGStats::Attributes[2,Desc] = "Your overall physical strength. Contributes slightly to weight capacity.";
 $RPGStats::Attributes[3,Desc] = "Determines damage with dex based weapons";
 $RPGStats::Attributes[4,Desc] = "Governs spell magic damage";
 $RPGStats::Attributes[5,Desc] = "Governs divine magic";
 
 $RPGStats::AttributeId["VIT"] = 0;
-$RPGStats::AttributeId["END"] = 1;
+$RPGStats::AttributeId["MND"] = 1;
 $RPGStats::AttributeId["STR"] = 2;
 $RPGStats::AttributeId["DEX"] = 3;
 $RPGStats::AttributeId["INT"] = 4;
@@ -39,56 +39,56 @@ $ClassName[8, 0] = "Mage";
 
 
 $ClassInitAttributes[Cleric,"VIT"] = 5;
-$ClassInitAttributes[Cleric,"END"] = 5;
+$ClassInitAttributes[Cleric,"MND"] = 5;
 $ClassInitAttributes[Cleric,"STR"] = 5;
 $ClassInitAttributes[Cleric,"DEX"] = 5;
 $ClassInitAttributes[Cleric,"INT"] = 5;
 $ClassInitAttributes[Cleric,"FAI"] = 5;
 
 $ClassInitAttributes[Druid,"VIT"] = 5;
-$ClassInitAttributes[Druid,"END"] = 5;
+$ClassInitAttributes[Druid,"MND"] = 5;
 $ClassInitAttributes[Druid,"STR"] = 5;
 $ClassInitAttributes[Druid,"DEX"] = 5;
 $ClassInitAttributes[Druid,"INT"] = 5;
 $ClassInitAttributes[Druid,"FAI"] = 5;
 
 $ClassInitAttributes[Thief,"VIT"] = 5;
-$ClassInitAttributes[Thief,"END"] = 5;
+$ClassInitAttributes[Thief,"MND"] = 5;
 $ClassInitAttributes[Thief,"STR"] = 5;
 $ClassInitAttributes[Thief,"DEX"] = 5;
 $ClassInitAttributes[Thief,"INT"] = 5;
 $ClassInitAttributes[Thief,"FAI"] = 5;
 
 $ClassInitAttributes[Bard,"VIT"] = 5;
-$ClassInitAttributes[Bard,"END"] = 5;
+$ClassInitAttributes[Bard,"MND"] = 5;
 $ClassInitAttributes[Bard,"STR"] = 5;
 $ClassInitAttributes[Bard,"DEX"] = 5;
 $ClassInitAttributes[Bard,"INT"] = 5;
 $ClassInitAttributes[Bard,"FAI"] = 5;
 
 $ClassInitAttributes[Fighter,"VIT"] = 5;
-$ClassInitAttributes[Fighter,"END"] = 5;
+$ClassInitAttributes[Fighter,"MND"] = 5;
 $ClassInitAttributes[Fighter,"STR"] = 5;
 $ClassInitAttributes[Fighter,"DEX"] = 5;
 $ClassInitAttributes[Fighter,"INT"] = 5;
 $ClassInitAttributes[Fighter,"FAI"] = 5;
 
 $ClassInitAttributes[Paladin,"VIT"] = 5;
-$ClassInitAttributes[Paladin,"END"] = 5;
+$ClassInitAttributes[Paladin,"MND"] = 5;
 $ClassInitAttributes[Paladin,"STR"] = 5;
 $ClassInitAttributes[Paladin,"DEX"] = 5;
 $ClassInitAttributes[Paladin,"INT"] = 5;
 $ClassInitAttributes[Paladin,"FAI"] = 5;
 
 $ClassInitAttributes[Ranger,"VIT"] = 5;
-$ClassInitAttributes[Ranger,"END"] = 5;
+$ClassInitAttributes[Ranger,"MND"] = 5;
 $ClassInitAttributes[Ranger,"STR"] = 5;
 $ClassInitAttributes[Ranger,"DEX"] = 5;
 $ClassInitAttributes[Ranger,"INT"] = 5;
 $ClassInitAttributes[Ranger,"FAI"] = 5;
 
 $ClassInitAttributes[Mage,"VIT"] = 5;
-$ClassInitAttributes[Mage,"END"] = 5;
+$ClassInitAttributes[Mage,"MND"] = 5;
 $ClassInitAttributes[Mage,"STR"] = 5;
 $ClassInitAttributes[Mage,"DEX"] = 5;
 $ClassInitAttributes[Mage,"INT"] = 5;
@@ -102,6 +102,37 @@ function RPGStats::getBaseAttributeValue(%clientId,%attr)
 function RPGStats::getExtraAttributeValue(%clientId,%attr)
 {
     return AddBonusStatePoints(%clientId, %attr) + RPGItem::GetPlayerEquipStats(%clientId,%type);
+}
+
+function ScaleEnemyAttributesToLevel(%aiId)
+{
+    %botType = fetchData(%aiId,"BotLoadoutTag"); //clipTrailingNumbers(fetchData(%aiId,"BotInfoAiName"));
+    %class = fetchData(%aiId,"CLASS");
+    %ap = $APgainedPerLevel * (fetchData(%aiId,"LVL") - 1);
+    %apRemaining = %ap;
+    //Distribute AP
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %clAttr = $ClassInitAttributes[%class,%attr];
+        %apSpent = floor(%ap * $EnemyAttrPercent[%botType,%i]);
+        echo("BT: "@ %botType);
+        echo(%attr @": "@%clAttr@"+"@ %apSpent);
+        storeData(%aiId,%attr,%clAttr+%apSpent,"inc");
+        %apRemaining -= %apSpent;
+    }
+    
+    //Distribute remaining stats randomly
+    for(%aa = 0; %aa < %apRemaining; %aa++)
+    {
+        %dumpStat = $RPGStats::Attributes[getIntRandomMT(0,$RPGStats::AttributeCount-1)];
+        storeData(%aiId,%dumpStat,1,"inc");
+    }
+    
+    //Dumping method
+    //%dumpStat = $RPGStats::Attributes[getIntRandomMT(0,$RPGStats::AttributeCount-1)];
+    //storeData(%aiId,%dumpStat,%apRemaining,"inc");
+    echo("Remainder "@ %apRemaining);
 }
 
 function RPGStats::DisplayAttributeInfo(%clientId,%attrId)

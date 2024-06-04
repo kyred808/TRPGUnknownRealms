@@ -203,6 +203,101 @@ $spawnIndex[60] = "Enforceress";
 $spawnIndex[61] = "TombGuard";
 //------------------------------
 
+function PreCalculateAttributePercents(%aiType)
+{
+    $EnemyStatDistribFlag[%aiType] = true;
+    %total = 0;
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %weight = $EnemyAttributeScaling[%aiType,%attr];
+        if(%weight != "")
+            %total += %weight;
+    }
+    echo("ATTR PERC: "@ %aiType);
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %weight = $EnemyAttributeScaling[%aiType,%attr];
+        if(%weight != "")
+            $EnemyAttrPercent[%aiType,%i] = %weight / %total;
+        else
+            $EnemyAttrPercent[%aiType,%i] = 0;
+            
+        echo(%attr @": "@$EnemyAttrPercent[%aiType,%i]);
+    }
+}
+
+//EnemyRoleAttrDistrib determines how stats are distributed for mobs when they are scaled to their level on spawn
+//The values themselves don't matter, just their relationship to the total. The bigger the number, the more weight that stat gets in the distribution
+
+$EnemyRoleAttrDistrib[Attacker,"VIT"] = 2;
+$EnemyRoleAttrDistrib[Attacker,"MND"] = 1;
+$EnemyRoleAttrDistrib[Attacker,"STR"] = 3;
+$EnemyRoleAttrDistrib[Attacker,"DEX"] = 2;
+$EnemyRoleAttrDistrib[Attacker,"INT"] = 1;
+$EnemyRoleAttrDistrib[Attacker,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[AttackerDex,"VIT"] = 2;
+$EnemyRoleAttrDistrib[AttackerDex,"MND"] = 1;
+$EnemyRoleAttrDistrib[AttackerDex,"STR"] = 2;
+$EnemyRoleAttrDistrib[AttackerDex,"DEX"] = 3;
+$EnemyRoleAttrDistrib[AttackerDex,"INT"] = 1;
+$EnemyRoleAttrDistrib[AttackerDex,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[Armsman,"VIT"] = 2;
+$EnemyRoleAttrDistrib[Armsman,"MND"] = 1;
+$EnemyRoleAttrDistrib[Armsman,"STR"] = 3;
+$EnemyRoleAttrDistrib[Armsman,"DEX"] = 3;
+$EnemyRoleAttrDistrib[Armsman,"INT"] = 1;
+$EnemyRoleAttrDistrib[Armsman,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[Tank,"VIT"] = 3;
+$EnemyRoleAttrDistrib[Tank,"MND"] = 1;
+$EnemyRoleAttrDistrib[Tank,"STR"] = 3;
+$EnemyRoleAttrDistrib[Tank,"DEX"] = 1;
+$EnemyRoleAttrDistrib[Tank,"INT"] = 1;
+$EnemyRoleAttrDistrib[Tank,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[Rogue,"VIT"] = 2;
+$EnemyRoleAttrDistrib[Rogue,"MND"] = 1;
+$EnemyRoleAttrDistrib[Rogue,"STR"] = 2;
+$EnemyRoleAttrDistrib[Rogue,"DEX"] = 3;
+$EnemyRoleAttrDistrib[Rogue,"INT"] = 1;
+$EnemyRoleAttrDistrib[Rogue,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[Archer,"VIT"] = 2;
+$EnemyRoleAttrDistrib[Archer,"MND"] = 2;
+$EnemyRoleAttrDistrib[Archer,"STR"] = 2;
+$EnemyRoleAttrDistrib[Archer,"DEX"] = 3;
+$EnemyRoleAttrDistrib[Archer,"INT"] = 1;
+$EnemyRoleAttrDistrib[Archer,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[SpellCaster,"VIT"] = 2;
+$EnemyRoleAttrDistrib[SpellCaster,"MND"] = 3;
+$EnemyRoleAttrDistrib[SpellCaster,"STR"] = 1;
+$EnemyRoleAttrDistrib[SpellCaster,"DEX"] = 1;
+$EnemyRoleAttrDistrib[SpellCaster,"INT"] = 3;
+$EnemyRoleAttrDistrib[SpellCaster,"FAI"] = 1;
+
+$EnemyRoleAttrDistrib[Healer,"VIT"] = 2;
+$EnemyRoleAttrDistrib[Healer,"MND"] = 3;
+$EnemyRoleAttrDistrib[Healer,"STR"] = 2;
+$EnemyRoleAttrDistrib[Healer,"DEX"] = 1;
+$EnemyRoleAttrDistrib[Healer,"INT"] = 1;
+$EnemyRoleAttrDistrib[Healer,"FAI"] = 3;
+
+function SetAttributeScaleByEnemyRole(%aiType,%role)
+{
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        $EnemyAttributeScaling[%aiType,%attr] = $EnemyRoleAttrDistrib[%role,%attr];
+    }
+    
+    PreCalculateAttributePercents(%aiType);
+}
+
 //Drop rate explained:
 //Defined in GiveThisStuff
 //For a value of 1/(-N), the drop rate is nearly (1/(100-N))/2
@@ -213,6 +308,19 @@ $BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 rKnife/x 1 Sli
 $BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 manaring 1/-2000"; //Turquoise 1/-500 GoblinEar 1/-500";
 $BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 rPickAxe/x 1"; //BlackStatue 1/-150 Jade 1/-300 GoblinEar 1/-400";
 
+//The attribute scaling distribution can be set manually, but using the pre-made role ones is faster
+$EnemyAttributeScaling[Runt,"VIT"] = 1;
+$EnemyAttributeScaling[Runt,"MND"] = 1;
+$EnemyAttributeScaling[Runt,"STR"] = 1;
+$EnemyAttributeScaling[Runt,"DEX"] = 1;
+$EnemyAttributeScaling[Runt,"INT"] = 1;
+$EnemyAttributeScaling[Runt,"FAI"] = 1;
+PreCalculateAttributePercents(Runt);
+
+SetAttributeScaleByEnemyRole(Thief,Rogue);
+SetAttributeScaleByEnemyRole(Wizard,SpellCaster);
+SetAttributeScaleByEnemyRole(Raider,AttackerDex);
+
 $AIBehavior[Runt,UseBackstab] = true;
 $AIBehavior[Thief,RunOnLowHP] = true;
 
@@ -220,6 +328,11 @@ $BotEquipment[Pup] = 		"CLASS Fighter LVL 10/50 COINS 6/50 LCK 0 rClub/x 1";
 $BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 manaring 1/-2000 rClub/x 1";
 $BotEquipment[Scavenger] = 	"CLASS Fighter LVL 15/50 COINS 8/50 LCK 0 rClub/x 1";
 $BotEquipment[Hunter] = 	"CLASS Ranger LVL 17/50 COINS 9/50 LCK 0 rWarAxe/x 1 Sling/x 1 SmallRock 20/50"; //Topaz 3/-3000";
+
+SetAttributeScaleByEnemyRole(Pup,Attacker);
+SetAttributeScaleByEnemyRole(Shaman,SpellCaster);
+SetAttributeScaleByEnemyRole(Scavenger,Attacker);
+SetAttributeScaleByEnemyRole(Hunter,Armsman);
 
 $AIBehavior[Pup,RunOnLowHP] = true;
 $AIBehavior[Pup,UseBash] = true;
@@ -231,20 +344,38 @@ $BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 LeatherArmo
 $BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 LeatherArmor0/x 1/-100 rBroadSword/x 1 rShortBow/x 1 BasicArrow 20/50"; // Opal 5/-250";
 $BotEquipment[Oracle] =     "CLASS Cleric LVL 25/25 COINS 20/50 LCK 0 BoneClub/x 1";
 
+SetAttributeScaleByEnemyRole(Warlock,SpellCaster);
+SetAttributeScaleByEnemyRole(Berserker,Attacker);
+SetAttributeScaleByEnemyRole(Ravager,Tank);
+SetAttributeScaleByEnemyRole(Slayer,Armsman);
+SetAttributeScaleByEnemyRole(Oracle,Healer);
+
 $AIBehavior[Oracle,IsHealer] = true;
 $AIBehavior[Oracle,IsHealer,Spells] = "bothealbreeze";
 
 $BotEquipment[Ruffian] = 	"CLASS Fighter LVL 22/50 COINS 80/50 LCK 0 rBroadSword/x 1 Quartz 8/-200 Yuccavera 4/-300";
-$BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 90/50 LCK 0 rSpikedClub/x 1 Yuccavera 4/-300";
+$BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 90/50 LCK 0 HideArmor0/x 1 rSpikedClub/x 1 Yuccavera 4/-300";
 $BotEquipment[Halberdier] = 	"CLASS Fighter LVL 31/50 COINS 120/50 LCK 0 rBroadSword/x 1 BluePotion 3/30";
 $BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 310/50 LCK 1 rWarAxe/x 1 rShortBow/x 1 BasicArrow 15/75";
 $BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1";
+
+SetAttributeScaleByEnemyRole(Ruffian,Attacker);
+SetAttributeScaleByEnemyRole(Destroyer,Tank);
+SetAttributeScaleByEnemyRole(Halberdier,Attacker);
+SetAttributeScaleByEnemyRole(Dreadnought,Armsman);
+SetAttributeScaleByEnemyRole(Magi,SpellCaster);
 
 $BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 200/50 LCK 0 rSpikedClub/x 1 Granite 10/-300";
 $BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 StuddedLeather/x 1 rLongSword/x 1 Opal 3/-300";
 $BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 260/50 LCK 0 HideArmor0/x 1/-80 rWarAxe/x 1 Turquoise 4/-300";
 $BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Diamond 1/-3000";
 $BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 590/50 LCK 2 Gladius/x 1 Diamond 1/-1000 Emerald 1/-700";
+
+SetAttributeScaleByEnemyRole(Mauler,Attacker);
+SetAttributeScaleByEnemyRole(Thrasher,Tank);
+SetAttributeScaleByEnemyRole(Skeleton,Attacker);
+SetAttributeScaleByEnemyRole(Necromancer,SpellCaster);
+SetAttributeScaleByEnemyRole(Spawn,AttackerDex);
 
 $AIBehavior[Skeleton,IsSapper] = true;
 $AIBehavior[Skeleton,IsSapper,Spell] = "botstatdrain ATK";
@@ -255,38 +386,70 @@ $BotEquipment[Lord] = 		"CLASS Ranger LVL 59/50 COINS 31/50 LCK 1 rSpikedClub/x 
 $BotEquipment[Champion] = 	"CLASS Ranger LVL 63/50 COINS 34/50 LCK 1 ScaleMail0/x 1/-20 rLongSword/x 1 rLightCrossbow/x 1 HeavyQuarrel 25/75 Sapphire 3/-1000";
 $BotEquipment[Conjurer] =	"CLASS Mage LVL 70/50 COINS 32/50 LCK 0 CastingBlade 1 Topaz 2/-300";
 
+SetAttributeScaleByEnemyRole(Protector,AttackerDex);
+SetAttributeScaleByEnemyRole(Peacekeeper,Attacker);
+SetAttributeScaleByEnemyRole(Lord,Armsman);
+SetAttributeScaleByEnemyRole(Champion,Armsman);
+SetAttributeScaleByEnemyRole(Conjurer,SpellCaster);
+
 $BotEquipment[Brigand] = 	"CLASS Fighter LVL 75/50 COINS 30/50 LCK 0 rLongSword/x 1 Sapphire 2/-3000";
 $BotEquipment[Marauder] =	"CLASS Fighter LVL 79/50 COINS 33/50 LCK 0 rLongSword/x 1 Opal 4/-300 Turquoise 1/-800";
 $BotEquipment[Knight] = 	"CLASS Fighter LVL 83/50 COINS 36/50 LCK 0 ChainMail0/x 1/-20 rLongSword/x 1 rShortBow/x 1 SheafArrow 40/50 Jade 2/-600";
 $BotEquipment[Paladin] = 	"CLASS Mage LVL 87/50 COINS 39/50 LCK 1 CastingBlade 1 Topaz 1/-300";
+
+SetAttributeScaleByEnemyRole(Brigand,Attacker);
+SetAttributeScaleByEnemyRole(Marauder,Attacker);
+SetAttributeScaleByEnemyRole(Knight,Armsman);
+SetAttributeScaleByEnemyRole(Paladin,SpellCaster);
 
 $BotEquipment[Civilian] = 	"CLASS Fighter LVL 1 COINS 5/50 LCK 0 rBroadSword/x 1";
 $BotEquipment[Gladiator] =	"CLASS Fighter LVL 1 LCK 0";
 $BotEquipment[Mercenary] = 	"CLASS Ranger LVL 65/50 COINS 32/50 LCK 0 rBroadSword/x 1";
 $BotEquipment[Militia] = 	"CLASS Paladin LVL 75/50 COINS 35/50 LCK 1 rLongSword/x 1";
 
+SetAttributeScaleByEnemyRole(Civilian,Attacker);
+SetAttributeScaleByEnemyRole(Gladiator,Attacker);
+SetAttributeScaleByEnemyRole(Mercenary,Armsman);
+SetAttributeScaleByEnemyRole(Militia,Attacker);
+
 $BotEquipment[Thug] = 		"CLASS Thief LVL 65/50 COINS 32/50 LCK 1 rBroadSword/x 1 Jade 5/-500";
 $BotEquipment[Miner] = 		"CLASS Paladin LVL 29/50 COINS 35/50 LCK 0 rPickAxe/x 1 Parchment 1/-16000 Quartz 10/50 Opal 5/50 Turquoise 2/-50 Emerald 1/-1000";
+
+SetAttributeScaleByEnemyRole(Thug,Attacker);
+SetAttributeScaleByEnemyRole(Miner,Rogue);
 
 $BotEquipment[Goliath] = 	"CLASS Fighter LVL 107/50 COINS 70/50 LCK 1 BattleAxe/x 1";
 $BotEquipment[Reaper] = 	"CLASS Mage LVL 174/50 COINS 105/50 LCK 2 CastingBlade 1 Turquoise 5/-500";
 
+SetAttributeScaleByEnemyRole(Goliath,Attacker);
+SetAttributeScaleByEnemyRole(Reaper,SpellCaster);
+
 $BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 LongSword/x 1 DragonScale 1/-3000 Gold 1/-1000";
 $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000";
 
+SetAttributeScaleByEnemyRole(Sloth,Attacker);
+SetAttributeScaleByEnemyRole(Gohort,SpellCaster);
+
 $BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 30/50 LCK 0 Quartz 4/-300 batteeth_im10 1 Grain 1/-100";
+SetAttributeScaleByEnemyRole(Bat,Attacker);
 
 $BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 75/50 LCK 3 TreeAtk 1";
+SetAttributeScaleByEnemyRole(Ent,AttackerDex);
 
 $BotEquipment[Dragon] = "CLASS Fighter LVL 50 COINS 3000";
 
 $BotEquipment[Small] = 		"CLASS Fighter LVL 1 COINS 1/-10 batteeth 1 LCK 0 Grain 1/-100";
+SetAttributeScaleByEnemyRole(Small,Attacker);
 
 $BotEquipment[Enforcer] = "CLASS Fighter LVL 60/50 COINS 400/50 LCK 2/-50 rSpikedClub/x 1 ChainMail0/x 1";
 $BotEquipment[Closer] = "CLASS Fighter LVL 60/50 COINS 400/50 LCK 2/-50 rSpikedClub/x 1 BloodRobe0/x 1";
 $BotEquipment[Enforceress] = "CLASS Fighter LVL 60/50 COINS 400/50 LCK 2/-50 rSpikedClub/x 1 ChainMail0/x 1";
 $BotEquipment[TombGuard] = "Class Paladin LVL 60/20 COINS 500/15 LCK 1/-50 rSpikedClub/x 1 BronzePlateMail0/x 1";
 
+SetAttributeScaleByEnemyRole(Enforcer,Attacker);
+SetAttributeScaleByEnemyRole(Closer,Attacker);
+SetAttributeScaleByEnemyRole(Enforceress,Armsman);
+SetAttributeScaleByEnemyRole(TombGuard,Tank);
 
 $AIBehavior[Enforcer,UseBash] = true;
 $AIBehavior[Closer,IsSapper] = true;

@@ -2869,7 +2869,13 @@ function DisplayTargetStats(%clientId,%id,%obj)
     %str = %str@"AMR: " @ Number::Beautify(fetchData(%id, "AMR"),0,2) @ "\n";
     %str = %str@"MDEF: " @ Number::Beautify(fetchData(%id, "MDEF"),0,2) @ "\n";
     %str = %str@"Hit Pts: " @ fetchData(%id, "HP") @ " / " @ fetchData(%id, "MaxHP") @ "\n";
-    %str = %str@"LCK: " @ fetchData(%id, "LCK") @ "\n";
+    %str = %str@"LCK: " @ fetchData(%id, "LCK") @ "\n\n";
+    
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %str = %str@%attr@": "@ fetchData(%id,%attr) @"\n";
+    }
     
     %len = String::len(%str);
     if(%len > 255)
