@@ -113,7 +113,8 @@ function RPGItem::setItemAffix(%itemTag,%affixType,%amt,%special)
             $ParseAffix[%affixType] += %amt;
         else if(%special == "dec")
             $ParseAffix[%affixType] -= %amt;
-            
+        
+        $ParseAffix[%affixType] = FixDecimals($ParseAffix[%affixType]);        
         return RPGItemAffix::CreateTagFromParse();
     }
     else

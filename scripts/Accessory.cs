@@ -21,6 +21,7 @@
 //11: Mana regen	
 
 $SpecialVarAMR = 1;
+$SpecialVarBAR = 2;
 $SpecialVarMDEF = 3;
 $SpecialVarHP = 4;
 $SpecialVarMana = 5;
@@ -36,9 +37,31 @@ $SpecialVarManaHarvest = 13;
 $SpecialVarArmorPiercing = 15;
 
 $SpecialVarATKSpeed = 19;
+//Attribute scaling
+$SpecialVarVITScaling = 20;
+$SpecialVarMNDScaling = 21;
+$SpecialVarSTRScaling = 22;
+$SpecialVarDEXScaling = 23;
+$SpecialVarINTScaling = 24;
+$SpecialVarFAIScaling = 25;
 
-$SpecialVarDesc[1] = "AMR";
-$SpecialVarDesc[2] = "NONE";
+$SpecialVarVIT = 26;
+$SpecialVarMND = 27;
+$SpecialVarSTR = 28;
+$SpecialVarDEX = 29;
+$SpecialVarINT = 30;
+$SpecialVarFAI = 31;
+
+$SpecialVarArcaneScale = 32;
+$SpecialVarIncantScale = 33;
+$SpecialVarNatureScale = 34;
+
+$SpecialVarCataINTScale = 35;
+$SpecialVarCataFAIScale = 36;
+$SpecialVarCataMNDScale = 37;
+
+$SpecialVarDesc[1] = "ARMOR";
+$SpecialVarDesc[2] = "BARRIER";
 $SpecialVarDesc[3] = "MDEF (Magical)";
 $SpecialVarDesc[4] = "HP";
 $SpecialVarDesc[5] = "Mana";
@@ -57,6 +80,28 @@ $SpecialVarDesc[15] = "AMR Pierce";
 //$SpecialVarDesc[18] = "Idle Stam";
 $SpecialVarDesc[19] = "ATK SPD";
 
+$SpecialVarDesc[20] = "VIT Scale";
+$SpecialVarDesc[21] = "MND Scale";
+$SpecialVarDesc[22] = "STR Scale";
+$SpecialVarDesc[23] = "DEX Scale";
+$SpecialVarDesc[24] = "INT Scale";
+$SpecialVarDesc[25] = "FAI Scale";
+
+$SpecialVarDesc[26] = "VIT";
+$SpecialVarDesc[27] = "MND";
+$SpecialVarDesc[28] = "STR";
+$SpecialVarDesc[29] = "DEX";
+$SpecialVarDesc[30] = "INT";
+$SpecialVarDesc[31] = "FAI";
+
+$SpecialVarDesc[32] = "ArcaneScale";
+$SpecialVarDesc[33] = "IncantScale";
+$SpecialVarDesc[34] = "NatureScale";
+
+$SpecialVarDesc[35] = "CatalystINTScale";
+$SpecialVarDesc[36] = "CatalystFAIScale";
+$SpecialVarDesc[37] = "CatalystMNDScale";
+
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;
 $BootsAccessoryType = 3;
@@ -73,6 +118,7 @@ $ShortBladeAccessoryType = 13;
 $PickAxeAccessoryType = 14;
 $MageStaffAccessoryType = 15;
 $ArmAccessoryType = 16;
+$CatalystAccessoryType = 17;
 
 $LocationDesc[$RingAccessoryType] = "Ring";
 $LocationDesc[$BodyAccessoryType] = "Body";
@@ -90,6 +136,7 @@ $LocationDesc[$ShortBladeAccessoryType] = "ShortBlade";
 $LocationDesc[$PickAxeAccessoryType] = "PickAxe";
 $LocationDesc[$MageStaffAccessoryType] = "Staff";
 $LocationDesc[$ArmAccessoryType] = "Arm";
+$LocationDesc[$CatalystAccessoryType] = "Catalyst";
 
 $maxAccessory[$RingAccessoryType] = 2;
 $maxAccessory[$BodyAccessoryType] = 1;
@@ -98,6 +145,7 @@ $maxAccessory[$BackAccessoryType] = 1;
 $maxAccessory[$ShieldAccessoryType] = 1;
 $maxAccessory[$TalismanAccessoryType] = 1;
 $maxAccessory[$ArmAccessoryType] = 1;
+$maxAccessory[$CatalystAccessoryType] = 1;
 
 //these are used for $AccessoryVar
 $AccessoryType = 1;			//(used in item.cs)
@@ -207,6 +255,10 @@ function GetAccessoryList(%clientId, %type, %filter)
     {
         %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]);
     }
+    else if(%type == 15)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]);
+    }
     else if(%type == -1)
     {
         %list = RPGItem::getFullItemList(%clientId,false);
@@ -222,6 +274,7 @@ function GetAccessoryList(%clientId, %type, %filter)
         %c[11] = $ShortBladeAccessoryType;
         %c[12] = $PickAxeAccessoryType;
         %c[13] = $BodyAccessoryType;
+        %c[15] = $CatalystAccessoryType;
         
         for(%i = 0; (%itemTag = getWord(%list,%i)) != -1; %i+=2)
         {
@@ -242,6 +295,11 @@ function GetAccessoryList(%clientId, %type, %filter)
             else if(%type == 13)
             {
                 if($AccessoryVar[getCroppedItem(%item), $AccessoryType] == $BodyAccessoryType)
+                    %typeCheck = true;
+            }
+            else if(%type == 15)
+            {
+                if($AccessoryVar[getCroppedItem(%item), $AccessoryType] == $CatalystAccessoryType)
                     %typeCheck = true;
             }
             else if(%c[%type] == $AccessoryVar[%item, $AccessoryType])
@@ -524,12 +582,24 @@ function AddItemSpecificPoints(%item, %char)
 	return %info;
 }
 
-function WhatSpecialVars(%thing)
+//Adding contents of VarB to VarA
+function CombineSpecialVars(%varA,%varB)
+{
+    for(%i = 0; (%w = getWord(%varB,%i)) != -1; %i+= 2)
+    {
+        %ret = SetStuffString(%varA,%w,getWord(%varB,%i+1),"inc",true);
+    }
+    return %ret;
+}
+
+function WhatSpecialVars(%thing,%addOn)
 {
 	dbecho($dbechoMode, "WhatSpecialVars(" @ %thing @ ")");
 
 	%tmp = GetAccessoryVar(%thing, $SpecialVar);
-
+    if(%addOn != "")
+        %tmp = CombineSpecialVars(%tmp,%addOn);
+        
 	%t = "";
 	for(%i = 0; GetWord(%tmp, %i) != -1; %i+=2)
 	{
@@ -543,6 +613,7 @@ function WhatSpecialVars(%thing)
         }
         else
             %desc = $SpecialVarDesc[%s];
+        
 		%t = %t @ %desc @ ": " @ %n @ ", ";
 	}
 	if(%t == "")

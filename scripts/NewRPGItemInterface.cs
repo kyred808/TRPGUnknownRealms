@@ -550,7 +550,7 @@ function RPGItem::useItem(%clientId,%itemTag,%amnt)
                 else
                     RPGItem::UnequipItem(%clientId,%itemTag);
             }
-            else if(%class == $RPGItem::AccessoryClass)
+            else if(%class == $RPGItem::AccessoryClass || %class == $RPGItem::CatalystClass)
             {
                 RPGItem::EquipItem(%clientId,%itemTag);
             }
@@ -685,7 +685,8 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
         %oldMp = fetchData(%clientId,"MANA");
         if(SkillCanUse(%clientId, %label))
         {
-            if(%class == $RPGItem::AccessoryClass)
+            //echo(%class);
+            if(%class == $RPGItem::AccessoryClass || %class == $RPGItem::CatalystClass)
             {
                 %equipId = $RPGItem::ItemDef[%itemId,Alternate];
                 %equipTag = "id"@%equipId;
@@ -832,7 +833,7 @@ function RPGItem::dropItem(%clientId,%itemTag,%amnt)
         %curAmnt = RPGItem::getItemCount(%clientId,%itemTag);
         if(%curAmnt >= %amnt)
         {
-            echo("Item Class: "@ %class);
+            //echo("Item Class: "@ %class);
             if(%class == $RPGItem::EquippedClass)
             {
                 Client::sendMessage(%clientId, $MsgRed, "You can't drop an equipped item!~wC_BuySell.wav");
@@ -840,7 +841,7 @@ function RPGItem::dropItem(%clientId,%itemTag,%amnt)
             }
             else if(%class == $RPGItem::WeaponClass)
             {
-                echo("New Amnt: "@ %curAmnt - %amnt);
+                //echo("New Amnt: "@ %curAmnt - %amnt);
                 if(%curAmnt - %amnt == 0 && fetchData(%clientId,"EquippedWeapon") == %itemTag)
                 {
                     echo("Dropping Equipped Weapon");

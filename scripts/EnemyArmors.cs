@@ -214,7 +214,7 @@ function PreCalculateAttributePercents(%aiType)
         if(%weight != "")
             %total += %weight;
     }
-    echo("ATTR PERC: "@ %aiType);
+    //echo("ATTR PERC: "@ %aiType);
     for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
     {
         %attr = $RPGStats::Attributes[%i];
@@ -224,7 +224,7 @@ function PreCalculateAttributePercents(%aiType)
         else
             $EnemyAttrPercent[%aiType,%i] = 0;
             
-        echo(%attr @": "@$EnemyAttrPercent[%aiType,%i]);
+        //echo(%attr @": "@$EnemyAttrPercent[%aiType,%i]);
     }
 }
 
@@ -342,7 +342,7 @@ $BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 20/50 LCK 0 CastingBlade 1
 $BotEquipment[Berserker] = 	"CLASS Fighter LVL 20/50 COINS 13/50 LCK 0 rBroadSword/x 1"; //Topaz 4/-500";
 $BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 LeatherArmor0/x 1 rBroadSword/x 1";// BluePotion 3/30 Opal 4/-300";
 $BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 LeatherArmor0/x 1/-100 rBroadSword/x 1 rShortBow/x 1 BasicArrow 20/50"; // Opal 5/-250";
-$BotEquipment[Oracle] =     "CLASS Cleric LVL 25/25 COINS 20/50 LCK 0 BoneClub/x 1";
+$BotEquipment[Oracle] =     "CLASS Cleric LVL 25/25 COINS 20/50 LCK 0 rSpikedClub/x 1";
 
 SetAttributeScaleByEnemyRole(Warlock,SpellCaster);
 SetAttributeScaleByEnemyRole(Berserker,Attacker);

@@ -24,7 +24,7 @@ $SpellEndSoundLocationPlayer = 0;
 $SpellEndSoundLocationCastPoint = 1;
 
 // Spells
-$SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
+$SkillRestriction[sparks] = $SkillOffensiveCasting @ " 15";
 $SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20";
 $SkillRestriction[firebomb] = $SkillOffensiveCasting @ " 35";
 $SkillRestriction[icespike] = $SkillOffensiveCasting @ " 45";
@@ -37,6 +37,7 @@ $SkillRestriction[hellstorm] = $SkillOffensiveCasting @ " 420";
 $SkillRestriction[beam] = $SkillOffensiveCasting @ " 520";
 $SkillRestriction[dimensionrift] = $SkillOffensiveCasting @ " 750";
 
+$SkillRestriction[thorn] = $SkillNatureCasting @ " 15";
 $SkillRestriction[teleport] = $SkillNatureCasting @ " 60";
 $SkillRestriction[transport] = $SkillNatureCasting @ " 200";
 $SkillRestriction[advtransport] = $SkillNatureCasting @ " 350";
@@ -72,7 +73,7 @@ $Spell::recoveryTime[1] = 2.625;
 $Spell::radius[1] = 10;
 $Spell::damageValue[1] = "55";
 $Spell::LOSrange[1] = 80;
-$Spell::manaCost[1] = 5;
+$Spell::manaCost[1] = 15;
 $Spell::auraEffect[1] = SpellEffectAura2;
 $Spell::startSound[1] = ActivateBF;
 $Spell::endSound[1] = NoSound;
@@ -139,7 +140,7 @@ $Spell::recoveryTime[5] = 2.625;
 $Spell::radius[5] = 10;
 $Spell::damageValue[5] = "85";
 $Spell::LOSrange[5] = 80;
-$Spell::manaCost[5] = 10;
+$Spell::manaCost[5] = 15;
 $Spell::startSound[5] = ActivateBF;
 $Spell::endSound[5] = LaunchFB;
 $Spell::endSoundLoc[5] = $SpellEndSoundLocationPlayer;
@@ -159,7 +160,7 @@ $Spell::recoveryTime[6] = 2.625;
 $Spell::radius[6] = 10;
 $Spell::damageValue[6] = "140";
 $Spell::LOSrange[6] = 80;
-$Spell::manaCost[6] = 15;
+$Spell::manaCost[6] = 25;
 $Spell::startSound[6] = ActivateBF;
 $Spell::endSound[6] = ActivateAB;
 $Spell::endSoundLoc[6] = $SpellEndSoundLocationPlayer;
@@ -179,7 +180,7 @@ $Spell::recoveryTime[7] = 7.5;
 $Spell::radius[7] = 10;
 $Spell::damageValue[7] = "70";
 $Spell::LOSrange[7] = 80;
-$Spell::manaCost[7] = 20;
+$Spell::manaCost[7] = 40;
 $Spell::startSound[7] = ActivateBF;
 $Spell::endSound[7] = ExplodeLM;
 $Spell::groupListCheck[7] = False;
@@ -193,9 +194,12 @@ $Spell::index[heal] = 8;
 $Spell::name[8] = "Heal Self";
 $Spell::description[8] = "Heals the caster.";
 $Spell::delay[8] = 1.5;
+$Spell::scaleDamper[8] = 0.75;
 $Spell::recoveryTime[8] = 2.25;
-$Spell::damageValue[8] = -6;
-$Spell::manaCost[8] = 2;
+$Spell::damageValue[8] = 0.02; //"HPRegen 0.02";
+$Spell::scaleEffect[8] = 0.6;
+$Spell::manaCost[8] = 5;
+$Spell::ticks[8] = 15;
 $Spell::startSound[8] = DeActivateWA;
 $Spell::endSound[8] = ActivateAR;
 $Spell::groupListCheck[8] = False;
@@ -263,7 +267,7 @@ $Spell::delay[12] = 0.0;
 $Spell::recoveryTime[12] = 15;
 $Spell::damageValue[12] = "180";
 $Spell::LOSrange[12] = 1000;
-$Spell::manaCost[12] = 30;
+$Spell::manaCost[12] = 80;
 $Spell::startSound[12] = HitLevelDT;
 $Spell::endSound[12] = HitBF;
 $Spell::groupListCheck[12] = False;
@@ -281,7 +285,7 @@ $Spell::recoveryTime[13] = 1.5;
 $Spell::radius[13] = 6;
 $Spell::damageValue[13] = "20";
 $Spell::LOSrange[13] = 80;
-$Spell::manaCost[13] = 1;
+$Spell::manaCost[13] = 3;
 $Spell::startSound[13] = ActivateFK;
 $Spell::endSound[13] = DeflectAS;
 $Spell::endSoundLoc[13] = $SpellEndSoundLocationPlayer;
@@ -290,7 +294,7 @@ $Spell::refVal[13] = 20;
 $Spell::graceDistance[13] = 5;
 $Spell::effectType[13] = $SpellTypeProjectile;
 $Spell::projectileData[13] = Thorn;
-$SkillType[thorn] = $SkillOffensiveCasting;
+$SkillType[thorn] = $SkillNatureCasting;
 
 $Spell::keyword[14] = "fireball";
 $Spell::index[fireball] = 14;
@@ -301,7 +305,7 @@ $Spell::recoveryTime[14] = 1.5;
 $Spell::radius[14] = 8;
 $Spell::damageValue[14] = "35";
 $Spell::LOSrange[14] = 80;
-$Spell::manaCost[14] = 3;
+$Spell::manaCost[14] = 10;//3;
 $Spell::startSound[14] = ActivateAB;
 $Spell::endSound[14] = LaunchFB;
 $Spell::endSoundLoc[14] = $SpellEndSoundLocationPlayer;
@@ -321,7 +325,7 @@ $Spell::recoveryTime[15] = 1.5;
 $Spell::radius[15] = 6;
 $Spell::damageValue[15] = "28";
 $Spell::LOSrange[15] = 80;
-$Spell::manaCost[15] = 3;
+$Spell::manaCost[15] = 8;
 $Spell::startSound[15] = ActivateFK;
 $Spell::endSound[15] = HitPawnDT;
 $Spell::endSoundLoc[15] = $SpellEndSoundLocationPlayer;
@@ -341,7 +345,7 @@ $Spell::recoveryTime[16] = 2.25;
 $Spell::radius[16] = 11;
 $Spell::damageValue[16] = "45";
 $Spell::LOSrange[16] = 80;
-$Spell::manaCost[16] = 4;
+$Spell::manaCost[16] = 20;
 $Spell::startSound[16] = ImpactTR;
 $Spell::endSound[16] = Reflected;
 $Spell::endSoundLoc[16] = $SpellEndSoundLocationPlayer;
@@ -360,7 +364,7 @@ $Spell::recoveryTime[17] = 13.5;
 $Spell::radius[17] = 7;
 $Spell::damageValue[17] = "128";
 $Spell::LOSrange[17] = 80;
-$Spell::manaCost[17] = 12;
+$Spell::manaCost[17] = 25;
 $Spell::startSound[17] = UnravelAM;
 $Spell::endSound[17] = NoSound;
 $Spell::groupListCheck[17] = False;
@@ -380,7 +384,7 @@ $Spell::radius[18] = 20;
 $Spell::damageValue[18] = "265";
 $Spell::auraEffect[18] = SpellEffectAura2;
 $Spell::LOSrange[18] = 80;
-$Spell::manaCost[18] = 20;
+$Spell::manaCost[18] = 30;
 $Spell::startSound[18] = LoopLS;
 $Spell::endSound[18] = LaunchET;
 $Spell::groupListCheck[18] = False;
@@ -398,7 +402,7 @@ $Spell::recoveryTime[19] = 11.25;
 $Spell::radius[19] = 30;
 $Spell::damageValue[19] = "320";
 $Spell::LOSrange[19] = 80;
-$Spell::manaCost[19] = 40;
+$Spell::manaCost[19] = 80;
 $Spell::auraEffect[19] = SpellEffectAura1;
 $Spell::startSound[19] = LaunchLS;
 $Spell::endSound[19] = Explode3FW;
@@ -495,10 +499,10 @@ $SkillType[massfullheal] = $SkillDefensiveCasting;
 $Spell::keyword[25] = "shield";
 $Spell::index[shield] = 25;
 $Spell::name[25] = "Shield Self";
-$Spell::description[25] = "A magical shield adds 50 DEF to the caster.";
+$Spell::description[25] = "A magical shield adds 50 DEF to the caster and 5 AMR.";
 $Spell::delay[25] = 2.0;
 $Spell::recoveryTime[25] = 8;
-$Spell::damageValue[25] = "DEF 50";
+$Spell::damageValue[25] = "DEF 50 AMR 5";
 $Spell::ticks[25] = 150;	//5 minutes
 $Spell::manaCost[25] = 5;
 $Spell::startSound[25] = ActivateTR;
@@ -512,10 +516,10 @@ $SkillType[shield] = $SkillDefensiveCasting;
 $Spell::keyword[26] = "advshield1";
 $Spell::index[advshield1] = 26;
 $Spell::name[26] = "Shield Self Or Other (1st)";
-$Spell::description[26] = "A magical shield that adds 80 DEF to the caster or target in LOS.";
+$Spell::description[26] = "A magical shield that adds 80 DEF to the caster or target in LOS and 5 AMR.";
 $Spell::delay[26] = 2.0;
 $Spell::recoveryTime[26] = 10;
-$Spell::damageValue[26] = "DEF 80";
+$Spell::damageValue[26] = "DEF 80 AMR 5";
 $Spell::ticks[26] = 165;	//5:30 minutes
 $Spell::LOSrange[26] = 80;
 $Spell::manaCost[26] = 8;
@@ -530,10 +534,10 @@ $SkillType[advshield1] = $SkillDefensiveCasting;
 $Spell::keyword[27] = "advshield2";
 $Spell::index[advshield2] = 27;
 $Spell::name[27] = "Shield Self Or Other (2nd)";
-$Spell::description[27] = "A magical shield that adds 70 DEF and 50 MDEF to the caster or target in LOS.";
+$Spell::description[27] = "A magical shield that adds 70 DEF, 50 MDEF, and 5 AMR to the caster or target in LOS.";
 $Spell::delay[27] = 2.0;
 $Spell::recoveryTime[27] = 12;
-$Spell::damageValue[27] = "DEF 70 MDEF 50";
+$Spell::damageValue[27] = "DEF 70 MDEF 50 AMR 5";
 $Spell::ticks[27] = 190;	//6:20 minutes
 $Spell::LOSrange[27] = 80;
 $Spell::manaCost[27] = 15;
@@ -548,10 +552,10 @@ $SkillType[advshield2] = $SkillDefensiveCasting;
 $Spell::keyword[28] = "advshield3";
 $Spell::index[advshield3] = 28;
 $Spell::name[28] = "Shield Self Or Other (3rd)";
-$Spell::description[28] = "A magical shield that adds 120 DEF and 80 MDEF to the caster or target in LOS.";
+$Spell::description[28] = "A magical shield that adds 120 DEF, 80 MDEF, and 5 AMR to the caster or target in LOS.";
 $Spell::delay[28] = 2.0;
 $Spell::recoveryTime[28] = 14;
-$Spell::damageValue[28] = "DEF 120 MDEF 80";
+$Spell::damageValue[28] = "DEF 120 MDEF 80 AMR 5";
 $Spell::ticks[28] = 218;	//7:16 minutes
 $Spell::LOSrange[28] = 80;
 $Spell::manaCost[28] = 18;
@@ -584,10 +588,10 @@ $SkillType[advshield4] = $SkillDefensiveCasting;
 $Spell::keyword[30] = "advshield5";
 $Spell::index[advshield5] = 30;
 $Spell::name[30] = "Shield Self Or Other (5th)";
-$Spell::description[30] = "A magical shield that adds 150 DEF and 210 MDEF to the caster or target in LOS.";
+$Spell::description[30] = "A magical shield that adds 150 DEF, 210 MDEF, and 5 AMR to the caster or target in LOS.";
 $Spell::delay[30] = 2.0;
 $Spell::recoveryTime[30] = 20;
-$Spell::damageValue[30] = "DEF 150 MDEF 210";
+$Spell::damageValue[30] = "DEF 150 MDEF 210 AMR 5";
 $Spell::ticks[30] = 300;	//10 minutes
 $Spell::LOSrange[30] = 80;
 $Spell::manaCost[30] = 25;
@@ -602,11 +606,11 @@ $SkillType[advshield5] = $SkillDefensiveCasting;
 $Spell::keyword[31] = "massshield";
 $Spell::index[massshield] = 31;
 $Spell::name[31] = "Mass Shield";
-$Spell::description[31] = "A magical shield that adds 115 DEF and 105 MDEF to all friendlies within a 10 meter radius.";
+$Spell::description[31] = "A magical shield that adds 115 DEF, 105 MDEF, and 5 AMR to all friendlies within a 10 meter radius.";
 $Spell::delay[31] = 2.0;
 $Spell::recoveryTime[31] = 30;
 $Spell::radius[31] = 10;
-$Spell::damageValue[31] = "DEF 115 MDEF 105";
+$Spell::damageValue[31] = "DEF 115 MDEF 105 AMR 5";
 $Spell::ticks[31] = 270;	//9 minutes
 $Spell::manaCost[31] = 20;
 $Spell::startSound[31] = ActivateTR;
@@ -870,6 +874,24 @@ $Spell::effectType[45] = $SpellTypeCustom;
 $SkillType[botstatdrain2] = $SkillNatureCasting;
 $SkillRestriction[botstatdrain2] = "B 1"; //Bot only spells
 
+$Spell::keyword[46] = "sparks";
+$Spell::index[sparks] = 46;
+$Spell::name[46] = "Sparks";
+$Spell::description[46] = "Steals stat points from targets.";
+$Spell::delay[46] = 0.01;
+$Spell::radius[46] = 4;
+$Spell::recoveryTime[46] = 1.2;
+$Spell::damageValue[46] = 10; //stat damage
+$Spell::manaCost[46] = 4;
+$Spell::startSound[46] = ActivateAB;
+$Spell::endSound[46] = NoSound;
+$Spell::groupListCheck[46] = False;
+$Spell::refVal[46] = -30;
+$Spell::graceDistance[46] = 15;
+$Spell::effectType[46] = $SpellTypeCustom;
+$SkillType[sparks] = $SkillOffensiveCasting;
+
+
 //----------------------------------------------------------------------------------------------------------------
 
 function TranslateEffectVars(%effectVars)
@@ -976,7 +998,13 @@ function BeginCastSpell(%clientId, %keyword)
 				if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "Casting " @ $Spell::name[%i] @ ".");
-
+                    if(%clientId.isAtRest != 0)
+                    {
+                        %clientId.isAtRest = 0;
+                        %clientId.isAtRestCounter = 0;
+                        refreshHPREGEN(%clientId,fetchData(%clientId,"zone"));
+                        
+                    }
 					%player = Client::getOwnedObject(%clientId);
 					if(GameBase::getLOSinfo(%player, $Spell::LOSrange[%i]))
 					{
@@ -1099,6 +1127,16 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
     
     if($Spell::effectType[%index] == $SpellTypeCustom)
     {
+        if(%index == 46) //Sparks
+        {
+            %trans = GameBase::getEyeTransform(%clientId);
+            %vel = Item::getVelocity(%clientId);
+            %eyePos = Word::getSubWord(%trans,9,3);
+            %dir = Word::getSubWord(%trans,3,3);
+            %offsetProj = Vector::add(%eyePos,ScaleVector(%dir,5));
+            
+            CreateAndDetBomb(%clientId, "Bomb9", %offsetProj, True, %index);
+        }
         if(%index == 40)
         {
             %trans = GameBase::getEyeTransform(%clientId);
@@ -1328,11 +1366,16 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
         {
             //heal self spell
 
-            Client::sendMessage(%clientId, $MsgBeige, "Healing self");
+            Client::sendMessage(%clientId, $MsgBeige, "Accelerate Healing");
 
-            %r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
-            refreshHP(%clientId, %r);
-
+            //%r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
+            //refreshHP(%clientId, %r);
+            %scale = fetchData(%clientId,"IncantScaling");
+            %dampered = (%scale - 100)*$Spell::scaleDamper[%index];
+            %catascale = (%scale - %dampered)/100;
+            echo("Scale: "@ %catascale);
+            UpdateBonusState(%clientId, "HPRegen "@ %catascale*$Spell::damageValue[%index], $Spell::ticks[%index]);
+            
             %castPos = GameBase::getPosition(%clientId);
 
             %returnFlag = True;
@@ -1717,7 +1760,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
     }
 
 	Player::setAnimation(%clientId, 39);
-    echo(%overrideEndSound);
+    //echo(%overrideEndSound);
 	if(!%overrideEndSound)
 	{
         %endSoundSetting = $SpellEndSoundLocationCastPoint;
@@ -1727,9 +1770,9 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
         {
             %endSoundSetting = $Spell::endSoundLoc[%index];
         }
-        echo(%endSoundSetting);
+        //echo(%endSoundSetting);
         %soundPos = DetermineEndSoundLocation(%clientId,%castPos,%endSoundSetting);
-        echo(%soundPos);
+        //echo(%soundPos);
 		if(%extraDelay == "")
 			playSound($Spell::endSound[%index], %soundPos);
 		else

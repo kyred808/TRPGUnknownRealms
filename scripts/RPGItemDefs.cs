@@ -5,6 +5,7 @@ $RPGItem::WeaponTypeBotSpell = 3;
 
 $RPGItem::AccessoryClass = "Accessory";
 $RPGItem::WeaponClass = "Weapon";
+$RPGItem::CatalystClass = "Catalyst";
 $RPGItem::EquippedClass = "Equipped";
 $RPGItem::AmmoClass = "Ammo";
 
@@ -70,6 +71,7 @@ $RangeWeaponFireVel[aeoluswing] = 100;
 RPGItem::AddItemClass("Weapon","Weapons","WeaponItemInv","WeaponItemStorage");
 RPGItem::AddItemClass("Equipped","Equipped","EquippedItemInv","");
 RPGItem::AddItemClass("Accessory","Accessories","AccessoryItemInv","AccessoryItemStorage");
+RPGItem::AddItemClass("Catalyst","Catalysts","AccessoryItemInv","AccessoryItemStorage");
 RPGItem::AddItemClass("Rares","Rares","PouchItemInv","PouchItemStorage");
 RPGItem::AddItemClass("Gems","Gems","PouchItemInv","PouchItemStorage");
 RPGItem::AddItemClass("Ores","Ores","PouchItemInv","PouchItemStorage");
@@ -126,9 +128,9 @@ RPGItem::AddWeapon("CastingBlade","Casting Blade",43,$RPGItem::WeaponTypeBotSpel
 RPGItem::AddWeapon("TreeAtk","TreeAtk",45,$RPGItem::WeaponTypeMelee,TreeShapeItem);
 
 RPGItem::AddWeapon("rknife","Rusty Knife",39,$RPGItem::WeaponTypeMelee,DaggerShape);
-RPGItem::AddWeapon("RClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
+RPGItem::AddWeapon("rClub","Cracked Club",40,$RPGItem::WeaponTypeMelee,MaceShape);
 RPGItem::AddWeapon("rwaraxe","Rusty War Axe",41,$RPGItem::WeaponTypeMelee,WarAxeShape);
-RPGItem::AddWeapon("RPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
+RPGItem::AddWeapon("rPickAxe","Rusty Pickaxe",42,$RPGItem::WeaponTypePick,PickAxeShape);
 RPGItem::AddWeapon("rlightcrossbow","Cracked Light Crossbow",44,$RPGItem::WeaponTypeMelee,CrossbowShape);
 RPGItem::AddWeapon("rshortbow","Cracked Short Bow",46,$RPGItem::WeaponTypeRange,LongBowShape);
 RPGItem::AddWeapon("rbroadsword","Rusty Broadsword",47,$RPGItem::WeaponTypeMelee,SwordShape);
@@ -146,9 +148,9 @@ $ExcludeAffix["rlongsword"] = true;
 $ExcludeAffix["rspikedclub"] = true;
 
 $UnrustedItem["rknife"] = "knife";
-$UnrustedItem["RClub"] = "club";
+$UnrustedItem["rClub"] = "club";
 $UnrustedItem["rwaraxe"] = "waraxe";
-$UnrustedItem["RPickAxe"] = "pickaxe";
+$UnrustedItem["rPickAxe"] = "pickaxe";
 $UnrustedItem["rlightcrossbow"] = "lightcrossbow";
 $UnrustedItem["rshortbow"] = "shortbow";
 $UnrustedItem["rbroadsword"] = "broadsword";
@@ -407,6 +409,15 @@ function AddNeckAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%special
     $AccessoryVar[%label, $SpecialVar] = %special;
 }
 
+function AddCatalystAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%special)
+{
+    RPGItem::AddAccessoryEquipment(%label,%name,$RPGItem::CatalystClass,%id,%datablk);
+    $AccessoryVar[%label, $AccessoryType] = $CatalystAccessoryType;
+    $AccessoryVar[%label, $Weight] = %weight;
+    $HardcodedItemCost[%label] = %cost;
+    $AccessoryVar[%label, $SpecialVar] = %special;
+}
+
 // Rings
 AddRingItemHelper(ringofharm,"Ring of Harm",200,MiscLootShape,0.2,10000,$SpecialVarATK@" 10");
 AddRingItemHelper(ringofdefense,"Ring of Defense",202,MiscLootShape,0.2,8000,$SpecialVarDEF@" 50");
@@ -501,13 +512,12 @@ $SkillRestriction[morningstar] = $SkillBludgeoning @ " 250";
 AddNeckAccessoryHelper(traitorsamulet,"Traitor's Amulet",281,MiscLootShape,0.2,150000,"SKILL"@$SkillHiding@" 100 SKILL"@$SkillBackstabbing@" 100");
 $AccessoryVar[traitorsamulet, $MiscInfo] = "A rare amulet that raises Hiding and Backstabbing by 100";
 
+
 AddItemHelper(DeepMineKey,"Deep Mine Key","Rares",283,0.02,5000,MiscLootShape);
 $AccessoryVar[DeepMineKey, $MiscInfo] = "Key that grants access to the Deep Keldrin Mines. Consumed on use.";
 
 AddArmAccessoryHelper(OgresBracelet,"Ogre's Bracelet",284,MiscLootShape,0.2,195000,"SKILL"@$SkillSlashing@" 100 SKILL"@$SkillEndurance@" 100");
 $AccessoryVar[OgresBracelet, $MiscInfo] = "A bracelet that enhances the user's health and strength.";
-
-
 
 //Hard coded costs are overwritten in CratingItemDefs
 AddItemHelper("Copper","Copper","Ores",300,3,1500,MiscLootShape);
@@ -520,7 +530,19 @@ AddItemHelper("Cobalt","Cobalt","Ores",306,15,7500,MiscLootShape);
 AddItemHelper("Mythril","Mythril","Ores",307,25,11250,MiscLootShape);
 AddItemHelper("Adamantium","Adamantium","Ores",308,30,15750,MiscLootShape);
 
-//Next item starts at 309
+//Next item starts at 311
+
+AddNeckAccessoryHelper(weakmagicamulet,"Weak Magic Amulet",309,MiscLootShape,0.2,2500,$SpecialVarBAR @" 10 "@ $SpecialVarMDEF @" 80");
+$AccessoryVar[weakmagicamulet, $MiscInfo] = "A small amulet that protects from magic damage";
+
+$CatalystTypeArcane = 0;
+$CatalystTypeIncant = 1;
+$CatalystTypeNature = 2;
+AddCatalystAccessoryHelper(novicecatalyst,"Novice Catalyst",400,MiscLootShape,0.2,5000,$SpecialVarArcaneScale @" 30 "@ $SpecialVarCataINTScale @" 5 "@$SpecialVarCataMNDScale @" 1");
+$AccessoryVar[novicecatalyst, $MiscInfo] = "A magic spell casting catalyst for mages in training.";
+
+$CatalystType[novicecatalyst] = $CatalystTypeArcane;
+$SkillRestriction[novicecatalyst] = $SkillOffensiveCasting @ " 20";
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {

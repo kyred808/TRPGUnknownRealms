@@ -711,6 +711,14 @@ function sellItem(%clientId,%itemTag, %amnt)
                                 {
                                     RPGItem::decItemCount(%clientId,RPGItem::LabelToItemTag("TitaniteShard"),%reqAmt,true);
                                     %newItem = RPGItem::setItemAffix(%itemTag,"im",1,"inc");
+                                    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+                                    {
+                                        %spec = Attribute::GetScalingSpecialVar($RPGStats::Attributes[%i]);
+                                        if(GetStuffStringCount($AccessoryVar[RPGItem::ItemTagToLabel(%itemTag), $SpecialVar],%spec) > 0)
+                                        {
+                                            %newItem = RPGItem::setItemAffix(%newItem,$RPGItem::SpecialVarToAffix[%spec],$WeaponImprovementScaleFactor,"inc");
+                                        }
+                                    }
                                     %equipped = fetchData(%clientId,"EquippedWeapon") == %itemTag;
                                     RPGItem::decItemCount(%clientId,%itemTag,1);
                                     RPGItem::incItemCount(%clientId,%newItem,1);

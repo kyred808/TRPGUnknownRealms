@@ -496,7 +496,7 @@ function remoteConsider(%clientId)
             }
             %groupName = Object::getName(getGroup(%object));
 
-            if(Object::getName(%object) == "bonfire" && String::findSubStr(%groupName, "Camp") != -1)
+            if(Object::getName(%object) == "lvlbonfire" || (Object::getName(%object) == "bonfire" && String::findSubStr(%groupName, "Camp") != -1))
             {
                 //RPGLevelUpMenu(%clientId,1);
                 BonfireMenu(%clientId,1);

@@ -59,6 +59,27 @@ $dayCycleHaze[5] = -900;
 if($fullCycleTime == "") $fullCycleTime = 60 * 60;
 if($nightDayCycle == "") $nightDayCycle = False;
 //--------------------------------------
+
+$WeapAtkDmgScale = 0.5;
+$AttrDmgScale = 1;
+$SkillDmgScale = 0.05;
+
+$WeaponImprovementScaleFactor = 0.1;
+
+$MaxManaMNDFactor = 2;
+$MaxManaSkillFactor = 0.2;
+
+$MagicEffectScalingINT = 5;
+$MagicEffectScalingMND = 1;
+$MagicEffectScalingFAI = 5;
+
+$SpellDamageSkillScale = 0.05;
+
+$WeightCapVITFactor = 0.5;
+$WeightCapSTRFactor = 1;
+$WeightCapDEXFactor = 0.5;
+$WeightCapSkillFactor = 0.5;
+
 $SlowDownHitEnabled = false;
 $PlayerLevelLimitForExp = 300;
 
@@ -94,7 +115,7 @@ $ExtraCraftingRequirements = true; //Crafting system needs reassessing
 $BaseCraftingDifficulty = 10;
 $MaxCraftingBatch = 100;
 
-$NewPlayerSpawnZone = "DUNGEON New Player Cave";
+$NewPlayerSpawnZone = "PROTECTED Keldrin Town"; //"DUNGEON New Player Cave";
 
 $ManaEnergyFactor = 1/25; //Need to reassess if this is used
 

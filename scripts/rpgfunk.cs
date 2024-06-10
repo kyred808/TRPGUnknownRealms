@@ -2312,7 +2312,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		else if(%w == "LVL")
 		{
 			//note: the class MUST be specified in %stuff prior to this call
-			storeData(%clientId, "EXP", GetExpToLevel(%w2, %clientId) + 100);
+			//storeData(%clientId, "EXP", GetExpToLevel(%w2, %clientId) + 100);
             storeData(%clientId, "LVL", %w2);
 		}
 		else if(%w == "TEAM")
@@ -2424,10 +2424,12 @@ function FellOffMap(%id)
 }
 
 
-function SetStuffString(%stuff,%item,%amount,%mod)
+function SetStuffString(%stuff,%item,%amount,%mod,%fix)
 {
     if(%mod == "")
         %mod = "inc";
+    if(%fix == "")
+        %fix = false;
     $RPGStuffStr::amount = "";
     %stuff = FixStuffString(%stuff);
     //echo(%stuff);
@@ -2451,7 +2453,9 @@ function SetStuffString(%stuff,%item,%amount,%mod)
             %newAmount = getWord(%entry,1) - %amount;
         else if(%mod == "set")
             %newAmount = %amount;
-            
+        
+        if(%fix)
+            %newAmount = FixDecimals(%newAmount);
         if(%newAmount > 0)
         {
             %new = %item @" "@ %newAmount @ " ";
@@ -2874,7 +2878,8 @@ function DisplayTargetStats(%clientId,%id,%obj)
     for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
     {
         %attr = $RPGStats::Attributes[%i];
-        %str = %str@%attr@": "@ fetchData(%id,%attr) @"\n";
+        %str = %str@%attr@": "@ CalcPlayerAttribute(%id,%attr) @"\n";
+        //echo(%attr @ " "@ CalcPlayerAttribute(%id,%attr));
     }
     
     %len = String::len(%str);
@@ -2926,10 +2931,20 @@ function WhatIs(%item)
         %tag = %item;
         %item = getCroppedItem(RPGItem::ItemTagToLabel(%item));
         %desc = RPGItem::getItemNameFromTag(%tag);
+        %specAdd = "";
         if(RPGItem::GetItemGroupFromTag(%tag) == $RPGItem::WeaponClass)
         {
             %im = RPGItem::getImprovementLevel(%tag);
             %bonusAtk = round(GetWord(GetAccessoryVar(%item, $SpecialVar), 1) * %im * 0.1);
+            for(%aa = 0; %aa < $RPGStats::AttributeCount; %aa++)
+            {
+                %spec = Attribute::GetScalingSpecialVar($RPGStats::Attributes[%aa]);
+                %affixVal = RPGItem::getAffixValue(%tag,$RPGItem::SpecialVarToAffix[%spec]);
+                if(%affixVal > 0)
+                {
+                    %specAdd = %specAdd @ %spec @" "@ %affixVal @" ";
+                }
+            }
         }
     }
     else
@@ -2998,7 +3013,7 @@ function WhatIs(%item)
 
     %specialVars = "";
 
-    %specialVars = WhatSpecialVars(%item);
+    %specialVars = WhatSpecialVars(%item,%specAdd);
     
     %restrict = WhatSkills(%item);
 	//--------- BUILD MSG --------------------
@@ -3006,14 +3021,6 @@ function WhatIs(%item)
 	%msg = %msg @ "<f1>" @ %desc @ %loc @ " <f0>"@%tag@"<f1>\n";
     if(%abi == "" && %specialVars != "None")
     {
-        //if(%bonusAtk != "")
-        //{
-        //    if(%bonusAtk > 0)
-        //        %msg = %msg @ "\nBonuses: " @ %specialVars+%bonusAtk @" (+"@%bonusAtk@")";
-        //    else
-        //        %msg = %msg @ "\nBonuses: " @ %specialVars+%bonusAtk @" ("@%bonusAtk@")";
-        //}
-        //else
         %msg = %msg @ "\nBonuses: " @ %specialVars;
         if(%bonusAtk > 0)
             %msg = %msg @ " (ATK+"@%bonusAtk@")";

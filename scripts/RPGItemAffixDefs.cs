@@ -90,7 +90,22 @@ RPGItem::addAffixType("hp","HP",$SpecialVarHP); //MaxHP
 RPGItem::addAffixType("mp","MP",$SpecialVarMana); //MaxMP
 RPGItem::addAffixType("hr","HPRegen",$SpeicalVarHPRegen); //HPRegen
 RPGItem::addAffixType("mr","MPRegen",$SpecialVarManaRegen); //MPRegen
-RPGItem::addAffixType("ap","AMRP",$SpecialVarArmorPiercing); //Armor Pierce
+
+RPGItem::addAffixType("vs","VITScale",$SpecialVarVITScaling);
+RPGItem::addAffixType("ms","MNDScale",$SpecialVarMNDScaling);
+RPGItem::addAffixType("ss","STRScale",$SpecialVarSTRScaling);
+RPGItem::addAffixType("ds","DEXScale",$SpecialVarDEXScaling);
+RPGItem::addAffixType("is","INTScale",$SpecialVarINTScaling);
+RPGItem::addAffixType("fs","FAIScale",$SpecialVarFAIScaling);
+
+RPGItem::addAffixType("vt","VIT",$SpecialVarVIT);
+RPGItem::addAffixType("mn","MND",$SpecialVarMND);
+RPGItem::addAffixType("sr","STR",$SpecialVarSTR);
+RPGItem::addAffixType("dx","DEX",$SpecialVarDEX);
+RPGItem::addAffixType("it","INT",$SpecialVarINT);
+RPGItem::addAffixType("fa","FAI",$SpecialVarFAI);
+
+RPGItem::addAfficType("ba","BARRIER",$SpecialVarBAR);
 
 $RPGItem::SpecialVarToAffix[$SpecialVarAMR] = "am";
 $RPGItem::SpecialVarToAffix[$SpecialVarMDEF] = "md";
@@ -107,11 +122,27 @@ $RPGItem::SpecialVarToAffix[$SpecialVarManaHarvest] = "";
 $RPGItem::SpecialVarToAffix[$SpecialVarArmorPiercing] = "ap";
 $RPGItem::SpecialVarToAffix[$SpecialVarATKSpeed] = "sp";
 
+$RPGItem::SpecialVarToAffix[$SpecialVarVITScaling] = "vs";
+$RPGItem::SpecialVarToAffix[$SpecialVarMNDScaling] = "ms";
+$RPGItem::SpecialVarToAffix[$SpecialVarSTRScaling] = "ss";
+$RPGItem::SpecialVarToAffix[$SpecialVarDEXScaling] = "ds";
+$RPGItem::SpecialVarToAffix[$SpecialVarINTScaling] = "is";
+$RPGItem::SpecialVarToAffix[$SpecialVarFAIScaling] = "fs";
+
+$RPGItem::SpecialVarToAffix[$SpecialVarVIT] = "vt";
+$RPGItem::SpecialVarToAffix[$SpecialVarMND] = "mn";
+$RPGItem::SpecialVarToAffix[$SpecialVarSTR] = "sr";
+$RPGItem::SpecialVarToAffix[$SpecialVarDEX] = "dx";
+$RPGItem::SpecialVarToAffix[$SpecialVarINT] = "it";
+$RPGItem::SpecialVarToAffix[$SpecialVarFAI] = "fa";
+
+$RPGItem::SpecialVarToAffix[$SpecialVarBAR] = "ba";
+
 RPGItemAffix::defineEquipModifier("Fast","sp 40,at -15%,va 10%",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Hard","de 50,va 5%",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Broken","at -40%,va -80%",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Vengeful","at 20%,va 25%,de -100,sp 25",$RPGItem::WeaponClass);
-RPGItemAffix::defineEquipModifier("Warding","md 100,va 12%",$RPGItem::WeaponClass);
+RPGItemAffix::defineEquipModifier("Warding","md 100,va 12%,ba 15",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Sharp","at 10,va 10%",$RPGItem::WeaponClass);
 RPGItemAffix::defineEquipModifier("Gilded","va 25%",$RPGItem::WeaponClass);
 //RPGItemAffix::defineEquipModifier("Old","va -70%,at -30%,we 50%,sp -50",$RPGItem::WeaponClass);

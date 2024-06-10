@@ -504,6 +504,24 @@ function CalculateDamageReduction(%clientId)
     
 }
 
+function CalculateRawDamage(%clientId,%weapon)
+{
+    %playeratk = fetchData(%clientId,"ATK");
+    %attrf = CalcWeaponAttrFactor(%clientId,%weapon);
+    %skillVal = CalculatePlayerSkill(%clientId, $SkillType[RPGItem::ItemTagToLabel(%weapon)]);
+    %value = round(%playeratk*$WeapAtkDmgScale + %attrf*$AttrDmgScale + %skillVal*$SkillDmgScale);
+    
+    return %value;
+}
+
+function PlayerDamageRangeText(%clientId,%itemTag)
+{
+    %raw = CalculateRawDamage(%clientId,%itemTag);
+    %low = round(%raw * (0.85));
+    %high = round(%raw * 1.15);
+    return %low @" - "@ %high;
+}
+
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%object,%weapon,%preCalcMiss,%dmgMult)
 {
 	//dbecho($dbechoMode2, "Player::onDamage(" @ %this @ ", " @ %type @ ", " @ %value @ ", " @ %pos @ ", " @ %vec @ ", " @ %mom @ ", " @ %vertPos @ ", " @ %rweapon @ ", " @ %object @ ", " @ %weapon @ ", " @ %preCalcMiss @ ", " @ %dmgMult @ ")");
@@ -600,7 +618,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		if(%type == $SpellDamageType || %type == $StaffDamageType)
 		{
             //For the case of SPELLS, the initial damage has already been determined before calling this function
-            
+            echo("MAGIC");
             if(%type == $StaffDamageType)
             {
                 //%staffWeap = Player::getMountedItem(%shooterClient,$WeaponSlot);
@@ -611,7 +629,6 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
             else
             {
-                echo($Spell::index[%weapTag]);
                 if($Spell::index[%weapTag] != "")
                 {
                     %skilltype = $SkillType[%weapTag];
@@ -622,10 +639,21 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             echo("Spell Type: "@ %skilltype);
 			%sdm = AddBonusStatePoints(%shooterClient, "SDM"); //Spell Damage bonus
 			%dmg = %value + %sdm;
+            %cataTypeList[$SkillOffensiveCasting] = "MagicScaling";
+            %cataTypeList[$SkillDefensiveCasting] = "IncantScaling";
+            %cataTypeList[$SkillNatureCasting] = "MagicScaling";
+            
             if(%empower)
                 %dmg += 15;
-			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
-
+            
+            %cataScale = fetchData(%shooterClient,%cataTypeList[%skilltype]);
+            //echo("SC: "@%catascale);
+            //echo("SK: "@ CalculatePlayerSkill(%shooterClient, %skilltype) * $SpellDamageSkillScale);
+            %value = round( (%dmg * %cataScale / 100) + CalculatePlayerSkill(%shooterClient, %skilltype) * $SpellDamageSkillScale);
+			//%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
+            %amr = fetchData(%damagedClient,"BAR");
+            %value = Cap(%value - %amr, 1, "inf");
+            
 			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10));
 			%value = Cap(%value - %ab, 0, "inf");
 
@@ -701,7 +729,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             
             if(%empower)
                 %weapondamage += 15;
-			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
+			//%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
+            %attrf = CalcWeaponAttrFactor(%shooterClient,%weapTag);
+            %skillVal = CalculatePlayerSkill(%shooterClient, %skilltype);
+            %value = round((%weapondamage*$WeapAtkDmgScale + %attrf*$AttrDmgScale + %skillVal*$SkillDmgScale)* %multi * %dmgMult);
+            //echo(%value);
             %a = (%value * 0.15);
 			%r = round((getRandom() * (%a*2)) - %a);
 			%value += %r;
@@ -742,6 +774,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
             if(%empower)
                 %value += 2;
+            echo(%value);
 			%value = (%value / $TribesDamageToNumericDamage);
             
 		}

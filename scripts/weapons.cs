@@ -102,57 +102,58 @@ $AccessoryVar[FireStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[ThornStaff, $AccessoryType] = $MageStaffAccessoryType;
 $AccessoryVar[HealerStaff, $AccessoryType] = $MageStaffAccessoryType;
 
-$AccessoryVar[Shiv, $SpecialVar] = "6 8";
+$AccessoryVar[Shiv, $SpecialVar] = $SpecialVarATK @" 8 "@ $SpecialVarDEXScaling @" 0.5";
 
-$AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";
-$AccessoryVar[Hatchet, $SpecialVar] = "6 20";			//12 (5)
-$AccessoryVar[BroadSword, $SpecialVar] = "6 35";		//21 (5)
-$AccessoryVar[WarAxe, $SpecialVar] = "6 70";			//30 (7)
-$AccessoryVar[LongSword, $SpecialVar] = "6 65";			//39 (5)
-$AccessoryVar[BattleAxe, $SpecialVar] = "6 144";		//48 (9)
-$AccessoryVar[BastardSword, $SpecialVar] = "6 133";		//57 (7)
-$AccessoryVar[Halberd, $SpecialVar] = "6 176";			//66 (8)
-$AccessoryVar[Claymore, $SpecialVar] = "6 188";			//75.2 (7.5)
-$AccessoryVar[KeldriniteLS, $SpecialVar] = "6 90";		//90 (0.5)
-$AccessoryVar[MeteorAxe, $SpecialVar] = "6 110 13 5"; //Mana harvest
+$AccessoryVar[CrudeAxe, $SpecialVar] = "6 10 "@ $SpecialVarSTRScaling @" 0.5";
+$AccessoryVar[Hatchet, $SpecialVar] = "6 20 "@ $SpecialVarSTRScaling @" 0.8";			//12 (5)
+$AccessoryVar[BroadSword, $SpecialVar] = "6 35 "@ $SpecialVarSTRScaling @" 1.2";		//21 (5)
+$AccessoryVar[WarAxe, $SpecialVar] = "6 70 "@ $SpecialVarSTRScaling @" 1.8";			//30 (7)
+$AccessoryVar[LongSword, $SpecialVar] = "6 65 "@ $SpecialVarSTRScaling @" 1.5";			//39 (5)
+$AccessoryVar[BattleAxe, $SpecialVar] = "6 144 "@ $SpecialVarSTRScaling @" 1.8";		//48 (9)
+$AccessoryVar[BastardSword, $SpecialVar] = "6 133 "@ $SpecialVarSTRScaling @" 1.5";		//57 (7)
+$AccessoryVar[Halberd, $SpecialVar] = "6 176 "@ $SpecialVarSTRScaling @" 1.5";			//66 (8)
+$AccessoryVar[Claymore, $SpecialVar] = "6 188 "@ $SpecialVarSTRScaling @" 1.5";			//75.2 (7.5)
+$AccessoryVar[KeldriniteLS, $SpecialVar] = "6 90 "@ $SpecialVarSTRScaling @" 2";		//90 (0.5)
+$AccessoryVar[MeteorAxe, $SpecialVar] = "6 110 13 5 "@ $SpecialVarSTRScaling @" 1.4"; //Mana harvest
+
 //.................................................................................
-$AccessoryVar[Club, $SpecialVar] = "6 12";			//12 (3)
-$AccessoryVar[QuarterStaff, $SpecialVar] = "6 35";		//21 (5)
-$AccessoryVar[BoneClub, $SpecialVar] = "6 34";			//26 (4)
-$AccessoryVar[SpikedClub, $SpecialVar] = "6 30";		//30 (3)
-$AccessoryVar[Mace, $SpecialVar] = "6 78";			//39 (6)
-$AccessoryVar[HammerPick, $SpecialVar] = "6 80";		//48 (5)
-$AccessoryVar[SpikedBoneClub, $SpecialVar] = "6 70";		//52.5 (4)
-$AccessoryVar[LongStaff, $SpecialVar] = "6 114";		//57 (6)
-$AccessoryVar[WarHammer, $SpecialVar] = "6 176";		//66 (8)
-$AccessoryVar[JusticeStaff, $SpecialVar] = "6 118";		//70.8 (5)
-$AccessoryVar[WarMaul, $SpecialVar] = "6 175";			//75 (7)
+$AccessoryVar[Club, $SpecialVar] = "6 12 "@ $SpecialVarSTRScaling @" 0.5";			//12 (3)
+$AccessoryVar[QuarterStaff, $SpecialVar] = "6 35 "@ $SpecialVarSTRScaling @" 0.8";		//21 (5)
+$AccessoryVar[BoneClub, $SpecialVar] = "6 34 "@ $SpecialVarSTRScaling @" 1";			//26 (4)
+$AccessoryVar[SpikedClub, $SpecialVar] = "6 30 "@ $SpecialVarSTRScaling @" 1.2";		//30 (3)
+$AccessoryVar[Mace, $SpecialVar] = "6 78 "@ $SpecialVarSTRScaling @" 1.5";			//39 (6)
+$AccessoryVar[HammerPick, $SpecialVar] = "6 80 "@ $SpecialVarSTRScaling @" 1.2";		//48 (5)
+$AccessoryVar[SpikedBoneClub, $SpecialVar] = "6 70 "@ $SpecialVarSTRScaling @" 1.5";		//52.5 (4)
+$AccessoryVar[LongStaff, $SpecialVar] = "6 114 "@ $SpecialVarSTRScaling @" 1.75";		//57 (6)
+$AccessoryVar[WarHammer, $SpecialVar] = "6 176 "@ $SpecialVarSTRScaling @" 2";		//66 (8)
+$AccessoryVar[JusticeStaff, $SpecialVar] = "6 118 "@ $SpecialVarSTRScaling @" 2";		//70.8 (5)
+$AccessoryVar[WarMaul, $SpecialVar] = "6 175 "@ $SpecialVarSTRScaling @" 2";			//75 (7)
 //.................................................................................
-$AccessoryVar[PickAxe, $SpecialVar] = "6 16";			//12 (4)
-$AccessoryVar[Knife, $SpecialVar] = "6 18";			//18 (1)
-$AccessoryVar[Dagger, $SpecialVar] = "6 23";			//23 (3)
-$AccessoryVar[ShortSword, $SpecialVar] = "6 50";		//30 (5)
-$AccessoryVar[Spear, $SpecialVar] = "6 78";			//39 (6)
-$AccessoryVar[Gladius, $SpecialVar] = "6 80";			//48 (5)
-$AccessoryVar[Trident, $SpecialVar] = "6 114";			//57 (6)
-$AccessoryVar[Rapier, $SpecialVar] = "6 110";			//66 (5)
-$AccessoryVar[AwlPike, $SpecialVar] = "6 200";			//75 (8)
-$AccessoryVar[MeteorDagger, $SpecialVar] = "6 40 12 1"; // Mana theif
+$AccessoryVar[PickAxe, $SpecialVar] = "6 16 "@ $SpecialVarDEXScaling @" 0.5";			//12 (4)
+$AccessoryVar[Knife, $SpecialVar] = "6 18 "@ $SpecialVarDEXScaling @" 0.8";			//18 (1)
+$AccessoryVar[Dagger, $SpecialVar] = "6 23 "@ $SpecialVarDEXScaling @" 1";			//23 (3)
+$AccessoryVar[ShortSword, $SpecialVar] = "6 50 "@ $SpecialVarDEXScaling @" 1.25";		//30 (5)
+$AccessoryVar[Spear, $SpecialVar] = "6 78 "@ $SpecialVarDEXScaling @" 1.5";			//39 (6)
+$AccessoryVar[Gladius, $SpecialVar] = "6 80 "@ $SpecialVarDEXScaling @" 1.5";			//48 (5)
+$AccessoryVar[Trident, $SpecialVar] = "6 114 "@ $SpecialVarDEXScaling @" 1.8";			//57 (6)
+$AccessoryVar[Rapier, $SpecialVar] = "6 110 "@ $SpecialVarDEXScaling @" 1.8";			//66 (5)
+$AccessoryVar[AwlPike, $SpecialVar] = "6 200 "@ $SpecialVarDEXScaling @" 2";			//75 (8)
+$AccessoryVar[MeteorDagger, $SpecialVar] = "6 40 12 1 "@ $SpecialVarDEXScaling @" 1.2"; // Mana theif
 //.................................................................................
 $AccessoryVar[CastingBlade, $SpecialVar] = "6 18";
 $AccessoryVar[CastingScepter, $SpecialVar] = "6 35";
 //.................................................................................
-$AccessoryVar[Sling, $SpecialVar] = "6 11";			//11 (2)
-$AccessoryVar[ShortBow, $SpecialVar] = "6 23";			//23 (3)
-$AccessoryVar[LightCrossbow, $SpecialVar] = "6 72";		//36 (6)
-$AccessoryVar[LongBow, $SpecialVar] = "6 86";			//51.6 (5)
-$AccessoryVar[CompositeBow, $SpecialVar] = "6 85";		//63.75 (4)
-$AccessoryVar[RepeatingCrossbow, $SpecialVar] = "6 75";	//75 (3)
-$AccessoryVar[ElvenBow, $SpecialVar] = "6 89";			//89 (3)
-$AccessoryVar[AeolusWing, $SpecialVar] = "6 101";		//101 (2)
-$AccessoryVar[HeavyCrossbow, $SpecialVar] = "6 300";		//112.5 (8)
+$AccessoryVar[Sling, $SpecialVar] = "6 11 "@ $SpecialVarDEXScaling @" 0.8";			//11 (2)
+$AccessoryVar[ShortBow, $SpecialVar] = "6 23 "@ $SpecialVarDEXScaling @" 1.2";			//23 (3)
+$AccessoryVar[LightCrossbow, $SpecialVar] = "6 72 "@ $SpecialVarDEXScaling @" 1.2";		//36 (6)
+$AccessoryVar[LongBow, $SpecialVar] = "6 86 "@ $SpecialVarDEXScaling @" 1.5";			//51.6 (5)
+$AccessoryVar[CompositeBow, $SpecialVar] = "6 85 "@ $SpecialVarDEXScaling @" 1.5";		//63.75 (4)
+$AccessoryVar[RepeatingCrossbow, $SpecialVar] = "6 75 "@ $SpecialVarDEXScaling @" 1.5";	//75 (3)
+$AccessoryVar[ElvenBow, $SpecialVar] = "6 89 "@ $SpecialVarDEXScaling @" 1.8";			//89 (3)
+$AccessoryVar[AeolusWing, $SpecialVar] = "6 101 "@ $SpecialVarDEXScaling @" 1.8";		//101 (2)
+$AccessoryVar[HeavyCrossbow, $SpecialVar] = "6 300 "@ $SpecialVarDEXScaling @" 2";		//112.5 (8)
 //.................................................................................
-$AccessoryVar[SmallRock, $SpecialVar] = "6 10";
+$AccessoryVar[SmallRock, $SpecialVar] = "6 5";
 $AccessoryVar[BasicArrow, $SpecialVar] = "6 12";
 $AccessoryVar[ShortQuarrel, $SpecialVar] = "6 14";
 $AccessoryVar[LightQuarrel, $SpecialVar] = "6 16";
@@ -446,6 +447,24 @@ function GenerateAllWeaponCosts()
 	$ItemCost[RShortBow] = round($ItemCost[ShortBow] * $RustyCostAmp);
 	$ItemCost[RLightCrossbow] = round($ItemCost[LightCrossbow] * $RustyCostAmp);
 	$ItemCost[RWarAxe] = round($ItemCost[WarAxe] * $RustyCostAmp);
+}
+
+function GetWeaponAttrScaling(%clientId,%scaleVar,%weaponTag)
+{
+    return FixDecimals(RPGItem::GetPlayerEquipStats(%clientId,%scaleVar)); //+ RPGItem::getImprovementLevel(%weaponTag) * $WeaponImprovementScaleFactor);
+}
+
+function CalcWeaponAttrFactor(%clientId,%weaponTag)
+{
+    %val = 0;
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %spec = Attribute::GetScalingSpecialVar(%attr);
+        if(%spec != "")
+            %val += CalcPlayerAttribute(%clientId,%attr) * GetWeaponAttrScaling(%clientId,%spec,%weaponTag);
+    }
+    return %val;
 }
 
 //****************************************************************************************************

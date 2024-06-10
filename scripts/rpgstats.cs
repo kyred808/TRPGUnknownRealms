@@ -28,6 +28,11 @@ $RPGStats::AttributeId["FAI"] = 5;
 
 $RPGStats::AttributeCount = 6;
 
+function Attribute::GetScalingSpecialVar(%attr)
+{
+    return $SpecialVar[%attr @ "Scaling"];
+}
+
 $ClassName[1, 0] = "Cleric";
 $ClassName[2, 0] = "Druid";
 $ClassName[3, 0] = "Thief";
@@ -121,7 +126,7 @@ function ScaleEnemyAttributesToLevel(%aiId)
         storeData(%aiId,%attr,%clAttr+%apSpent,"inc");
         %apRemaining -= %apSpent;
     }
-    
+    echo(%apRemaining);
     //Distribute remaining stats randomly
     for(%aa = 0; %aa < %apRemaining; %aa++)
     {
@@ -132,7 +137,7 @@ function ScaleEnemyAttributesToLevel(%aiId)
     //Dumping method
     //%dumpStat = $RPGStats::Attributes[getIntRandomMT(0,$RPGStats::AttributeCount-1)];
     //storeData(%aiId,%dumpStat,%apRemaining,"inc");
-    echo("Remainder "@ %apRemaining);
+    //echo("Remainder "@ %apRemaining);
 }
 
 function RPGStats::DisplayAttributeInfo(%clientId,%attrId)
@@ -177,6 +182,27 @@ function CalcPlayerAttribute(%clientId,%type)
     return fetchData(%clientId,%type) + AddBonusStatePoints(%clientId, %type) + RPGItem::GetPlayerEquipStats(%clientId,%type);
 }
 
+function CalcHPfromVIT(%vit)
+{
+    %hp = 0;
+    if(%vit <= 15)
+    {
+        %hp = %vit * 12;
+    }
+    else if(%vit <= 40)
+    {
+        %hp = 15*12; //15 * 8
+        %remain = %vit - 15;
+        %hp += %remain * 8;
+    }
+    else
+    {
+        %hp = 15*12 + 40*8 + (%vit - 40)*2; //15*8 + (40-15)*4 + (%vit - 40)*2
+    }
+    
+    return %hp;
+}
+
 function fetchData(%clientId, %type)
 {
 	dbecho($dbechoMode, "fetchData(" @ %clientId @ ", " @ %type @ ")");
@@ -204,6 +230,13 @@ function fetchData(%clientId, %type)
         //%v = Cap(%a + %b + %belt,0,"inf");
         %v = Cap(%a + %b,0,"inf");
         
+        return floor(%v);
+    }
+    else if(%type == "BAR")
+    {
+        %a = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarBAR);
+        %b = AddBonusStatePoints(%clientId, "BAR");
+        %v = Cap(%a + %b,0,"inf");
         return floor(%v);
     }
 	else if(%type == "DEF")
@@ -277,15 +310,15 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "MaxHP")
 	{
-		%a = $MinHP[fetchData(%clientId, "RACE")] + (CalculatePlayerSkill(%clientId, $SkillEndurance) * 0.6);
+        %v = CalcHPfromVIT(CalcPlayerAttribute(%clientId,"VIT")); //$MinHP[fetchData(%clientId, "RACE")]
+		%a = CalculatePlayerSkill(%clientId, $SkillEndurance) * 0.2; //0.6
 		//%b = AddPoints(%clientId, 4);
         %b = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarHP);
 		%c = floor(fetchData(%clientId, "RemortStep") * (CalculatePlayerSkill(%clientId, $SkillEndurance) / 8));
 		%d = fetchData(%clientId, "LVL");
 		%e = AddBonusStatePoints(%clientId, "MaxHP");
-        //%f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
-		return floor(%a + %b + %c + %d + %e);// + %f);
-	}
+		return floor(%v + %a + %b + %c + %d + %e);
+    }
 	else if(%type == "HP")
 	{
 		%armor = Player::getArmor(%clientId);
@@ -307,12 +340,12 @@ function fetchData(%clientId, %type)
         //if(fetchData(%clientId,"Class") == "Mage")
         //    %extra = 15;
         //return 5*%lvl + 3*%rl + %eng + %eqp + %extra;
-        
-		%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) ) + floor(fetchData(%clientId,"LVL")*$ManaPerLevel);
+        %a = CalcPlayerAttribute(%clientId,"MND") * $MaxManaMNDFactor + CalculatePlayerSkill(%clientId, $SkillEnergy) * $MaxManaSkillFactor;
+		//%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) ) + floor(fetchData(%clientId,"LVL")*$ManaPerLevel);
 		//%b = AddPoints(%clientId, 5);
 		%c = AddBonusStatePoints(%clientId, "MaxMANA");
         %d = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMana);
-		return %a + %c + %d;
+		return round(%a + %c + %d);
 	}
 	else if(%type == "MANA")
 	{
@@ -324,9 +357,30 @@ function fetchData(%clientId, %type)
         
 		return round(%b);
 	}
+    else if(%type == "MagicScaling")
+    {
+        %cata = RPGItem::getAlternateTag(getWord(GetAccessoryList(%clientId, 15),0));
+        %catalystStats = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarArcaneScale);
+        if($CatalystType[RPGItem::ItemTagToLabel(%cata)] == $CatalystTypeArcane)
+        {
+            %attrVals = CalcPlayerAttribute(%clientId,"INT") * RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarCataINTScale) + CalcPlayerAttribute(%clientId,"MND")*RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarCataMNDScale);
+        }
+        else //Use default scaling
+        {
+            %attrVals = CalcPlayerAttribute(%clientId,"INT") * $MagicEffectScalingINT + CalcPlayerAttribute(%clientId,"MND") * $MagicEffectScalingMND;
+        }
+        
+        return round(%catalystStats + %attrVals);
+    }
+    else if(%type == "IncantScaling")
+    {
+        %catalystStats = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarIncantScale);
+        %attrVals = CalcPlayerAttribute(%clientId,"FAI") * $MagicEffectScalingFAI + CalcPlayerAttribute(%clientId,"MND") * $MagicEffectScalingMND;
+        return round(%catalystStats + %attrVals);
+    }
 	else if(%type == "MaxWeight")
 	{
-		%a = 50 + CalculatePlayerSkill(%clientId, $SkillWeightCapacity);
+		%a = 50 + CalcPlayerAttribute(%clientId,"VIT")*$WeightCapVITFactor + CalcPlayerAttribute(%clientId,"STR")*$WeightCapSTRFactor + CalcPlayerAttribute(%clientId,"DEX")**$WeightCapDEXFactor + CalculatePlayerSkill(%clientId, $SkillWeightCapacity) * $WeightCapSkillFactor;
 		//%b = AddPoints(%clientId, 9);
         %b = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMaxWeight);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");
@@ -1142,40 +1196,45 @@ function StartStatSelection(%clientId)
 	MenuGroup(%clientId);
 }
 
-function RPG::DoLevelUp(%clientId,%amt)
+function RPG::DoLevelUp(%clientId,%amt,%refreshScore)
 {
+    if(%refreshScore == "")
+        %refreshScore = true;
     if(fetchData(%clientId, "HasLoadedAndSpawned") && %amt != 0)
 	{
         storeData(%clientId, "SPcredits", (%amt * $SPgainedPerLevel), "inc");
         storeData(%clientId, "APcredits", (%amt * $APgainedPerLevel), "inc");
         storeData(%clientId,"LVL",%amt,"inc");
-        if(%amt > 0)
+        if(!Player::isAiControlled(%clientId))
         {
-            if(%amt == 1)
-                Client::sendMessage(%clientId,0,"You have gained a level!");		
-            else
-                Client::sendMessage(%clientId,0,"You have gained " @ %amt @ " levels!");
-            
-            Client::sendMessage(%clientId,0,"Welcome to level " @ fetchData(%clientId, "LVL"));
-            PlaySound(SoundLevelUp, GameBase::getPosition(%clientId));
-            
-            //Refresh health and mana!
-            setHP(%clientId);
-            setMana(%clientId);
-            //setStamina(%clientId);
-            
+            if(%amt > 0)
+            {
+                if(%amt == 1)
+                    Client::sendMessage(%clientId,0,"You have gained a level!");		
+                else
+                    Client::sendMessage(%clientId,0,"You have gained " @ %amt @ " levels!");
+                
+                Client::sendMessage(%clientId,0,"Welcome to level " @ fetchData(%clientId, "LVL"));
+                PlaySound(SoundLevelUp, GameBase::getPosition(%clientId));
+                
+                //Refresh health and mana!
+                setHP(%clientId);
+                setMana(%clientId);
+                //setStamina(%clientId);
+                
+            }
+            else if(%amt < 0)
+            {
+                if(%amt == -1)
+                    Client::sendMessage(%clientId,0,"You have lost a level...");		
+                else
+                    Client::sendMessage(%clientId,0,"You have lost " @ -%amt @ " levels...");
+                Client::sendMessage(%clientId,0,"You are now level " @ fetchData(%clientId, "LVL"));
+            }
         }
-        else if(%amt < 0)
-        {
-            if(%amt == -1)
-                Client::sendMessage(%clientId,0,"You have lost a level...");		
-            else
-                Client::sendMessage(%clientId,0,"You have lost " @ -%amt @ " levels...");
-            Client::sendMessage(%clientId,0,"You are now level " @ fetchData(%clientId, "LVL"));
-        }
-        
         RefreshEquipment(%clientId);
-        Game::refreshClientScore(%clientId);
+        if(%refreshScore)
+            Game::refreshClientScore(%clientId);
     }
 }
 
@@ -1239,6 +1298,22 @@ function Game::refreshClientScore(%clientId)
 	//		schedule("DoRemort(" @ %clientId @ ");", 60, %clientId);
 	//	}
 	//}
+    
+    %lvl = fetchData(%clientId,"LVL");
+    %need = GetExpToLevel(%lvl,%clientId);
+    %exp = fetchData(%clientId, "EXP");
+    %amt = 0;
+    if(%exp >= %need)
+    {
+        while(%exp >= %need)
+        {
+            %amt++;
+            %exp -= %need;
+            %need = GetExpToLevel(%lvl+%amt,%clientId);
+        }
+        RPG::DoLevelUp(%clientId,%amt,false); //Prevent infinite loop
+        storeData(%clientId,"EXP",%exp);
+    }
     
     %clZone = "";
     if(fetchData(%clientId, "invisible"))

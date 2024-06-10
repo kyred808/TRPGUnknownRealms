@@ -452,10 +452,16 @@ function processMenuOptions(%clientId, %option)
 	else if(%opt == "viewstats")
 	{
 		%a[%tmp++] = "<f1>" @ Client::getName(%clientId) @ ", LEVEL " @ fetchData(%clientId, "LVL") @ " " @ fetchData(%clientId, "RACE") @ " " @ fetchData(%clientId, "CLASS") @ "<f0>\n\n";
-
+        //%raw = CalculateRawDamage(%clientId,fetchData(%clientId,"EquippedWeapon"));
 		%a[%tmp++] = "ATK: " @ Number::Beautify(fetchData(%clientId, "ATK"),0,2) @ "\n";
+        %a[%tmp++] = "DMG: " @ PlayerDamageRangeText(%clientId,fetchData(%clientId,"EquippedWeapon")) @ "\n"; //Number::Beautify(%raw,0,2) @ "\n";//Number::Beautify(%raw * 0.85,0,2) @" - "@ Number::Beautify(%raw * 1.15,0,2) @"\n";
 		%a[%tmp++] = "DEF: " @ Number::Beautify(fetchData(%clientId, "DEF"),0,2) @ " ("@ round(CalculateDamageReduction(%clientId)*100) @"%)\n";
-        %a[%tmp++] = "AMR: " @ Number::Beautify(fetchData(%clientId, "AMR"),0,2) @ "\n";
+        %amrval = fetchData(%clientId, "AMR");
+        if(%amrval != 0)
+            %a[%tmp++] = "AMR: " @ Number::Beautify(%amrval,0,2) @ "\n";
+        %barval = fetchData(%clientId, "BAR");
+        if(%barval != 0)
+            %a[%tmp++] = "BAR: " @ Number::Beautify(%barval,0,2) @ "\n";
 		%a[%tmp++] = "MDEF: " @ Number::Beautify(fetchData(%clientId, "MDEF"),0,2) @ "\n";
 		%a[%tmp++] = "Hit Pts: " @ fetchData(%clientId, "HP") @ " / " @ fetchData(%clientId, "MaxHP") @ "\n";
         
@@ -481,7 +487,7 @@ function processMenuOptions(%clientId, %option)
 
 		%a[%tmp++] = "Experience: " @ fetchData(%clientId, "EXP") @ "\n";
             %a[%tmp++] = "Exp needed: " @ (GetExpToLevel(GetLevel(fetchData(%clientId, "EXP"), %clientId)+1, %clientId) - fetchData(%clientId, "EXP") @ "\n\n");
-
+        %a[%tmp++] = "Magic Scaling\n<f1>Arcane: <f0>" @ fetchData(%clientId,"MagicScaling") @ "    <f1>Incant: <f0>"@ fetchData(%clientId,"IncantScaling") @"    <f1>Nature: <f0>"@ fetchData(%clientId,"NatureScaling") @"\n\n";
 		%a[%tmp++] = "Coins: " @ fetchData(%clientId, "COINS") @ " - Bank: " @ fetchData(%clientId, "BANK") @ "\n";
 		%a[%tmp++] = "TOTAL $: " @ fetchData(%clientId, "COINS") + fetchData(%clientId, "BANK") @ "\n\n";
 		
@@ -491,7 +497,16 @@ function processMenuOptions(%clientId, %option)
 		for(%i = 1; %a[%i] != ""; %i++)
 			%f = %f @ %a[%i];
 
-		bottomprint(%clientId, %f, floor(String::len(%f) / 20));
+        %len = String::len(%f);
+        if(%len > 255)
+        {
+            %substr = String::getsubstr(%f,0,255);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(%len / 20), 1);
+            %substr = String::getSubstr(%f,255,%len);
+            remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+        }
+        else
+            bottomprint(%clientId, %f, floor(%len / 20));
 
 		return;
 	}
@@ -622,7 +637,11 @@ function RPGAttributeMenu(%clientId,%page)
         %valStr = %valStr @ "]";
         Client::addMenuItem(%clientId, %i+1 @ %attr @ ": " @ %valStr, "selAttr "@ %i);
     }
-    
+    %ap = fetchData(%clientId,"APcredits");
+    if(%ap > 0)
+    {
+        Client::addMenuItem(%clientId, "sSpend AP ("@ %ap @")", "spend");
+    }
     Client::addMenuItem(%clientId, "bBack <<" , "back");
 }
 
@@ -634,6 +653,10 @@ function processMenuattributemenu(%clientId,%option)
     if(%opt == "selAttr")
     {
         RPGStats::DisplayAttributeInfo(%clientId,%attrId);
+    }
+    else if(%opt == "spend")
+    {
+        RPGIncreaseAttributesMenu(%clientId,1,"attr");
     }
     else if(%opt == "back")
     {
@@ -783,7 +806,7 @@ function processMenubonfiremenu(%clientId,%option)
         %clientId.attrSpentAmt = 0;
         %clientId.attrSpent = "";
         %clientId.attrSeq = "";
-        RPGIncreaseAttributesMenu(%clientId,1);
+        RPGIncreaseAttributesMenu(%clientId,1,"bonfire");
     }
 }
 
@@ -828,7 +851,7 @@ function processMenulevelmenu(%clientId,%option)
     }
 }
 
-function RPGIncreaseAttributesMenu(%clientId,%page)
+function RPGIncreaseAttributesMenu(%clientId,%page,%prev)
 {
     %ap = fetchData(%clientId,"APcredits");
     //if(%clientId.attrSpentAmt > 0)
@@ -844,20 +867,20 @@ function RPGIncreaseAttributesMenu(%clientId,%page)
         
         %base = fetchData(%clientId,%attr);
         %extra = GetStuffStringCount(%clientId.attrSpent,%attr);
-        echo(%extra);
+        //echo(%extra);
         %valStr = "[" @ %base;
         if(%extra > 0)
             %valStr = %valStr @ "+"@ %extra;
         %valStr = %valStr @ "]";
-        Client::addMenuItem(%clientId, %i+1 @ %attr @ ": " @ %valStr, "selAttr "@ %attr);
+        Client::addMenuItem(%clientId, %i+1 @ %attr @ ": " @ %valStr, "selAttr "@ %attr @" "@%prev);
     }
     if(%clientId.attrSpentAmt > 0)
     {
-        Client::addMenuItem(%clientId, "cConfirm to Apply","confirm");
-        Client::addMenuItem(%clientId, "uUndo","undo");
+        Client::addMenuItem(%clientId, "cConfirm to Apply","confirm "@ %prev);
+        Client::addMenuItem(%clientId, "uUndo","undo " @ %prev);
     }
     else
-        Client::addMenuItem(%clientId, "xBack","back");
+        Client::addMenuItem(%clientId, "xBack","back "@ %prev);
 }
 
 function processMenuLevelAttr(%clientId,%option)
@@ -869,11 +892,12 @@ function processMenuLevelAttr(%clientId,%option)
         if(%clientId.attrSpentAmt < fetchData(%clientId,"APcredits"))
         {
             %attr = getWord(%option,1);
+            %prev = getWord(%option,2);
             %clientId.attrSpent = SetStuffString(%clientId.attrSpent,%attr,1,"inc");
             %clientId.attrSpentAmt++;
             %clientId.attrSeq = %attr @ " " @ %clientId.attrSeq;
         }
-        RPGIncreaseAttributesMenu(%clientId,1);
+        RPGIncreaseAttributesMenu(%clientId,1,%prev);
     }
     else if(%opt == "undo")
     {
@@ -881,7 +905,7 @@ function processMenuLevelAttr(%clientId,%option)
         %clientId.attrSpent = SetStuffString(%clientId.attrSpent,%attr,1,"dec");
         %clientId.attrSpentAmt--;
         %clientId.attrSeq = Word::getSubWord(%clientId.attrSeq,1,99999);
-        RPGIncreaseAttributesMenu(%clientId,1);
+        RPGIncreaseAttributesMenu(%clientId,1,getWord(%option,1));
     }
     else if(%opt == "confirm")
     {
@@ -890,14 +914,18 @@ function processMenuLevelAttr(%clientId,%option)
         %clientId.attrSpentAmt = 0;
         %clientId.attrSpent = "";
         %clientId.attrSeq = "";
-        RPGIncreaseAttributesMenu(%clientId,1);
+        RPGIncreaseAttributesMenu(%clientId,1,getWord(%option,1));
     }
     else if(%opt == "back")
     {
         %clientId.attrSpentAmt = 0;
         %clientId.attrSpent = "";
         %clientId.attrSeq = "";
-        BonfireMenu(%clientId,1);
+        %prev = getWord(%option,1);
+        if(%prev == "bonfire")
+            BonfireMenu(%clientId,1);
+        else if(%prev == "attr")
+            RPGAttributeMenu(%clientId,1);
     }
         
 }
