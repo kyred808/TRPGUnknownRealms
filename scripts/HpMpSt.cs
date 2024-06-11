@@ -302,6 +302,58 @@ function refreshMANAREGEN(%clientId)
 	GameBase::setRechargeRate(Client::getOwnedObject(%clientId), %r);
 }
 
+function Player::GetMana(%clientId)
+{
+    %usem2 = fetchData(%clientId,"UseMana2");
+    
+    %mana = fetchData(%clientId,"MANA");
+    if(%usem2)
+        %mana += fetchData(%clientId,"MANA2");
+    
+    return %mana;
+}
+
+function Player::UseMana(%clientId,%amt)
+{
+    %usem2 = fetchData(%clientId,"UseMana2");
+    
+    %m1 = fetchData(%clientId,"MANA");
+    if(%amt <= %m1)
+    {
+        refreshMana(%clientId,%amt);
+    }
+    if(%amt > %m1)
+    {
+        setMANA(%clientId, 0);
+        if(%usem2)
+        {
+            echo(%amt - %m1);
+            storeData(%clientId,"MANA2",Cap(%amt - %m1,0,"inf"),"dec");
+        }
+    }
+    
+}
+
+function ExternalManaRegenTick(%clientId)
+{
+    //dbecho($dbechoMode, "ExternalManaRegenTick(" @ %clientId @ ")");
+    if(%clientId.manaRegenTick == "")
+        %clientId.manaRegenTick = 1;
+    else
+        %clientId.manaRegenTick++;
+        
+    if(%clientId.manaRegenTick >= $ExternalManaRegenRate)
+    {
+        %val = $ExternalManaRegenAmount;
+        %c = AddBonusStatePoints(%clientId, "MANA2Regen");
+        %val = %val + %c; //%b + %c;
+        //refreshMANA(%clientId, -1 * %val);
+        storeData(%clientId,"MANA2",%val,"inc");
+        
+        %clientId.manaRegenTick = 0;
+    }
+}
+
 //function setMANA(%clientId, %val)
 //{
 //	dbecho($dbechoMode, "setMANA(" @ %clientId @ ", " @ %val @ ")");

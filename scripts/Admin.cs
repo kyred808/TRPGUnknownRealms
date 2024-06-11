@@ -492,7 +492,7 @@ function processMenuOptions(%clientId, %option)
 		%a[%tmp++] = "TOTAL $: " @ fetchData(%clientId, "COINS") + fetchData(%clientId, "BANK") @ "\n\n";
 		
 		%a[%tmp++] = "Weight: " @ Number::Beautify(fetchData(%clientId, "Weight"),0,2) @ " / " @ Number::Beautify(fetchData(%clientId, "MaxWeight"),0,2) @ "\n";
-		%a[%tmp++] = "Mana: " @ fetchData(%clientId, "MANA") @ " / " @ fetchData(%clientId, "MaxMANA") @ "\n";
+		%a[%tmp++] = "Mana: " @ fetchData(%clientId, "MANA") @ " / " @ fetchData(%clientId, "MaxMANA") @ "    External Mana: "@ fetchData(%clientId,"MANA2") @" / "@ fetchData(%clientId,"MaxMANA2") @"\n";
 
 		for(%i = 1; %a[%i] != ""; %i++)
 			%f = %f @ %a[%i];
@@ -670,6 +670,10 @@ function RPGWeaponOptionMenu(%clientId,%page)
 {
     Client::buildMenu(%clientId, "Weapon Options", "weaponoptions", true);
     Client::addMenuItem(%clientId, %curItem++ @ "Ranged weapons..." , "rweapons");
+    if(fetchData(%clientId,"UseMana2"))
+        Client::addMenuItem(%clientId, %curItem++ @ "Mana Lock is OFF" , "mlock");
+    else
+        Client::addMenuItem(%clientId, %curItem++ @ "Mana Lock is ON" , "mlock");
     Client::addMenuItem(%clientId, "bBack <<" , "back");
 }
 
@@ -691,6 +695,22 @@ function processMenuweaponoptions(%clientId, %option)
 		}
 		return;
 	}
+    else if(%opt == "mlock")
+    {
+        if(fetchData(%clientId, "SpellCastStep") == 1)
+        {
+            Client::sendMessage(%clientId,$MsgRed,"You cannot change this while casting a spell!");
+            return;
+        }
+        %set = !fetchData(%clientId,"UseMana2");
+        storeData(%clientId,"UseMana2",%set);
+        if(%set)
+            bottomprint(%clientId, "<jc> <f1>Mana Lock is now <f0>OFF<f1> - External Mana will be used.", 5);
+        else
+            bottomprint(%clientId, "<jc> <f1>Mana Lock is now <f0>ON<f1> - External Mana will <f2>NOT<f1> be used.", 5);
+        RPGWeaponOptionMenu(%clientId,1);
+        return;
+    }
     else if(%opt == "back")
     {
         Game::menuRequest(%clientId,1);

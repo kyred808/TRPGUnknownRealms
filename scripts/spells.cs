@@ -994,8 +994,9 @@ function BeginCastSpell(%clientId, %keyword)
 		//{
 			if(SkillCanUse(%clientId, $Spell::keyword[%i]))
 			{
-                //Need to change later
-				if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
+                
+				//if(fetchData(%clientId, "MANA") >= $Spell::manaCost[%i])
+                if(Player::GetMana(%clientId) >= $Spell::manaCost[%i])
 				{
 					Client::sendMessage(%clientId, $MsgBeige, "Casting " @ $Spell::name[%i] @ ".");
                     if(%clientId.isAtRest != 0)
@@ -1020,8 +1021,8 @@ function BeginCastSpell(%clientId, %keyword)
 					storeData(%clientId, "SpellCastStep", 1);
 	
 					%tempManaCost = floor($Spell::manaCost[%i] / 2);
-                    refreshMANA(%clientId, %tempManaCost);
-					//refreshStamina(%clientId, %tempManaCost);
+                    //refreshMANA(%clientId, %tempManaCost);
+					Player::UseMana(%clientId,%tempManaCost);
 					playSound($Spell::startSound[%i], GameBase::getPosition(%clientId));
 
 					%skt = $SkillType[$Spell::keyword[%i]];
@@ -1041,7 +1042,7 @@ function BeginCastSpell(%clientId, %keyword)
                     //if(Player::isAiControlled(%clientId))
                     //    schedule("%retval=DoBotCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
 					//else
-                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){refreshMANA(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
+                        schedule("%retval=DoCastSpell(" @ %clientId @ ", " @ %i @ ", \"" @ GameBase::getPosition(%clientId) @ "\", \"" @ %lospos @ "\", \"" @ %losobj @ "\", \"" @ %w2 @ "\"); if(%retval){Player::UseMana(" @ %clientId @ ", " @ %tempManaCost @ ");}", $Spell::delay[%i]);
                     schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recovTime);
 		
 					return True;

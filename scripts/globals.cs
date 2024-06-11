@@ -68,6 +68,7 @@ $WeaponImprovementScaleFactor = 0.1;
 
 $MaxManaMNDFactor = 2;
 $MaxManaSkillFactor = 0.2;
+$MaxMANA2SkillFactor = 2;
 
 $MagicEffectScalingINT = 5;
 $MagicEffectScalingMND = 1;
@@ -75,6 +76,10 @@ $MagicEffectScalingFAI = 5;
 
 $SpellDamageSkillScale = 0.05;
 
+$RestoreManaCostPer = 100;
+
+$ExternalManaRegenRate = 6; //per *2 seconds
+$ExternalManaRegenAmount = 1;
 $WeightCapVITFactor = 0.5;
 $WeightCapSTRFactor = 1;
 $WeightCapDEXFactor = 0.5;

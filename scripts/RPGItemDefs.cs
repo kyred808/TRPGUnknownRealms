@@ -319,8 +319,8 @@ $MiningDifficulty["adamantite"] = 750;
 
 $MaxOrePerSwing = 8;
 
-$RPGItem::ItemDef[153,Action] = "RestoreMana 10";
-$RPGItem::ItemDef[154,Action] = "RestoreMana 50";
+$RPGItem::ItemDef[153,Action] = "RestoreMana2 10";
+$RPGItem::ItemDef[154,Action] = "RestoreMana2 50";
 
 AddItemHelper("BlackStatue","Black Statue","Rares",155,3,1,MiscLootShape);
 AddItemHelper("GoblinEar","Goblin Ear","Rares",156,0.2,6200,MiscLootShape);
@@ -566,10 +566,10 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
         RefreshAll(%clientId,false);
         return true;
     }
-    else if(%type == "RestoreMana")
+    else if(%type == "RestoreMana2")
     {
         %baseAmt = getWord(%action,1);
-        RestoreMana(%clientId,%baseAmt,"crushed a "@ RPGItem::getItemNameFromTag(%itemTag));
+        RestoreMana2(%clientId,%baseAmt,"crushed a "@ RPGItem::getItemNameFromTag(%itemTag));
         RPGItem::decItemCount(%clientId,%itemTag,1);
         return true;
     }
@@ -640,8 +640,8 @@ function NewDrinkManaPotion(%clientId,%itemName,%amt)
 
 }
 
-function RestoreMana(%clientId,%amt,%desc)
+function RestoreMana2(%clientId,%amt,%desc)
 {
-    refreshMana(%clientId,%amt*-1);
-    Client::sendMessage(%clientId, $MsgWhite, "You "@%desc@" and recovered "@ %amt @" Mana~wActivateAR.wav");
+    storeData(%clientId,"MANA2",%amt,"inc");
+    Client::sendMessage(%clientId, $MsgWhite, "You "@%desc@" and recovered "@ %amt @" External Mana~wActivateAR.wav");
 }

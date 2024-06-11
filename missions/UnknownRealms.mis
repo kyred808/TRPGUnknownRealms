@@ -4726,6 +4726,17 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "RACE MaleHuman";
                 instant SimGroup "SHOP id50 id52 id54 id56 id2 id3 id10 id11 id19 id20 id28 id29 id165 id16 id120 id121 id122 id123 id99 id238 id309"; //134 135 136 137";
             };
+            instant SimGroup "manamerchant1" {
+                instant Marker "keldrin merchant" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2384.66 -275.432 65";
+                    rotation = "0 -0 0.559956";
+                };
+                instant SimGroup "NAME Fr. Sarah";
+                instant SimGroup "ITEMS CLASS Ranger LVL 2 LCK 0 Dagger 1";
+                instant SimGroup "RACE FemaleHuman";
+            };
             instant SimGroup "respec0" {
                 instant Marker "keldrin respec" {
                     dataBlock = "PathMarker";

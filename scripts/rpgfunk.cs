@@ -422,7 +422,10 @@ function SaveCharacter(%clientId)
     $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "attunedWeapon");
     $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "attunedWeaponMana");
     $funk::var["[\"" @ %name @ "\", 0, 36]"] = fetchData(%clientId, "APcredits");
-    
+    $funk::var["[\"" @ %name @ "\", 0, 37]"] = fetchData(%clientId, "MANA2");
+    $funk::var["[\"" @ %name @ "\", 0, 38]"] = fetchData(%clientId, "MANA3");
+    $funk::var["[\"" @ %name @ "\", 0, 39]"] = fetchData(%clientId, "UseMana2");
+
     for(%i = 0; (%inv = $RPGItem::InvItemLists[%i]) != ""; %i++)
     {
         %invStr = fetchData(%clientId,%inv);
@@ -622,7 +625,9 @@ function LoadCharacter(%clientId)
         storeData(%clientId,"attunedWeaponMana",$funk::var[%name, 0, 35]);
         
         storeData(%clientId,"APcredits",$funk::var[%name, 0, 36]);
-        
+        storeData(%clientId,"tmpmana2",$funk::var[%name, 0, 37]);
+        storeData(%clientId,"MANA3",$funk::var[%name, 0, 38]);
+        storeData(%clientId,"UseMana2",$funk::var[%name, 0, 39]);
         //A buffered method might be better, but this seems to work well enough.
         %invStr = "";
         for(%i = 0; (%inv = $RPGItem::InvItemLists[%i]) != ""; %i++)
@@ -748,6 +753,7 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "LCKconsequence", "death");
 		storeData(%clientId, "tmphp", "");
 		storeData(%clientId, "tmpmana", "");
+        storeData(%clientId, "tmpmana2", "");
 		storeData(%clientId, "RemortStep", 0);
 		storeData(%clientId, "tmpname", %name);
 		storeData(%clientId, "tmpLastSaveVer", $rpgver);
@@ -758,6 +764,9 @@ function LoadCharacter(%clientId)
         storeData(%clientId, "TP", 0);
         storeData(%clientId,"APcredits",0);
         storeData(%clientId,"LVL",1);
+        storeData(%clientId,"MANA2",0);
+        storeData(%clientId,"MANA3",0);
+        storeData(%clientId,"UseMana2",false);
 		%clientId.choosingGroup = True;
         %clientId.loadCharacterFlag = false;
 		SetAllSkills(%clientId, 0);

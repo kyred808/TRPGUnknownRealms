@@ -33,7 +33,7 @@ $SpeicalVarHPRegen = 10;
 $SpecialVarManaRegen = 11;
 $SpecialVarManaThief = 12;
 $SpecialVarManaHarvest = 13;
-
+$SpecialVarMana2 = 14;
 $SpecialVarArmorPiercing = 15;
 
 $SpecialVarATKSpeed = 19;
@@ -73,7 +73,7 @@ $SpecialVarDesc[10] = "HP regen";
 $SpecialVarDesc[11] = "Mana regen";
 $SpecialVarDesc[12] = "Mana Thief";
 $SpecialVarDesc[13] = "Mana Harvest";
-//$SpecialVarDesc[14] = "Max Stamina";
+$SpecialVarDesc[14] = "Ext. Mana";
 $SpecialVarDesc[15] = "AMR Pierce";
 //$SpecialVarDesc[16] = "Stam Regen";
 //$SpecialVarDesc[17] = "Rest Stam";
@@ -101,6 +101,8 @@ $SpecialVarDesc[34] = "NatureScale";
 $SpecialVarDesc[35] = "CatalystINTScale";
 $SpecialVarDesc[36] = "CatalystFAIScale";
 $SpecialVarDesc[37] = "CatalystMNDScale";
+
+
 
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;

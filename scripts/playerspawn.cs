@@ -148,7 +148,7 @@ function Game::playerSpawn(%clientId, %respawn)
 
             %spawnhp = 1;
 			%spawnmana = 0;
-            
+            %spawnmana2 = 0;
 			if(%respawn)	      
 			{
                 %spawnhp = fetchData(%clientId, "MaxHP");
@@ -160,13 +160,17 @@ function Game::playerSpawn(%clientId, %respawn)
 			{
 				%spawnhp = fetchData(%clientId, "tmphp");
 				%spawnmana = fetchData(%clientId, "tmpmana");
+                %spawnmana2 = fetchData(%clientId,"tmpmana2");
 				storeData(%clientId, "tmphp", "");
 				storeData(%clientId, "tmpmana", "");
+                storeData(%clientId, "tmpmana2", "");
 			}
+
             if(%spawnhp < 0){ %spawnhp = ""; echo("Error: spawn hp was less than 0"); }
 			if(%spawnmana < 0){ %spawnmana = 0; echo("Error: spawn mp was less than 0"); }
 			setHP(%clientId, %spawnhp);
 			setMANA(%clientId, %spawnmana);
+            storeData(%clientId,"MANA2",%spawnmana2);
 			storeData(%clientId.possessId, "dumbAIflag", "");
             storeData(%clientId, "isDead", False);
 		}

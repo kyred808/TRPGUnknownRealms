@@ -6126,7 +6126,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 				//GameBase::setRotation(%closestId, %rot);
 				//RemotePlayAnim(%closestId, 12);
 			}
-			if(clipTrailingNumbers(%aiName) == "merchant")
+            %nn = clipTrailingNumbers(%aiName);
+			if(%nn == "merchant")
 			{
 				//process merchant code
 				%trigger[2] = "buy";
@@ -6151,7 +6152,31 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-			else if(clipTrailingNumbers(%aiName) == "banker")
+            else if(%nn == "manamerchant")
+            {
+                //process merchant code
+				%trigger = "restore";
+				if($state[%closestId, %TrueClientId] == "")
+				{
+					if(%initTalk)
+					{
+                        %aiGender = $BotInfo[%aiName, RACE];
+						//playSound("Sound" @ %aiGender @ "Hey", GameBase::getPosition(%closestId));
+						AI::sayLater(%TrueClientId, %closestId, "Would you like to RESTORE some ext mana?", True);
+						$state[%closestId, %TrueClientId] = 1;
+					}
+				}
+				else if($state[%closestId, %TrueClientId] == 1)
+				{
+					if(String::findSubStr(%message, %trigger) != -1)
+					{
+						SetupManaRestore(%TrueClientId, %closestId);
+
+						$state[%closestId, %TrueClientId] = "";
+					}
+				}
+            }
+			else if(%nn == "banker")
 			{
 				//process banker code
 				%trigger[2] = "deposit";
@@ -6243,7 +6268,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					$state[%closestId, %TrueClientId] = "";
 				}
 			}
-            else if(clipTrailingNumbers(%aiName) == "respec")
+            else if(%nn == "respec")
 			{
                 //process merchant code
 				%trigger[2] = "respec";
@@ -6267,7 +6292,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
             }
-			else if(clipTrailingNumbers(%aiName) == "assassin")
+			else if(%nn == "assassin")
 			{
 				//process assassin code
 				%trigger[2] = "yes";
@@ -6395,7 +6420,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-			else if(clipTrailingNumbers(%aiName) == "porter")
+			else if(%nn == "porter")
 			{
 				//process porter code
 				%trigger[2] = "enter";
@@ -6445,7 +6470,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-			else if(clipTrailingNumbers(%aiName) == "quest")
+			else if(%nn == "quest")
 			{
 				//process quest code
 				%trigger[2] = $BotInfo[%aiName, CUE, 1];
@@ -6543,7 +6568,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-            else if(clipTrailingNumbers(%aiName) == "newquest")
+            else if(%nn == "newquest")
             {
                 if(%initTalk || $state[%closestId, %TrueClientId] == "")
 				{
@@ -6581,7 +6606,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
                     }
                 }
             }
-			else if(clipTrailingNumbers(%aiName) == "manager")
+			else if(%nn == "manager")
 			{
 				//process manager code
 				%trigger[2] = "fight";
@@ -6633,7 +6658,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-			if(clipTrailingNumbers(%aiName) == "botmaker")
+			if(%nn == "botmaker")
 			{
 				//process botmaker code
 				%trigger[2] = "yes";
@@ -6785,7 +6810,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-			if(clipTrailingNumbers(%aiName) == "blacksmith")
+			if(%nn == "blacksmith")
 			{
 				//process botmaker code
 				%trigger[2] = "buy";
@@ -6821,7 +6846,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 					}
 				}
 			}
-			else if(clipTrailingNumbers(%aiName) == "guildmaster")
+			else if(%nn == "guildmaster")
 			{
 				//process guildmaster code
 				%trigger[2] = "join";

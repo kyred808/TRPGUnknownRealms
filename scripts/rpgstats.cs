@@ -357,6 +357,13 @@ function fetchData(%clientId, %type)
         
 		return round(%b);
 	}
+    else if(%type == "MaxMANA2") //External mana
+    {
+        %sk = CalculatePlayerSkill(%clientId,$SkillManaManipulation) * $MaxMANA2SkillFactor;
+        %d = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMana2);
+        
+        return 20 + round(%sk + %d);
+    }
     else if(%type == "MagicScaling")
     {
         %cata = RPGItem::getAlternateTag(getWord(GetAccessoryList(%clientId, 15),0));
@@ -509,7 +516,7 @@ function storeData(%clientId, %type, %amt, %special)
 	{
 		setHP(%clientId, %amt);
 	}
-	else if(%type == "MANA")
+	else if(%type == "MANA2")
 	{
         %newVal = 0;
 		if(%special == "inc")
@@ -518,8 +525,8 @@ function storeData(%clientId, %type, %amt, %special)
 			%newVal = $ClientData[%clientId, %type] - %amt;
         else
             %newVal = %amt;
-            
-        $ClientData[%clientId, %type] = Cap(%newVal,0,fetchData(%clientId,"MaxMANA"));
+
+        $ClientData[%clientId, %type] = Cap(%newVal,0,fetchData(%clientId,"MaxMANA2"));
 	}
     else if(%type == "COINS")
     {

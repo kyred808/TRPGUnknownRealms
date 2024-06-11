@@ -762,7 +762,7 @@ function UpdateZone(%object)
     //-----------------------------------------------------------
 	// Do passive mana regen ticks
 	//-----------------------------------------------------------
-    //ManaRegenTick(%clientId);
+    ExternalManaRegenTick(%clientId);
     
     //if(%clientId.sleepMode == 2 && fetchData(%clientId, "Stamina") < fetchData(%clientId,"MaxStam"))
     //{

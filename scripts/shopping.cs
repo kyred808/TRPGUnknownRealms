@@ -106,6 +106,64 @@ function processMenuRespecPage(%clientId,%opt)
     }
 }
 
+function SetupManaRestore(%clientId, %id)
+{
+    %m2 = fetchData(%clientId,"MANA2");
+    %mx = fetchData(%clientId,"MaxMANA2");
+    Client::buildMenu(%clientId, "Ext. Mana: "@ %m2 @" / "@ %mx @" - COINS: "@ fetchData(%clientId, "COINS"), "RestoreManaPage", true);
+    %diff = %mx - %m2;
+    
+    if(%diff >= 10)
+        Client::addMenuItem(%clientId, %cnt++ @"Restore 10: $" @ $RestoreManaCostPer * 10, "restore 10 "@ %id);
+    if(%diff >= 50)
+        Client::addMenuItem(%clientId, %cnt++ @"Restore 50: $" @ $RestoreManaCostPer * 50, "restore 50 "@ %id);
+    if(%diff >= 100)
+        Client::addMenuItem(%clientId, %cnt++ @"Restore 100: $" @ $RestoreManaCostPer * 100, "restore 100 "@ %id);
+    if(%diff >= 500)
+        Client::addMenuItem(%clientId, %cnt++ @"Restore 500: $" @ $RestoreManaCostPer * 500, "restore 500 "@ %id);
+    if(%diff >= 1000)
+        Client::addMenuItem(%clientId, %cnt++ @"Restore 1000: $" @ $RestoreManaCostPer * 1000, "restore 1000 "@ %id);
+    if(%diff >= 5000)
+        Client::addMenuItem(%clientId, %cnt++ @"Restore 5000: $" @ $RestoreManaCostPer * 5000, "restore 5000 "@ %id);
+        
+    Client::addMenuItem(%clientId, "rRestore ALL ("@%diff@"): $" @ $RestoreManaCostPer * %diff, "restore "@%diff@" "@ %id);
+    Client::addMenuItem(%clientId, "xDone", "done");
+}
+
+function processMenuRestoreManaPage(%clientId,%opt)
+{
+    %select = getWord(%opt,0);
+    if(%select == "restore")
+    {
+        %amt = getWord(%opt,1);
+        %id = getWord(%opt,2);
+        %m2 = fetchData(%clientId,"MANA2");
+        %mx = fetchData(%clientId,"MaxMANA2");
+        %diff = %mx - %m2;
+        if(%diff < %amt) //Incase enough mana regenerated that it was less than the menu option
+            %amt = %diff;
+        
+        %cost = %amt * $RestoreManaCostPer;
+        
+        if(fetchData(%clientId, "COINS") >= %cost)
+        {
+            Client::SendMessage(%clientId, $MsgWhite, "You regained "@ %amt @" External MANA.~wActivateAR.wav");
+            storeData(%clientId,"MANA2",%amt,"inc");
+            storeData(%clientId,"COINS",%cost,"dec");
+        }
+        else
+        {
+            Client::SendMessage(%clientId, $MsgRed,"You don't have enough COINS~wC_BuySell.wav");
+        }
+        
+        SetupManaRestore(%clientId, %id);
+    }
+    else if(%select == "done")
+    {
+        return;
+    }
+}
+
 function SetupItemRefinement(%clientId,%anvilObj)
 {
     %clientId.currentAnvil = "RefineEquip "@%anvilObj;
