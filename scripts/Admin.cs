@@ -917,6 +917,7 @@ function processMenuLevelAttr(%clientId,%option)
             %clientId.attrSpentAmt++;
             %clientId.attrSeq = %attr @ " " @ %clientId.attrSeq;
         }
+        DisplayStatInc(%clientId);
         RPGIncreaseAttributesMenu(%clientId,1,%prev);
     }
     else if(%opt == "undo")
@@ -925,6 +926,7 @@ function processMenuLevelAttr(%clientId,%option)
         %clientId.attrSpent = SetStuffString(%clientId.attrSpent,%attr,1,"dec");
         %clientId.attrSpentAmt--;
         %clientId.attrSeq = Word::getSubWord(%clientId.attrSeq,1,99999);
+        DisplayStatInc(%clientId);
         RPGIncreaseAttributesMenu(%clientId,1,getWord(%option,1));
     }
     else if(%opt == "confirm")
@@ -935,6 +937,7 @@ function processMenuLevelAttr(%clientId,%option)
         %clientId.attrSpent = "";
         %clientId.attrSeq = "";
         RPGIncreaseAttributesMenu(%clientId,1,getWord(%option,1));
+        bottomprint(%clientId,"");
     }
     else if(%opt == "back")
     {
@@ -948,6 +951,73 @@ function processMenuLevelAttr(%clientId,%option)
             RPGAttributeMenu(%clientId,1);
     }
         
+}
+
+function DisplayStatInc(%clientId)
+{
+    %weap = fetchData(%clientId,"EquippedWeapon");
+    %extra["VIT"] = 0; %extra["MND"] = 0; %extra["STR"] = 0; %extra["DEX"] = 0; %extra["INT"] = 0; %extra["FAI"] = 0;
+    %extraDmg = 0;
+    for(%i = 0; %i < $RPGStats::AttributeCount; %i++)
+    {
+        %attr = $RPGStats::Attributes[%i];
+        %extra[%attr] = GetStuffStringCount(%clientId.attrSpent,%attr);
+        %spec = Attribute::GetScalingSpecialVar(%attr);
+        
+        if(%spec != "")
+        {
+            %extraDmg += %extra[%attr] * GetWeaponAttrScaling(%clientId,%spec,%weap);
+            //echo(%extra[%attr] * GetWeaponAttrScaling(%clientId,%spec,%weap));
+        }
+    }
+    //Get vit without temp bonus
+    %baseVit = RPGStats::getBaseAttributeValue(%clientId,"VIT") + RPGItem::GetPlayerEquipStats(%clientId,"VIT");
+    %baseHP = CalcHPfromVIT(%baseVit);
+    %hpGain = CalcHPfromVIT(%baseVit + %extra["VIT"]);
+    %add = "";
+    if(%extra["VIT"] > 0)
+        %add = "<f2>+"@ %hpGain - %baseHP;
+    %a[%tmp++] = "<f0>MaxHP: <f1>"@ %baseHP @" "@ %add @"\n";
+    %add = "";
+    if(%extra["MND"] > 0)
+        %add = "<f2>+"@ %extra["MND"] * $MaxManaMNDFactor @"";
+    %a[%tmp++] = "<f0>MaxMP: <f1>"@ fetchData(%clientId,"MaxMANA") @" "@ %add @"\n";
+    %add = "";
+    if(%extra["VIT"] > 0 || %extra["STR"] > 0 || %extra["DEX"] > 0)
+        %add = "<f2>+"@ %extra["VIT"]*$WeightCapVITFactor + %extra["STR"]*$WeightCapSTRFactor + %extra["DEX"]*$WeightCapDEXFactor;
+    %a[%tmp++] = "<f0>Weight: <f1>"@ fetchData(%clientId,"MaxWeight") @" "@ %add @"\n\n";
+    %add = "";
+    
+    %dmg = CalculateRawDamage(%clientId,%weap);
+
+    if(%extraDmg > 0)
+    {
+        %add = "<f2>+"@ round(%extraDmg);
+    }
+    
+    %a[%tmp++] = "<f0>DMG: <f1>"@ %dmg @" "@ %add @"\n";
+    %add = "";
+    %baseInt = RPGStats::getBaseAttributeValue(%clientId,"INT") + RPGItem::GetPlayerEquipStats(%clientId,"INT");
+    %baseMnd = RPGStats::getBaseAttributeValue(%clientId,"MND") + RPGItem::GetPlayerEquipStats(%clientId,"MND");
+    %baseArcane = CalculateMagicScaling(%clientId,%baseInt,%baseMnd);
+    %diff = CalculateMagicScaling(%clientId,%baseInt+%extra["INT"],%baseMnd+%extra["MND"]) - %baseArcane;
+    if(%extra["MND"] > 0 || %extra["INT"] > 0)
+        %add = "<f2>+"@%diff@"";
+    %a[%tmp++] = "<f0>Arcane: <f1>"@ %baseArcane @" "@ %add @"\n";
+    %add = "";
+    for(%i = 1; %a[%i] != ""; %i++)
+        %f = %f @ %a[%i];
+
+    %len = String::len(%f);
+    if(%len > 255)
+    {
+        %substr = String::getsubstr(%f,0,255);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(%len / 2), 1);
+        %substr = String::getSubstr(%f,255,%len);
+        remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
+    }
+    else
+        bottomprint(%clientId, %f, floor(%len / 2));
 }
 
 function RPGApplyAttributes(%clientId,%attrUpdateStr)

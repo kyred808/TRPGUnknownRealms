@@ -538,7 +538,7 @@ $AccessoryVar[weakmagicamulet, $MiscInfo] = "A small amulet that protects from m
 $CatalystTypeArcane = 0;
 $CatalystTypeIncant = 1;
 $CatalystTypeNature = 2;
-AddCatalystAccessoryHelper(novicecatalyst,"Novice Catalyst",400,MiscLootShape,0.2,5000,$SpecialVarArcaneScale @" 30 "@ $SpecialVarCataINTScale @" 5 "@$SpecialVarCataMNDScale @" 1");
+AddCatalystAccessoryHelper(novicecatalyst,"Novice Catalyst",400,MiscLootShape,0.2,5000,$SpecialVarArcaneScale @" 30 "@ $SpecialVarCataINTScale @" 2.5 "@$SpecialVarCataMNDScale @" 0.5");
 $AccessoryVar[novicecatalyst, $MiscInfo] = "A magic spell casting catalyst for mages in training.";
 
 $CatalystType[novicecatalyst] = $CatalystTypeArcane;

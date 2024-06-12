@@ -60,7 +60,9 @@ if($fullCycleTime == "") $fullCycleTime = 60 * 60;
 if($nightDayCycle == "") $nightDayCycle = False;
 //--------------------------------------
 
-$WeapAtkDmgScale = 0.5;
+$WeaponImprovementScaling = 0.25; //25% increase
+
+$WeapAtkDmgScale = 0.2;
 $AttrDmgScale = 1;
 $SkillDmgScale = 0.05;
 
@@ -70,9 +72,9 @@ $MaxManaMNDFactor = 2;
 $MaxManaSkillFactor = 0.2;
 $MaxMANA2SkillFactor = 2;
 
-$MagicEffectScalingINT = 5;
-$MagicEffectScalingMND = 1;
-$MagicEffectScalingFAI = 5;
+$MagicEffectScalingINT = 2;
+$MagicEffectScalingMND = 0.2;
+$MagicEffectScalingFAI = 2;
 
 $SpellDamageSkillScale = 0.05;
 

@@ -106,7 +106,7 @@ function RPGStats::getBaseAttributeValue(%clientId,%attr)
 
 function RPGStats::getExtraAttributeValue(%clientId,%attr)
 {
-    return AddBonusStatePoints(%clientId, %attr) + RPGItem::GetPlayerEquipStats(%clientId,%type);
+    return AddBonusStatePoints(%clientId, %attr) + RPGItem::GetPlayerEquipStats(%clientId,%attr);
 }
 
 function ScaleEnemyAttributesToLevel(%aiId)
@@ -121,12 +121,12 @@ function ScaleEnemyAttributesToLevel(%aiId)
         %attr = $RPGStats::Attributes[%i];
         %clAttr = $ClassInitAttributes[%class,%attr];
         %apSpent = floor(%ap * $EnemyAttrPercent[%botType,%i]);
-        echo("BT: "@ %botType);
-        echo(%attr @": "@%clAttr@"+"@ %apSpent);
+        //echo("BT: "@ %botType);
+        //echo(%attr @": "@%clAttr@"+"@ %apSpent);
         storeData(%aiId,%attr,%clAttr+%apSpent,"inc");
         %apRemaining -= %apSpent;
     }
-    echo(%apRemaining);
+    //echo(%apRemaining);
     //Distribute remaining stats randomly
     for(%aa = 0; %aa < %apRemaining; %aa++)
     {
@@ -187,20 +187,35 @@ function CalcHPfromVIT(%vit)
     %hp = 0;
     if(%vit <= 15)
     {
-        %hp = %vit * 12;
+        %hp = %vit * 8;
     }
     else if(%vit <= 40)
     {
-        %hp = 15*12; //15 * 8
+        %hp = 15*8; //15 * 8
         %remain = %vit - 15;
-        %hp += %remain * 8;
+        %hp += %remain * 6;
     }
     else
     {
-        %hp = 15*12 + 40*8 + (%vit - 40)*2; //15*8 + (40-15)*4 + (%vit - 40)*2
+        %hp = 15*8 + 40*6 + (%vit - 40)*4; //15*8 + (40-15)*4 + (%vit - 40)*2
     }
     
     return %hp;
+}
+
+function CalculateMagicScaling(%clientId,%int,%mnd)
+{
+    %cata = RPGItem::getAlternateTag(getWord(GetAccessoryList(%clientId, 15),0));
+    %catalystStats = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarArcaneScale);
+    if($CatalystType[RPGItem::ItemTagToLabel(%cata)] == $CatalystTypeArcane)
+    {
+        %attrVals = %int * RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarCataINTScale) + %mnd*RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarCataMNDScale);
+    }
+    else //Use default scaling
+    {
+        %attrVals = %int * $MagicEffectScalingINT + %mnd * $MagicEffectScalingMND;
+    }
+    return %attrVals;
 }
 
 function fetchData(%clientId, %type)
@@ -280,7 +295,7 @@ function fetchData(%clientId, %type)
                     %bb = GetWord(GetAccessoryVar(%rweaponLabel, $SpecialVar), 1);
                     %im = RPGItem::getAffixValue(%rweapon,"im");
                     if(%im != 0)
-                        %bb += round(%bb * 0.1 * %im);
+                        %bb += round(%bb * $WeaponImprovementScaling * %im);
                     %projAtk = %bb;
                 }
             }
@@ -294,7 +309,7 @@ function fetchData(%clientId, %type)
             %affixBonus = 0;
             if(%im != 0)
             {
-                %affixBonus = round(%baseAtk * 0.1 * %im);
+                %affixBonus = round(%baseAtk * $WeaponImprovementScaling * %im);
                 //%affixBonus = %affixBonus + RPGItem::getAffixValue(%weapon,$RPGItem::SpecialVarToAffix[$SpecialVarATK]);
             }
             //%b = %baseAtk + %extra;
@@ -387,7 +402,7 @@ function fetchData(%clientId, %type)
     }
 	else if(%type == "MaxWeight")
 	{
-		%a = 50 + CalcPlayerAttribute(%clientId,"VIT")*$WeightCapVITFactor + CalcPlayerAttribute(%clientId,"STR")*$WeightCapSTRFactor + CalcPlayerAttribute(%clientId,"DEX")**$WeightCapDEXFactor + CalculatePlayerSkill(%clientId, $SkillWeightCapacity) * $WeightCapSkillFactor;
+		%a = 50 + CalcPlayerAttribute(%clientId,"VIT")*$WeightCapVITFactor + CalcPlayerAttribute(%clientId,"STR")*$WeightCapSTRFactor + CalcPlayerAttribute(%clientId,"DEX")*$WeightCapDEXFactor + CalculatePlayerSkill(%clientId, $SkillWeightCapacity) * $WeightCapSkillFactor;
 		//%b = AddPoints(%clientId, 9);
         %b = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMaxWeight);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");

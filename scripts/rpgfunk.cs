@@ -2944,7 +2944,7 @@ function WhatIs(%item)
         if(RPGItem::GetItemGroupFromTag(%tag) == $RPGItem::WeaponClass)
         {
             %im = RPGItem::getImprovementLevel(%tag);
-            %bonusAtk = round(GetWord(GetAccessoryVar(%item, $SpecialVar), 1) * %im * 0.1);
+            %bonusAtk = round(GetWord(GetAccessoryVar(%item, $SpecialVar), 1) * %im * $WeaponImprovementScaling);
             for(%aa = 0; %aa < $RPGStats::AttributeCount; %aa++)
             {
                 %spec = Attribute::GetScalingSpecialVar($RPGStats::Attributes[%aa]);

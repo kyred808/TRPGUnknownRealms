@@ -29,7 +29,7 @@ $SpecialVarATK = 6;
 $SpecialVarDEF = 7;
 $SpecialVarSPEED = 8;
 $SpecialVarMaxWeight = 9;
-$SpeicalVarHPRegen = 10;
+$SpecialVarHPRegen = 10;
 $SpecialVarManaRegen = 11;
 $SpecialVarManaThief = 12;
 $SpecialVarManaHarvest = 13;
@@ -102,7 +102,11 @@ $SpecialVarDesc[35] = "CatalystINTScale";
 $SpecialVarDesc[36] = "CatalystFAIScale";
 $SpecialVarDesc[37] = "CatalystMNDScale";
 
-
+function AccDataDump(%file)
+{
+    export("AccessoryVar*","temp/"@%file,false);
+    export("SpecialVar*","temp/"@%file,true);
+}
 
 $RingAccessoryType = 1;
 $BodyAccessoryType = 2;

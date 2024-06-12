@@ -88,7 +88,7 @@ RPGItem::addAffixType("de","DEF",$SpecialVarDEF); //Defense
 RPGItem::addAffixType("sp","ATKSPD",$SpecialVarATKSpeed); //atk speed Debating this one as spec var
 RPGItem::addAffixType("hp","HP",$SpecialVarHP); //MaxHP
 RPGItem::addAffixType("mp","MP",$SpecialVarMana); //MaxMP
-RPGItem::addAffixType("hr","HPRegen",$SpeicalVarHPRegen); //HPRegen
+RPGItem::addAffixType("hr","HPRegen",$SpecialVarHPRegen); //HPRegen
 RPGItem::addAffixType("mr","MPRegen",$SpecialVarManaRegen); //MPRegen
 
 RPGItem::addAffixType("vs","VITScale",$SpecialVarVITScaling);
@@ -115,7 +115,7 @@ $RPGItem::SpecialVarToAffix[$SpecialVarATK] = "at";
 $RPGItem::SpecialVarToAffix[$SpecialVarDEF] = "de";
 $RPGItem::SpecialVarToAffix[$SpecialVarSPEED] = "";
 $RPGItem::SpecialVarToAffix[$SpecialVarMaxWeight] = "";
-$RPGItem::SpecialVarToAffix[$SpeicalVarHPRegen] = "hr";
+$RPGItem::SpecialVarToAffix[$SpecialVarHPRegen] = "hr";
 $RPGItem::SpecialVarToAffix[$SpecialVarManaRegen] = "mr";
 $RPGItem::SpecialVarToAffix[$SpecialVarManaThief] = "";
 $RPGItem::SpecialVarToAffix[$SpecialVarManaHarvest] = "";

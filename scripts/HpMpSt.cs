@@ -123,7 +123,7 @@ function refreshHPREGEN(%clientId,%zone)
             %b+=1;
         }
     }
-	%c = RPGItem::GetPlayerEquipStats(%clientId,$SpeicalVarHPRegen) / 2000;//AddPoints(%clientId, 10) / 2000;
+	%c = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarHPRegen) / 2000;//AddPoints(%clientId, 10) / 2000;
 
 	%r = %a + %b + %c;
     //echo(%a @" "@ %b @" "@ %c);
