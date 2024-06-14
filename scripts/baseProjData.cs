@@ -22,6 +22,8 @@ $SlamDamageType = 19;
 $StaffDamageType = 20;
 $MeteorDamageType = 21;
 
+$SpellDamageOffset = 200;
+
 $ProjectileTrackerCounter = 0;
 
 function Projectile::startTracking(%ownerClient,%proj,%rate,%range)
@@ -207,7 +209,7 @@ BulletData Thorn
 
    damageClass        = 1;
    damageValue        = 26;
-   damageType         = $SpellDamageType;
+   damageType         = $SpellDamageOffset + $Spell::index[thorn];
    explosionRadius = 3.0;
    kickBackStrength = 0.0;
    muzzleVelocity     = 90.0;
@@ -229,7 +231,7 @@ BulletData Firebolt
 
    damageClass        = 1;
    damageValue        = 45;
-   damageType         = $SpellDamageType;
+   damageType         = $SpellDamageType; //Firebolt
    explosionRadius = 6.0;
    kickBackStrength = 0.0;
    muzzleVelocity     = 50.0;
@@ -244,7 +246,6 @@ BulletData Firebolt
    rotationPeriod = 0.1;
 };
 
-//FireBall
 RocketData Flare
 { 
 	bulletShapeName = "PlasmaBolt.dts"; 
@@ -253,7 +254,7 @@ RocketData Flare
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 35; 
-	damageType = $SpellDamageType; //Energy gets translated to spell damage type in onDamage
+	damageType = $SpellDamageOffset + $Spell::index[flare]; //Energy gets translated to spell damage type in onDamage
 	explosionRadius = 8.0;
 	kickBackStrength = 0.1;
 	muzzleVelocity   = 5.0;
@@ -281,7 +282,7 @@ RocketData Fireball
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 35; 
-	damageType = $SpellDamageType; //Energy gets translated to spell damage type in onDamage
+	damageType = $SpellDamageOffset + $Spell::index[fireball]; //Energy gets translated to spell damage type in onDamage
 	explosionRadius = 8.0;
 	kickBackStrength = 0.1;
 	muzzleVelocity   = 60.0;
@@ -312,7 +313,7 @@ GrenadeData FireBomb
 
    damageClass        = 1;       // 0 impact, 1, radius
    damageValue        = 55;
-   damageType         = $SpellDamageType;
+   damageType         = $SpellDamageOffset + $Spell::index[firebomb];
    explosionRadius    = 10.0;
    kickBackStrength   = 3.0;
    maxLevelFlightDist = 75;
@@ -333,7 +334,7 @@ RocketData IceSpike
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 35; 
-	damageType = $SpellDamageType;
+	damageType = $SpellDamageOffset + $Spell::index[icespike];
 	explosionRadius = 6.0;
 	kickBackStrength = 0.0;
 	muzzleVelocity   = 50.0;
@@ -360,7 +361,7 @@ RocketData IceStorm
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 45/6; 
-	damageType = $SpellDamageType;
+	damageType = $SpellDamageOffset + $Spell::index[icestorm];
 	explosionRadius = 11.0;
 	kickBackStrength = 0.0;
 	muzzleVelocity   = 40.0;
@@ -391,7 +392,7 @@ GrenadeData Cloud
 
    damageClass        = 1;       // 0 impact, 1, radius
    damageValue        = 85;
-   damageType         = $SpellDamageType;
+   damageType         = $SpellDamageOffset + $Spell::index[cloud];
    explosionRadius    = 10.0;
    kickBackStrength   = 5.0;
    maxLevelFlightDist = 75;
@@ -412,7 +413,7 @@ RocketData Melt
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 140; 
-	damageType = $SpellDamageType;
+	damageType = $SpellDamageOffset + $Spell::index[melt];
 	explosionRadius = 13.0;
 	kickBackStrength = -2.0;
 	muzzleVelocity   = 80.0;
@@ -439,7 +440,7 @@ LaserData sniperLaser
 	hitName           = "laserhit.dts";
 
 	damageConversion  = 0.0;
-	baseDamageType    = $SpellDamageType;
+	baseDamageType    = $SpellDamageOffset + $Spell::index[beam];
 
  	beamTime          = 3.5;
 
@@ -459,7 +460,7 @@ RocketData DimensionRift
 	mass = 0.5;
 	damageClass = 1;
 	damageValue = 320; 
-	damageType = $SpellDamageType;
+	damageType = $SpellDamageOffset + $Spell::index[dimensionrift];
 	explosionRadius = 60.0;
 	kickBackStrength = -30.0;
 	muzzleVelocity   = 10.0;
@@ -571,7 +572,7 @@ RocketData Fireblast
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 240; 
-	damageType = $SpellDamageType;
+	damageType = $SpellDamageType; //Fireblast
 	explosionRadius = 85;
 	kickBackStrength = 500;
 	muzzleVelocity   = 60.0;
@@ -972,7 +973,7 @@ RocketData SunFlare
 	mass = 2.0;
 	damageClass = 1;
 	damageValue = 140; 
-	damageType = $SpellDamageType;
+	damageType = $SpellDamageOffset + $Spell::index[sunflare];
 	explosionRadius = 13.0;
 	kickBackStrength = -2.0;
 	muzzleVelocity   = 200.0;

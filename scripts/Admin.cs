@@ -971,13 +971,13 @@ function DisplayStatInc(%clientId)
         }
     }
     //Get vit without temp bonus
-    %baseVit = RPGStats::getBaseAttributeValue(%clientId,"VIT") + RPGItem::GetPlayerEquipStats(%clientId,"VIT");
+    %baseVit = RPGStats::getBaseAttributeValue(%clientId,"VIT") + RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarVIT);
     %baseHP = CalcHPfromVIT(%baseVit);
     %hpGain = CalcHPfromVIT(%baseVit + %extra["VIT"]);
     %add = "";
     if(%extra["VIT"] > 0)
         %add = "<f2>+"@ %hpGain - %baseHP;
-    %a[%tmp++] = "<f0>MaxHP: <f1>"@ %baseHP @" "@ %add @"\n";
+    %a[%tmp++] = "<f0>MaxHP: <f1>"@ fetchData(%clientId,"MaxHP") @" "@ %add @"\n";
     %add = "";
     if(%extra["MND"] > 0)
         %add = "<f2>+"@ %extra["MND"] * $MaxManaMNDFactor @"";
@@ -997,10 +997,10 @@ function DisplayStatInc(%clientId)
     
     %a[%tmp++] = "<f0>DMG: <f1>"@ %dmg @" "@ %add @"\n";
     %add = "";
-    %baseInt = RPGStats::getBaseAttributeValue(%clientId,"INT") + RPGItem::GetPlayerEquipStats(%clientId,"INT");
-    %baseMnd = RPGStats::getBaseAttributeValue(%clientId,"MND") + RPGItem::GetPlayerEquipStats(%clientId,"MND");
-    %baseArcane = CalculateMagicScaling(%clientId,%baseInt,%baseMnd);
-    %diff = CalculateMagicScaling(%clientId,%baseInt+%extra["INT"],%baseMnd+%extra["MND"]) - %baseArcane;
+    %baseInt = RPGStats::getBaseAttributeValue(%clientId,"INT") + RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarINT);
+    %baseMnd = RPGStats::getBaseAttributeValue(%clientId,"MND") + RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarMND);
+    %baseArcane = round(CalculateMagicScaling(%clientId,%baseInt,%baseMnd));
+    %diff = round(CalculateMagicScaling(%clientId,%baseInt+%extra["INT"],%baseMnd+%extra["MND"]) - %baseArcane);
     if(%extra["MND"] > 0 || %extra["INT"] > 0)
         %add = "<f2>+"@%diff@"";
     %a[%tmp++] = "<f0>Arcane: <f1>"@ %baseArcane @" "@ %add @"\n";

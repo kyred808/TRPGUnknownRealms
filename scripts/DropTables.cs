@@ -26,11 +26,12 @@ function ParseDropTable(%key,%str)
         $DropTable[%key,%i,Rate] = (%percent/100) * 1.000001;
     }
 }
-
+%healscroll = "id286_pr(80)_np1_mana2_pow80_recov4_skill50_delay1";
+%fbscroll = "id287_pr(100)_np1_mana2_pow100_recov4_skill50_delay1";
 //Enemy Type Tables
 //Goblins-Mines
-ParseDropTable("Runt","rKnife 1 10");
-ParseDropTable("Thief","rKnife 1 5|Sling 1 5|BlackStatue 1 10");
+ParseDropTable("Runt","rKnife 1 10|"@%healscroll@" 1 90");
+ParseDropTable("Thief","rKnife 1 5|Sling 1 5|BlackStatue 1 10|"@%fbscroll@" 1 90");
 ParseDropTable("Wizard","Turquoise 1 5");
 ParseDropTable("Raider","rPickaxe 1 10|BlackStatue 15|Granite 1 15");
 

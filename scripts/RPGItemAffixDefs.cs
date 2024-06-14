@@ -78,6 +78,7 @@ RPGItem::addAffixType("sd","SpellDmg"); //Spell Damage
 RPGItem::addAffixType("we","Weight"); //Weight
 RPGItem::addAffixType("va","Value"); //Value
 RPGItem::addAffixType("pr"); //Prefix
+RPGItem::addAffixType("np"); //Stop parsing here. For custom affix tags
 RPGItem::addAffixType("nn"); //Name
 
 //Special Var related affixes

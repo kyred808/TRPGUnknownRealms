@@ -11,7 +11,41 @@ function RPGItem::addAffixType(%tag,%desc,%spec)
     $RPGItem::AffixCount++;
 }
 
+//For arbitary affix length.  Not very efficient..should rewrite
+function RPGItemAffix::ParseData(%itemTag,%dataTagList)
+{
+    deleteVariables("ParseAffix*");
+    $ParseAffix["tagId"] = String::getWord(%itemTag,"_",0);
+    for(%k = 0; (%d = String::getWord(%dataTagList," ",%k)) != " "; %k++)
+    {
+        %len = String::len(%d);
+        echo(%d);
+        for(%i = 1; (%w = String::getWord(%itemTag,"_",%i)) != "_"; %i++)
+        {
+            %data = String::getSubStr(%w,0,%len);
+            if(String::ICompare(%data,%d) == 0)
+            {
+                
+                %val = String::getSubStr(%w,%len,9999);
+                $ParseAffix[%data] = %val;
+            }
+        }
+    }
+}
 
+//Zip $ParseAffix[] array up into an itemTag for arbitary affix
+function RPGItemAffix::CreateTagFromDataParse(%dataTagList)
+{
+    %newTag = $ParseAffix["tagId"];
+    for(%i = 0; (%w = String::getWord(%dataTagList," ",%i)) != " "; %i++)
+    {
+        if($ParseAffix[%w] != "" && String::ICompare($ParseAffix[%w],0) != 0) //Must use icompare, because $ParseAffix[%type] could be a string
+        {
+            %newTag = %newTag@"_"@%w@$ParseAffix[%w];
+        }
+    }
+    return %newTag;
+}
 
 //Unzip an itemTag into $ParseAffix[] array
 function RPGItemAffix::ParseAffixes(%itemTag)
@@ -23,6 +57,8 @@ function RPGItemAffix::ParseAffixes(%itemTag)
         %affix = String::getSubStr(%w,0,$RPGItem::affixLen);
         %val = String::getSubStr(%w,$RPGItem::affixLen,9999);
         $ParseAffix[%affix] = %val;
+        if(%affix == "np")
+            break;
     }
 }
 

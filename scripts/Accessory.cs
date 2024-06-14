@@ -60,6 +60,8 @@ $SpecialVarCataINTScale = 35;
 $SpecialVarCataFAIScale = 36;
 $SpecialVarCataMNDScale = 37;
 
+$SpecialVarManaCostAdj = 38;
+
 $SpecialVarDesc[1] = "ARMOR";
 $SpecialVarDesc[2] = "BARRIER";
 $SpecialVarDesc[3] = "MDEF (Magical)";
@@ -101,6 +103,8 @@ $SpecialVarDesc[34] = "NatureScale";
 $SpecialVarDesc[35] = "CatalystINTScale";
 $SpecialVarDesc[36] = "CatalystFAIScale";
 $SpecialVarDesc[37] = "CatalystMNDScale";
+
+$SpecialVarDesc[38] = "Mana Cost";
 
 function AccDataDump(%file)
 {

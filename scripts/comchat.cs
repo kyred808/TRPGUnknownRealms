@@ -1020,7 +1020,8 @@ function remoteSay(%clientId, %team, %message, %senderName)
 		            else
 		            {
                         //Spell::BeginCastSpell(%TrueClientId, escapestring(%cropped));
-                        BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        //BeginCastSpell(%TrueClientId, escapestring(%cropped));
+                        Player::CastSpell(%TrueClientId, escapestring(%cropped));
 					if(String::findSubStr(%cropped, "\"") != -1){
 						%ip = Client::getTransportAddress(%ClientId);
 						echo("Exploit attempt detected and blocked: " @ %trueClientId @ ", aka " @ %nameomg @ ", at " @ %ip @ ".");
@@ -6586,7 +6587,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
                     %lastCue = $BotInfo[%aiName, CUE, %state-1];
                     %need = $BotInfo[%aiName, NEED,%state];
                     %sound = $BotInfo[%aiName, SOUND, %state];
-                    
+                    %buytrigger = "buy";
                     echo("State: "@ %state);
                     echo("NextCue: "@ $BotInfo[%aiName, CUE, %state]);
                     if(%sound != "")
@@ -6603,6 +6604,18 @@ function remoteSay(%clientId, %team, %message, %senderName)
                             AI::sayLater(%TrueClientId, %closestId, $BotInfo[%aiName, SAY, %state] @ " [" @ $BotInfo[%aiName, CUE, %state] @ "]~w"@%sound, True);
                             $state[%closestId, %TrueClientId]++;
                         }
+                    }
+                    
+                    if(String::findSubStr(%message,%buytrigger) != -1)
+                    {
+                        if($BotInfo[%aiName, SHOP] != "")
+						{
+							SetupShop(%TrueClientId, %closestId);
+							AI::sayLater(%TrueClientId, %closestId, "Take a look at what I have.", True);
+						}
+						else
+							AI::sayLater(%TrueClientId, %closestId, "I have nothing to sell.", True);
+                        $state[%closestId, %TrueClientId] = "";
                     }
                 }
             }

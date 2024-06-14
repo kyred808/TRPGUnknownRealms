@@ -72,9 +72,9 @@ $MaxManaMNDFactor = 2;
 $MaxManaSkillFactor = 0.2;
 $MaxMANA2SkillFactor = 2;
 
-$MagicEffectScalingINT = 2;
-$MagicEffectScalingMND = 0.2;
-$MagicEffectScalingFAI = 2;
+$MagicEffectScalingINT = 0.5;
+$MagicEffectScalingMND = 0.0;
+$MagicEffectScalingFAI = 0.5;
 
 $SpellDamageSkillScale = 0.05;
 
@@ -114,7 +114,7 @@ $SkillSecondaryBonus = 20;
 
 $BaseTPLimit = 100;
 
-//Hear air in mountains
+//Hear wind in mountains
 $UnknownZoneAmbientSoundMinHeight = 300;
 
 //Toggle if you can craft anywhere or need to look at or have certain objects.
@@ -122,7 +122,7 @@ $ExtraCraftingRequirements = true; //Crafting system needs reassessing
 $BaseCraftingDifficulty = 10;
 $MaxCraftingBatch = 100;
 
-$NewPlayerSpawnZone = "PROTECTED Keldrin Town"; //"DUNGEON New Player Cave";
+$NewPlayerSpawnZone = "DUNGEON New Player Cave";
 
 $ManaEnergyFactor = 1/25; //Need to reassess if this is used
 

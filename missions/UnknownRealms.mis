@@ -2808,6 +2808,14 @@ instant SimGroup "MissionGroup" {
                 lightParams = "0 ";
                 locked = "0";
             };
+            instant InteriorShape "Schurch1" {
+                fileName = "Schurch.dis";
+                isContainer = "1";
+                position = "-2462.91 -2362.94 64.9997";
+                rotation = "0 -0 -3.1";
+                lightParams = "0 ";
+                locked = "1";
+            };
             instant SimGroup "Scenery" {
                 instant InteriorShape "lrock21" {
                     fileName = "lrock2.1.dis";
@@ -3662,6 +3670,66 @@ instant SimGroup "MissionGroup" {
                 };
                 instant SimGroup "NEED AI false";
                 instant SimGroup "GSAY You have been teleported back to Keldrin Mines.~wPortal6.wav";
+            };
+            instant SimGroup "magetower teleport in" {
+                instant SimGroup "Input" {
+                    instant Trigger "GroupTrigger1" {
+                        dataBlock = "GroupTrigger";
+                        name = "";
+                        position = "-2574.7 539.14 671.67";
+                        rotation = "0 0 0";
+                        boundingBox = "-1 -1 -1 1 1 1";
+                        isSphere = "True";
+                    };
+                    instant StaticShape "BigElectroBeam1" {
+                        dataBlock = "ElectricalBeamBig";
+                        name = "";
+                        position = "-2574.7 539.14 671.67";
+                        rotation = "0 0 0";
+                        destroyable = "True";
+                        deleteOnDestroy = "False";
+                    };
+                };
+                instant SimGroup "Output" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2622.14 615.024 692.503";
+                        rotation = "0 0 0";
+                    };
+                };
+                instant SimGroup "NEED AI false";
+                instant SimGroup "GSAY You have been teleported.~wPortal6.wav";
+            };
+            instant SimGroup "magetower teleport out" {
+                instant SimGroup "Input" {
+                    instant Trigger "GroupTrigger1" {
+                        dataBlock = "GroupTrigger";
+                        name = "";
+                        position = "-2626.87 613.917 692.503";
+                        rotation = "0 0 0";
+                        boundingBox = "-1 -1 -1 1 1 1";
+                        isSphere = "True";
+                    };
+                    instant StaticShape "BigElectroBeam1" {
+                        dataBlock = "ElectricalBeamBig";
+                        name = "";
+                        position = "-2626.87 613.917 692.503";
+                        rotation = "0 0 0";
+                        destroyable = "True";
+                        deleteOnDestroy = "False";
+                    };
+                };
+                instant SimGroup "Output" {
+                    instant Marker "Marker1" {
+                        dataBlock = "PathMarker";
+                        name = "";
+                        position = "-2585.27 526.286 673.3";
+                        rotation = "0 0 0";
+                    };
+                };
+                instant SimGroup "NEED AI false";
+                instant SimGroup "GSAY You have been teleported.~wPortal6.wav";
             };
         };
         instant SimGroup "StrangeOrchard" {
@@ -5040,7 +5108,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY2 Thank you, here is your reward.";
                 instant SimGroup "CSAY I do not need your help. Or perhaps you are looking to BUY?";
                 instant SimGroup "LSAY I do not need your help. Or perhaps you are looking to BUY?";
-                instant SimGroup "SHOP id86 id88";
+                instant SimGroup "SHOP id86 id88 id500 id501 id502 id503 id504 id505 id506 id507 id508 id509 id510 id511 id512";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";
@@ -5289,6 +5357,56 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NAME Sarah";
                 instant SimGroup "RACE FemaleHuman";
                 instant SimGroup "SHOP id200 id202 id204 id240";
+            };
+            instant SimGroup "merchant8" {
+                instant Marker "EthrenDivineSpellMerch" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2475.69 -2363.36 67.1245";
+                    rotation = "0 -0 -1.51997";
+                };
+                instant SimGroup "NAME Fr. Michael";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "SHOP id513 id514 id515 id516 id517 id518 id519 id520 id521 id522 id523 id524 id525 id526 id527 id528 id529 id530";
+            };
+            instant SimGroup "merchant9" {
+                instant Marker "ScrollMerch" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2467.79 -2353.3 65.3747";
+                    rotation = "0 -0 -2.21996";
+                };
+                instant SimGroup "NAME Divine Scroll Merch";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "SHOP id200 id202 id204 id240";
+            };
+            instant SimGroup "newquest5" {
+                instant Marker "BasicArcaneMerch" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2371.53 -263.735 65";
+                    rotation = "0 -0 2.15998";
+                };
+                instant SimGroup "NAME Basic Arcane Spells";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "SHOP id500 id501 id400";
+                instant SimGroup "SAY1 Would you like to BUY basic Offensive Casting spells?";
+                instant SimGroup "CUE1 stronger";
+                instant SimGroup "SAY2 The wizard Arkemn north of here in the mountains sells stronger spells.";
+            };
+            instant SimGroup "newquest6" {
+                instant Marker "BasicDivineMerch" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-2377 -256.207 65";
+                    rotation = "0 -0 2.23998";
+                };
+                instant SimGroup "NAME Basic Divine Spells";
+                instant SimGroup "RACE MaleHuman";
+                instant SimGroup "SHOP id513 id524 id402";
+                instant SimGroup "SAY1 Would you like to BUY basic Defensive Casting spells?";
+                instant SimGroup "CUE1 stronger";
+                instant SimGroup "SAY2 Vist Fr. Michael at the church in Ethren for stronger spells.";
             };
         };
         instant InteriorShape "RemorterHall1" {

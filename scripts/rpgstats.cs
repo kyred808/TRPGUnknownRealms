@@ -28,6 +28,11 @@ $RPGStats::AttributeId["FAI"] = 5;
 
 $RPGStats::AttributeCount = 6;
 
+function Attribute::GetSpecialVar(%attr)
+{
+    return $SpecialVar[%attr];
+}
+
 function Attribute::GetScalingSpecialVar(%attr)
 {
     return $SpecialVar[%attr @ "Scaling"];
@@ -106,7 +111,7 @@ function RPGStats::getBaseAttributeValue(%clientId,%attr)
 
 function RPGStats::getExtraAttributeValue(%clientId,%attr)
 {
-    return AddBonusStatePoints(%clientId, %attr) + RPGItem::GetPlayerEquipStats(%clientId,%attr);
+    return AddBonusStatePoints(%clientId, %attr) + RPGItem::GetPlayerEquipStats(%clientId,Attribute::GetSpecialVar(%attr));
 }
 
 function ScaleEnemyAttributesToLevel(%aiId)
@@ -179,7 +184,7 @@ function RPGStats::DisplayAttributeInfo(%clientId,%attrId)
 
 function CalcPlayerAttribute(%clientId,%type)
 {
-    return fetchData(%clientId,%type) + AddBonusStatePoints(%clientId, %type) + RPGItem::GetPlayerEquipStats(%clientId,%type);
+    return fetchData(%clientId,%type) + AddBonusStatePoints(%clientId, %type) + RPGItem::GetPlayerEquipStats(%clientId,Attribute::GetSpecialVar(%type));
 }
 
 function CalcHPfromVIT(%vit)
@@ -215,7 +220,7 @@ function CalculateMagicScaling(%clientId,%int,%mnd)
     {
         %attrVals = %int * $MagicEffectScalingINT + %mnd * $MagicEffectScalingMND;
     }
-    return %attrVals;
+    return round(%catalystStats + %attrVals);
 }
 
 function fetchData(%clientId, %type)

@@ -160,6 +160,7 @@ function Player::onKilled(%this)
                 
                 if($StealProtectedItem[%a])
 					%bInclude = false;
+                    
             }
             
             if(%bInclude)
@@ -615,7 +616,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
         }
 		//------------- CREATE DAMAGE VALUE -------------
-		if(%type == $SpellDamageType || %type == $StaffDamageType)
+		if(%type == $SpellDamageType || %type == $StaffDamageType || %type > $SpellDamageOffset)
 		{
             //For the case of SPELLS, the initial damage has already been determined before calling this function
             echo("MAGIC");
@@ -629,6 +630,12 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
             else
             {
+                if(%type > $SpellDamageOffset)
+                {
+                    %index = %type - $SpellDamageOffset;
+                    %weapTag = $Spell::keyword[%index];
+                }
+                
                 if($Spell::index[%weapTag] != "")
                 {
                     %skilltype = $SkillType[%weapTag];
@@ -641,15 +648,28 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			%dmg = %value + %sdm;
             %cataTypeList[$SkillOffensiveCasting] = "MagicScaling";
             %cataTypeList[$SkillDefensiveCasting] = "IncantScaling";
-            %cataTypeList[$SkillNatureCasting] = "MagicScaling";
+            %cataTypeList[$SkillNatureCasting] = "MagicScaling"; //Temp
             
             if(%empower)
                 %dmg += 15;
             
-            %cataScale = fetchData(%shooterClient,%cataTypeList[%skilltype]);
-            //echo("SC: "@%catascale);
+            %tmpStats = fetchData(%shooterClient,"tempCastStats");
+            if(%index != "" && %weapTag != "" && getWord(%tmpStats,0) == %index)
+            {
+                %skill = getWord(%tmpStats,1);
+                %cataScale = getWord(%tmpStats,2);
+                %saveOnHit = getWord(%tempStats,3);
+                if(%saveOnHit != 1)
+                    storeData(%shooterClient,"tempCastStats","");
+            }
+            else
+            {
+                %cataScale = fetchData(%shooterClient,%cataTypeList[%skilltype]);
+                %skill = CalculatePlayerSkill(%shooterClient, %skilltype);
+            }
+            echo("SC: "@%catascale);
             //echo("SK: "@ CalculatePlayerSkill(%shooterClient, %skilltype) * $SpellDamageSkillScale);
-            %value = round( (%dmg * %cataScale / 100) + CalculatePlayerSkill(%shooterClient, %skilltype) * $SpellDamageSkillScale);
+            %value = round( (%dmg * %cataScale / 100) +  * $SpellDamageSkillScale);
 			//%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
             %amr = fetchData(%damagedClient,"BAR");
             %value = Cap(%value - %amr, 1, "inf");

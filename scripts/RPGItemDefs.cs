@@ -8,6 +8,7 @@ $RPGItem::WeaponClass = "Weapon";
 $RPGItem::CatalystClass = "Catalyst";
 $RPGItem::EquippedClass = "Equipped";
 $RPGItem::AmmoClass = "Ammo";
+$RPGItem::SpellBookClass = "SpellBook";
 
 $RPGItem::PlayerWeaponList = "WeaponItemInv";
 
@@ -15,6 +16,7 @@ $RPGItem::InvItemLists[0] = $RPGItem::PlayerWeaponList;
 $RPGItem::InvItemLists[1] = "EquippedItemInv";
 $RPGItem::InvItemLists[2] = "AccessoryItemInv";
 $RPGItem::InvItemLists[3] = "PouchItemInv";
+$RPGItem::InvItemLists[4] = "SpellItemInv";
 $RPGItem::InvItemLists[4] = "AmmoItemInv";
 $RPGItem::InvItemLists[5] = "LoreItemInv";
 
@@ -79,6 +81,8 @@ RPGItem::AddItemClass("Pouch","Pouch","PouchItemInv","PouchItemStorage");
 RPGItem::AddItemClass("Potion","Potions","PouchItemInv","PouchItemStorage");
 RPGItem::AddItemClass("Plants","Plants","PouchItemInv","PouchItemStorage");
 RPGItem::AddItemClass("Ammo","Ammo","AmmoItemInv","AmmoItemStorage");
+RPGItem::AddItemClass("Scrolls","Spell Scrolls","PouchItemInv","PouchItemStorage");
+RPGItem::AddItemClass("SpellBook","Spell Book","SpellItemInv","PouchItemStorage");
 RPGItem::AddItemClass("Lore","Lore","LoreItemInv","");
 
 //Weapons
@@ -519,6 +523,16 @@ $AccessoryVar[DeepMineKey, $MiscInfo] = "Key that grants access to the Deep Keld
 AddArmAccessoryHelper(OgresBracelet,"Ogre's Bracelet",284,MiscLootShape,0.2,195000,"SKILL"@$SkillSlashing@" 100 SKILL"@$SkillEndurance@" 100");
 $AccessoryVar[OgresBracelet, $MiscInfo] = "A bracelet that enhances the user's health and strength.";
 
+AddItemHelper("healscroll","Scroll of Healing","Scrolls",286,1,7500,MiscLootShape);
+$RPGItem::ItemDef[286,Action] = "CastSpell 8";
+$AccessoryVar[healscroll, $MiscInfo] = "A scroll that casts the healing spell.";
+
+AddItemHelper("fireballscroll","Scroll of Fireball","Scrolls",287,1,7500,MiscLootShape);
+$RPGItem::ItemDef[287,Action] = "CastSpell 14";
+$AccessoryVar[fireballscroll, $MiscInfo] = "A scroll that casts the fireball spell.";
+
+$ExcludeAffix["healscroll"] = true;
+$ExcludeAffix["fireballscroll"] = true;
 //Hard coded costs are overwritten in CratingItemDefs
 AddItemHelper("Copper","Copper","Ores",300,3,1500,MiscLootShape);
 AddItemHelper("Tin","Tin","Ores",301,3,1500,MiscLootShape);
@@ -538,11 +552,97 @@ $AccessoryVar[weakmagicamulet, $MiscInfo] = "A small amulet that protects from m
 $CatalystTypeArcane = 0;
 $CatalystTypeIncant = 1;
 $CatalystTypeNature = 2;
-AddCatalystAccessoryHelper(novicecatalyst,"Novice Catalyst",400,MiscLootShape,0.2,5000,$SpecialVarArcaneScale @" 30 "@ $SpecialVarCataINTScale @" 2.5 "@$SpecialVarCataMNDScale @" 0.5");
-$AccessoryVar[novicecatalyst, $MiscInfo] = "A magic spell casting catalyst for mages in training.";
+AddCatalystAccessoryHelper(novicecatalyst,"Novice Catalyst",400,MiscLootShape,0.2,5000,$SpecialVarArcaneScale @" 50 "@ $SpecialVarCataINTScale @" 1 "@$SpecialVarCataMNDScale @" 0.5");
+$AccessoryVar[novicecatalyst, $MiscInfo] = "A magic spell casting catalyst for mages in training.  Provides low INT scaling, but higher than average base Arcane for its tier";
 
 $CatalystType[novicecatalyst] = $CatalystTypeArcane;
 $SkillRestriction[novicecatalyst] = $SkillOffensiveCasting @ " 20";
+
+AddCatalystAccessoryHelper(acolytecatalyst,"Acolyte Catalyst",402,MiscLootShape,0.2,5000,$SpecialVarIncantScale @" 50 "@ $SpecialVarCataFAIScale @" 1 "@$SpecialVarCataMNDScale @" 0.5");
+$AccessoryVar[acolytecatalyst, $MiscInfo] = "A incant spell casting catalyst for clerics in training.  Provices low FAI scaling, but her than average base Incant for its tier";
+
+$CatalystType[acolytecatalyst] = $CatalystTypeIncant;
+$SkillRestriction[acolytecatalyst] = $SkillDefensiveCasting @ " 20";
+
+AddCatalystAccessoryHelper(magecatalyst,"Mage Catalyst",404,MiscLootShape,0.2,15000,$SpecialVarArcaneScale @" 30 "@ $SpecialVarCataINTScale @" 2.5 "@$SpecialVarCataMNDScale @" 0.5 "@ $SpecialVarManaCostAdj @" -40");
+$AccessoryVar[magecatalyst, $MiscInfo] = "A magic spell casting catalyst for mages. INT scaling is low, but reduces mana costs by 40%";
+
+$CatalystType[magecatalyst] = $CatalystTypeArcane;
+$SkillRestriction[magecatalyst] = "C Mage";
+
+AddCatalystAccessoryHelper(clericcatalyst,"Cleric Catalyst",406,MiscLootShape,0.2,15000,$SpecialVarIncantScale @" 30 "@ $SpecialVarCataFAIScale @" 1.5 "@$SpecialVarCataMNDScale @" 0.5"@ $SpecialVarManaCostAdj @" -40");
+$AccessoryVar[clericcatalyst, $MiscInfo] = "A incant spell casting catalyst for clerics.  FAI scaling is low, but reduces mana costs by 40%";
+
+$CatalystType[clericcatalyst] = $CatalystTypeIncant;
+$SkillRestriction[clericcatalyst] = "C Cleric";
+
+//Spell Items
+AddItemHelper("sparksspellitem","Sparks","SpellBook",500,0,500,MiscLootShape);
+AddItemHelper("fireballspellitem","Fireball","SpellBook",501,0,1250,MiscLootShape);
+AddItemHelper("firebombspellitem","Firebomb","SpellBook",502,0,5000,MiscLootShape);
+AddItemHelper("icespikespellitem","Ice Spike","SpellBook",503,0,5250,MiscLootShape);
+AddItemHelper("icestormspellitem","Ice Storm","SpellBook",504,0,10000,MiscLootShape);
+AddItemHelper("ironfistspellitem","Iron Fist","SpellBook",505,0,17500,MiscLootShape);
+AddItemHelper("cloudspellitem","Cloud","SpellBook",506,0,25000,MiscLootShape);
+AddItemHelper("meltspellitem","Melt","SpellBook",507,0,50000,MiscLootShape);
+AddItemHelper("powercloudspellitem","Power Cloud","SpellBook",508,0,75000,MiscLootShape);
+AddItemHelper("hellstormspellitem","Hell Storm","SpellBook",509,0,500000,MiscLootShape);
+AddItemHelper("beamspellitem","Beam","SpellBook",510,0,1000000,MiscLootShape);
+AddItemHelper("dimensionriftspellitem","Dimension Rift","SpellBook",511,0,3000000,MiscLootShape);
+
+$StealProtectedItem[sparksspellitem] = true;
+$StealProtectedItem[fireballspellitem] = true;
+$StealProtectedItem[firebombspellitem] = true;
+$StealProtectedItem[icespikespellitem] = true;
+$StealProtectedItem[icestormspellitem] = true;
+$StealProtectedItem[ironfistspellitem] = true;
+$StealProtectedItem[cloudspellitem] = true;
+$StealProtectedItem[meltspellitem] = true;
+$StealProtectedItem[powercloudspellitem] = true;
+$StealProtectedItem[hellstormspellitem] = true;
+$StealProtectedItem[beamspellitem] = true;
+$StealProtectedItem[dimensionriftspellitem] = true;
+
+AddItemHelper("thornspellitem","Thorn","SpellBook",512,0,500,MiscLootShape);
+$StealProtectedItem[thornspellitem] = true;
+
+AddItemHelper(healspellitem,"Heal","SpellBook",513,0,2500,MiscLootShape);
+AddItemHelper(advheal1spellitem,"Adv. Heal 1","SpellBook",514,0,2500*3,MiscLootShape);
+AddItemHelper(advheal2spellitem,"Adv. Heal 2","SpellBook",515,0,2500*6,MiscLootShape);
+AddItemHelper(advheal3spellitem,"Adv. Heal 3","SpellBook",516,0,2500*9,MiscLootShape);
+AddItemHelper(advheal4spellitem,"Adv. Heal 4","SpellBook",517,0,2500*12,MiscLootShape);
+AddItemHelper(advheal5spellitem,"Adv. Heal 5","SpellBook",518,0,2500*15,MiscLootShape);
+AddItemHelper(advheal6spellitem,"Adv. Heal 6","SpellBook",519,0,2500*18,MiscLootShape);
+AddItemHelper(godlyhealspellitem,"Godly Heal","SpellBook",520,0,2500*21,MiscLootShape);
+AddItemHelper(fullhealspellitem,"Ful Heal","SpellBook",521,0,2500*30,MiscLootShape);
+AddItemHelper(masshealspellitem,"Mass Heal","SpellBook",522,0,2500*45,MiscLootShape);
+AddItemHelper(massfullhealspellitem,"Mass Full Heal","SpellBook",523,0,2500*80,MiscLootShape);
+AddItemHelper(shieldspellitem,"Shield","SpellBook",524,0,3500,MiscLootShape);
+AddItemHelper(advshield1spellitem,"Adv. Shield 1","SpellBook",525,0,3500*3,MiscLootShape);
+AddItemHelper(advshield2spellitem,"Adv. Shield 2","SpellBook",526,0,3500*6,MiscLootShape);
+AddItemHelper(advshield3spellitem,"Adv. Shield 3","SpellBook",527,0,3500*9,MiscLootShape);
+AddItemHelper(advshield4spellitem,"Adv. Shield 4","SpellBook",528,0,3500*12,MiscLootShape);
+AddItemHelper(advshield5spellitem,"Adv. Shield 5","SpellBook",529,0,3500*15,MiscLootShape);
+AddItemHelper(massshieldspellitem,"Mass Shield","SpellBook",530,0,3500*25,MiscLootShape);
+
+$StealProtectedItem[healspellitem] = true;
+$StealProtectedItem[advheal1spellitem] = true;
+$StealProtectedItem[advheal2spellitem] = true;
+$StealProtectedItem[advheal3spellitem] = true;
+$StealProtectedItem[advheal4spellitem] = true;
+$StealProtectedItem[advheal5spellitem] = true;
+$StealProtectedItem[advheal6spellitem] = true;
+$StealProtectedItem[godlyhealspellitem] = true;
+$StealProtectedItem[fullhealspellitem] = true;
+$StealProtectedItem[masshealspellitem] = true;
+$StealProtectedItem[massfullhealspellitem] = true;
+$StealProtectedItem[shieldspellitem] = true;
+$StealProtectedItem[advshield1spellitem] = true;
+$StealProtectedItem[advshield2spellitem] = true;
+$StealProtectedItem[advshield3spellitem] = true;
+$StealProtectedItem[advshield4spellitem] = true;
+$StealProtectedItem[advshield5spellitem] = true;
+$StealProtectedItem[massshieldspellitem] = true;
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {
@@ -571,6 +671,22 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
         %baseAmt = getWord(%action,1);
         RestoreMana2(%clientId,%baseAmt,"crushed a "@ RPGItem::getItemNameFromTag(%itemTag));
         RPGItem::decItemCount(%clientId,%itemTag,1);
+        return true;
+    }
+    else if(%type == "CastSpell")
+    {
+        %index = getWord(%action,1);
+        RPGItemAffix::ParseData(%itemTag,"mana pow recov skill delay");
+        echo("MANA: "@$ParseAffix["mana"]);
+        echo("DELAY: "@$ParseAffix["delay"]);
+        echo("RECOV: "@$ParseAffix["recov"]);
+        echo("SKILL: "@$ParseAffix["skill"]);
+        echo("POW: "@$ParseAffix["pow"]);
+        if(BeginCastSpell(%clientId,%index,$ParseAffix["mana"],$ParseAffix["delay"],$ParseAffix["recov"],$ParseAffix["skill"],$ParseAffix["pow"],false))
+        {
+            RPGItem::decItemCount(%clientId,%itemTag,1);
+        }
+        RefreshAll(%clientId,false);
         return true;
     }
     else if(String::getWord(%action,",",0) == "EatFoodItem")

@@ -318,6 +318,7 @@ function Player::UseMana(%clientId,%amt)
     %usem2 = fetchData(%clientId,"UseMana2");
     
     %m1 = fetchData(%clientId,"MANA");
+
     if(%amt <= %m1)
     {
         refreshMana(%clientId,%amt);
@@ -327,7 +328,7 @@ function Player::UseMana(%clientId,%amt)
         setMANA(%clientId, 0);
         if(%usem2)
         {
-            echo(%amt - %m1);
+            //echo(%amt - %m1);
             storeData(%clientId,"MANA2",Cap(%amt - %m1,0,"inf"),"dec");
         }
     }

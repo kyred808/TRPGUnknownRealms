@@ -45,14 +45,14 @@ $ClassGroup[Paladin] = "Warrior";
 $ClassGroup[Ranger] = "Warrior";
 $ClassGroup[Mage] = "Wizard";
 
-$ClassSpawnStuff[Cleric] = "club 1";
+$ClassSpawnStuff[Cleric] = "club 1 clericcatalyst 1 healspellitem 1";
 $ClassSpawnStuff[Druid] = "hatchet 1 knife 1";
-$ClassSpawnStuff[Thief] = "dagger 1";
-$ClassSpawnStuff[Bard] = "knife 1 pickaxe 1";
-$ClassSpawnStuff[Fighter] = "knife 1 broadsword 1 club 1 paddedarmor 1";
-$ClassSpawnStuff[Paladin] = "broadsword 1 club 1 paddedarmor 1";
+$ClassSpawnStuff[Thief] = "dagger 1 paddedarmor 1";
+$ClassSpawnStuff[Bard] = "knife 1 pickaxe_im2 1";
+$ClassSpawnStuff[Fighter] = "knife 1 broadsword 1 club 1 leatherarmor 1";
+$ClassSpawnStuff[Paladin] = "broadsword 1 club 1 leatherarmor 1 acolytecatalyst 1";
 $ClassSpawnStuff[Ranger] = "shortbow 1 hatchet 1 basicarrow 50";
-$ClassSpawnStuff[Mage] = "novicecatalyst 1 knife 1";
+$ClassSpawnStuff[Mage] = "magecatalyst 1 knife 1 sparksspellitem 1";
 
 //===================================
 // REMORTS
