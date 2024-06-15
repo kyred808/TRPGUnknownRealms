@@ -2442,6 +2442,68 @@ function SetStuffString(%stuff,%item,%amount,%mod,%fix)
     $RPGStuffStr::amount = "";
     %stuff = FixStuffString(%stuff);
     //echo(%stuff);
+    
+    %w = Word::FindWord(%stuff,%item);
+    //echo(%w != -1);
+    if(%w < 0)
+    {
+        %ret = %stuff;
+        if(%amount > 0)
+            %ret = %ret @ %item @ " " @ %amount @ " ";
+        
+        $RPGStuffStr::amount = %amount;
+        return %ret;
+    }
+    else
+    {
+        for(%i = 0; (%word = String::getWord(%stuff," ",%i)) != " "; %i+=2)
+        {
+            if(%word == %item)
+            {
+                %curAmt = String::getWord(%stuff," ",%i+1);
+                if(%mod == "inc")
+                    %newAmount = %curAmt + %amount;
+                else if(%mod == "dec")
+                    %newAmount = %curAmt - %amount;
+                else if(%mod == "set")
+                    %newAmount = %amount;
+                
+                if(%fix)
+                    %newAmount = FixDecimals(%newAmount);
+                
+                if(%newAmount > 0)
+                {
+                    %new = %item @" "@ %newAmount @ " ";
+                    $RPGStuffStr::amount = %newAmount;
+                }
+                else
+                {
+                    %new = "";
+                    $RPGStuffStr::amount = 0;
+                }
+                break;
+            }
+        }
+        
+        %begin = Word::getSubWord(%stuff,0,%i);
+        %end = Word::getSubWord(%stuff,%i+2,9999);
+        
+        %ret = %begin @ %new @ %end;
+        
+        return %ret;
+    }
+}
+
+function OldSetStuffString(%stuff,%item,%amount,%mod,%fix)
+{
+    if(%mod == "")
+        %mod = "inc";
+    if(%fix == "")
+        %fix = false;
+    $RPGStuffStr::amount = "";
+    %stuff = FixStuffString(%stuff);
+    //echo(%stuff);
+    
     %w = Word::FindWord(%stuff,%item);
     //echo(%w != -1);
     if(%w < 0)

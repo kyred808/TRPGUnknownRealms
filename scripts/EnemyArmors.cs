@@ -305,7 +305,7 @@ function SetAttributeScaleByEnemyRole(%aiType,%role)
 
 $BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 rKnife/x 1"; // Quartz 4/-300 GobbieBerry 1/-150 GoblinEar 1/-500";
 $BotEquipment[Thief] = 		"CLASS Fighter LVL 5/50 COINS 3/50 LCK 0 rKnife/x 1 Sling/x 1 SmallRock 20/50"; //BlackStatue 1/-100 GoblinEar 1/-500";
-$BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 manaring 1/-2000"; //Turquoise 1/-500 GoblinEar 1/-500";
+$BotEquipment[Wizard] = 	"CLASS Mage LVL 9/50 COINS 5/50 LCK 0 CastingBlade 1 goblincatalyst0/x 1"; //Turquoise 1/-500 GoblinEar 1/-500";
 $BotEquipment[Raider] = 	"CLASS Fighter LVL 11/50 COINS 4/50 LCK 0 rPickAxe/x 1"; //BlackStatue 1/-150 Jade 1/-300 GoblinEar 1/-400";
 
 //The attribute scaling distribution can be set manually, but using the pre-made role ones is faster
@@ -325,7 +325,7 @@ $AIBehavior[Runt,UseBackstab] = true;
 $AIBehavior[Thief,RunOnLowHP] = true;
 
 $BotEquipment[Pup] = 		"CLASS Fighter LVL 10/50 COINS 6/50 LCK 0 rClub/x 1";
-$BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 manaring 1/-2000 rClub/x 1";
+$BotEquipment[Shaman] = 	"CLASS Mage LVL 12/50 COINS 7/50 LCK 0 CastingBlade 1 rClub/x 1 goblincatalyst0/x 1";
 $BotEquipment[Scavenger] = 	"CLASS Fighter LVL 15/50 COINS 8/50 LCK 0 rClub/x 1";
 $BotEquipment[Hunter] = 	"CLASS Ranger LVL 17/50 COINS 9/50 LCK 0 rWarAxe/x 1 Sling/x 1 SmallRock 20/50"; //Topaz 3/-3000";
 
@@ -338,7 +338,7 @@ $AIBehavior[Pup,RunOnLowHP] = true;
 $AIBehavior[Pup,UseBash] = true;
 $AIBehavior[Scavenger,UseBash] = true;
 
-$BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 20/50 LCK 0 CastingBlade 1"; //EnchantedStone 1/-100";
+$BotEquipment[Warlock] = 	"CLASS Mage LVL 16/50 COINS 20/50 LCK 0 CastingBlade 1 goblincatalyst0/x 1"; //EnchantedStone 1/-100";
 $BotEquipment[Berserker] = 	"CLASS Fighter LVL 20/50 COINS 13/50 LCK 0 rBroadSword/x 1"; //Topaz 4/-500";
 $BotEquipment[Ravager] = 	"CLASS Fighter LVL 24/50 COINS 16/50 LCK 0 LeatherArmor0/x 1 rBroadSword/x 1";// BluePotion 3/30 Opal 4/-300";
 $BotEquipment[Slayer] = 	"CLASS Fighter LVL 28/50 COINS 19/50 LCK 0 LeatherArmor0/x 1/-100 rBroadSword/x 1 rShortBow/x 1 BasicArrow 20/50"; // Opal 5/-250";
@@ -357,7 +357,7 @@ $BotEquipment[Ruffian] = 	"CLASS Fighter LVL 22/50 COINS 80/50 LCK 0 rBroadSword
 $BotEquipment[Destroyer] = 	"CLASS Fighter LVL 27/50 COINS 90/50 LCK 0 HideArmor0/x 1 rSpikedClub/x 1 Yuccavera 4/-300";
 $BotEquipment[Halberdier] = 	"CLASS Fighter LVL 31/50 COINS 120/50 LCK 0 rBroadSword/x 1 BluePotion 3/30";
 $BotEquipment[Dreadnought] = 	"CLASS Fighter LVL 36/50 COINS 310/50 LCK 1 rWarAxe/x 1 rShortBow/x 1 BasicArrow 15/75";
-$BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1";
+$BotEquipment[Magi] =		"CLASS Mage LVL 42/50 COINS 400/50 LCK 1 CastingBlade 1 goblincatalyst0/x 1";
 
 SetAttributeScaleByEnemyRole(Ruffian,Attacker);
 SetAttributeScaleByEnemyRole(Destroyer,Tank);
@@ -368,7 +368,7 @@ SetAttributeScaleByEnemyRole(Magi,SpellCaster);
 $BotEquipment[Mauler] = 	"CLASS Fighter LVL 45/50 COINS 200/50 LCK 0 rSpikedClub/x 1 Granite 10/-300";
 $BotEquipment[Thrasher] =	"CLASS Fighter LVL 49/50 COINS 230/50 LCK 0 StuddedLeather/x 1 rLongSword/x 1 Opal 3/-300";
 $BotEquipment[Skeleton] = 	"CLASS Fighter LVL 54/50 COINS 260/50 LCK 0 HideArmor0/x 1/-80 rWarAxe/x 1 Turquoise 4/-300";
-$BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Diamond 1/-3000";
+$BotEquipment[Necromancer] = 	"CLASS Mage LVL 61/50 COINS 290/50 LCK 1 CastingBlade 1 Diamond 1/-3000 goblincatalyst0/x 1";
 $BotEquipment[Spawn] = 		"CLASS Paladin LVL 180/90 COINS 590/50 LCK 2 Gladius/x 1 Diamond 1/-1000 Emerald 1/-700";
 
 SetAttributeScaleByEnemyRole(Mauler,Attacker);
@@ -384,7 +384,7 @@ $BotEquipment[Protector] = 	"CLASS Ranger LVL 50/50 COINS 25/50 LCK 0 ScaleMail/
 $BotEquipment[Peacekeeper] =	"CLASS Ranger LVL 54/50 COINS 28/50 LCK 0 rLongSword/x 1 rShortBow/x 1 SheafArrow 40/50 Jade 5/-500";
 $BotEquipment[Lord] = 		"CLASS Ranger LVL 59/50 COINS 31/50 LCK 1 rSpikedClub/x 1 rLightCrossbow/x 1 LightQuarrel 25/75 Emerald 1/-2800";
 $BotEquipment[Champion] = 	"CLASS Ranger LVL 63/50 COINS 34/50 LCK 1 ScaleMail0/x 1/-20 rLongSword/x 1 rLightCrossbow/x 1 HeavyQuarrel 25/75 Sapphire 3/-1000";
-$BotEquipment[Conjurer] =	"CLASS Mage LVL 70/50 COINS 32/50 LCK 0 CastingBlade 1 Topaz 2/-300";
+$BotEquipment[Conjurer] =	"CLASS Mage LVL 70/50 COINS 32/50 LCK 0 CastingBlade 1 Topaz 2/-300 goblincatalyst0/x 1";
 
 SetAttributeScaleByEnemyRole(Protector,AttackerDex);
 SetAttributeScaleByEnemyRole(Peacekeeper,Attacker);
@@ -425,7 +425,7 @@ SetAttributeScaleByEnemyRole(Goliath,Attacker);
 SetAttributeScaleByEnemyRole(Reaper,SpellCaster);
 
 $BotEquipment[Sloth] = 		"CLASS Paladin LVL 317/50 COINS 115/50 LCK 3 LongSword/x 1 DragonScale 1/-3000 Gold 1/-1000";
-$BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000";
+$BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 1 DragonScale 1/-300 Emerald 1/-1000 goblincatalyst0/x 1";
 
 SetAttributeScaleByEnemyRole(Sloth,Attacker);
 SetAttributeScaleByEnemyRole(Gohort,SpellCaster);

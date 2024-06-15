@@ -30,14 +30,14 @@ function ParseDropTable(%key,%str)
 %fbscroll = "id287_pr(100)_np1_mana2_pow100_recov4_skill50_delay1";
 //Enemy Type Tables
 //Goblins-Mines
-ParseDropTable("Runt","rKnife 1 10|"@%healscroll@" 1 90");
-ParseDropTable("Thief","rKnife 1 5|Sling 1 5|BlackStatue 1 10|"@%fbscroll@" 1 90");
-ParseDropTable("Wizard","Turquoise 1 5");
+ParseDropTable("Runt","rKnife 1 10");//|"@%healscroll@" 1 90");
+ParseDropTable("Thief","rKnife 1 5|Sling 1 5|BlackStatue 1 15");//|"@%fbscroll@" 1 90");
+ParseDropTable("Wizard","Turquoise 1 5|manaring 1 1");
 ParseDropTable("Raider","rPickaxe 1 10|BlackStatue 15|Granite 1 15");
 
 //Gnolles-Mines
 ParseDropTable("Pup","CrystalBluePotion 1 5|BluePotion 1 20|Ruby 1 0.5");
-ParseDropTable("Shaman","EnergyShot 1 20|rClub 1 10|Jade 1 20");
+ParseDropTable("Shaman","EnergyShot 1 20|rClub 1 10|Jade 1 20|manaring 1 2");
 ParseDropTable("Scavenger","rClub 1 5|Sapphire 1 0.5");
 ParseDropTable("Hunter","rWaraxe 1 10|Sling 1 10|Granite [1,3] 15|DeepMineKey 1 0.5");
 
@@ -129,6 +129,7 @@ function DropTable::GenerateLootDrops(%clientId,%lootstr)
                 
                 if($ExcludeAffix[%item] == "")
                 {
+                    echo(%item);
                     if(%p <= $AffixDropRate)
                     {
                         if(!RPGItem::isItemTag(%item))

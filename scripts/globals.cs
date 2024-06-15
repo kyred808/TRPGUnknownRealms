@@ -62,9 +62,10 @@ if($nightDayCycle == "") $nightDayCycle = False;
 
 $WeaponImprovementScaling = 0.25; //25% increase
 
+$GlobalATKMod = 1;
 $WeapAtkDmgScale = 0.2;
 $AttrDmgScale = 1;
-$SkillDmgScale = 0.05;
+$SkillDmgScale = 0.15;
 
 $WeaponImprovementScaleFactor = 0.1;
 
@@ -76,7 +77,7 @@ $MagicEffectScalingINT = 0.5;
 $MagicEffectScalingMND = 0.0;
 $MagicEffectScalingFAI = 0.5;
 
-$SpellDamageSkillScale = 0.05;
+$SpellDamageSkillScale = 0.15;
 
 $RestoreManaCostPer = 100;
 

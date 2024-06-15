@@ -614,6 +614,7 @@ function BaseWeaponImage::onFire(%player,%slot)
                     %clientId = 0;
                 
                 %index = GetBestSpell(%clientId, 1, True);
+                echo("Spell Index: "@ %index @" - "@ $Spell::keyword[%index]);
                 %length = $Spell::LOSrange[%index]-1;
                 if(%length == "")
                     %length = 80;

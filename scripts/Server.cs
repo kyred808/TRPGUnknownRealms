@@ -60,6 +60,21 @@ function DebugTerminal() {
 	Debug::functions();
 }
 
+function RPGItem::ClearVariables()
+{
+    deleteVariables("RPGItem::ItemDef*");
+    deleteVariables("RPGItem::ItemClass*");
+    deleteVariables("RPGItem::ItemDefList*");
+    $RPGItem::ItemCount = 0;
+    $RPGItem::ItemClassCount = 0;
+}
+
+function Realms::clean()
+{
+    deleteVariables("RealmData*");
+}
+
+
 function createServer(%mission, %dedicated)
 {
 	dbecho($dbechoMode2, "createServer(" @ %mission @ ", " @ %dedicated @ ")");
@@ -129,7 +144,8 @@ function createServer(%mission, %dedicated)
 	exec(Trigger);
     exec(Realms);
 	exec(zone);
-	exec(spells);
+	exec(NewRPGItemInterface);
+    exec(RPGItemAffix);
     //exec(NewSpells);
     exec(SpellBook);
 	exec(classes);
@@ -138,8 +154,9 @@ function createServer(%mission, %dedicated)
 	exec(NSound);
 	exec(BaseExpData);
 	exec(BaseDebrisData);
-	exec(BaseProjData);
+	
 	exec(ArmorData);
+    exec(bunnymarmor);
 	exec(Mission);
 	exec(Item);
 	exec(Accessory);
@@ -186,11 +203,14 @@ function createServer(%mission, %dedicated)
     //exec(BeltItemDefs);
     exec(crafting);
     //exec(RPGItemInterface);
-    exec(NewRPGItemInterface);
-    exec(RPGItemAffix);
+    
+    
+    
     exec(RPGItemDefs);
     exec(RPGItemAffixDefs); //Must come after item defs
     exec(CraftingItemDefs); //Must be after RPGItemDefs
+    exec(spells);
+    exec(BaseProjData);
     exec(Farming);
     exec(Abilities);
     exec(SkillBook);

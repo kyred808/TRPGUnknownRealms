@@ -2,15 +2,6 @@
 $RPGItem::ItemClassCount = 0;
 $RPGItem::ItemCount = 0;
 
-function RPGItem::ClearVariables()
-{
-    deleteVariables("RPGItem::ItemDef*");
-    deleteVariables("RPGItem::ItemClass*");
-    deleteVariables("RPGItem::ItemDefList*");
-    $RPGItem::ItemCount = 0;
-    $RPGItem::ItemClassCount = 0;
-}
-
 //Item ID vs ItemTag
 //Item ID
 //The item ID is a number assigned to the item.  I will be used to lookup info on the item.

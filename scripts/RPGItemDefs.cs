@@ -16,9 +16,9 @@ $RPGItem::InvItemLists[0] = $RPGItem::PlayerWeaponList;
 $RPGItem::InvItemLists[1] = "EquippedItemInv";
 $RPGItem::InvItemLists[2] = "AccessoryItemInv";
 $RPGItem::InvItemLists[3] = "PouchItemInv";
-$RPGItem::InvItemLists[4] = "SpellItemInv";
 $RPGItem::InvItemLists[4] = "AmmoItemInv";
 $RPGItem::InvItemLists[5] = "LoreItemInv";
+$RPGItem::InvItemLists[6] = "SpellItemInv";
 
 $RPGItem::StorageItemLists[0] = "WeaponItemStorage";
 $RPGItem::StorageItemLists[1] = "AccessoryItemStorage";
@@ -163,7 +163,7 @@ $UnrustedItem["rspikedclub"] = "spikedclub";
 
 $SkillType[TreeAtk] = $SkillPiercing;
 $AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;
-$AccessoryVar[TreeAtk, $SpecialVar] = "6 75";
+$AccessoryVar[TreeAtk, $SpecialVar] = "6 "@round(75 * $GlobalATKMod)@"";
 $AccessoryVar[TreeAtk, $MiscInfo] = "A Treeatk";
 $AccessoryVar[TreeAtk, $Weight] = 0.1;
 $WeaponRange[TreeAtk] = $minRange + 1;
@@ -378,7 +378,7 @@ RPGItem::AddAccessoryEquipment(OrbOfBreath,"Orb of Breath",$RPGItem::AccessoryCl
 RPGItem::AddWeapon("batteeth","BatTeeth",182,$RPGItem::WeaponTypeMelee,InvisShape);
 $SkillType[batteeth] = $SkillPiercing;
 $AccessoryVar[batteeth, $AccessoryType] = $ShortBladeAccessoryType;
-$AccessoryVar[batteeth, $SpecialVar] = "6 10";
+$AccessoryVar[batteeth, $SpecialVar] = "6 "@round(10 * $GlobalATKMod)@"";
 $AccessoryVar[batteeth, $MiscInfo] = "Teeth of a bat.";
 $AccessoryVar[batteeth, $Weight] = 0.1;
 $WeaponRange[batteeth] = $minRange + 1;
@@ -439,7 +439,7 @@ AddRingItemHelper(harvestring,"Harvest Ring",224,MiscLootShape,0.2,15000,"SKILL"
 AddRingItemHelper(archeryring,"Archery Ring",226,MiscLootShape,0.2,15000,"SKILL"@$SkillArchery@" 20");
 AddRingItemHelper(ringofrest,"REMOVE id228",228,MiscLootShape,0.2,8000);//,$SpecialVarRestStamRegen@" 0.8");
 AddRingItemHelper(ringofidle,"REMOVE id230",230,MiscLootShape,0.2,8000);//,$SpecialVarIdleStamRegen@" 0.2");
-AddRingItemHelper(manaring,"Mana Ring",232,MiscLootShape,0.2,25000,$SpecialVarMana@" 50");
+AddRingItemHelper(manaring,"Mana Ring",232,MiscLootShape,0.2,25000,$SpecialVarMana@" 25");
 
 $AccessoryVar[ringofharm, $MiscInfo] = "Ring that gives <f0>+10 ATK";
 $AccessoryVar[ringofdefense, $MiscInfo] = "Ring that gives <f0>+50 DEF";
@@ -506,7 +506,7 @@ $AccessoryVar[StrawberryCake, $MiscInfo] = "A cake slices of strawberries.  Grea
 
 RPGItem::AddWeapon(morningstar,"Morning Star",280,$RPGItem::WeaponTypeMelee,MaceShape);
 $AccessoryVar[morningstar, $AccessoryType] = $BludgeonAccessoryType;
-$AccessoryVar[morningstar, $SpecialVar] = "6 95";
+$AccessoryVar[morningstar, $SpecialVar] = "6 "@round(95 * $GlobalATKMod)@"";
 $AccessoryVar[morningstar, $Weight] = 6;
 $AccessoryVar[morningstar, $MiscInfo] = "The Morning Star is a rare club that cannot be found in shops";
 $SkillType[morningstar] = $SkillBludgeoning;
@@ -576,6 +576,9 @@ $AccessoryVar[clericcatalyst, $MiscInfo] = "A incant spell casting catalyst for 
 $CatalystType[clericcatalyst] = $CatalystTypeIncant;
 $SkillRestriction[clericcatalyst] = "C Cleric";
 
+AddCatalystAccessoryHelper(goblincatalyst,"Goblin Catalyst",408,MiscLootShape,0.2,15000,$SpecialVarArcaneScale @" 60 "@$SpecialVarIncantScale @" 30 "@ $SpecialVarCataFAIScale @" 1.5 "@$SpecialVarCataMNDScale @" 0.5"@ $SpecialVarManaCostAdj @" -80");
+$CatalystType[goblincatalyst] = $CatalystTypeIncant;
+$SkillRestriction[goblincatalyst] = "B 1";
 //Spell Items
 AddItemHelper("sparksspellitem","Sparks","SpellBook",500,0,500,MiscLootShape);
 AddItemHelper("fireballspellitem","Fireball","SpellBook",501,0,1250,MiscLootShape);
@@ -643,6 +646,8 @@ $StealProtectedItem[advshield3spellitem] = true;
 $StealProtectedItem[advshield4spellitem] = true;
 $StealProtectedItem[advshield5spellitem] = true;
 $StealProtectedItem[massshieldspellitem] = true;
+
+AddArmAccessoryHelper(bunband,"Bunny?",531,MiscLootShape,0.2,150000,"8 6");
 
 function RPGItem::DoUseAction(%clientId,%itemTag,%action)
 {

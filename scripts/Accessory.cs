@@ -609,7 +609,7 @@ function WhatSpecialVars(%thing,%addOn)
 	%tmp = GetAccessoryVar(%thing, $SpecialVar);
     if(%addOn != "")
         %tmp = CombineSpecialVars(%tmp,%addOn);
-        
+    echo("tmp: "@ %tmp);
 	%t = "";
 	for(%i = 0; GetWord(%tmp, %i) != -1; %i+=2)
 	{

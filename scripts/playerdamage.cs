@@ -615,6 +615,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 return;
             }
         }
+        echo("Type: "@ %type);
 		//------------- CREATE DAMAGE VALUE -------------
 		if(%type == $SpellDamageType || %type == $StaffDamageType || %type > $SpellDamageOffset)
 		{
@@ -669,7 +670,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             }
             echo("SC: "@%catascale);
             //echo("SK: "@ CalculatePlayerSkill(%shooterClient, %skilltype) * $SpellDamageSkillScale);
-            %value = round( (%dmg * %cataScale / 100) +  * $SpellDamageSkillScale);
+            %value = round( (%dmg * %cataScale / 100) + %skill * $SpellDamageSkillScale);
 			//%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
             %amr = fetchData(%damagedClient,"BAR");
             %value = Cap(%value - %amr, 1, "inf");
@@ -952,7 +953,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 		//-------------------------------------------------
 		if(%damagedClient == %shooterClient)
 		{
-			if(%type == $SpellDamageType)
+			if(%type == $SpellDamageType || %type > $SpellDamageOffset)
 				%value = %value / 3;
             if(%type == $BladeBoltDamageType)
                 %value = 0;

@@ -778,11 +778,12 @@ function SkillCanUse(%clientId, %thing)
 	%flag = 0;
 	%gc = 0;
 	%gcflag = 0;
+    %isBot = Player::isAiControlled(%clientId);
 	for(%i = 0; GetWord($SkillRestriction[%thing], %i) != -1; %i+=2)
 	{
 		%s = GetWord($SkillRestriction[%thing], %i);
 		%n = GetWord($SkillRestriction[%thing], %i+1);
-
+        
 		if(%s == "L")
 		{
 			if(fetchData(%clientId, "LVL") < %n)
@@ -800,7 +801,7 @@ function SkillCanUse(%clientId, %thing)
 		}
         else if(%s == "B")
         {
-            if(%n == 1 && !Player::isAiControlled(%clientId))
+            if(%n == 1 && !%isBot)
                 %flag = 1;
         }
 		else if(%s == "G")
@@ -823,7 +824,7 @@ function SkillCanUse(%clientId, %thing)
 		}
         else if(%s == "I")
         {
-            if(RPGItem::getItemCount(%clientId,%n) < 1)
+            if(RPGItem::getItemCount(%clientId,%n) < 1 && !%isBot)
                 %flag = 1;
         }
 		else
@@ -832,7 +833,6 @@ function SkillCanUse(%clientId, %thing)
 				%flag = 1;
 		}
 	}
-
 	//First, if there are any class/group restrictions, house restrictions, check these first.
 	if(%gcflag > 0)
 	{

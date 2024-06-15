@@ -360,7 +360,7 @@ RocketData IceStorm
 	collisionRadius = 0.0; 
 	mass = 2.0;
 	damageClass = 1;
-	damageValue = 45/6; 
+	damageValue = 22/6; 
 	damageType = $SpellDamageOffset + $Spell::index[icestorm];
 	explosionRadius = 11.0;
 	kickBackStrength = 0.0;
@@ -391,9 +391,9 @@ GrenadeData Cloud
    elasticity         = 0.1;
 
    damageClass        = 1;       // 0 impact, 1, radius
-   damageValue        = 85;
+   damageValue        = 90;
    damageType         = $SpellDamageOffset + $Spell::index[cloud];
-   explosionRadius    = 10.0;
+   explosionRadius    = 16.5;
    kickBackStrength   = 5.0;
    maxLevelFlightDist = 75;
    totalTime          = 30.0;

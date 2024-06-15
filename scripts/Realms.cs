@@ -25,13 +25,6 @@ $RealmHeight[0] = 0;
 $RealmHeight[1] = -4000;
 $RealmHeight[2] = 4000;
 
-
-
-function Realms::clean()
-{
-    deleteVariables("RealmData*");
-}
-
 function Realms::getRealmGroupName(%realmId)
 {
     return "MissionGroup\\Realm"@%i;

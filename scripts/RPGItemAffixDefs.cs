@@ -106,7 +106,7 @@ RPGItem::addAffixType("dx","DEX",$SpecialVarDEX);
 RPGItem::addAffixType("it","INT",$SpecialVarINT);
 RPGItem::addAffixType("fa","FAI",$SpecialVarFAI);
 
-RPGItem::addAfficType("ba","BARRIER",$SpecialVarBAR);
+RPGItem::addAffixType("ba","BARRIER",$SpecialVarBAR);
 
 $RPGItem::SpecialVarToAffix[$SpecialVarAMR] = "am";
 $RPGItem::SpecialVarToAffix[$SpecialVarMDEF] = "md";

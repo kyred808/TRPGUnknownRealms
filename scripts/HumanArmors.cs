@@ -29,6 +29,8 @@ $ArmorForSpeed[MaleHuman, 2] = MaleHumanArmor9;		//can glide
 $ArmorForSpeed[MaleHuman, 3] = MaleHumanArmor10;	//has jetpack
 $ArmorForSpeed[MaleHuman, 4] = MaleHumanArmor11; // Haste
 $ArmorForSpeed[MaleHuman, 5] = MaleHumanArmor12; // Haste + Paws
+$ArmorForSpeed[MaleHuman, 6] = bunnymarmor1;
+$ArmorForSpeed[FemaleHuman, 6] = bunnymarmor1;
 //-----------------------------------------
 
 $mass[MaleHuman, 0] = 19.5;
