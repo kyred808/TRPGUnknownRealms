@@ -2249,9 +2249,9 @@ ItemData FireChage3Item
 
 ItemImageData ChargeMagicImage
 {
-	shapeFile = "OneWayWallInvis_8x8";
+	shapeFile = "enbolt";
 	mountPoint = 0;
-    //mountOffset = { 0, -0.6, 0 };
+    //mountOffset = { 0, -0.2, -0.3 };
 	//mountRotation = { -1.57 ,0 ,0 };
 	weaponType = 2;
 	//projectileType = ThornStaffBolt;

@@ -295,7 +295,7 @@ ExplosionData FireBombExp
 ExplosionData turretExp
 {
    shapeName = "fusionex.dts";
-   soundId   = NoSound;
+   soundId   = Reflected;
 
    faceCamera = true;
    randomSpin = true;

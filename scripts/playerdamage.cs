@@ -1091,6 +1091,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 {
                     UpdateBonusState(%damagedClient,"AMR -5",$Ability::ticks[$Ability::index[heavystrike]]);
                 }
+                if(round(%value * $TribesDamageToNumericDamage) >= fetchData(%damagedClient,"HP"))
+                {
+                    if(%type == $SpellDamageType && %weapTag == "powerbeam" && %shooterClient.pbeamCharge == 1)
+                    {
+                        %dweap = fetchData(%damagedClient,"EquippedWeapon");
+                        if(%dweap != "")
+                            RPGItem::UnequipItem(%damagedClient,%dweap,false,true);
+                        Player::blowUp(%this);
+                    }
+                }
                 
 				%rhp = refreshHP(%damagedClient, %value);
                 if(%shooterClient != %damagedClient && %type != $SpellDamageType)
@@ -1355,7 +1365,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 					if(%type == $ImpactDamageType && %object.clLastMount != "")
 						%shooterClient = %object.clLastMount;
-
+                    
+                    
+                    
 					Client::onKilled(%damagedClient, %shooterClient, %type);
 				}
 			}

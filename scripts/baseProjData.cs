@@ -360,7 +360,7 @@ RocketData IceStorm
 	collisionRadius = 0.0; 
 	mass = 2.0;
 	damageClass = 1;
-	damageValue = 22/6; 
+	damageValue = 30/7; 
 	damageType = $SpellDamageOffset + $Spell::index[icestorm];
 	explosionRadius = 11.0;
 	kickBackStrength = 0.0;
@@ -440,7 +440,7 @@ LaserData sniperLaser
 	hitName           = "laserhit.dts";
 
 	damageConversion  = 0.0;
-	baseDamageType    = $SpellDamageOffset + $Spell::index[beam];
+	baseDamageType    = $SpellDamageOffset + $Spell::index[beam]; //Will still be damage type 6
 
  	beamTime          = 3.5;
 
@@ -1193,6 +1193,19 @@ BulletData BlueStaffBolt
    rotationPeriod = 1;
 };
 
+LaserData ParticleBeam
+{	laserBitmapName = "warp.bmp";
+	hitName = "shockwave_large.dts";
+	damageConversion = 0.0;	//0.064;	
+	//DamageType = $BulletDamageType;
+	DamageType = $LaserDamageType;	//could make this anything, it will still be type 6..	-plasmatic
+	beamTime = 0.5;
+	lightRange = 20.0;
+	lightColor = { 255, 0.25, 0.25 };
+	detachFromShooter = false;
+	hitSoundId = SoundFlierCrash;
+};
+
 //BulletData FireBallBolt
 //{
 //   bulletShapeName    = "PlasmaBolt.dts";
@@ -1372,22 +1385,22 @@ SeekingMissileData TurretMissile
    soundId = SoundJetHeavy;
 };
 
-LaserData sniperLaser
-{
-	laserBitmapName   = "forcefield.bmp";
-	hitName           = "laserhit.dts";
-
-	damageConversion  = 0.0;
-	baseDamageType    = $LaserDamageType;
-
- 	beamTime          = 1.5;
-
-	lightRange        = 10.0;
-	lightColor        = { 0.2, 0.2, 1.0 };
-
-	detachFromShooter = false;
-	hitSoundId        = NoSound;
-};
+//LaserData sniperLaser
+//{
+//	laserBitmapName   = "forcefield.bmp";
+//	hitName           = "laserhit.dts";
+//
+//	damageConversion  = 0.0;
+//	baseDamageType    = $LaserDamageType;
+//
+// 	beamTime          = 1.5;
+//
+//	lightRange        = 10.0;
+//	lightColor        = { 0.2, 0.2, 1.0 };
+//
+//	detachFromShooter = false;
+//	hitSoundId        = NoSound;
+//};
 
 function SeekingMissile::updateTargetPercentage(%target)
 {

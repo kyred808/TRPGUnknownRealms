@@ -1005,16 +1005,16 @@ function remoteSay(%clientId, %team, %message, %senderName)
         }
 	      if(%w1 == "#spell" || %w1 == "#cast")
 		{
-			if(fetchData(%TrueClientId, "SpellCastStep") == 1)
-				Client::sendMessage(%TrueClientId, 0, "You are already casting a spell!");
-			else if(fetchData(%TrueClientId, "SpellCastStep") == 2)
-				Client::sendMessage(%TrueClientId, 0, "You are still recovering from your last spell cast.");
-			else if(%TrueClientId.sleepMode != "" && %TrueClientId.sleepMode != False)
-				Client::sendMessage(%TrueClientId, $MsgRed, "You can not cast a spell while sleeping or meditating.");
-			else if(IsDead(%TrueClientId))
-				Client::sendMessage(%TrueClientId, $MsgRed, "You can not cast a spell when dead.");
-			else
-			{
+			//if(fetchData(%TrueClientId, "SpellCastStep") == 1)
+			//	Client::sendMessage(%TrueClientId, 0, "You are already casting a spell!");
+			//else if(fetchData(%TrueClientId, "SpellCastStep") == 2)
+			//	Client::sendMessage(%TrueClientId, 0, "You are still recovering from your last spell cast.");
+			//else if(%TrueClientId.sleepMode != "" && %TrueClientId.sleepMode != False)
+			//	Client::sendMessage(%TrueClientId, $MsgRed, "You can not cast a spell while sleeping or meditating.");
+			//else if(IsDead(%TrueClientId))
+			//	Client::sendMessage(%TrueClientId, $MsgRed, "You can not cast a spell when dead.");
+			//else
+			//{
 		            if(%cropped == "")
 					Client::sendMessage(%TrueClientId, 0, "Specify a spell.");
 		            else
@@ -1032,7 +1032,7 @@ function remoteSay(%clientId, %team, %message, %senderName)
 						schedule("delayedban(" @ %TrueClientId @ ");",1.0);
 					}
 				}
-			}
+			//}
 			return;
 		}
         else if(%w1 == "#break")

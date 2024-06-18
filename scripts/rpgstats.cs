@@ -457,7 +457,7 @@ function fetchData(%clientId, %type)
 	{
 		return Cap(floor($ClientData[%clientId, %type]), 0, "inf");
 	}
-	else if(%type == "SlowdownHitFlag")
+	else if(%type == "SlowdownHitFlag" || %type == "SpellMovementFlag")
 	{
 		if(Player::isAiControlled(%clientId))
 			return False;

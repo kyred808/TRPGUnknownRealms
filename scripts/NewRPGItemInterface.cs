@@ -709,6 +709,8 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
                 if(Player::getMountedItem(%clientId,$BaseWeaponSlot) != "BaseWeapon")
                 {
                     Player::mountItem(%clientId,"BaseWeapon",$BaseWeaponSlot);
+                    if(fetchData(%clientId,"EquippedSpell") != "")
+                        storeData(%clientId,"EquippedSpell","");
                 }
                 %curWeapon = fetchData(%clientId,"EquippedWeapon");
                 if(%curWeapon != %itemTag)

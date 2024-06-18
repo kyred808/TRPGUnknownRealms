@@ -126,54 +126,59 @@ function RefreshWeight(%clientId)
 	dbecho($dbechoMode2, "RefreshWeight(" @ %clientId @ ")");
 
 	%player = Client::getOwnedObject(%clientId);
-
-	if(!fetchData(%clientId, "SlowdownHitFlag"))
-	{
-		%weight = fetchData(%clientId, "Weight");
-		
-		%changeweightstep = 5;
-
-		//determine the new armor to use
-		%newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), 0];
-		%spill = %weight - fetchData(%clientId, "MaxWeight");
-
-		%num = floor(%spill / %changeweightstep);
-        
-		if(%num > 0)
-		{
-			//overweight, select appropriate armor
-			for(%i = -1; %i >= -%num; %i--)
-			{
-				if($ArmorForSpeed[fetchData(%clientId, "RACE"), %i] != "")
-					%newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %i];
-				else
-					break;
-			}
-		}
-		else
-		{
-            %mod = "";
-            if(AddBonusStatePoints(%clientId,"SPD") > 0)
-            {
-                %mod = 4;
-            }
-			//when not overweight, the special armor-modifying items come in
-			%x = $GetWeight::ArmorMod;
-            if(%mod == 4)
-            {
-                if(%x == 1)
-                    %x = 5; //Haste + Paws
-                else
-                    %x = 4;
-            }
-            //echo(%x);
-			if(%x > 0)
-				%newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %x];
-		}
-	}
+    
+    if(fetchData(%clientId, "SlowdownHitFlag"))
+    {
+        %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), -5];
+    }
 	else
 	{
-		%newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), -5];
+        if(fetchData(%clientId, "SpellMovementFlag") == "")
+        {
+            %weight = fetchData(%clientId, "Weight");
+            
+            %changeweightstep = 5;
+
+            //determine the new armor to use
+            %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), 0];
+            %spill = %weight - fetchData(%clientId, "MaxWeight");
+
+            %num = floor(%spill / %changeweightstep);
+            
+            if(%num > 0)
+            {
+                //overweight, select appropriate armor
+                for(%i = -1; %i >= -%num; %i--)
+                {
+                    if($ArmorForSpeed[fetchData(%clientId, "RACE"), %i] != "")
+                        %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %i];
+                    else
+                        break;
+                }
+            }
+            else
+            {
+                %mod = "";
+                if(AddBonusStatePoints(%clientId,"SPD") > 0)
+                {
+                    %mod = 4;
+                }
+                //when not overweight, the special armor-modifying items come in
+                %x = $GetWeight::ArmorMod;
+                if(%mod == 4)
+                {
+                    if(%x == 1)
+                        %x = 5; //Haste + Paws
+                    else
+                        %x = 4;
+                }
+                //echo(%x);
+                if(%x > 0)
+                    %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %x];
+            }
+        }
+        else
+            %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), -5];
 	}
 
 	%a = Player::getArmor(%clientId);

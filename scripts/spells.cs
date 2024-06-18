@@ -23,6 +23,13 @@ $SpellTypeCustom = 3;
 $SpellEndSoundLocationPlayer = 0;
 $SpellEndSoundLocationCastPoint = 1;
 
+$CastingMethodInstant = 0;
+$CastingMethodCharge = 1;
+$CastingMethodChannel = 2;
+
+$ChargeCastingTypeSingleShot = 0;
+$ChargeCastingTypeStack = 1;
+
 // Spells
 $SkillRestriction[sparks] = $SkillOffensiveCasting @ " 15 I "@RPGItem::LabelToItemTag("sparksspellitem");
 $SkillRestriction[fireball] = $SkillOffensiveCasting @ " 20 I "@RPGItem::LabelToItemTag("fireballspellitem");
@@ -82,6 +89,7 @@ $SkillRestriction[massshield] = $SkillDefensiveCasting @ " 680 I "@RPGItem::Labe
 
 $Spell::keyword[1] = "firebomb";
 $Spell::index[firebomb] = 1;
+$Spell::castMethod[1] = $CastingMethodInstant;
 $Spell::name[1] = "Fire Bomb From Hell";
 $Spell::description[1] = "Casts an explosive.";
 $Spell::delay[1] = 1.5;
@@ -314,22 +322,27 @@ $SkillType[thorn] = $SkillNatureCasting;
 
 $Spell::keyword[14] = "fireball";
 $Spell::index[fireball] = 14;
+$Spell::castMethod[14] = $CastingMethodCharge;
+$Spell::chargeType[14] = $ChargeCastingTypeSingleShot;
+$Spell::chargeTime[14] = 2;
 $Spell::name[14] = "Fireball";
 $Spell::description[14] = "Casts a fireball.";
 $Spell::delay[14] = 1;
-$Spell::recoveryTime[14] = 5;
+//$Spell::recoveryTime[14] = 5;
 $Spell::radius[14] = 8;
 $Spell::damageValue[14] = "35";
 $Spell::LOSrange[14] = 80;
 $Spell::manaCost[14] = 10;//3;
 $Spell::startSound[14] = ActivateAB;
 $Spell::endSound[14] = LaunchFB;
+$Spell::castSound[14] = LaunchFB;
 $Spell::endSoundLoc[14] = $SpellEndSoundLocationPlayer;
 $Spell::groupListCheck[14] = False;
 $Spell::refVal[14] = 150;
 $Spell::graceDistance[14] = 2;
 $Spell::effectType[14] = $SpellTypeProjectile;
 $Spell::projectileData[14] = Fireball;
+$Spell::botVersion[14] = "botfireball";
 $SkillType[fireball] = $SkillOffensiveCasting;
 
 $Spell::keyword[15] = "icespike";
@@ -354,21 +367,27 @@ $SkillType[icespike] = $SkillOffensiveCasting;
 
 $Spell::keyword[16] = "icestorm";
 $Spell::index[icestorm] = 16;
+$Spell::castMethod[16] = $CastingMethodCharge;
+$Spell::chargeType[16] = $ChargeCastingTypeStack;
+$Spell::chargeTime[16] = 0.5;
+$Spell::chargeStackLimit[16] = 7;
 $Spell::name[16] = "Icestorm";
 $Spell::description[16] = "Casts icestorm.";
 $Spell::delay[16] = 1;
-$Spell::recoveryTime[16] = 20.5;
+$Spell::recoveryTime[16] = 3; //This is per proj cast //20.5;
 $Spell::radius[16] = 11;
 $Spell::damageValue[16] = "45";
 $Spell::LOSrange[16] = 80;
-$Spell::manaCost[16] = 20;
+$Spell::manaCost[16] = 3;
 $Spell::startSound[16] = ImpactTR;
 $Spell::endSound[16] = Reflected;
+$Spell::castSound[16] = ImpactTR;
 $Spell::endSoundLoc[16] = $SpellEndSoundLocationPlayer;
 $Spell::groupListCheck[16] = False;
 $Spell::refVal[16] = 145;
 $Spell::graceDistance[16] = 2;
 $Spell::effectType[16] = $SpellTypeCustom;
+$Spell::botVersion[16] = "boticestorm";
 $SkillType[icestorm] = $SkillOffensiveCasting;
 
 $Spell::keyword[17] = "ironfist";
@@ -907,6 +926,74 @@ $Spell::graceDistance[46] = 15;
 $Spell::effectType[46] = $SpellTypeCustom;
 $SkillType[sparks] = $SkillOffensiveCasting;
 
+$Spell::keyword[47] = "botfireball";
+$Spell::index[botfireball] = 47;
+$Spell::castMethod[47] = $CastingMethodInstant;
+$Spell::name[47] = "Fireball";
+$Spell::description[47] = "Casts a fireball.";
+$Spell::delay[47] = 1;
+$Spell::recoveryTime[47] = 5;
+$Spell::radius[47] = 8;
+$Spell::damageValue[47] = "35";
+$Spell::LOSrange[47] = 80;
+$Spell::manaCost[47] = 10;//3;
+$Spell::startSound[47] = ActivateAB;
+$Spell::endSound[47] = LaunchFB;
+$Spell::endSoundLoc[47] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[47] = False;
+$Spell::refVal[47] = 0;
+$Spell::graceDistance[47] = 2;
+$Spell::effectType[47] = $SpellTypeProjectile;
+$Spell::projectileData[47] = Fireball;
+$SkillType[botfireball] = $SkillOffensiveCasting;
+
+$Spell::keyword[48] = "boticestorm";
+$Spell::index[boticestorm] = 48;
+$Spell::castMethod[48] = $CastingMethodInstant;
+$Spell::name[48] = "Icestorm";
+$Spell::description[48] = "Casts icestorm.";
+$Spell::delay[48] = 1;
+$Spell::recoveryTime[48] = 21;
+$Spell::radius[48] = 11;
+$Spell::damageValue[48] = "45";
+$Spell::LOSrange[48] = 80;
+$Spell::manaCost[48] = 21;
+$Spell::startSound[48] = ImpactTR;
+$Spell::endSound[48] = Reflected;
+$Spell::castSound[48] = ImpactTR;
+$Spell::endSoundLoc[48] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[48] = False;
+$Spell::refVal[48] = 145;
+$Spell::graceDistance[48] = 2;
+$Spell::effectType[48] = $SpellTypeCustom;
+$SkillType[boticestorm] = $SkillOffensiveCasting;
+
+$Spell::keyword[49] = "powerbeam";
+$Spell::index[powerbeam] = 49;
+$Spell::chargePartial[49] = true;
+$Spell::castMethod[49] = $CastingMethodCharge;
+$Spell::chargeType[49] = $ChargeCastingTypeSingleShot;
+$Spell::chargeTime[49] = 10;
+$Spell::name[49] = "Power Beam";
+$Spell::description[49] = "I'mma firin' my lazor!";
+//$Spell::delay[49] = 1;
+$Spell::recoveryTime[49] = 15;
+$Spell::radius[49] = 8;
+$Spell::damageValue[49] = "200";
+$Spell::LOSrange[49] = 1200;
+$Spell::manaCost[49] = 50;//3;
+$Spell::startSound[49] = ActivateAB;
+$Spell::endSound[49] = LaunchFB;
+//$Spell::castSound[49] = LaunchFB;
+$Spell::endSoundLoc[49] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[49] = False;
+$Spell::refVal[49] = -20;
+$Spell::graceDistance[49] = 2;
+$Spell::effectType[49] = $SpellTypeCustom;
+$Spell::botVersion[49] = "beam";
+$Spell::auraEffect[49] = SpellEffectAura1;
+$SkillType[powerbeam] = $SkillOffensiveCasting;
+
 //$Spell::castingType[1] = $CastingTypeArcane
 
 $CastingTypeArcane = "Arcane";
@@ -965,7 +1052,7 @@ function Spell::WhatIsSpell(%clientId,%keyword)
 		%desc = $Spell::name[%si];
         %reqs = WhatSkills(%keyword);
 		%nfo = $Spell::description[%si];
-        //%type = $Spell::type[%si];
+        %type = $Spell::castMethod[%si];
 		%atkinfo = $Spell::damageValue[%si];
 		%sd = $Spell::delay[%si];
 		%sr = $Spell::recoveryTime[%si];
@@ -991,23 +1078,38 @@ function Spell::WhatIsSpell(%clientId,%keyword)
         %effects = TranslateEffectVars($Spell::effectVars[%si]);
 	}
     %typeStr = "";
-    //if(%type == $SpellTypeCantrip)
-    //    %typeStr = "Cantrip";
-    //else if(%type == $SpellTypeMagic)
-    //    %typeStr = "Magic";
+    %cht = $Spell::chargeType[%si];
+    if(%type == $CastingMethodInstant || %type == "")
+        %typeStr = "Cast";
+    else if(%type == $CastingMethodCharge)
+    {
+        %typeStr = "Charge";
+        if(%cht == "" || %cht == $ChargeCastingTypeSingleShot)
+            %typeStr = %typeStr @ " - <f2> Single Shot";
+        if(%cht == $ChargeCastingTypeStack)
+            %typeStr = %typeStr @ " - <f2> Stacking";
+    }
+    else if(%type == $CastingMethodChannel)
+        %typeStr = "Channel";
+    
+    
+    
     %msg = "";
-	%msg = %msg @ "<f1>" @ %desc @" - <f0>\n"; //@%typeStr@"<f1>\n";
+	%msg = %msg @ "<f1>" @ %desc @" - "@ %typeStr@"<f0>\n";
     %msg = %msg @ "\nSkill Type: " @ $SkillDesc[$SkillType[%keyword]];
     if(%atkinfo != "")
         %msg = %msg @ "\nATK: " @ %atkinfo;
     %msg = %msg @ "\nRestrictions: " @ %reqs;
     if(%effects != "")
         %msg = %msg @ "\nBonuses: "@ %effects;
-    %msg = %msg @ "\nDelay: " @ %sd @ " sec";
+    if(%cht == $ChargeCastingTypeStack)
+        %msg = %msg @ "\nMax Stacks: "@ $Spell::chargeStackLimit[%si];
+    if(%type == $CastingMethodCharge)
+        %msg = %msg @ "\nCharge Delay: " @ $Spell::chargeTime[%si] @ " sec";
+    //else if(%type == "" || %type == $CastingMethodInstant)
+    else
+        %msg = %msg @ "\nDelay: " @ %sd @ " sec";
     %msg = %msg @ "\nRecovery: " @ %sr @ " sec";
-    //%msg = %msg @ "\nStamina: "@ %stam;
-    //if(%minStam && (%stam > %minStam))
-    //    %msg = %msg @ "\nMinStam: "@ %minStam;
     if(%bm)
     {
         if(%mc != 0)
@@ -1019,40 +1121,257 @@ function Spell::WhatIsSpell(%clientId,%keyword)
     return %msg;
 }
 
+function CalcSpellManaCost(%clientId,%index)
+{
+    %manacost = $Spell::manaCost[%index];
+    %mc = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarManaCostAdj);
+    if(%mc != 0)
+        %manacost += round(%manacost * (1+(%mc/100)) - %manacost);
+    return %manacost;
+}
+
 function Player::CastSpell(%clientId,%keyword)
 {
     %w1 = GetWord(%keyword, 0);
 	%w2 = String::getSubStr(%keyword, String::len(%w1)+1, 99999);
     
     %idx = $Spell::index[%w1];
-    
     if(%idx != "")
     {
-        if(SkillCanUse(%clientId, $Spell::keyword[%idx]))
+        if(Player::isAIControlled(%clientId) && $Spell::botVersion[%idx] != "")
         {
-            %skill = $SkillType[$Spell::keyword[%idx]];
-            if($Spell::castingType[%idx] == "")
-                %castType = $DefaultCastingType[%skill];
-            else
-                %castType = $Spell::castingType[%idx];
-                
-            %scaling = fetchData(%clientId,$CastingTypeToFetch[%castType]);
-            
-            %manacost = $Spell::manaCost[%idx];
-            %mc = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarManaCostAdj);
-
-            if(%mc != 0)
-                %manacost += round(%manacost * (1+(%mc/100)) - %manacost); 
-            
-            return BeginCastSpell(%clientId,%idx,%manacost,$Spell::delay[%idx],$Spell::recoveryTime[%idx],CalculatePlayerSkill(%clientId, %skill),%scaling,true);
+            %w1 = $Spell::botVersion[%idx];
+            %idx = $Spell::index[%w1];
         }
-		else
-            Client::sendMessage(%clientId, $MsgWhite, "You can't cast this spell because you lack the necessary skills or don't know this spell.");
-	}
+        %scs = fetchData(%clientId,"SpellCastStep");
+        
+        if(%clientId.sleepMode != "" && %clientId.sleepMode != False)
+        {
+            Client::sendMessage(%clientId, $MsgRed, "You can not cast a spell while sleeping or meditating.");
+            return false;
+        }
+        else if(IsDead(%clientId))
+        {
+            Client::sendMessage(%clientId, $MsgRed, "You can not cast a spell when dead.");
+            return false;
+        }
+        if(%scs == "")
+        {
+            if(SkillCanUse(%clientId, $Spell::keyword[%idx]))
+            {
+                %skill = $SkillType[$Spell::keyword[%idx]];
+                if($Spell::castingType[%idx] == "")
+                    %castType = $DefaultCastingType[%skill];
+                else
+                    %castType = $Spell::castingType[%idx];
+                    
+                %scaling = fetchData(%clientId,$CastingTypeToFetch[%castType]);
+                %castMethod = $Spell::castMethod[%idx];
+                
+                if(%castMethod == "")
+                    %castMethod = $CastingMethodInstant;
+                if(%castMethod == $CastingMethodInstant)
+                {
+                
+                    %manacost = CalcSpellManaCost(%clientId,%idx); //$Spell::manaCost[%idx];
+                    //%mc = RPGItem::GetPlayerEquipStats(%clientId,$SpecialVarManaCostAdj);
+
+                    //if(%mc != 0)
+                    //    %manacost += round(%manacost * (1+(%mc/100)) - %manacost);
+                    
+                    return BeginCastSpell(%clientId,%idx,%manacost,$Spell::delay[%idx],$Spell::recoveryTime[%idx],CalculatePlayerSkill(%clientId, %skill),%scaling,true);
+                }
+                else if(%castMethod == $CastingMethodCharge)
+                {
+                    %weap = fetchData(%clientId,"EquippedWeapon");
+                    if(%weap != "")
+                    {
+                        RPGItem::unequipItem(%clientId,%weap,false);
+                    }
+                    
+                    Player::unmountItem(%clientId,$BaseWeaponSlot);
+                    Player::mountItem(%clientId,ChargeMagicItem,$BaseWeaponSlot);
+                    storeData(%clientId,"EquippedSpell",%idx);
+                    bottomprint(%clientId,"<jc><f1>"@$Spell::name[%idx]@"<f0> - Hold Fire to Charge",5);
+                    return true;
+                }
+            
+            }
+            else
+                Client::sendMessage(%clientId, $MsgWhite, "You can't cast this spell because you lack the necessary skills or don't know this spell.");
+        }
+        else
+        {
+            if(%scs == 1)
+                Client::sendMessage(%clientId, 0, "You are already casting a spell!");
+            else if(%scs == 2)
+                Client::sendMessage(%clientId, 0, "You are still recovering from your last spell cast.");
+            return false;
+        }
+    }
     else
         Client::sendMessage(%clientId, $MsgWhite, "This spell seems unfamiliar to you.");
         
     return false;
+}
+
+function Spell::CastChargedMagic(%clientId,%index,%timeDiff,%stack)
+{
+    %chargeTime = $Spell::chargeTime[%index];
+    %casterPos = Gamebase::getPosition(%clientId);
+    if(%timeDiff >= %chargeTime)
+    {
+        if($Spell::manaCost[%index] > 0 && $Spell::chargeType[%index] != $ChargeCastingTypeStack)
+        {
+            %mcost = CalcSpellManaCost(%clientId,%index);
+            if(Player::GetMana(%clientId) >= %mcost)
+                Player::UseMana(%clientId,%mcost);
+            else
+            {
+                storeData(%clientId, "SpellCastStep", "");
+                Client::sendMessage(%clientId, $MsgRed, "You lost too much mana before you could finish the spell.~wUnravelAM.wav");
+                return false;
+            }
+        }
+        if($Spell::castSound[%index] != "")
+            playSound($Spell::castSound[%index],%casterPos);
+    }
+    else if($Spell::chargeType[%index] == $ChargeCastingTypeStack && %stack > 0)
+    {
+        if($Spell::castSound[%index] != "")
+            playSound($Spell::castSound[%index],%casterPos);
+    }
+    
+    if($Spell::chargeType[%index] == $ChargeCastingTypeSingleShot && $Spell::chargePartial[%index] == "" && %timeDiff < %chargeTime)
+    {
+        storeData(%clientId, "SpellCastStep", "");
+        return;
+    }
+    %player = Client::getOwnedObject(%clientId);
+    
+    if($Spell::effectType[%index] == $SpellTypeProjectile)
+    {
+        %trans = GameBase::getEyeTransform(%clientId);
+        %vel = Item::getVelocity(%clientId);
+        %eyePos = Word::getSubWord(%trans,9,3);
+        %dir = Word::getSubWord(%trans,3,3);
+        
+        // This gets around close range collision issues
+        %offsetProj = Vector::add(%eyePos,ScaleVector(%dir,1));
+        Projectile::spawnProjectile($Spell::projectileData[%index],Word::getSubWord(%trans,0,9) @" "@ %offsetProj,%player,%vel); //%trans,%player,%vel);
+        %overrideEndSound = False;
+		%returnFlag = True;
+        %recoveryTime = $Spell::recoveryTime[%index];
+    }
+
+    if($Spell::effectType[%index] == $SpellTypeCustom)
+    {
+        if(%index == $Spell::index[icestorm])
+        {
+            if(%stack > 0)
+            {
+                for(%i = 0; %i < %stack; %i++)
+                {
+                    schedule("%trans = GameBase::getMuzzleTransform(" @ %clientId @ "); Projectile::spawnProjectile(\"IceStorm\", %trans, \"" @ %player @ "\", \"" @ %vel @ "\");", %i / 7, %player);
+                    
+                }
+                
+                %returnFlag = true;
+                %recoveryTime = $Spell::recoveryTime[%index] * %stack;
+            }
+            else
+                %returnFlag = false;
+        }
+        else if(%index == $Spell::index[powerbeam])
+        {
+            if(%timediff < %chargeTime * 0.4)
+            {
+                playSound(SoundFireLaser, GameBase::getPosition(%clientId));
+                %proj = "sniperLaser";
+                %kick = false;
+            }
+            if(%timediff >= %chargeTime * 0.4)
+            {
+                playSound(SoundPlasmaTurretFire, GameBase::getPosition(%clientId));
+                %proj = "sniperLaser";
+                %kick = false;
+            }
+            if(%timediff >= %chargeTime)
+            {
+                playSound(explosion3, GameBase::getPosition(%clientId));
+                %proj = "ParticleBeam";
+                %bomb = true;
+                %kick = true;
+            }
+            //laser beam
+            %player = Client::getOwnedObject(%clientId);
+            %los = Gamebase::getLOSInfo(%player,$Spell::LOSrange[%index]);
+            if(%los)
+            {
+                if(getObjectType($los::object) == "Player")
+                    %id = Player::getClient($los::object);
+            }
+            %trans = GameBase::getMuzzleTransform(%clientId);
+            %p = Projectile::spawnProjectile(%proj, %trans, %player, "0 0 0", 1.0);
+            if(%kick)
+            {
+                %mom1 = Vector::getFromRot( GameBase::getRotation(%clientId), -80, 1 );
+                Player::applyImpulse(%clientId, %mom1);
+            }
+            if(%bomb && %los)
+            {
+                CreateAndDetBomb(%clientId, "Bomb2", $los::position, false, %index);
+            }
+            
+            %chargePct = Cap(%timediff/%chargeTime,0,1);
+            %clientId.pbeamCharge = %chargePct;
+            %r = $Spell::damageValue[%index]*%chargePct;
+        
+            if(%id != "")
+            {
+                SpellDamage(%clientId, %id, %r, %index);
+                %mom2 = Vector::getFromRot( GameBase::getRotation(%clientId), 50, 1 );
+                Player::applyImpulse(%id, %mom2);
+            }
+
+            //%castPos = GameBase::getPosition(%clientId);
+            %recoveryTime = $Spell::recoveryTime[%index]*%chargePct;
+            %returnFlag = true;
+            
+        }
+    }
+    Player::setAnimation(%clientId, 39);
+    if(%recoveryTime != "")
+    {
+        storeData(%clientId, "SpellCastStep", 2);
+        schedule("storeData(" @ %clientId @ ", \"SpellCastStep\", \"\");sendDoneRecovMsg(" @ %clientId @ ");", %recoveryTime);
+    }
+    else
+        storeData(%clientId, "SpellCastStep", "");
+    //==================================================================
+
+	%skilltype = $SkillType[$Spell::keyword[%index]];
+	if(%returnFlag == True)
+	{
+        //if(%useSkill)
+        //{
+            if(%skilltype == $SkillNatureCasting || %skilltype == $SkillDefensiveCasting)
+                UseSkill(%clientId, %skilltype, True, True);
+            UseSkill(%clientId, $SkillEnergy, True, True);
+        //}
+		return True;
+	}
+	else if(%returnFlag == False)
+	{
+        //if(%useSkill)
+        //{
+            UseSkill(%clientId, %skilltype, False, True);
+            UseSkill(%clientId, $SkillEnergy, False, True);
+        //}
+		return False;
+	}
+    
+    
 }
 
 function BeginCastSpell(%clientId,%index,%mana,%delay,%recov,%skillLvl,%castingStat,%useSkill)
@@ -1599,7 +1918,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,%castSt
         //    }
         //}
         
-        if(%index == 16)
+        if(%index == 48) //Bot icestorm
         {
             for(%i = 0; %i <= 6; %i++)
             {

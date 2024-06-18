@@ -579,6 +579,12 @@ $SkillRestriction[clericcatalyst] = "C Cleric";
 AddCatalystAccessoryHelper(goblincatalyst,"Goblin Catalyst",408,MiscLootShape,0.2,15000,$SpecialVarArcaneScale @" 60 "@$SpecialVarIncantScale @" 30 "@ $SpecialVarCataFAIScale @" 1.5 "@$SpecialVarCataMNDScale @" 0.5"@ $SpecialVarManaCostAdj @" -80");
 $CatalystType[goblincatalyst] = $CatalystTypeIncant;
 $SkillRestriction[goblincatalyst] = "B 1";
+
+AddCatalystAccessoryHelper(arcanistswand,"Arcanist's Wand",410,MiscLootShape,0.2,138000,$SpecialVarArcaneScale @" 120 "@ $SpecialVarCataINTScale @" 1.8 "@$SpecialVarCataMNDScale @" 1.0");
+$AccessoryVar[arcanistswand, $MiscInfo] = "A wand used by established mages.";
+
+$CatalystType[arcanistswand] = $CatalystTypeArcane;
+$SkillRestriction[arcanistswand] = $SkillOffensiveCasting @ " 250";
 //Spell Items
 AddItemHelper("sparksspellitem","Sparks","SpellBook",500,0,500,MiscLootShape);
 AddItemHelper("fireballspellitem","Fireball","SpellBook",501,0,1250,MiscLootShape);

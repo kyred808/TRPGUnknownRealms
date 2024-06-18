@@ -352,11 +352,11 @@ SoundData SoundHFootLSnow
 //   profile = Profile3dNear;
 //};
 
-//SoundData SoundPlasmaTurretFire
-//{
-//   wavFileName = "turretFire4.wav";
-//   profile = Profile3dMedium;
-//};
+SoundData SoundPlasmaTurretFire
+{
+   wavFileName = "turretFire4.wav";
+   profile = Profile3dMedium;
+};
 
 //SoundData SoundPlasmaTurretTurn
 //{
@@ -409,11 +409,11 @@ SoundData SoundHFootLSnow
 //   profile = Profile3dNear;
 //};
 
-//SoundData SoundMissileTurretFire
-//{
-//   wavFileName = "turretFire1.wav";
-//   profile = Profile3dMedium;
-//};
+SoundData SoundMissileTurretFire
+{
+   wavFileName = "turretFire1.wav";
+   profile = Profile3dMedium;
+};
 
 //
 //SoundData SoundMortarTurretOn
@@ -1046,11 +1046,11 @@ SoundData dimensionRiftExplosionLoopB
 //   profile = Profile3dMediumLoop;
 //};
 
-//SoundData SoundFlierCrash
-//{
-//   wavFileName = "crash.wav";
-//   profile = Profile3dMedium;
-//};
+SoundData SoundFlierCrash
+{
+   wavFileName = "crash.wav";
+   profile = Profile3dMedium;
+};
 
 //SoundData SoundTankMount
 //{

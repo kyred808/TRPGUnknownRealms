@@ -5108,7 +5108,7 @@ instant SimGroup "MissionGroup" {
                 instant SimGroup "NSAY2 Thank you, here is your reward.";
                 instant SimGroup "CSAY I do not need your help. Or perhaps you are looking to BUY?";
                 instant SimGroup "LSAY I do not need your help. Or perhaps you are looking to BUY?";
-                instant SimGroup "SHOP id86 id88 id500 id501 id502 id503 id504 id505 id506 id507 id508 id509 id510 id511 id512";
+                instant SimGroup "SHOP id86 id88 id500 id501 id502 id503 id504 id505 id506 id507 id508 id509 id510 id511 id512 id410";
                 instant Marker "Marker1" {
                     dataBlock = "PathMarker";
                     name = "";

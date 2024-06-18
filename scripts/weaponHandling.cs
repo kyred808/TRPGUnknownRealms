@@ -179,7 +179,17 @@ function SelectNextWeapon(%clientId,%idx,%len,%dir)
 function remoteNextWeapon(%clientId)
 {
 	dbecho($dbechoMode, "remoteNextWeapon(" @ %clientId @ ")");
-
+    //echo(Player::getMountedItem(%clientId,$BaseWeaponSlot) );
+    if(Player::getMountedItem(%clientId,$BaseWeaponSlot) == "ChargeMagicItem")
+    {
+        if(fetchData(%clientId, "SpellCastStep") == 1)
+        {
+            Client::sendMessage(%clientId,0,"You can't equip weapons while charging as spell!");
+            return;
+        }
+    }
+    //%mm = Player::getMountedItem(%player,$WeaponSlot);
+    
     %itemList = RPGItem::getItemList(%clientId,$RPGItem::PlayerWeaponList);
     %itemTag = fetchData(%clientId,"EquippedWeapon");
     
@@ -262,7 +272,14 @@ function remoteNextWeapon(%clientId)
 function remotePrevWeapon(%clientId)
 {
 	dbecho($dbechoMode, "remotePrevWeapon(" @ %clientId @ ")");
-
+    if(Player::getMountedItem(%clientId,$BaseWeaponSlot) == "ChargeMagicItem")
+    {
+        if(fetchData(%clientId, "SpellCastStep") == 1)
+        {
+            Client::sendMessage(%clientId,0,"You can't equip weapons while charging as spell!");
+            return;
+        }
+    }
     %itemList = RPGItem::getItemList(%clientId,$RPGItem::PlayerWeaponList);
     %itemTag = fetchData(%clientId,"EquippedWeapon");
     
@@ -323,7 +340,14 @@ function remotePrevWeapon(%clientId)
 function selectValidWeapon(%clientId)
 {
 	dbecho($dbechoMode, "selectValidWeapon(" @ %clientId @ ")");
-
+    if(Player::getMountedItem(%clientId,$BaseWeaponSlot) == "ChargeMagicItem")
+    {
+        if(fetchData(%clientId, "SpellCastStep") == 1)
+        {
+            Client::sendMessage(%clientId,0,"You can't equip weapons while charging as spell!");
+            return;
+        }
+    }
     %itemList = RPGItem::getItemList(%clientId,$RPGItem::PlayerWeaponList);
     for(%i = 0; (%itemTag = getWord(%itemList,%i)) != -1; %i+=2)
     {
@@ -648,47 +672,112 @@ function BaseWeaponImage::onFire(%player,%slot)
 
 function ChargeMagicImage::onActivate(%player,%slot)
 {
-    //echo("ChargeMagicImage::onActivate("@%player@","@%slot@")");
-    %player.chargeStartTime = getSimTime();
-    %clientId = Player::getClient(%player);
-    %i = fetchData(%clientId,"EquippedSpell");
-    playSound($Spell::chargeSound[%i], GameBase::getPosition(%clientId));
-    //%player.chargeStage = -1;
-    %ct = $Spell::chargeTime[%i];
-    remoteEval(%clientId,"rpgbarhud",%ct,1,0,"||",4,$Spell::name[%i]);
+    if(!%player.lockActivate) //This will be set for 1 tenth of a second. Otherwise when you change armors due to the slowdown, the weapon reactivates and deactivates constantly.
+    {
+        echo("ChargeMagicImage::onActivate("@%player@","@%slot@")");
+        %player.chargeStartTime = getSimTime();
+        %clientId = Player::getClient(%player);
+        %index = fetchData(%clientId,"EquippedSpell");
+        %player.castBlock = false;
+        //playSound($Spell::chargeSound[%i], GameBase::getPosition(%clientId));
+        //%player.chargeStage = -1;
+        
+        %clientId.isAtRestCounter = 0;
+        if(%clientId.isAtRest)
+        {
+            //Stop HP Regen
+            %clientId.isAtRest = 0;
+            refreshHPREGEN(%clientId);
+        }
+
+        %scs = fetchData(%clientId,"SpellCastStep");
+        if(%scs == "")
+        {
+            if(Player::GetMana(%clientId) >= CalcSpellManaCost(%clientId,%index))
+            {
+                %ct = $Spell::chargeTime[%index];
+                %clientId.spellChargeStack = 0;
+                storeData(%clientId, "SpellCastStep", 1);
+                storeData(%clientId, "SpellMovementFlag", true);
+                %player.lockActivate = true;
+                if($Spell::auraEffect[%index] != "")
+                    Player::mountItem(%player,$Spell::auraEffect[%index],$SpellAuraSlot);
+                RefreshWeight(%clientId);
+                //schedule("RefreshWeight("@%clientId@");",1);
+                //echo("TEST");
+                remoteEval(%clientId,"rpgbarhud",%ct,1,0,"||",4,$Spell::name[%index]);
+            }
+            else
+            {
+                %player.castBlock = true;
+                Client::sendMessage(%clientId, $MsgWhite, "Insufficient mana to cast this spell.");
+            }
+        }
+        else if(%scs == 1)
+        {
+            %player.castBlock = true;
+            Client::sendMessage(%clientId, $MsgWhite, "You are already casting a spell!");
+            return;
+        }
+        else if(%scs == 2)
+        {
+            %player.castBlock = true;
+            Client::sendMessage(%clientId, 0, "You are still recovering from your last spell cast.");
+            return;
+        }
+    }
 }
 
 function ChargeMagicImage::onDeactivate(%player,%slot)
 {
-    //echo("ChargeMagicImage::onDeactivate("@%player@","@%slot@")");
-    //%trans = Gamebase::getMuzzleTransform(%player);
-    //%vel = Item::getVelocity(%player);
-    %clientId = Player::getClient(%player);
-    %spell = fetchData(%clientId,"EquippedSpell");
-    %timeDiff = getSimTime()-%player.chargeStartTime;
-    Spell::CastChargedMagic(%clientId,%spell,%timeDiff);
-    
-    if(%timeDiff < $Spell::chargeTime[%spell])
-        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"CANCELLED");
-    //if(%player.chargeStage == 0)
-    //{
-    //    Projectile::spawnProjectile(Firebolt,%trans,%player,%vel);
-    //    playSound(HitPawnDT,Gamebase::getPosition(%player));
-    //}
-    //else if(%player.chargeStage == 1)
-    //{
-    //    Projectile::spawnProjectile(Fireball,%trans,%player,%vel);
-    //    playSound(ActivateAB,Gamebase::getPosition(%player));
-    //}
-    //else if(%player.chargeStage == 2)
-    //{
-    //    Projectile::spawnProjectile(Melt,%trans,%player,%vel);
-    //    playSound(LaunchFB,Gamebase::getPosition(%player));
-    //}
-    
-    //Player::unmountItem(%player,7);
-    %player.chargeStartTime = "";
-    //%player.chargeStage = "";
+    if(!%player.lockActivate)
+    {
+        echo("ChargeMagicImage::onDeactivate("@%player@","@%slot@")");
+        //%trans = Gamebase::getMuzzleTransform(%player);
+        //%vel = Item::getVelocity(%player);
+        %clientId = Player::getClient(%player);
+        storeData(%clientId, "SpellMovementFlag", "");
+        RefreshWeight(%clientId);
+        %player.lockActivate = false;
+        echo("Cast Blk: "@ %player.castBlock);
+        if(!%player.castBlock)
+        {
+            %clientId.isAtRestCounter = 0;
+            %index = fetchData(%clientId,"EquippedSpell");
+            %timeDiff = getSimTime()-%player.chargeStartTime;
+            %chargeType = $Spell::chargeType[%index];
+            if(%chargeType == "")
+                %chargeType = $ChargeCastingTypeSingleShot;
+            
+            %stack = 1;
+            if(%chargeType == $ChargeCastingTypeStack)
+            {
+                %stack = %clientId.spellChargeStack;
+                %clientId.spellChargeStack = 0;
+            }
+            
+            if($Spell::auraEffect[%index] != "")
+                Player::unmountItem(%player,$SpellAuraSlot);
+            
+            Spell::CastChargedMagic(%clientId,%index,%timeDiff,%stack);
+            
+            if(%timeDiff < $Spell::chargeTime[%index])
+            {
+                if(%chargeType != $ChargeCastingTypeStack)
+                    remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"CANCELLED");
+                else
+                {
+                    if(%stack > 0)
+                        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,$Spell::name[%index] @" "@ %stack);
+                    else
+                        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"CANCELLED");
+                }
+            }
+            //storeData(%clientId, "SpellMovementFlag", "");
+            //RefreshWeight(%clientId);
+            %player.chargeStartTime = "";
+        }
+    }
 }
 
 $Charge::spacerLen = 20;
@@ -696,44 +785,60 @@ $Charge::spacerLen = 20;
 function ChargeMagicImage::onUpdateFire(%player,%slot)
 {
     //echo("ChargeMagicImage::onUpdateFire("@%player@","@%slot@")");
-    
-    %clientId = Player::getClient(%player);
-    %time = getSimTime();
-    %timeDiff = %time - %player.chargeStartTime;
-    %spell = fetchData(%clientId,"EquippedSpell");
-    
-    if(%timeDiff >= $Spell::chargeTime[%spell])
+    if(!%player.castBlock)
     {
-        if(%time >= $lastAttackTime[%clientId] + 3)
+        %clientId = Player::getClient(%player);
+        %time = getSimTime();
+        %timeDiff = %time - %player.chargeStartTime;
+        %index = fetchData(%clientId,"EquippedSpell");
+        if(%timeDiff > 0.1)
+            %player.lockActivate = false;
+        if(%timeDiff >= $Spell::chargeTime[%index])
         {
-            $lastAttackTime[%clientId] = %time;
-            remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"You are ready to cast!");
+            %chargeType = $Spell::chargeType[%index];
+            if(%chargeType == "")
+                %chargeType = $ChargeCastingTypeSingleShot;
+            if( %chargeType == $ChargeCastingTypeSingleShot )
+            {
+                if(%time >= $lastAttackTime[%clientId] + 3)
+                {
+                    $lastAttackTime[%clientId] = %time;
+                    remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"You are ready to cast!");
+                }
+            }
+            else if(%chargeType == $ChargeCastingTypeStack)
+            {
+                %mcost = CalcSpellManaCost(%clientId,%index);
+                //echo("Mana: "@Player::getMana(%clientId) @" "@ %mcost);
+                if( %clientId.spellChargeStack < $Spell::chargeStackLimit[%index] && Player::getMana(%clientId) >= %mcost)
+                {
+                    %clientId.spellChargeStack += 1;
+                    
+                    Player::UseMana(%clientId,%mcost);
+                    
+                    if(Player::getMana(%clientId) >= %mcost)
+                    {
+                        if(%clientId.spellChargeStack != $Spell::chargeStackLimit[%index])
+                            %player.chargeStartTime = %time;
+                        remoteEval(%clientId,"rpgbarhud",$Spell::chargeTime[%index],1,0,"||",4,$Spell::name[%index] @" "@ %clientId.spellChargeStack);
+                    }
+                    else
+                        Client::sendMessage(%clientId,0,"Not enough mana to store another charge.");
+                }
+                else
+                {
+                    //if(%clientId.spellChargeStack == $Spell::chargeStackLimit[%index])
+                    //    %clientId.spellChargeStack+=1;
+                    if(%time >= $lastAttackTime[%clientId] + 3)
+                    {
+                        $lastAttackTime[%clientId] = %time;
+                        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,$Spell::name[%index] @" "@ %clientId.spellChargeStack);
+                    }
+                }
+            }
+            
         }
     }
-    
-    //if(%time >= $lastAttackTime[%clientId] + 0.2) //Spell update rate
-    //{
-    //    
-    //    
-    //    %chargeTime = $Spell::chargeTime[%spell];
-    //    if(%timeDiff < %chargeTime)
-    //    {
-    //        //%msg = ChargeMagic::CreateBottomPrintMsg(%clientId,%spell,%timeDiff);
-    //    }
-    //    else
-    //    {
-    //        
-    //        remoteEval(%clientId,"rpgbarhud",0,1,0,"||",4,"You are ready to cast!");
-    //        //if(%player.flash)
-    //        //    %msg = "<jc>Charge:\n<f1>[====================]\n<f0>You are ready to cast!";
-    //        //else
-    //        //    %msg = "<jc>Charge:\n<f1>[====================]\n<f1>You are ready to cast!";
-    //        //%player.flash = !%player.flash;
-    //    }
-    //    
-    //    bottomprint(%clientId,%msg,0.4);
-    //}
-    //%player.chargeLastUpdate = getSimTime();
 }
 
 function ChargeMagic::CreateBottomPrintMsg(%clientId,%spellIndex,%timeDiff)
