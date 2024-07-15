@@ -116,7 +116,7 @@ function RPGStats::getExtraAttributeValue(%clientId,%attr)
 
 function ScaleEnemyAttributesToLevel(%aiId)
 {
-    %botType = fetchData(%aiId,"BotLoadoutTag"); //clipTrailingNumbers(fetchData(%aiId,"BotInfoAiName"));
+    %botType = fetchData(%aiId,"BotLoadoutTag");
     %class = fetchData(%aiId,"CLASS");
     %ap = $APgainedPerLevel * (fetchData(%aiId,"LVL") - 1);
     %apRemaining = %ap;
@@ -139,10 +139,6 @@ function ScaleEnemyAttributesToLevel(%aiId)
         storeData(%aiId,%dumpStat,1,"inc");
     }
     
-    //Dumping method
-    //%dumpStat = $RPGStats::Attributes[getIntRandomMT(0,$RPGStats::AttributeCount-1)];
-    //storeData(%aiId,%dumpStat,%apRemaining,"inc");
-    //echo("Remainder "@ %apRemaining);
 }
 
 function RPGStats::DisplayAttributeInfo(%clientId,%attrId)
@@ -190,19 +186,19 @@ function CalcPlayerAttribute(%clientId,%type)
 function CalcHPfromVIT(%vit)
 {
     %hp = 0;
-    if(%vit <= 15)
+    if(%vit <= 20)
     {
         %hp = %vit * 8;
     }
     else if(%vit <= 40)
     {
-        %hp = 15*8; //15 * 8
-        %remain = %vit - 15;
+        %hp = 20*8; //15 * 8
+        %remain = %vit - 20;
         %hp += %remain * 6;
     }
     else
     {
-        %hp = 15*8 + 40*6 + (%vit - 40)*4; //15*8 + (40-15)*4 + (%vit - 40)*2
+        %hp = 20*8 + 40*6 + (%vit - 40)*4; //15*8 + (40-15)*4 + (%vit - 40)*2
     }
     
     return %hp;
@@ -536,6 +532,43 @@ function storeData(%clientId, %type, %amt, %special)
 	{
 		setHP(%clientId, %amt);
 	}
+    else if(%type == "DEX" || %type == "EquipStat"@$SpecialVarDEX) //Special handling for DEX
+    {
+        %prevDex = $ClientData[%clientId, "DEX"] + $ClientData[%clientId, "EquipStat"@$SpecialVarDEX];
+        if(%special == "inc")
+			$ClientData[%clientId, %type] += %amt;
+		else if(%special == "dec")
+			$ClientData[%clientId, %type] -= %amt;
+		else if(%special == "strinc")
+			$ClientData[%clientId, %type] = $ClientData[%clientId, %type] @ %amt;
+		else
+			$ClientData[%clientId, %type] = %amt;
+
+		if(GetWord(%special, 1) == "cap")
+			$ClientData[%clientId, %type] = Cap($ClientData[%clientId, %type], GetWord(%special, 2), GetWord(%special, 3));
+        %newDex = $ClientData[%clientId, "DEX"] + $ClientData[%clientId, "EquipStat"@$SpecialVarDEX];
+        %list = GetAccessoryList(%clientId, 16); //All equipped items with DEX minimums
+        for(%i = 0; (%equip = getWord(%list,%i)) != -1; %i++)
+        {
+            %lbl = RPGItem::ItemTagToLabel(%equip);
+            %minDex = GetStuffStringCount($SkillRestriction[getCroppedItem(%lbl)],$MinArmorDex);
+            echo("MinDex: "@%minDex);
+            //If we previously were under the minimum, but now are over it, update the value
+            if(%prevDex < %minDex && %newDex >= %minDex)
+            {
+                if(fetchData(%clientId,"SlowDexFlags") > 0) //Navigate any weirdness
+                {
+                    storeData(%clientId,"SlowDexFlags",1,"dec");
+                    RefreshWeight(%clientId);
+                }
+            }
+            else if(%prevDex >= %minDex && %newDex < %minDex)
+            {
+                storeData(%clientId,"SlowDexFlags",1,"inc");
+                RefreshWeight(%clientId);
+            }
+        }
+    }
 	else if(%type == "MANA2")
 	{
         %newVal = 0;

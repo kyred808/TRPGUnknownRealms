@@ -144,16 +144,27 @@ function RefreshWeight(%clientId)
             %spill = %weight - fetchData(%clientId, "MaxWeight");
 
             %num = floor(%spill / %changeweightstep);
-            
-            if(%num > 0)
+            %sdfCount = fetchData(%clientId,"SlowDexFlags");
+            echo(%sdfCount);
+            if(%sdfCount == "")
+                %sdfCount = 0;
+            if(%num > 0 || %sdfCount > 0)
             {
-                //overweight, select appropriate armor
-                for(%i = -1; %i >= -%num; %i--)
+                if(%num > 0)
                 {
-                    if($ArmorForSpeed[fetchData(%clientId, "RACE"), %i] != "")
-                        %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %i];
-                    else
-                        break;
+                    //overweight, select appropriate armor
+                    for(%i = -1; %i >= -%num; %i--)
+                    {
+                        if($ArmorForSpeed[fetchData(%clientId, "RACE"), %i] != "")
+                            %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), %i];
+                        else
+                            break;
+                    }
+                }
+                echo("NUM: "@ -%num);
+                if(%sdfCount > 0 && -%num > -2)
+                {
+                    %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), -2];
                 }
             }
             else
@@ -180,7 +191,7 @@ function RefreshWeight(%clientId)
         else
             %newarmor = $ArmorForSpeed[fetchData(%clientId, "RACE"), -5];
 	}
-
+    echo(%newarmor);
 	%a = Player::getArmor(%clientId);
 	%ae = GameBase::getEnergy(%player);
 

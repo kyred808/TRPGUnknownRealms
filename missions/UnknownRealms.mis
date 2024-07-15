@@ -2158,7 +2158,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1733.83 -1136.39 269.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 100";
+                    oreType = "id149 100";
                     mhp = 6; //Mean hp
                     hpVar = 3;
                 };
@@ -2168,7 +2168,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1739.57 -1241.24 283.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id146 100";
+                    oreType = "id149 100";
                     mhp = 8; //Mean hp
                     hpVar = 3;
                 };
@@ -2178,7 +2178,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1717.52 -1121.09 269.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 75 id146 25";
+                    oreType = "id149 75 id148 25";
                     mhp = 6; //Mean hp
                     hpVar = 3;
                 };
@@ -2188,7 +2188,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1691.74 -1138.43 243.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id147 100";
+                    oreType = "id148 100";
                     mhp = 8; //Mean hp
                     hpVar = 4;
                 };
@@ -2198,7 +2198,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1682.66 -1188.96 243.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 25 id146 75";
+                    oreType = "id149 25 id148 75";
                     mhp = 8; //Mean hp
                     hpVar = 4;
                 };
@@ -2208,7 +2208,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1627.32 -1186.41 252.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id147 100";
+                    oreType = "id148 100";
                     mhp = 8; //Mean hp
                     hpVar = 3;
                 };
@@ -2218,7 +2218,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1735.99 -1122.92 245.125";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id147 25 id148 25 id146 25 id145 25";
+                    oreType = "id149 50 id148 50";
                     mhp = 8; //Mean hp
                     hpVar = 3;
                 };
@@ -2231,7 +2231,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1772 -1104.75 71.135";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 50 id146 50";
+                    oreType = "id149 50 id148 50";
                     mhp = 6; //Mean hp
                     hpVar = 3;
                 };
@@ -2241,7 +2241,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1819.38 -1059.25 71.1357";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 25 id146 25 id149 25 id147 25";
+                    oreType = "id149 75 id148 25";
                     mhp = 6;
                     hpVar = 3;
                 };
@@ -2251,7 +2251,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1765.23 -1060.59 71.1357";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 25 id146 25 id148 25 id149 25";
+                    oreType = "id149 100";
                     mhp = 6;
                     hpVar = 3;
                 };
@@ -2261,7 +2261,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1768.56 -1074.83 71.1357";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 50 id146 50";
+                    oreType = "id148 100";
                     mhp = 6;
                     hpVar = 3;
                 };
@@ -2301,7 +2301,7 @@ instant SimGroup "MissionGroup" {
                     position = "-1766.15 -1083.39 71.1357";
                     rotation = "0 0 0";
                     crystalType = "OreCrystal";
-                    oreType = "id145 50 id146 50";
+                    oreType = "id148 100";
                     mhp = 6;
                     hpVar = 3;
                 };

@@ -33,6 +33,8 @@ $MinClass = "C";
 $MinRemort = "R";
 $MinAdmin = "A";
 $MinHouse = "H";
+$MinArmorDex = "D"; //Handled in NewRPGItemInterface
+$MustBeBot = "B";
 
 $SkillFlurryDelay = 150;
 
@@ -66,6 +68,7 @@ $SkillDesc[C] = "Class";
 $SkillDesc[R] = "Remort";
 $SkillDesc[A] = "Admin Level";
 $SkillDesc[H] = "House";
+$SkillDesc[D] = "Min DEX";
 $SkillDesc[I] = "Item";
 
 //######################################################################################
@@ -419,7 +422,7 @@ $SkillRestriction[LeatherArmor] = $SkillEndurance @ " 40";
 $SkillRestriction[StuddedLeather] = $SkillEndurance @ " 95";
 $SkillRestriction[SpikedLeather] = $SkillEndurance @ " 135";
 $SkillRestriction[HideArmor] = $SkillEndurance @ " 180";
-$SkillRestriction[ScaleMail] = $SkillEndurance @ " 240";
+$SkillRestriction[ScaleMail] = $SkillEndurance @ " 240 "@ $MinArmorDex @ " 7";
 $SkillRestriction[BrigandineArmor] = $SkillEndurance @ " 300";
 $SkillRestriction[ChainMail] = $SkillEndurance @ " 350";
 $SkillRestriction[RingMail] = $SkillEndurance @ " 410";
@@ -690,6 +693,7 @@ function CalcTotalSpentSP(%clientId)
     return %total;
 }
 
+// Unused currently
 function NewSkillCanUse(%clientId, %thing)
 {
 	dbecho($dbechoMode, "SkillCanUse(" @ %clientId @ ", " @ %thing @ ")");
@@ -715,6 +719,7 @@ function NewSkillCanUse(%clientId, %thing)
     return %flag;
 }
 
+// Currently unused
 function SkillCheckString(%clientId,%thing)
 {
     %flag = true;
@@ -784,39 +789,39 @@ function SkillCanUse(%clientId, %thing)
 		%s = GetWord($SkillRestriction[%thing], %i);
 		%n = GetWord($SkillRestriction[%thing], %i+1);
         
-		if(%s == "L")
+		if(%s == $MinLevel)
 		{
 			if(fetchData(%clientId, "LVL") < %n)
 				%flag = 1;
 		}
-		else if(%s == "R")
+		else if(%s == $MinRemort)
 		{
 			if(fetchData(%clientId, "RemortStep") < %n)
 				%flag = 1;
 		}
-		else if(%s == "A")
+		else if(%s == $MinAdmin)
 		{
 			if(%clientId.adminLevel < %n)
 				%flag = 1;
 		}
-        else if(%s == "B")
+        else if(%s == $MustBeBot)
         {
             if(%n == 1 && !%isBot)
                 %flag = 1;
         }
-		else if(%s == "G")
+		else if(%s == $MinGroup)
 		{
 			%gcflag++;
 			if(String::ICompare(fetchData(%clientId, "GROUP"), %n) == 0)
 				%gc = 1;
 		}
-		else if(%s == "C")
+		else if(%s == $MinClass)
 		{
 			%gcflag++;
 			if(String::ICompare(fetchData(%clientId, "CLASS"), %n) == 0)
 				%gc = 1;
 		}
-		else if(%s == "H")
+		else if(%s == $MinHouse)
 		{
 			%hflag++;
 			if(String::ICompare(fetchData(%clientId, "MyHouse"), %n) == 0)
@@ -826,6 +831,10 @@ function SkillCanUse(%clientId, %thing)
         {
             if(RPGItem::getItemCount(%clientId,%n) < 1 && !%isBot)
                 %flag = 1;
+        }
+        else if(%s == $MinArmorDex)
+        {
+            continue;
         }
 		else
 		{

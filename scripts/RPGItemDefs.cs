@@ -39,6 +39,13 @@ function AddItemHelper(%label,%name,%class,%id,%weight,%value,%datablk,%action)
     $HardcodedItemCost[%label] = %value;
 }
 
+function AddScrollItemHelper(%label,%name,%class,%id,%weight,%value,%datablk,%spec)
+{
+    RPGItem::AddItemDefinition(%label,%name,%class,%id,%datablk,"CastSpell "@ %spec);
+    $AccessoryVar[%label, $Weight] = %weight;
+    $HardcodedItemCost[%label] = %value;
+}
+
 $GemAffix[-2] = "Cracked";
 $GemAffix[-1] = "Rough";
 $GemAffix[0] = "";
@@ -163,7 +170,7 @@ $UnrustedItem["rspikedclub"] = "spikedclub";
 
 $SkillType[TreeAtk] = $SkillPiercing;
 $AccessoryVar[TreeAtk, $AccessoryType] = $PolearmAccessoryType;
-$AccessoryVar[TreeAtk, $SpecialVar] = "6 "@round(75 * $GlobalATKMod)@"";
+$AccessoryVar[TreeAtk, $SpecialVar] = "6 "@round(200 * $GlobalATKMod)@" "@$SpecialVarDEXScaling @" 2";
 $AccessoryVar[TreeAtk, $MiscInfo] = "A Treeatk";
 $AccessoryVar[TreeAtk, $Weight] = 0.1;
 $WeaponRange[TreeAtk] = $minRange + 1;
@@ -422,6 +429,13 @@ function AddCatalystAccessoryHelper(%label,%name,%id,%datablk,%weight,%cost,%spe
     $AccessoryVar[%label, $SpecialVar] = %special;
 }
 
+//Basic armor def upgrade
+AddItemHelper("HardStoneShard","Hard Stone Shard","Ores",184,0.5,3500,MiscLootShape);
+
+//Basic armor mdef upgrade
+AddItemHelper("BlueStoneShard","Blue Stone Shard","Ores",185,0.5,3500,MiscLootShape);
+
+
 // Rings
 AddRingItemHelper(ringofharm,"Ring of Harm",200,MiscLootShape,0.2,10000,$SpecialVarATK@" 10");
 AddRingItemHelper(ringofdefense,"Ring of Defense",202,MiscLootShape,0.2,8000,$SpecialVarDEF@" 50");
@@ -524,15 +538,17 @@ AddArmAccessoryHelper(OgresBracelet,"Ogre's Bracelet",284,MiscLootShape,0.2,1950
 $AccessoryVar[OgresBracelet, $MiscInfo] = "A bracelet that enhances the user's health and strength.";
 
 AddItemHelper("healscroll","Scroll of Healing","Scrolls",286,1,7500,MiscLootShape);
-$RPGItem::ItemDef[286,Action] = "CastSpell 8";
+$RPGItem::ItemDef[286,Action] = "CastSpell advheal1 5 1.5 15 200 120";
 $AccessoryVar[healscroll, $MiscInfo] = "A scroll that casts the healing spell.";
 
-AddItemHelper("fireballscroll","Scroll of Fireball","Scrolls",287,1,7500,MiscLootShape);
-$RPGItem::ItemDef[287,Action] = "CastSpell 14";
+AddItemHelper("fireballscroll","Scroll of Fireball","Scrolls",287,1,8500,MiscLootShape);
+$RPGItem::ItemDef[287,Action] = "CastSpell botfireball 2 1 5 80 100";
 $AccessoryVar[fireballscroll, $MiscInfo] = "A scroll that casts the fireball spell.";
 
-$ExcludeAffix["healscroll"] = true;
-$ExcludeAffix["fireballscroll"] = true;
+AddItemHelper("icestormscroll","Scroll of IceStorm","Scrolls",288,1,12000,MiscLootShape);
+$RPGItem::ItemDef[288,Action] = "CastSpell boticestorm 10 1.25 30 100 80";
+$AccessoryVar[fireballscroll, $MiscInfo] = "A scroll that casts the fireball spell.";
+
 //Hard coded costs are overwritten in CratingItemDefs
 AddItemHelper("Copper","Copper","Ores",300,3,1500,MiscLootShape);
 AddItemHelper("Tin","Tin","Ores",301,3,1500,MiscLootShape);
@@ -576,12 +592,16 @@ $AccessoryVar[clericcatalyst, $MiscInfo] = "A incant spell casting catalyst for 
 $CatalystType[clericcatalyst] = $CatalystTypeIncant;
 $SkillRestriction[clericcatalyst] = "C Cleric";
 
-AddCatalystAccessoryHelper(goblincatalyst,"Goblin Catalyst",408,MiscLootShape,0.2,15000,$SpecialVarArcaneScale @" 60 "@$SpecialVarIncantScale @" 30 "@ $SpecialVarCataFAIScale @" 1.5 "@$SpecialVarCataMNDScale @" 0.5"@ $SpecialVarManaCostAdj @" -80");
-$CatalystType[goblincatalyst] = $CatalystTypeIncant;
+AddCatalystAccessoryHelper(goblincatalyst,"Goblin Catalyst",408,MiscLootShape,0.2,15000,$SpecialVarArcaneScale @" 15 "@$SpecialVarIncantScale @" 5 "@ $SpecialVarCataFAIScale @" 1.5 "@$SpecialVarCataMNDScale @" 0.5"@ $SpecialVarManaCostAdj @" -80");
+$CatalystType[goblincatalyst] = $CatalystTypeArcane;
 $SkillRestriction[goblincatalyst] = "B 1";
 
 AddCatalystAccessoryHelper(arcanistswand,"Arcanist's Wand",410,MiscLootShape,0.2,138000,$SpecialVarArcaneScale @" 120 "@ $SpecialVarCataINTScale @" 1.8 "@$SpecialVarCataMNDScale @" 1.0");
 $AccessoryVar[arcanistswand, $MiscInfo] = "A wand used by established mages.";
+
+AddCatalystAccessoryHelper(enemycatalyst,"Enemy Catalyst",412,MiscLootShape,0.2,15000,$SpecialVarArcaneScale @" 60 "@$SpecialVarIncantScale @" 30 "@ $SpecialVarCataFAIScale @" 1.5 "@$SpecialVarCataMNDScale @" 0.5"@ $SpecialVarManaCostAdj @" -80");
+$CatalystType[enemycatalyst] = $CatalystTypeArcane;
+$SkillRestriction[enemycatalyst] = "B 1";
 
 $CatalystType[arcanistswand] = $CatalystTypeArcane;
 $SkillRestriction[arcanistswand] = $SkillOffensiveCasting @ " 250";
@@ -686,20 +706,35 @@ function RPGItem::DoUseAction(%clientId,%itemTag,%action)
     }
     else if(%type == "CastSpell")
     {
-        %index = getWord(%action,1);
-        RPGItemAffix::ParseData(%itemTag,"mana pow recov skill delay");
-        echo("MANA: "@$ParseAffix["mana"]);
-        echo("DELAY: "@$ParseAffix["delay"]);
-        echo("RECOV: "@$ParseAffix["recov"]);
-        echo("SKILL: "@$ParseAffix["skill"]);
-        echo("POW: "@$ParseAffix["pow"]);
-        if(BeginCastSpell(%clientId,%index,$ParseAffix["mana"],$ParseAffix["delay"],$ParseAffix["recov"],$ParseAffix["skill"],$ParseAffix["pow"],false))
+        %index = $Spell::index[getWord(%action,1)];
+        //%mana = getWord(%action,2);
+        //%delay = getWord(%action,3);
+        //%recov = getWord(%action,4);
+        //%skill = getWord(%action,5);
+        //%pow = getWord(%action,6);
+        if(BeginCastSpell(%clientId,%index,getWord(%action,2),getWord(%action,3),getWord(%action,4),getWord(%action,5),getWord(%action,6),false))
         {
             RPGItem::decItemCount(%clientId,%itemTag,1);
         }
         RefreshAll(%clientId,false);
         return true;
     }
+    //else if(%type == "CastSpell")
+    //{
+    //    %index = getWord(%action,1);
+    //    RPGItemAffix::ParseData(%itemTag,"mana pow recov skill delay");
+    //    echo("MANA: "@$ParseAffix["mana"]);
+    //    echo("DELAY: "@$ParseAffix["delay"]);
+    //    echo("RECOV: "@$ParseAffix["recov"]);
+    //    echo("SKILL: "@$ParseAffix["skill"]);
+    //    echo("POW: "@$ParseAffix["pow"]);
+    //    if(BeginCastSpell(%clientId,%index,$ParseAffix["mana"],$ParseAffix["delay"],$ParseAffix["recov"],$ParseAffix["skill"],$ParseAffix["pow"],false))
+    //    {
+    //        RPGItem::decItemCount(%clientId,%itemTag,1);
+    //    }
+    //    RefreshAll(%clientId,false);
+    //    return true;
+    //}
     else if(String::getWord(%action,",",0) == "EatFoodItem")
     {
         if(AddBonusStatePoints(%clientId,"FoodCooldown") == 0)

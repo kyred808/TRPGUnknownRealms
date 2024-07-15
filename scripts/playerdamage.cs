@@ -68,7 +68,7 @@ function Player::onKilled(%this)
 	%clientId = Player::getClient(%this);
 	%killerId = fetchData(%clientId, "tmpkillerid");
 	storeData(%clientId, "tmpkillerid", "");
-
+    %isBot = Player::isAiControlled(%clientId);
 	//revert
 	Client::setControlObject(%clientId.possessId, %clientId.possessId);
 	Client::setControlObject(%clientId, %clientId);
@@ -97,7 +97,7 @@ function Player::onKilled(%this)
 		%a = GetArenaDuelerIndex(%clientId);
 		$ArenaDueler[%a] = GetWord($ArenaDueler[%a], 0) @ " DEAD";
 
-		if(!Player::IsAiControlled(%clientId))
+		if(!%isBot)
 			%clientId.RespawnMeInArena = True;
 	}
 	else if(IsInRoster(%clientId))
@@ -107,7 +107,7 @@ function Player::onKilled(%this)
 		//to the roster, and an AI was killed to make way for this player.
 		//so don't drop lootbag
 
-		if(Player::isAiControlled(%clientId)) //if it was an AI, remove him right away, the same AI never spawns back
+		if(%isBot) //if it was an AI, remove him right away, the same AI never spawns back
 			RemoveFromRoster(%clientId);
 	}
 	else if(fetchData(%clientId, "noDropLootbagFlag"))
@@ -124,7 +124,7 @@ function Player::onKilled(%this)
 			%tmploot = %tmploot @ "COINS " @ floor(fetchData(%clientId, "COINS")) @ " ";
 		storeData(%clientId, "COINS", 0);
         
-        if(Player::isAiControlled(%clientId))
+        if(%isBot)
             %tmploot = DropTable::GenerateLootDrops(%clientId,%tmploot);
         
         %itemList = RPGItem::getFullItemList(%clientId,false);
@@ -134,9 +134,10 @@ function Player::onKilled(%this)
             %bInclude = false;
             %a = RPGItem::ItemTagToLabel(%itemTag);
             
-            if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
+            if(%isBot && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
             {
                 %bInclude = false;
+                RPGItem::setItemCount(%clientId, %itemTag, 0);
             }
             else
             {
@@ -180,7 +181,7 @@ function Player::onKilled(%this)
                 }
                 else
                 {
-                    %tmploot = %tmploot @ %newTag @ " " @ getWord(%itemList,%i+1) @ " ";
+                   %tmploot = %tmploot @ %newTag @ " " @ getWord(%itemList,%i+1) @ " ";
                     RPGItem::setItemCount(%clientId, %itemTag, 0); //Don't worry about equip stats.  Will be refreshed on spawn.
                     
                 }
@@ -201,84 +202,6 @@ function Player::onKilled(%this)
             }
         }
 
-        //Rework needed for virtual items
-        //Needs optimization, but not critical yet
-		//%max = getNumItems();
-		//for (%i = 0; %i < %max; %i++)
-		//{
-		//	%a = getItemData(%i);
-		//	%itemcount = Player::getItemCount(%clientId, %a);
-        //
-		//	if(%itemcount)
-		//	{
-		//		%flag = False;
-        //
-		//		if(fetchData(%clientId, "LCK") >= 0)
-		//		{
-		//			//currently mounted weapon and all equipped stuff + lore items are thrown into lootbag.
-		//			if(Player::getMountedItem(%clientId, $WeaponSlot) == %a || %a.className == "Equipped" || $LoreItem[%a] == True)
-		//				%flag = True;
-		//		}
-		//		else
-		//			%flag = True;
-        //
-		//		if(fetchData(%clientId, "LCK") < 0 && Player::isAiControlled(%clientId))
-		//			%flag = True;
-        //
-		//		if(%a == CastingBlade)
-		//			%flag = False;		//HARDCODED because we DONT want any players to have this item.
-		//		
-        //        if(%a == Treeatk)
-        //            %flag = False;
-        //        
-		//		if($StealProtectedItem[%a])
-		//			%flag = False;
-        //        
-        //        if(Player::isAiControlled(%clientId) && Word::findWord(fetchData(%clientId,"NoDropLootList"),%a) != -1)
-        //        {
-        //            
-        //            //echo(%a," "@fetchData(%clientId,"NoDropLootList"));
-        //            %flag = False;
-        //        }
-        //        
-		//		if(%flag)
-		//		{
-		//			%b = %a;
-		//			if(%b.className == "Equipped")
-		//				%b = String::getSubStr(%b, 0, String::len(%b)-1);
-        //
-		//			if(Player::getMountedItem(%clientId, $WeaponSlot) == %a)
-		//			{
-		//				//special handling for currently held weapon
-		//				%tmploot = %tmploot @ %b @ " 1 ";
-		//				Player::decItemCount(%clientId, %a);
-		//			}
-		//			else
-		//			{
-		//				%tmploot = %tmploot @ %b @ " " @ Player::getItemCount(%clientId, %a) @ " ";
-		//				RPGItem::setItemCount(%clientId, %a, 0);
-		//			}
-		//			if(String::len(%tmploot) > 200)
-		//			{
-		//				if(Player::isAiControlled(%clientId))
-		//					TossLootbag(%clientId, %tmploot, 1, "*", 300);
-		//				else
-		//				{
-		//					%namelist = Client::getName(%clientId) @ ",";
-		//					if(fetchData(%clientId, "LCK") >= 0)
-		//						%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 300, 300, 3600));
-		//					else
-		//						%tehLootBag = TossLootbag(%clientId, %tmploot, 5, %namelist, Cap(fetchData(%clientId, "LVL") * 0.2, 5, "inf"));
-		//				}
-		//				%tmploot = "";
-		//			}
-		//		}
-		//	}
-		//}
-        
-        //%beltItems = Belt::getDeathItems(%clientid);
-        //
-        //%tmploot = %tmploot @ %beltItems; 
 		if(%tmploot != "")
 		{
 			if(Player::isAiControlled(%clientId))
@@ -510,8 +433,13 @@ function CalculateRawDamage(%clientId,%weapon)
     %playeratk = fetchData(%clientId,"ATK");
     %attrf = CalcWeaponAttrFactor(%clientId,%weapon);
     %skillVal = CalculatePlayerSkill(%clientId, $SkillType[RPGItem::ItemTagToLabel(%weapon)]);
+    if(Player::isAIControlled(%clientId))
+        %skillVal = %skillVal * $NerfEnemySkillScale;
     %value = round(%playeratk*$WeapAtkDmgScale + %attrf*$AttrDmgScale + %skillVal*$SkillDmgScale);
     
+    echo("From ATK: "@ %playeratk*$WeapAtkDmgScale);
+    echo("From ATTR: "@ %attrf*$AttrDmgScale);
+    echo("From SKILL: "@ %skillVal*$SkillDmgScale);
     return %value;
 }
 
@@ -615,7 +543,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 return;
             }
         }
-        echo("Type: "@ %type);
+        //echo("Type: "@ %type);
 		//------------- CREATE DAMAGE VALUE -------------
 		if(%type == $SpellDamageType || %type == $StaffDamageType || %type > $SpellDamageOffset)
 		{
@@ -652,16 +580,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
             %cataTypeList[$SkillNatureCasting] = "MagicScaling"; //Temp
             
             if(%empower)
-                %dmg += 15;
+                %dmg += 30;
             
             %tmpStats = fetchData(%shooterClient,"tempCastStats");
             if(%index != "" && %weapTag != "" && getWord(%tmpStats,0) == %index)
             {
                 %skill = getWord(%tmpStats,1);
                 %cataScale = getWord(%tmpStats,2);
-                %saveOnHit = getWord(%tempStats,3);
-                if(%saveOnHit != 1)
-                    storeData(%shooterClient,"tempCastStats","");
+                //%saveOnHit = getWord(%tmpStats,3);
+                //if(%saveOnHit != 1)
+                //    storeData(%shooterClient,"tempCastStats","");
             }
             else
             {
@@ -669,6 +597,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
                 %skill = CalculatePlayerSkill(%shooterClient, %skilltype);
             }
             echo("SC: "@%catascale);
+            if(Player::isAIControlled(%shooterClient))
+                %skill = %skill * $NerfEnemySkillScale;
             //echo("SK: "@ CalculatePlayerSkill(%shooterClient, %skilltype) * $SpellDamageSkillScale);
             %value = round( (%dmg * %cataScale / 100) + %skill * $SpellDamageSkillScale);
 			//%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
@@ -753,6 +683,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			//%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
             %attrf = CalcWeaponAttrFactor(%shooterClient,%weapTag);
             %skillVal = CalculatePlayerSkill(%shooterClient, %skilltype);
+            
+            if(Player::isAIControlled(%shooterClient))
+                %skillVal = %skillVal * $NerfEnemySkillScale;
+            
             %value = round((%weapondamage*$WeapAtkDmgScale + %attrf*$AttrDmgScale + %skillVal*$SkillDmgScale)* %multi * %dmgMult);
             //echo(%value);
             %a = (%value * 0.15);
@@ -795,7 +729,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
             if(%empower)
                 %value += 2;
-            echo(%value);
+            //echo(%value);
 			%value = (%value / $TribesDamageToNumericDamage);
             
 		}
@@ -1321,8 +1255,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 						}
 					}
 				}
-
-				%flash = Player::getDamageFlash(%this) + %value * 2;
+				%flash = Player::getDamageFlash(%this) + (%value * $TribesDamageToNumericDamage / fetchData(%damagedClient,"MaxHP")) * 2; // * 2;
 				if(%flash > 0.75)
 					%flash = 0.75;
 				Player::setDamageFlash(%this,%flash);

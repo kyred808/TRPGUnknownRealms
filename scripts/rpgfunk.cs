@@ -3058,7 +3058,7 @@ function WhatIs(%item)
 	else
 		%nfo = "There is no further information available.";
 
-    echo(%item);
+    //echo(%item);
 	%si = $Spell::index[%item];
 	if(%si != "")
 	{

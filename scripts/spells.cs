@@ -222,7 +222,7 @@ $Spell::scaleDamper[8] = 0.75;
 $Spell::recoveryTime[8] = 5;
 $Spell::damageValue[8] = 0.02; //"HPRegen 0.02";
 $Spell::scaleEffect[8] = 0.6;
-$Spell::manaCost[8] = 5;
+$Spell::manaCost[8] = 6;
 $Spell::ticks[8] = 15;
 $Spell::startSound[8] = DeActivateWA;
 $Spell::endSound[8] = ActivateAR;
@@ -237,10 +237,10 @@ $Spell::index[advheal1] = 9;
 $Spell::name[9] = "Heal Self or Other (1st)";
 $Spell::description[9] = "Heals the caster or someone in the LOS.";
 $Spell::delay[9] = 1.5;
-$Spell::recoveryTime[9] = 8;
-$Spell::damageValue[9] = -10;
+$Spell::recoveryTime[9] = 10;
+$Spell::damageValue[9] = -25;
 $Spell::LOSrange[9] = 80;
-$Spell::manaCost[9] = 3;
+$Spell::manaCost[9] = 15;
 $Spell::startSound[9] = DeActivateWA;
 $Spell::endSound[9] = ActivateAR;
 $Spell::groupListCheck[9] = False;
@@ -257,7 +257,7 @@ $Spell::delay[10] = 1.5;
 $Spell::recoveryTime[10] = 12;
 $Spell::damageValue[10] = -15;
 $Spell::LOSrange[10] = 80;
-$Spell::manaCost[10] = 4;
+$Spell::manaCost[10] = 25;
 $Spell::startSound[10] = DeActivateWA;
 $Spell::endSound[10] = ActivateAR;
 $Spell::groupListCheck[10] = False;
@@ -1164,7 +1164,7 @@ function Player::CastSpell(%clientId,%keyword)
                     %castType = $DefaultCastingType[%skill];
                 else
                     %castType = $Spell::castingType[%idx];
-                    
+                
                 %scaling = fetchData(%clientId,$CastingTypeToFetch[%castType]);
                 %castMethod = $Spell::castMethod[%idx];
                 
@@ -1424,11 +1424,17 @@ function BeginCastSpell(%clientId,%index,%mana,%delay,%recov,%skillLvl,%castingS
         
         if(!%useSkill)
         {
-            if($Spell::keyword[%index] == "icestorm")
+            if($Spell::keyword[%index] == "boticestorm")
                 %flag = 1;
             else
                 %flag = 0;
-            storeData(%clientId,"tempCastStats",%index @" "@%skillLvl @" "@ %castingStat @" "@ %flag);
+            %castIdx = %index;
+            if($Spell::keyword[%index] == "botfireball")
+                %castIdx = $Spell::index[fireball];
+            if($Spell::keyword[%index] == "boticestorm")
+                %castIdx = $Spell::index[icestorm];
+
+            storeData(%clientId,"tempCastStats",%castIdx @" "@%skillLvl @" "@ %castingStat @" "@ %flag);
             schedule("storeData(" @%clientId @",\"tempCastStats\",\"\");",%recovTime);
         }
         
@@ -1849,8 +1855,10 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2,%castSt
             Client::sendMessage(%clientId, $MsgBeige, "Healing " @ Client::getName(%id));
             if(%clientId != %id)
                 Client::sendMessage(%id, $MsgBeige, Client::getName(%clientId) @ " is casting " @ $Spell::name[%index] @ " on you.");
-
-            %r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
+            
+            %r = ($Spell::damageValue[%index] * %castStat / 100 + CalculatePLayerSkill(%clientId,$SkillDefensiveCasting)*$SpellDamageSkillScale)/$TribesDamageToNumericDamage;
+            
+            //%r = $Spell::damageValue[%index] / $TribesDamageToNumericDamage;
 
             refreshHP(%id, %r);
 

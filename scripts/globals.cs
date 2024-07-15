@@ -65,7 +65,9 @@ $WeaponImprovementScaling = 0.25; //25% increase
 $GlobalATKMod = 1;
 $WeapAtkDmgScale = 0.2;
 $AttrDmgScale = 1;
-$SkillDmgScale = 0.15;
+$SkillDmgScale = 0.12;
+
+$NerfEnemySkillScale = 0.8;
 
 $WeaponImprovementScaleFactor = 0.1;
 

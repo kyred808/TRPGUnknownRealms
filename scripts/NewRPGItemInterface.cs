@@ -700,6 +700,13 @@ function RPGItem::EquipItem(%clientId,%itemTag,%showmsg)
                     RPGItem::decItemCount(%clientId,%itemTag,1,false);
                     RPGItem::incItemCount(%clientId,%equipTag,1,false);
                     RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,%label),"inc");
+                    
+                    //Check if player meets dex requirements
+                    %minDex = GetStuffStringCount($SkillRestriction[%label], $MinArmorDex);
+                    if(CalcPlayerAttribute(%clientId,"DEX") < %minDex && !Player::isAIControlled(%clientId))
+                    {
+                        storeData(%clientId,"SlowDexFlags",1,"inc");
+                    }
                 }
                 else if(%showmsg)
                     Client::sendMessage(%clientId, $MsgRed, "You can't equip this item because you have too many already equipped.~wC_BuySell.wav");
@@ -754,9 +761,20 @@ function RPGItem::UnequipItem(%clientId,%itemTag,%showmsg,%refreshEquipOverride)
             if(%showmsg)
                 Client::sendMessage(%clientId, $MsgBeige, "You unequipped " @ RPGItem::getItemNameFromTag(%itemTag) @ ".");
             %unequipTag = RPGItem::transferAffixesToItem(%itemTag,%unequipId);
+            %unequipLabel = getCroppedItem(%label);
             RPGItem::decItemCount(%clientId,%itemTag,1,false);
             RPGItem::incItemCount(%clientId,%unequipTag,1,false);
-            RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,getCroppedItem(%label)),"dec");
+            RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,%unequipLabel),"dec");
+            
+            //Clear dex flags
+            %minDex = GetStuffStringCount($SkillRestriction[%unequipLabel], $MinArmorDex);
+            if(CalcPlayerAttribute(%clientId,"DEX") < %minDex && !Player::isAIControlled(%clientId))
+            {
+                if(fetchData(%clientId,"SlowDexFlags") > 0) //Navigate any weirdness
+                {
+                    storeData(%clientId,"SlowDexFlags",1,"dec");
+                }
+            }
         }
         else if(%class == $RPGItem::WeaponClass)
         {
@@ -805,6 +823,10 @@ function RPGItem::RefreshPlayerEquipStats(%clientId)
         //%label = getCroppedItem(RPGItem::ItemTagToLabel(%itemTag)); //GetAccessoryVar handles the cropping
         %label = RPGItem::ItemTagToLabel(%itemTag);
         RPGItem::SetPlayerEquipStatsFromSpecialVar(%clientId,RPGItem::GetEquipmentStats(%itemTag,%label,%amnt),"inc");
+
+        %minDex = GetStuffStringCount($SkillRestriction[getCroppedItem(%label)], $MinArmorDex);
+        if(CalcPlayerAttribute(%clientId,"DEX") < %minDex && !Player::isAIControlled(%clientId))
+            storeData(%clientId,"SlowDexFlags",1,"inc");
     }
 }
 

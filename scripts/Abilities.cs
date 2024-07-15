@@ -377,7 +377,7 @@ function Ability::CheckCost(%clientId,%idx)
     %flag = true;
     if($Ability::cost[%idx,Mana])
     {
-        %mana = fetchData(%clientId,"MANA");
+        %mana = Player::getMana(%clientId);
         if(%mana < $Ability::cost[%idx,Mana])
             %flag = false;
     }

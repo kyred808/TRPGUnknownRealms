@@ -269,6 +269,10 @@ function GetAccessoryList(%clientId, %type, %filter)
     {
         %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]);
     }
+    else if(%type == 16)
+    {
+        %list = RPGItem::getItemList(%clientId,$RPGItem::ItemClass[$RPGItem::EquippedClass,InventoryTag]);
+    }
     else if(%type == -1)
     {
         %list = RPGItem::getFullItemList(%clientId,false);
@@ -311,6 +315,10 @@ function GetAccessoryList(%clientId, %type, %filter)
             {
                 if($AccessoryVar[getCroppedItem(%item), $AccessoryType] == $CatalystAccessoryType)
                     %typeCheck = true;
+            }
+            else if(%type == 16)
+            {
+                %typeCheck = GetStuffStringCount($SkillRestriction[getCroppedItem(%item)],$MinArmorDex) > 0;
             }
             else if(%c[%type] == $AccessoryVar[%item, $AccessoryType])
                 %typeCheck = true;
@@ -609,7 +617,7 @@ function WhatSpecialVars(%thing,%addOn)
 	%tmp = GetAccessoryVar(%thing, $SpecialVar);
     if(%addOn != "")
         %tmp = CombineSpecialVars(%tmp,%addOn);
-    echo("tmp: "@ %tmp);
+    //echo("tmp: "@ %tmp);
 	%t = "";
 	for(%i = 0; GetWord(%tmp, %i) != -1; %i+=2)
 	{

@@ -26,19 +26,18 @@ function ParseDropTable(%key,%str)
         $DropTable[%key,%i,Rate] = (%percent/100) * 1.000001;
     }
 }
-%healscroll = "id286_pr(80)_np1_mana2_pow80_recov4_skill50_delay1";
-%fbscroll = "id287_pr(100)_np1_mana2_pow100_recov4_skill50_delay1";
+
 //Enemy Type Tables
 //Goblins-Mines
 ParseDropTable("Runt","rKnife 1 10");//|"@%healscroll@" 1 90");
 ParseDropTable("Thief","rKnife 1 5|Sling 1 5|BlackStatue 1 15");//|"@%fbscroll@" 1 90");
-ParseDropTable("Wizard","Turquoise 1 5|manaring 1 1");
+ParseDropTable("Wizard","Turquoise 1 5|manaring 1 1|fireballscroll 1 20");
 ParseDropTable("Raider","rPickaxe 1 10|BlackStatue 15|Granite 1 15");
 
 //Gnolles-Mines
 ParseDropTable("Pup","CrystalBluePotion 1 5|BluePotion 1 20|Ruby 1 0.5");
 ParseDropTable("Shaman","EnergyShot 1 20|rClub 1 10|Jade 1 20|manaring 1 2");
-ParseDropTable("Scavenger","rClub 1 5|Sapphire 1 0.5");
+ParseDropTable("Scavenger","rClub 1 5|Sapphire 1 0.5|healscroll 1 5");
 ParseDropTable("Hunter","rWaraxe 1 10|Sling 1 10|Granite [1,3] 15|DeepMineKey 1 0.5");
 
 //Orcs-Yolanda
@@ -87,17 +86,17 @@ ParseDropTable("Ent","Strawberry [1,3] 5");
 
 //Race Tables
 ParseDropTable("Goblin","GoblinEar 1 5|GobbieBerry 1 8|Quartz [1,2] 25");
-ParseDropTable("Gnoll","traitorsamulet 1 0.25");
-ParseDropTable("Orc","Jade [1,2] 20|rLongSword 1 0.5");
+ParseDropTable("Gnoll","traitorsamulet 1 0.25|healscroll 1 1");
+ParseDropTable("Orc","Jade [1,2] 20|rLongSword 1 0.5|healscroll 1 5");
 ParseDropTable("Ogre","Jade [1,2] 15|OgresBracelet 1 0.2");
 ParseDropTable("Zombie","Jade [1,2] 25");
 ParseDropTable("Undead","Bonedust 1 15");
 ParseDropTable("Minotaur","MeteorChunk 1 5");
 
 //Zone Tables
-ParseDropTable("Keldrin Mine","COINS [5,20] 15|Quartz [1,2] 15");
-ParseDropTable("Stronghold Yolanda","COINS [15,30] 15|TitaniteShard 1 5|MorningStar 1 0.8");
-ParseDropTable("Ancient Crypt","COINS [45,60] 15|Bonedust [1,2] 5");
+ParseDropTable("Keldrin Mine","COINS [5,20] 15|Quartz [1,2] 15|healscroll 1 1|Ruby [1,3] 2");
+ParseDropTable("Stronghold Yolanda","COINS [15,30] 15|TitaniteShard 1 5|MorningStar 1 0.8|fireballscroll 1 5|icestormscroll 1 2|Sapphire [1,3] 2");
+ParseDropTable("Ancient Crypt","COINS [45,60] 15|Bonedust [1,2] 5|healscroll [1,2] 5");
 ParseDropTable("Elven Outpost","COINS [45,60] 15|Jade [1,4] 10");
 ParseDropTable("Traveller's Den","COINS [50,75] 15|turquoise [1,3] 5");
 ParseDropTable("Minotaur's Lair","COINS [100,300] 25|gladius 1 5|Topaz [1,4] 10");
@@ -107,7 +106,7 @@ function DropTable::AddTableToPlayer(%clientId,%tableKey)
     storeData(%clientId,"DropTableList",%tableKey@",","strinc");
 }
 
-$AffixDropRate = 0.25;
+$AffixDropRate = 0.30;
 $UnrustedDropRate = 0.2;
 function DropTable::GenerateLootDrops(%clientId,%lootstr)
 {
@@ -126,7 +125,7 @@ function DropTable::GenerateLootDrops(%clientId,%lootstr)
                     %item = $UnrustedItem[%item];
                     %p = getRandomMT();
                 }
-                
+                echo(%p @" <= "@ $AffixDropRate @"?");
                 if($ExcludeAffix[%item] == "")
                 {
                     echo(%item);
