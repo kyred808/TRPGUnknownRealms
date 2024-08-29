@@ -96,12 +96,12 @@ function RPGmountItem(%player, %itemTag, %slot)
                 if(%len > 255)
                 {
                     %substr = String::getsubstr(%bottomText,0,255);
-                    remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%bottomText) / 20), 1);
+                    remoteEval(%clientId,"BufferedCenterPrint",%substr, floor(String::len(%bottomText) / 5), 1);
                     %substr = String::getSubstr(%bottomText,255,%len);
                     remoteEval(%clientId,"BufferedCenterPrint",%substr, -1, 1);
                 }
                 else
-                    bottomprint(%clientId,%bottomText,String::len(%bottomText)/20);
+                    bottomprint(%clientId,%bottomText,String::len(%bottomText)/5);
             }
             //echo("Store Weapon! " @%itemTag);
             storeData(%clientId,"EquippedWeapon",%itemTag);

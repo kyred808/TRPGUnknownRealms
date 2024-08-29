@@ -3,6 +3,13 @@ $LastControlObject = 0;
 
 function Observer::triggerDown(%clientId)
 {
+    echo("Tap "@ %clientId.orbitControl);
+    if(!$EndOrbitLoop[%clientId])
+    {
+        $OrbitBoosters[%clientId] = true;
+        %clientId.obBoost = true;
+        echo("Boosters!");
+    }
 }
 
 function Observer::orbitObjectDeleted(%cl)
@@ -19,6 +26,8 @@ function Observer::enterMissionArea(%cl)
 
 function Observer::triggerUp(%clientId)
 {
+    if(!$EndOrbitLoop[%clientId])
+        $OrbitBoosters[%clientId] = false;
         if(%clientId.observerMode == "dead")
         {
                 if(%clientId.dieTime + $Server::respawnTime < getSimTime())
@@ -46,6 +55,8 @@ function Observer::triggerUp(%clientId)
 
 function Observer::jump(%clientId)
 {
+    if(!$EndOrbitLoop[%clientId])
+        $OrbitStop[%clientId] = true;
         if(%clientId.observerMode == "observerFly")
         {
                 %clientId.observerMode = "observerOrbit";

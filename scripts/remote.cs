@@ -32,16 +32,9 @@ function remotePlayMode(%clientId)
 
 function remoteCommandMode(%clientId)
 {
-	if($numMessage[%clientId, c] != "")
-	{
-		remotesay(%clientId,0,$numMessage[%clientId, c]);
-	}
-	else if(%clientId.adminLevel < 1)
-	{
-		//RPG players don't need commander mode.
-		client::sendmessage(%clientId, 0, "#set c [message]");
-		return;
-	}
+	//RPG players don't need commander mode.
+	remoteRawKey(%clientId, "c");
+	return;
 
 	//if(!(%clientId.adminLevel >= 1))
 	//{
@@ -61,6 +54,38 @@ function remoteCommandMode(%clientId)
 		Client::setGuiMode(%clientId, $GuiModeCommand);
 	}
 }
+
+//function remoteCommandMode(%clientId)
+//{
+//	if($numMessage[%clientId, c] != "")
+//	{
+//		remotesay(%clientId,0,$numMessage[%clientId, c]);
+//	}
+//	else if(%clientId.adminLevel < 1)
+//	{
+//		//RPG players don't need commander mode.
+//		client::sendmessage(%clientId, 0, "#set c [message]");
+//		return;
+//	}
+//
+//	//if(!(%clientId.adminLevel >= 1))
+//	//{
+//	//	//RPG players don't need commander mode.
+//	//	return;
+//	//}
+//
+//	Client::clearItemShopping(%clientId);
+//	Client::clearItemBuying(%clientId);
+//	ClearCurrentShopVars(%clientId);
+//
+//	// can't switch to command mode while a server menu is up
+//	if(!%clientId.guiLock)
+//	{
+//		remoteSCOM(%clientId, -1);  // force the bandwidth to be full command
+//
+//		Client::setGuiMode(%clientId, $GuiModeCommand);
+//	}
+//}
 
 function remoteInventoryMode(%clientId)
 {
@@ -183,8 +208,14 @@ function remoteUseItem(%clientId, %type)
             }
             else if($SetKeyRemote[%item] != "")
             {
-                if($numMessage[%trueClientId, $SetKeyRemote[%item]] == "")
-                    Client::sendmessage(%trueClientId, 0, "#set "@ $SetKeyRemote[%item] @" [message]");
+                %pressedKey = $SetKeyRemote[%item];
+                if(%trueClientId.overrideKeybinds)
+                {
+                    remoteRawOverride(%trueClientId, %pressedKey);
+                    return;
+                }
+                if($numMessage[%trueClientId,%pressedKey] == "")
+                    Client::sendmessage(%trueClientId, 0, "#set "@ %pressedKey @" [message]");
                 else
                     ActivateSetKey(%trueClientId,$numMessage[%trueClientId, $SetKeyRemote[%item]]);
             }
@@ -199,84 +230,6 @@ function remoteUseItem(%clientId, %type)
             //	//	Player::useItem(%clientId, %item);
             //	//}
             //}
-            
-            //else if(%item == Blaster)
-            //{
-            //	if($numMessage[%trueClientId, 1] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 1 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 1]);
-            //}
-            //else if(%item == PlasmaGun)
-            //{
-            //	if($numMessage[%trueClientId, 2] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 2 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 2]);
-            //}
-            //else if(%item == ChainGun)
-            //{
-            //	if($numMessage[%trueClientId, 3] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 3 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 3]);
-            //}
-            //else if(%item == DiscLauncher)
-            //{
-            //	if($numMessage[%trueClientId, 4] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 4 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 4]);
-            //}
-            //else if(%item == GrenadeLauncher)
-            //{
-            //	if($numMessage[%trueClientId, 5] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 5 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 5]);
-            //}
-            //else if(%item == LaserRifle)
-            //{
-            //	if($numMessage[%trueClientId, 6] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 6 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 6]);
-            //}
-            //else if(%item == ElfGun)
-            //{
-            //	if($numMessage[%trueClientId, 7] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 7 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 7]);
-            //}
-            //else if(%item == Mortar)
-            //{
-            //	if($numMessage[%trueClientId, 8] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 8 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 8]);
-            //}
-            //else if(%item == TargetingLaser)
-            //{
-            //	if($numMessage[%trueClientId, 9] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set 9 [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, 9]);
-            //}
-            //else if(%item == Beacon)
-            //{
-            //	if($numMessage[%trueClientId, b] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set b [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, b]);
-            //}
-            //else if(%item == RepairKit)
-            //{
-            //	if($numMessage[%trueClientId, h] == "")
-            //		client::sendmessage(%trueClientId, 0, "#set h [message]");
-            //	else
-            //		remotesay(%trueClientId,0,$numMessage[%trueClientId, h]);
-            //}
         }
 	}
 }
@@ -289,16 +242,17 @@ function ActivateSetKey(%clientId,%msg)
 
 function remoteThrowItem(%clientId,%type,%strength)
 {
-
 		%trueClientId = player::getclient(%clientId);
 		%item = getItemData(%type);
         
         if($SetKeyRemote[%item] != "")
         {
-            if($numMessage[%trueClientId, $SetKeyRemote[%item]] == "")
-                Client::sendmessage(%trueClientId, 0, "#set "@ $SetKeyRemote[%item] @" [message]");
+            %pressedKey = $SetKeyRemote[%item];
+            if($numMessage[%trueClientId, %pressedKey] == "")
+                Client::sendmessage(%trueClientId, 0, "#set "@ %pressedKey @" [message]");
             else
-                ActivateSetKey(%trueClientId,$numMessage[%trueClientId, $SetKeyRemote[%item]]);
+                ActivateSetKey(%trueClientId,$numMessage[%trueClientId, %pressedKey]);
+                //remoteRawKey(%clientId, %pressedKey);
         }
         
 		//if (%item == Grenade) {
@@ -341,7 +295,7 @@ function remoteDropItem(%clientId,%type,%amnt)
 		if($droppingAllowed == 1)
 		{
 			if((Client::getOwnedObject(%clientId)).driver != 1) {
-				echo("Drop item: "@%type @" "@%amnt);
+				//echo("Drop item: "@%type @" "@%amnt);
 				%clientId.throwStrength = 1;
                 if(RPGItem::isItemTag(%type))
                 {
@@ -590,6 +544,40 @@ function remoteConsider(%clientId)
 
 	if(!%sawsomething)
 		Client::sendMessage(%clientId, $MsgWhite, %nothingMsg);
+}
+
+function disableOverrides(%client){
+	schedule::Cancel("NewBotMessage"@%client);
+	schedule::cancel("transportmenu"@%client);
+	if(%client.overrideKeybinds == 2){
+		%index = floor(%client.castingmenuindex);
+		EndCast(%client,False,0,%index,gamebase::getposition(%client),False);
+	}
+	%client.keyOverride = "";
+	%client.overrideKeybinds = "";
+}
+
+function remoteRawOverride(%client, %key, %mod){
+	if(string::getsubstr(%key, 0, 6) == "numpad" && string::len(%key) == 7)
+		%key = string::getsubstr(%key, 6, 1);
+	if(string::getsubstr(%key, 0, 1) == "f" && string::len(%key) < 4)
+		%key = string::getsubstr(%key, 1, 2);
+	if(%mod == "control")
+		%key += 9;
+	if(String::Compare(floor(%key), %key) != 0){
+		client::sendmessage(%client, 0, "Please press a number corresponding to your choice.");
+		return;
+	}
+
+	if(%client.keyOverride != ""){
+		%evalstring = %client.keyOverride@"("@%client@",\""@%key@"\");";
+		eval(%evalstring);
+	}
+}
+
+function remoteReleaseKey(%client, %key, %mod)
+{
+    Client::sendMessage(%client, 0, "Release Key Unimplemented");
 }
 
 //This function is a placeholder+prevents possible console spam.

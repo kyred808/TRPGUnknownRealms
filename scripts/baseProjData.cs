@@ -1371,6 +1371,35 @@ SeekingMissileData TurretMissile
    soundId = SoundJetHeavy;
 };
 
+SeekingMissileData MagicMissile
+{
+   bulletShapeName = "enbolt.dts";
+   explosionTag    = rocketExp;
+   collisionRadius = 0.0;
+   mass            = 2.0;
+
+   damageClass      = 1;       // 0 impact, 1, radius
+   damageValue      = 0.5;
+   damageType       = $MissileDamageType;
+   explosionRadius  = 9.5;
+   kickBackStrength = 175.0;
+
+   muzzleVelocity    = 72.0;
+   totalTime         = 30;
+   liveTime          = 30;
+   seekingTurningRadius    = 3.0;
+   nonSeekingTurningRadius = 3.0;
+   proximityDist     = 1.5;
+   smokeDist         = 1.75;
+
+   lightRange       = 5.0;
+   lightColor       = { 0.4, 0.4, 1.0 };
+
+   inheritedVelocityScale = 0.5;
+
+   soundId = SoundJetHeavy;
+};
+
 LaserData sniperLaser
 {
 	laserBitmapName   = "forcefield.bmp";

@@ -534,6 +534,85 @@ $SkillRestriction["#advcompass"] = $SkillSenseHeading @ " 20";
 // Skill functions
 //######################################################################################
 
+$RotRate = $pi/2*0.1; //90 degs per second
+$ProjSpeed = 72;
+$ProjSpeedUpAccel = 50*0.1;//30*0.1;
+$ProjSlowDownAccel = 80*0.1;
+$ProjSpeedMin = 5;
+
+function abs(%val)
+{
+    if(%val < 0)
+        %val *= -1;
+    return %val;
+}
+
+function OrbitTest(%client)
+{
+    %trans = Gamebase::getMuzzleTransform(%client);
+    %player = Client::getOwnedObject(%client);
+    %vel = "0 0 0";
+    %proj = Projectile::spawnProjectile(MagicMissile,%trans,%player,%vel);
+    Client::setControlObject(%client, Client::getObserverCamera(%client));
+	Observer::setOrbitObject(%client, %proj, 30, 30, 30);
+    schedule("OrbitLoop("@%client@","@%proj@","@$ProjSpeed@");",1.5);
+    %client.orbitControl = true;
+    //OrbitLoop(%client,%proj);
+    $EndOrbitLoop[%client] = false;
+    schedule("$EndOrbitLoop["@%client@"] = true;",30);
+}
+
+function OrbitLoop(%client,%proj,%targetSpeed)
+{
+    %cam = Client::getObserverCamera(%client);
+    %rot = Gamebase::getRotation(%cam);
+    %lookVec = Vector::getFromRot(%rot, 1.0);
+    %vel = Item::getVelocity(%proj);
+    %speed = Vector::getDistance(%vel,"0 0 0");
+
+    echo(%speed @" vs "@ %targetSpeed);
+    if(abs(%speed - %targetSpeed) < 2)
+        %speed = %targetSpeed;
+    
+    if($OrbitStop[%client])
+    {
+        %targetSpeed = $ProjSpeedMin;
+        if($OrbitBoosters[%client])
+            $OrbitStop[%client] = false;
+    }
+    else
+    {
+        if($OrbitBoosters[%client])
+            %targetSpeed = $ProjSpeed*3;
+        else
+            %targetSpeed = $ProjSpeed;
+    }
+    
+    if(%speed > %targetSpeed)
+        %speed -= $ProjSlowDownAccel;
+    else if(%speed < %targetSpeed)
+        %speed += $ProjSpeedUpAccel;
+    
+    Item::setVelocity(%proj,ScaleVector(%lookVec,%speed));
+    if(!$EndOrbitLoop[%client])
+        schedule("OrbitLoop("@%client@","@%proj@","@%targetSpeed@");",0.1);
+    else
+    {
+        Client::setControlObject(%client, %client);
+        %client.orbitControl = false;
+        %client.obStop = false;
+        %client.obBoost = false;
+    }
+}
+
+function OrbitEnd(%client)
+{
+    Client::setControlObject(%client, %client);
+    $EndOrbitLoop[%client] = true;
+    %client.orbitControl = false;
+    %client.obStop = false;
+}
+
 function GetNumSkills()
 {
 	dbecho($dbechoMode, "GetNumSkills()");

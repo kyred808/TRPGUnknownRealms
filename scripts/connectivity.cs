@@ -190,7 +190,10 @@ function Server::onClientDisconnect(%clientId)
 function Server::onClientConnect(%clientId)
 {
 	dbecho($dbechoMode2, "Server::onClientConnect(" @ %clientId @ ")");
-
+    
+    $players++;
+	setWindowTitle($players@"/"@$server::maxplayers@" Tribes RPG server");
+    
 	%hisip = Client::getTransportAddress(%clientId);
 
 	for(%i = 1; $bannedip[%i] != ""; %i++)
@@ -200,9 +203,14 @@ function Server::onClientConnect(%clientId)
 			echo(%hisip @ " (banned)");
 			%clientId.IsInvalid = True;
 			BanList::add(%hisip, 9999);
+            %bannedFlag = true;
 		}
 	}
+    if(!%bannedFlag){
+		//Connection spam protection, 5 second delay on each connection, per IP
+		BanList::add(%hisip, 5);
 
+	}
 
 	if(!String::NCompare(Client::getTransportAddress(%clientId), "LOOPBACK", 8))
 	{
@@ -223,7 +231,7 @@ function Server::onClientConnect(%clientId)
 	//for the other half of this check.
 	remoteeval(%clientid, RepackIdent, true);
 
-    remoteeval(%clientId, RPGMenuInfo);
+    //remoteeval(%clientId, RPGMenuInfo);
     
 //-------------------------------------------------------------
 
@@ -240,3 +248,117 @@ function Client::leaveGame(%clientId)
 {
 }
 
+function newKick(%client, %msg, %force)
+{
+	if(!isObject(%client))
+		return false;
+	if($newKicked[%client])
+		return false;
+	if(%client.blockAllKicks && !%force)
+		return false;
+	$newKicked[%client] = True;
+	if(%msg == "")
+		%msg = " ";//So clients won't assume the "server went down".
+	%msg = escapestring(%msg);
+	pecho("Kick "@rpg::getname(%client)@": "@%msg);
+	schedule("net::kick("@%client@",\""@%msg@"\");$newKicked["@%client@"]=\"\";",0.05);
+	//Using a schedule prevents us from crashing because then it doesn't
+	//happen while doing other operations on the client.
+	return true;
+}
+
+// Part of phantom's hack block thingies
+function delayedban(%id)
+{
+	%hisip = Client::getTransportAddress(%id);
+	net::kick(%id, "You have been banned indefinately for that.");
+	BanList::add(%hisip, 9999);
+}
+
+function exploitBan(%id, %type, %period)
+{
+	%hisip = Client::getTransportAddress(%id);
+
+	%banmsg = "You have been temporarily auto-banned for "@%period@" minutes. Reason: "@%type;
+	%ret = newKick(%id,%banmsg, True);
+	if(%ret){
+		%period = %period * 60;
+		BanList::add(%hisip, %period);
+		%msg = %type@" detected from: " @ rpg::getname(%id) @ ", kicking.";
+		messageall(0,%msg);
+		pecho(%msg);
+	}
+	return %ret;
+}
+
+//For use from the server console. Coded functions should use newKick.
+//You can use a name or an ID on this.
+//Message is optional.
+//Examples:
+//
+//kick("phantom", "testing and stuff");
+//kick("phantom");
+//kick(2049);
+//
+function kick(%target, %msg)
+{
+	if(%target == "")
+	{
+		pecho("kick(\"Name/id\", \"kick message\");");
+		pecho("ex: kick(2049,\"Oh behave!\");");
+		pecho("Kicked players can return immediately.");
+		return false;
+	}
+	%client = %target;
+	if(client::getname(%target) == "")
+	{//looks like we were given a name
+		%client = NEWgetClientByName(%target);
+		if(%client == -1){
+			pecho("Couldn't kick "@%target@", name is invalid.");
+			return false;
+		}
+	}
+	if(%client < 2049){
+		pecho("Couldn't kick "@%client@", ID is invalid.");
+		return false;
+	}
+	if(!isObject(%client)){
+		pecho("Couldn't kick "@%client@", ID is invalid.");
+		return false;
+	}
+
+	newKick(%client, %msg, True);
+}
+
+
+function ban(%target, %period, %msg)
+{
+	if(%target == "")
+	{
+		pecho("ban(\"Name/id\", minutes, \"kick message\");");
+		pecho("ex: ban(2049,10,\"Time for a time out!\");");
+		pecho("Banned players can't return until their ban runs out.");
+		return false;
+	}
+	%client = %target;
+	if(client::getname(%target) == "")
+	{//looks like we were given a name
+		%client = NEWgetClientByName(%target);
+		if(%client == -1){
+			pecho("Couldn't ban "@%target@", name is invalid.");
+			return false;
+		}
+	}
+	if(%client < 2049){
+		pecho("Couldn't ban "@%client@", ID is invalid.");
+		return false;
+	}
+	if(!isObject(%client)){
+		pecho("Couldn't ban "@%client@", ID is invalid.");
+		return false;
+	}
+	%hisip = Client::getTransportAddress(%client);
+	%period = %period * 60;
+	BanList::add(%hisip, %period);
+	newKick(%client, %msg);
+}

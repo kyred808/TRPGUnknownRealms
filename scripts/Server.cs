@@ -119,6 +119,10 @@ function createServer(%mission, %dedicated)
 	exec(rpgserv);
 	exec(globals);
 	exec(rpgfunk);
+    exec(connectivity);
+    
+    setWindowTitle("0/"@$server::maxplayers@" Tribes RPG server");
+    
 	exec(skills);
 	exec(house);
 	exec(rpgarena);
@@ -148,7 +152,7 @@ function createServer(%mission, %dedicated)
 	exec(armors);
 	exec(Crystal);
 	exec(Spawn);
-	exec(connectivity);
+	
 	exec(gameevents);
 	exec(shopping);
 	exec(weight);
@@ -443,8 +447,8 @@ function Server::finishMissionLoad()
    purgeResources(true);
 
    // make sure the match happens within 5-10 hours.
-   schedule("Server::CheckMatchStarted();", 3600);
-   schedule("Server::nextMission();", 18000);
+   //schedule("Server::CheckMatchStarted();", 3600);
+   //schedule("Server::nextMission();", 18000);
    
    return "True";
 }
@@ -550,4 +554,100 @@ function topprintall(%msg, %timeout)
         %timeout = "";
    for(%clientId = Client::getFirst(); %clientId != -1; %clientId = Client::getNext(%clientId))
       remoteEval(%clientId, "TP", %msg, %timeout);
+}
+
+function Schedule::Add( %eval, %time, %tag ) {
+	if ( %tag == "" )
+		%tag = %eval;
+	if(String::findSubStr(%tag, "\"") != -1 || String::findSubStr(%tag, "\\") != -1){
+		pecho("%tag malformed: "@%tag);
+		return;
+	}
+	$Schedule::id[%tag]++;
+	$Schedule::eval[%tag] = %eval;
+	
+	schedule( "Schedule::Exec(\""@%tag@"\", "@$Schedule::ID[%tag]@");", %time );
+}
+
+function Schedule::Exec( %tag, %id ) {
+	if ( $Schedule::ID[%tag] != %id )
+		return;
+
+	%eval = $Schedule::eval[%tag];
+	Schedule::Cancel(%tag);
+	eval(%eval);
+}
+
+function Schedule::Cancel( %tag ) {
+	if($Schedule::ID[%tag] > 900000)
+		$Schedule::ID[%tag] = 0;
+	else
+		$Schedule::ID[%tag]++;
+	$Schedule::eval[%tag] = "";
+}
+
+function Schedule::Check( %tag ) {
+	if( $Schedule::eval[%tag] != "" )
+		return true;
+	else
+		return false;
+}
+
+function safePosition(%obj, %pos, %caller)
+{
+	if(string::findsubstr(%pos, "N") > -1){
+		pecho(%caller@" just tried to set pos "@%pos);
+		%x = floor(getWord(%pos, 0));
+		%y = floor(getWord(%pos, 1));
+		%z = floor(getWord(%pos, 2));
+		%pos = %x@" "@%y@" "@%z;
+	}
+	gamebase::setposition(%obj, %pos);
+}
+
+function safeDelete(%id, %caller, %instant)
+{
+	if(%id < 700){
+		pecho("Failure 1 to safeDelete object "@%id@", called by "@%caller);
+		return false;
+	}
+	if(!isObject(%id)){
+		pecho("Failure 2 to safeDelete object "@%id@", called by "@%caller);
+		return false;
+	}
+	if(%instant)
+		deleteObject(%id);
+	else
+		schedule("finalDelete("@%id@",\"escapeString(%caller)\");",0.01,%id);
+	return true;
+}
+
+function finalDelete(%id, %caller)
+{
+	if(!isObject(%id)){
+		pecho("Failure 2 to finalDelete object "@%id@", called by "@%caller);
+		return false;
+	}
+	deleteObject(%id);
+	return true;
+}
+
+// for player rotations only (around z axis) -plasmatic 
+function rotateVector(%vec,%rot){
+	%pi = 3.1416;
+	%rot3= getWord(%rot,2);
+	for(%i = 0; %rot3 >= %pi*2; %i++) %rot3 = %rot3 - %pi*2;
+	if (%rot3 > %pi) %rot3 = %rot3 - %pi*2;
+
+	%vec1= getWord(%vec,0);
+	%vec2= getWord(%vec,1);
+	%vc = %vec2;
+	%vec3= getWord(%vec,2); 
+	%ray = %vec1;
+	
+	%vec1 = %ray*cos(%rot3);
+	%vec2 = %ray*sin(%rot3);
+	%vec = %vec1 @" "@ %vec2 @" "@ %vec3;
+	%vec = Vector::add(%vec,Vector::getFromRot(%rot,%vc,0));
+	return %vec;
 }
