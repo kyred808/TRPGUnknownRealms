@@ -231,7 +231,7 @@ function Server::onClientConnect(%clientId)
 	//for the other half of this check.
 	remoteeval(%clientid, RepackIdent, true);
 
-    //remoteeval(%clientId, RPGMenuInfo);
+    remoteeval(%clientId, RPGMenuInfo);
     
 //-------------------------------------------------------------
 
