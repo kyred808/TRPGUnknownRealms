@@ -894,7 +894,7 @@ function DistributeExpForKilling(%damagedClient)
 			}
 
 			%perc = %dCounter[%finalDamagedBy[%i]] / %total;
-			%final = Cap(round( %value * %perc ), "inf", 1000);
+			%final = Cap(round( %value * %perc ), "inf", 10000);
 
 			//determine party exp
 			%pf = %partyFactor[%finalDamagedBy[%i]];
